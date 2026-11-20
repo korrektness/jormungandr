@@ -128,8 +128,12 @@ fun StmtConversionContext.declareLocalProperty(symbol: FirPropertySymbol, initia
     return Declare(variable, initializer?.withType(variable.type))
 }
 
-fun StmtConversionContext.declareLocalVariable(symbol: FirVariableSymbol<*>, initializer: ExpEmbedding?): Declare {
-    registerLocalVariable(symbol)
+fun StmtConversionContext.declareLocalVariable(
+    symbol: FirVariableSymbol<*>,
+    initializer: ExpEmbedding?,
+    type: TypeEmbedding = embedType(symbol.resolvedReturnType),
+): Declare {
+    registerLocalVariable(symbol, type)
     val variable = embedLocalVariable(symbol)
     return Declare(variable, initializer?.withType(variable.type))
 }
@@ -251,11 +255,9 @@ fun StmtConversionContext.embedPropertyAccess(
             ClassPropertyAccess(receiver, property, embedType(calleeSymbol.resolvedReturnType))
         }
 
-        is FirDelegateFieldSymbol ->
-            throw UnsupportedFeatureException(accessExpression.source, "Delegated properties are not supported.")
+        is FirDelegateFieldSymbol -> delegateAccess(accessExpression, calleeSymbol)
 
-        is FirFieldSymbol ->
-            throw UnsupportedFeatureException(accessExpression.source, "Java field access other than a static read")
+        is FirFieldSymbol -> javaFieldAccess(accessExpression, calleeSymbol)
 
         else ->
             error("Property access symbol $calleeSymbol has unsupported type.")

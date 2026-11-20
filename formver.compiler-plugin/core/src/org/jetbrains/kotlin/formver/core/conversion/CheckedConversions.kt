@@ -73,6 +73,13 @@ fun StmtConversionContext.platformNullCheck(
     return checkedCast(value, embedType(expected))
 }
 
+/**
+ * The exceptional exit of dereferencing [receiver] when its platform type admits null and conversion models exceptional
+ * exits there; `null` otherwise.
+ */
+fun StmtConversionContext.platformDereferenceMayThrow(receiver: FirExpression): ExpEmbedding? =
+    if (receiver.resolvedType is ConeFlexibleType && mayThrow()) NonDeterministically(exceptionalExit()) else null
+
 /** [read], converted from [access], with the throw of an unassigned `lateinit` property visible to an enclosing catch. */
 fun StmtConversionContext.lateinitReadMayThrow(access: FirPropertyAccessExpression, read: ExpEmbedding): ExpEmbedding {
     val symbol = access.calleeReference.symbol as? FirPropertySymbol

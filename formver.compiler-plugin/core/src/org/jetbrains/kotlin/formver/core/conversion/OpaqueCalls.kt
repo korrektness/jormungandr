@@ -10,7 +10,10 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.utils.isStatic
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirGetClassCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
+import org.jetbrains.kotlin.fir.expressions.FirResolvedQualifier
+import org.jetbrains.kotlin.fir.expressions.FirResolvedReifiedParameterReference
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
@@ -19,6 +22,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFieldSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.isNothing
+import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.FailureKind
@@ -30,6 +34,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.UnitLit
+import org.jetbrains.kotlin.formver.core.embeddings.expression.toBlock
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.TopLevelPropertyAccess
 import org.jetbrains.kotlin.formver.core.isPure
@@ -126,4 +133,37 @@ private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropert
         else KotlinCondition.OpaqueReason.TOP_LEVEL_PROPERTY
     reportOpaqueCall(source, symbol, reason)
     return unconstrainedValue(embedType(symbol.resolvedReturnType))
+}
+
+/**
+ * An access of the Java field [symbol] other than a static read: a read gives an arbitrary value of the field's type and
+ * reports `OPAQUE_CALL`, and a write is dropped, as a write to shared state is. Through a receiver of platform type,
+ * which may be null, the access may throw.
+ */
+internal fun StmtConversionContext.javaFieldAccess(
+    access: FirPropertyAccessExpression,
+    symbol: FirFieldSymbol,
+): PropertyAccessEmbedding {
+    val receiver = access.dispatchReceiver?.takeIf { !symbol.isStatic }
+    val evaluated = receiver?.let { convert(it) }
+    val dereference = receiver?.let { platformDereferenceMayThrow(it) }
+    return object : PropertyAccessEmbedding {
+        override fun getValue(ctx: StmtConversionContext): ExpEmbedding {
+            ctx.reportOpaqueCall(access.source, symbol, KotlinCondition.OpaqueReason.READ_NO_MODEL)
+            val value = ctx.unconstrainedValue(ctx.embedType(symbol.resolvedReturnType))
+            return listOfNotNull(evaluated, dereference, value).toBlock()
+        }
+
+        override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding =
+            listOfNotNull(evaluated, value, dereference, UnitLit).toBlock()
+    }
+}
+
+/** `x::class` evaluates `x` and gives an arbitrary non-null value of its static type; `C::class` evaluates nothing. */
+internal fun StmtConversionContext.convertGetClassCall(getClassCall: FirGetClassCall): ExpEmbedding {
+    val value = unconstrainedValue(embedType(getClassCall.resolvedType))
+    return when (val argument = getClassCall.argument) {
+        is FirResolvedQualifier, is FirResolvedReifiedParameterReference -> value
+        else -> listOfNotNull(convert(argument), platformDereferenceMayThrow(argument), value).toBlock()
+    }
 }

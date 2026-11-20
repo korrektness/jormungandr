@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.common.SemanticOptIn
 
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
@@ -102,8 +103,8 @@ class MethodConverter(
         }
     }
 
-    override fun registerLocalVariable(symbol: FirVariableSymbol<*>) {
-        propertyResolver.registerLocalVariable(symbol, embedType(symbol.resolvedReturnType))
+    override fun registerLocalVariable(symbol: FirVariableSymbol<*>, type: TypeEmbedding) {
+        propertyResolver.registerLocalVariable(symbol, type)
     }
 
     override fun capturedAccess(symbol: FirBasedSymbol<*>): PropertyAccessEmbedding? =

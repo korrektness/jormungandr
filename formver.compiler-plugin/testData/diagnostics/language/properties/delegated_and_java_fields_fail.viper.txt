@@ -1,0 +1,2353 @@
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for Positive:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Positive())
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Positive()
+  anon := par_n
+  inhale intFromRef(g_n(v_ret_0)) == intFromRef(anon)
+  fold acc(Positive_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Positive_unique(v_ret_0), write)
+}
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for getValue:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method g_property(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method getValue(this: Ref, thisRef: Ref, par_property: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  if (intFromRef(n(this)) > 0) {
+    v_ret_0 := n(this)
+  } else {
+    v_ret_0 := intToRef(1)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method getter(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for setValue:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method g_property(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method getter(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method setValue(this: Ref, thisRef: Ref, par_property: Ref, value: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method typeParameters(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for e:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method g_e(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method g_property(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getter(this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method s_e(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var _set@2d@@3f@: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_0: Ref
+  var anon_13: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(this), Holder())
+  _set@2d@@3f@ := arg_0
+  inhale isSubtype(typeOf(_set@2d@@3f@), intType())
+  inhale isSubtype(typeOf(anon_0), Positive())
+  anon_12 := anon_0
+  inhale isSubtype(typeOf(anon_1), KMutableProperty1())
+  anon_13 := anon_1
+  anon_11 := setValue(anon_12, this, anon_13, _set@2d@@3f@)
+  v_ret_1 := anon_11
+  goto lbl_ret_1
+  label lbl_ret_1
+}
+
+method setValue(this: Ref, thisRef: Ref, par_property: Ref, value: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(ret_25), unitType())
+
+
+method setter(this: Ref) returns (ret_27: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_27), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for e:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method g_e(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_0: Ref
+  var anon_13: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(this), Holder())
+  inhale isSubtype(typeOf(anon_0), Positive())
+  anon_12 := anon_0
+  inhale isSubtype(typeOf(anon_1), KMutableProperty1())
+  anon_13 := anon_1
+  anon_11 := getValue(anon_12, this, anon_13)
+  v_ret_0 := anon_11
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method g_property(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getValue(this: Ref, thisRef: Ref, par_property: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(ret_25), intType())
+  ensures intFromRef(ret_25) > 0
+
+
+method getter(this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method s_e(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method setter(this: Ref) returns (ret_27: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_27), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for readMember:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method g_e(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method g_property(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getValue(this: Ref, thisRef: Ref, par_property: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(ret_25), intType())
+  ensures intFromRef(ret_25) > 0
+
+
+method getter(this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method readMember(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var anon_0: Ref
+  var anon_12: Ref
+  var anon_1: Ref
+  var anon_13: Ref
+  var anon_2: Ref
+  anon_0 := this
+  inhale isSubtype(typeOf(anon_1), Positive())
+  anon_12 := anon_1
+  inhale isSubtype(typeOf(anon_2), KMutableProperty1())
+  anon_13 := anon_2
+  l0_v := getValue(anon_12, anon_0, anon_13)
+  assert intFromRef(l0_v) > 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method returnType(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method s_e(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method setter(this: Ref) returns (ret_27: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_27), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for writeMember:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method g_e(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method g_property(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getter(this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method s_e(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method setValue(this: Ref, thisRef: Ref, par_property: Ref, value: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(ret_25), unitType())
+
+
+method setter(this: Ref) returns (ret_27: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_27), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+method writeMember(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_1: Ref
+  var anon_14: Ref
+  var anon_2: Ref
+  anon_0 := this
+  inhale isSubtype(typeOf(anon_1), Positive())
+  anon_13 := anon_1
+  inhale isSubtype(typeOf(anon_2), KMutableProperty1())
+  anon_14 := anon_2
+  anon_12 := setValue(anon_13, anon_0, anon_14, intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for localDelegate:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Positive())
+  ensures intFromRef(g_n(ret_1)) == intFromRef(par_n)
+  ensures intFromRef(g_n(ret_1)) == intFromRef(par_n)
+
+
+method g_property(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getValue(this: Ref, thisRef: Ref, par_property: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(ret_25), intType())
+  ensures intFromRef(ret_25) > 0
+
+
+method getter(this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method localDelegate() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var before: Ref
+  var anon_11: Ref
+  var anon_0: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_1: Ref
+  x := con(intToRef(4))
+  fold acc(Positive_unique(x), write)
+  inhale isSubtype(typeOf(anon_0), KMutableProperty0())
+  anon_11 := anon_0
+  before := getValue(x, nullValue(), anon_11)
+  assert intFromRef(before) > 1
+  inhale isSubtype(typeOf(anon_1), KMutableProperty0())
+  anon_13 := anon_1
+  anon_12 := setValue(x, nullValue(), anon_13, intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method parameters(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method setValue(this: Ref, thisRef: Ref, par_property: Ref, value: Ref)
+  returns (ret_29: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(ret_29), unitType())
+
+
+method setter(this: Ref) returns (ret_27: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_27), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for classOf:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method classOf(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), anyType())
+  requires isSubtype(typeOf(par_b), anyType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_14: Ref
+  var anon_0: Ref
+  var anon_15: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), KClass())
+  anon_14 := anon_0
+  inhale isSubtype(typeOf(anon_1), KClass())
+  anon_15 := anon_1
+  assert equalsRelation(anon_14, anon_15)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method constructors(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method isCompanion(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isData(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isFun(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isInner(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isSealed(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isValue(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method members(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method nestedClasses(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method objectInstance(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method qualifiedName(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method sealedSubclasses(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+method simpleName(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method supertypes(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for classOfEvaluatesReceiver:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method cause(this: Ref) returns (ret_23: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_23), nullable(anyType()))
+
+
+method classOfEvaluatesReceiver(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var reached: Ref
+  var k: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var e: Ref
+  reached := boolToRef(false)
+  anon_1 := s
+  if (isSubtype(typeOf(anon_1), stringType())) {
+    inhale isSubtype(typeOf(anon_1), stringType())
+  } else {
+    var anon_11: Ref
+    if (boolFromRef(anon_11)) {
+      goto catch
+    }
+    inhale false
+  }
+  inhale isSubtype(typeOf(anon_0), KClass())
+  k := anon_0
+  reached := boolToRef(true)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), NullPointerException())
+  goto tryExit
+  label tryExit
+  assert boolFromRef(reached)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method constructors(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method isAbstract(this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method isCompanion(this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isData(this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isFinal(this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isFun(this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isInner(this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method isOpen(this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isSealed(this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isValue(this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method members(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method nestedClasses(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method objectInstance(this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method qualifiedName(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method sealedSubclasses(this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
+method simpleName(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method supertypes(this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method typeParameters(this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method visibility(this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for javaFieldWriteIsNotKept:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method javaFieldWriteIsNotKept(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  l0_v := anon
+  assert intFromRef(l0_v) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/delegated_and_java_fields_fail.kt: info: Generated Viper text for javaFieldMayThrow:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method g_location(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method javaFieldMayThrow(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var reached: Ref
+  var q: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var e: Ref
+  reached := boolToRef(false)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := g_location(p)
+  q := anon_0
+  inhale isSubtype(typeOf(q), nullable(Point()))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var anon_6: Ref
+    if (boolFromRef(anon_6)) {
+      goto catch
+    }
+    inhale false
+  }
+  reached := boolToRef(true)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), NullPointerException())
+  goto tryExit
+  label tryExit
+  assert boolFromRef(reached)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method s_location(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))

@@ -47,7 +47,19 @@ still verified. The call may throw, and its result is some value of its type. Th
 - a call of a library function, or a read of a library property, that SnaKt gives no model: no built-in
   translation, external specification, library contract or Kotlin contract. Library operators are calls too;
 - a read of a top-level property other than a `const val`, a `@Pure` property with a getter body or a property with
-  a custom getter, and a read of a Java static field.
+  a custom getter, and a read of a Java field.
+
+A write to a Java field is dropped, as a write through a shared path is (see
+[Unique and shared paths](#unique-and-shared-paths)); a later read gives an arbitrary value. An access of a Java field
+through a receiver of platform type may throw, since the receiver may be null.
+
+A read of a local or final delegated property calls its delegate's `getValue`, and a write calls `setValue`, under
+that function's contract; with none, the call is opaque. The delegate of a property that is not local is an arbitrary
+value of its type, since construction, which sets it, is not converted. Other delegated properties are read and
+written through their accessors.
+
+`x::class` evaluates `x` and gives an arbitrary non-null value of its static type; `C::class` gives an arbitrary
+non-null value of its type.
 
 A constructor of a library class and a function returning `Nothing` get no such warning.
 

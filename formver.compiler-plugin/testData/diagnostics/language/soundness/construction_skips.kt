@@ -12,9 +12,9 @@ fun interface Acc {
     }
 }
 
-// A delegated property skips its class's construction and its accessors; clients get no field facts.
+// A delegated property skips its class's construction; clients get no field facts.
 <!VERIFICATION_SKIPPED, VIPER_TEXT!>class LazyHolder<!>(val n: Int) {
-    val <!VERIFICATION_SKIPPED!>action<!>: Acc by <!OPAQUE_CALL, UNSUPPORTED_FEATURE!>lazy {
+    val <!VIPER_TEXT!>action<!>: Acc by <!OPAQUE_CALL!>lazy {
         Acc { amount ->
             exposes(Acc::class) { total() == 0 }
             <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-9<!>
@@ -28,7 +28,7 @@ fun <!VIPER_TEXT!>lazyHolderClient<!>() {
 }
 
 <!VERIFICATION_SKIPPED!>class LazyValue<!>(val n: Int) {
-    val <!VERIFICATION_SKIPPED!>doubled<!>: Int by <!OPAQUE_CALL, UNSUPPORTED_FEATURE!>lazy { 2 * n }<!>
+    val <!VIPER_TEXT!>doubled<!>: Int by <!OPAQUE_CALL!>lazy { 2 * n }<!>
 }
 
 fun <!VIPER_TEXT!>lazyValueClient<!>() {

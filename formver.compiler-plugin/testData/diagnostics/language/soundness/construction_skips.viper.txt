@@ -145,6 +145,263 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
       intFromRef(ret_1) == intFromRef(c_Acc_f_total(this)))
 }
 
+/construction_skips.kt: info: Generated Viper text for action:
+function CollectionModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(v_this)) == 0)
+
+
+function CollectionModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ListModel_g_size(v_this)) == 0)
+
+
+function ListModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(v_this)) &&
+      equalsRelation(element, get(v_this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(v_this)) &&
+      get(v_this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(v_this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(v_this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(v_this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(v_this, intToRef(anon_builtin_2))))
+
+
+function n(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), LazyHolder())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Acc())
+  requires acc(Acc_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method action(v_this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_0: Ref
+  var anon_14: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(v_this), LazyHolder())
+  inhale isSubtype(typeOf(anon_0), Lazy())
+  anon_13 := anon_0
+  inhale isSubtype(typeOf(anon_1), KProperty1())
+  anon_14 := anon_1
+  anon_12 := getValue(anon_13, v_this, anon_14)
+  anon_11 := anon_12
+  inhale isSubtype(typeOf(anon_11), Acc())
+  v_ret_0 := anon_11
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method annotations(v_this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(v_this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(v_this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method g_property(v_this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getValue(v_this_extension: Ref, thisRef: Ref, par_property: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(v_this_extension), Lazy())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(ret_25), nullable(anyType()))
+
+
+method getter(v_this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(v_this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(v_this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(v_this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(v_this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(v_this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(v_this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(v_this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(v_this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(v_this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(v_this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(v_this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(v_this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(v_this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(v_this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method typeParameters(v_this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method value(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method visibility(v_this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
+
 /construction_skips.kt: info: Generated Viper text for lazyHolderClient:
 function g_n(this: Ref): Ref
   requires isSubtype(typeOf(this), LazyHolder())
@@ -182,6 +439,257 @@ method lazyHolderClient() returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/construction_skips.kt: info: Generated Viper text for doubled:
+function CollectionModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(v_this)) == 0)
+
+
+function CollectionModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Enum_g_name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ListModel_g_size(v_this)) == 0)
+
+
+function ListModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(v_this)) &&
+      equalsRelation(element, get(v_this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(v_this)) &&
+      get(v_this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(v_this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(v_this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(v_this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(v_this, intToRef(anon_builtin_2))))
+
+
+function n(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), LazyValue())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ordinal(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method annotations(v_this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method arguments(v_this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method classifier(v_this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method doubled(v_this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_0: Ref
+  var anon_14: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(v_this), LazyValue())
+  inhale isSubtype(typeOf(anon_0), Lazy())
+  anon_13 := anon_0
+  inhale isSubtype(typeOf(anon_1), KProperty1())
+  anon_14 := anon_1
+  anon_12 := getValue(anon_13, v_this, anon_14)
+  anon_11 := anon_12
+  inhale isSubtype(typeOf(anon_11), intType())
+  v_ret_0 := anon_11
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method g_property(v_this: Ref) returns (ret_18: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_18), nullable(anyType()))
+
+
+method getValue(v_this_extension: Ref, thisRef: Ref, par_property: Ref)
+  returns (ret_25: Ref)
+  requires isSubtype(typeOf(v_this_extension), Lazy())
+  requires isSubtype(typeOf(thisRef), nullable(anyType()))
+  requires isSubtype(typeOf(par_property), KProperty())
+  ensures isSubtype(typeOf(ret_25), nullable(anyType()))
+
+
+method getter(v_this: Ref) returns (ret_24: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_24), nullable(anyType()))
+
+
+method isAbstract(v_this: Ref) returns (ret_14: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_14), nullable(anyType()))
+
+
+method isConst(v_this: Ref) returns (ret_17: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_17), nullable(anyType()))
+
+
+method isExternal(v_this: Ref) returns (ret_20: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_20), nullable(anyType()))
+
+
+method isFinal(v_this: Ref) returns (ret_12: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_12), nullable(anyType()))
+
+
+method isInfix(v_this: Ref) returns (ret_22: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_22), nullable(anyType()))
+
+
+method isInline(v_this: Ref) returns (ret_19: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_19), nullable(anyType()))
+
+
+method isLateinit(v_this: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_16), nullable(anyType()))
+
+
+method isMarkedNullable(v_this: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method isOpen(v_this: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_13), nullable(anyType()))
+
+
+method isOperator(v_this: Ref) returns (ret_21: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_21), nullable(anyType()))
+
+
+method isSuspend(v_this: Ref) returns (ret_15: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_15), nullable(anyType()))
+
+
+method parameters(v_this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method public_g_name(v_this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method returnType(v_this: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method typeParameters(v_this: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_10), nullable(anyType()))
+
+
+method value(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method visibility(v_this: Ref) returns (ret_11: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_11), nullable(anyType()))
+
 
 /construction_skips.kt: info: Generated Viper text for lazyValueClient:
 function g_n(this: Ref): Ref

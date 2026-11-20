@@ -34,7 +34,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomSetter
 import org.jetbrains.kotlin.fir.types.coneType
-import org.jetbrains.kotlin.fir.types.isChar
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.types.renderReadable
@@ -74,9 +73,7 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayElementAcc
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayBulk
-import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -223,21 +220,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression: FirPropertyAccessExpression,
         data: StmtConversionContext,
     ): ExpEmbedding {
-        propertyAccessExpression.calleeReference.symbol?.let(::receiverTemporaryAlias)?.let { return data.convert(it) }
-        val propertyId = propertyAccessExpression.toResolvedCallableSymbol()?.callableId
-        if (propertyId?.packageName?.asString() == "org.jetbrains.kotlin.formver.plugin" &&
-            propertyId.className?.asString() == "IterationSequence" && propertyId.callableName.asString() == "size") {
-            return OperatorExpEmbeddings.IterationSequenceSize(data.convert(propertyAccessExpression.dispatchReceiver!!))
-        }
-        val extensionReceiver = propertyAccessExpression.extensionReceiver
-        if (extensionReceiver != null && extensionReceiver.resolvedType.isChar &&
-            propertyId == CallableId(FqName("kotlin"), Name.identifier("code"))
-        ) {
-            val receiver = data.convert(extensionReceiver)
-            return IntegerOperators.unary.getValue(
-                IntegerOperators.Unary(IntegerKind.Char, "<get-code>", IntegerKind.Int)
-            )(receiver)
-        }
+        (propertyAccessExpression.calleeReference.symbol?.let(::receiverTemporaryAlias)?.let { data.convert(it) }
+            ?: data.delegatedRead(propertyAccessExpression))?.let { return it }
+        data.convertIntrinsicPropertyRead(propertyAccessExpression)?.let { return it }
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
@@ -450,6 +435,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitProperty(property: FirProperty, data: StmtConversionContext): ExpEmbedding {
         val symbol = property.symbol
         if (receiverTemporaryAlias(symbol) != null) return UnitLit
+        if (property.delegate != null) return data.declareLocalDelegate(symbol)
         if (!symbol.isLocal) {
             throw SnaktInternalException(
                 property.source,
@@ -465,6 +451,14 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (declaration.variable.viewSource != null || frame.analysis == null) return declaration
         return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
     }
+
+    override fun visitCallableReferenceAccess(
+        callableReferenceAccess: FirCallableReferenceAccess,
+        data: StmtConversionContext,
+    ): ExpEmbedding = data.delegateAccessorReference(callableReferenceAccess) ?: visitElement(callableReferenceAccess, data)
+
+    override fun visitGetClassCall(getClassCall: FirGetClassCall, data: StmtConversionContext): ExpEmbedding =
+        data.convertGetClassCall(getClassCall)
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
         val condition = data.convert(whileLoop.condition).withType { boolean() }
@@ -525,6 +519,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 variableAssignment.source, "Lvalue must be either property access or desugared assignment."
             )
         }
+        data.delegatedWrite(lValue, variableAssignment.rValue)?.let { return it }
         val embedding = data.embedPropertyAccess(lValue, variableAssignment)
         val convertedRValue = data.platformNullCheck(
             variableAssignment.rValue, data.convert(variableAssignment.rValue), lValue.resolvedType,

@@ -85,7 +85,7 @@ internal class ViperPoweredDeclarationChecker(
         if (shouldSkip()) return
         when (declaration) {
             is FirSimpleFunction -> {}
-            is FirPropertyAccessor -> if (declaration.body == null) return
+            is FirPropertyAccessor -> if (declaration.body == null || declaration.propertySymbol.isLocal) return
             else -> return
         }
         if (!config.shouldConvert(declaration)) return
