@@ -160,8 +160,9 @@ object SpecialKotlinFunctions {
                 val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingSubIntInt else SubIntInt
                 operation(args[0], args[1])
             }
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "times") { args, _ ->
-                MulIntInt(args[0], args[1])
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "times") { args, ctx ->
+                val operation = if (ctx.wrapsIntMultiplication) OperatorExpEmbeddings.WrappingMulIntInt else MulIntInt
+                operation(args[0], args[1])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "div") { args, _ ->
                 DivIntInt(args[0], args[1])

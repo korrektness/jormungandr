@@ -67,6 +67,12 @@ object OperatorExpEmbeddings {
         viperImplementation { wrapInt(Exp.Add(args[0], args[1], pos, info)) }
     }
 
+    val WrappingMulIntInt = buildBinaryOperator {
+        setName("wrappingTimesInts")
+        setSignature(intIntToIntType)
+        viperImplementation { wrapInt(Exp.Mul(args[0], args[1], pos, info)) }
+    }
+
     val WrappingSubIntInt = buildBinaryOperator {
         setName("wrappingMinusInts")
         setSignature(intIntToIntType)
@@ -445,7 +451,7 @@ object OperatorExpEmbeddings {
     val allTemplates
         get() = listOf(
             AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt,
-            WrappingAddIntInt, WrappingSubIntInt,
+            WrappingAddIntInt, WrappingSubIntInt, WrappingMulIntInt,
             LeIntInt, GeIntInt, LtIntInt, GtIntInt,
             Not, And, Or, Implies, Xor,
             AddCharInt, SubCharChar, SubCharInt,

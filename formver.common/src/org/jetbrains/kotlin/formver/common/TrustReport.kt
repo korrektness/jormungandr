@@ -25,12 +25,13 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
     override fun compareTo(other: TrustedAssumption): Int = compareValuesBy(this, other, { it.kind }, { it.name })
 }
 
-/** An exact semantic mode selected by a source annotation, independent of trusted assumptions. */
+/** An exact semantic mode selected by a source annotation or an overridden function, independent of trusted assumptions. */
 data class SemanticOptIn(val kind: Kind, val name: String) : Comparable<SemanticOptIn> {
     enum class Kind(val label: String) {
         WRAPPING_INT("@WrappingIntArithmetic"),
         WRAPPING_LONG("@WrappingLongArithmetic"),
         WRAPPING_NARROWING("@WrappingNarrowing"),
+        WRAPPING_HASHCODE("hashCode override"),
     }
 
     override fun compareTo(other: SemanticOptIn): Int = compareValuesBy(this, other, { it.kind }, { it.name })

@@ -72,6 +72,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("hashcode_wrapping.kt")
+        public void testHashcode_wrapping() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/hashcode_wrapping.kt");
+        }
+
+        @Test
         @TestMetadata("ranges.kt")
         public void testRanges() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/ranges.kt");

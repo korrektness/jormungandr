@@ -43,10 +43,13 @@ class MethodConverter(
     override val constructionBoundary: EstablishConstruction? = null,
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
     override val wrapsIntArithmetic: Boolean =
-        (signature as? NamedFunctionSignature)?.symbol?.wrapsIntArithmetic(session) == true
+        (signature as? NamedFunctionSignature)?.symbol?.let { it.wrapsIntArithmetic(session) || it.overridesHashCode() } == true
 
     override val wrapsLongArithmetic: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsLongArithmetic(session) == true
+
+    override val wrapsIntMultiplication: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.overridesHashCode() == true
 
     override val wrapsNarrowing: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsNarrowing(session) == true
@@ -56,7 +59,8 @@ class MethodConverter(
 
     init {
         (signature as? NamedFunctionSignature)?.symbol?.let {
-            if (wrapsIntArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_INT)
+            if (it.wrapsIntArithmetic(session)) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_INT)
+            if (it.overridesHashCode()) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_HASHCODE)
             if (wrapsLongArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_LONG)
             if (wrapsNarrowing) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_NARROWING)
         }

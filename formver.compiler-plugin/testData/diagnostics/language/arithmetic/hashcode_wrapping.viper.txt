@@ -1,0 +1,149 @@
+/hashcode_wrapping.kt: info: Generated Viper text for Key:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Key())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Key()
+  anon_0 := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Key_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Key_unique(v_ret_0), write)
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for hashCode:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_r: Ref
+  l0_r := a(this)
+  l0_r := wrappingPlusInts(wrappingTimesInts(intToRef(31), l0_r), b(this))
+  v_ret_0 := l0_r
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for notHashCode:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method notHashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := timesInts(intToRef(31), a(this))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for hashCode:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hashCode(this: Ref, salt: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Key())
+  requires isSubtype(typeOf(salt), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := timesInts(intToRef(31), a(this))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for Divides:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Divides())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_d(this: Ref): Ref
+  requires isSubtype(typeOf(this), Divides())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_d), intType())
+  ensures isSubtype(typeOf(v_ret_0), Divides())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_d(v_ret_0)) == intFromRef(par_d)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_d(v_ret_0)) == intFromRef(par_d)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Divides()
+  anon_0 := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_d
+  inhale intFromRef(g_d(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Divides_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Divides_unique(v_ret_0), write)
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for hashCode:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Divides())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function d(this: Ref): Ref
+  requires isSubtype(typeOf(this), Divides())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Divides())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divInts(a(this), d(this))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
