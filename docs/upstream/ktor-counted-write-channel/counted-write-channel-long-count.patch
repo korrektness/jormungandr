@@ -1,0 +1,20 @@
+diff --git a/ktor-io/common/src/io/ktor/utils/io/CountedByteWriteChannel.kt b/ktor-io/common/src/io/ktor/utils/io/CountedByteWriteChannel.kt
+index 017a322..d48da70 100644
+--- a/ktor-io/common/src/io/ktor/utils/io/CountedByteWriteChannel.kt
++++ b/ktor-io/common/src/io/ktor/utils/io/CountedByteWriteChannel.kt
+@@ -12,13 +12,13 @@ public fun ByteWriteChannel.counted(): CountedByteWriteChannel = CountedByteWrit
+ public class CountedByteWriteChannel(private val delegate: ByteWriteChannel) : ByteWriteChannel {
+     @OptIn(InternalAPI::class)
+     private var initial = delegate.writeBuffer.size
+-    private var flushedCount = 0
++    private var flushedCount = 0L
+ 
+     public override val autoFlush: Boolean
+         get() = delegate.autoFlush
+ 
+     @OptIn(InternalAPI::class)
+-    public val totalBytesWritten: Long get() = (flushedCount + writeBuffer.size - initial).toLong()
++    public val totalBytesWritten: Long get() = flushedCount + writeBuffer.size - initial
+ 
+     override val isClosedForWrite: Boolean
+         get() = delegate.isClosedForWrite

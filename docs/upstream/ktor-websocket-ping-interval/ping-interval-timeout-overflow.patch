@@ -1,0 +1,9 @@
+diff --git a/ktor-client/ktor-client-core/common/src/io/ktor/client/plugins/websocket/WebSockets.kt b/ktor-client/ktor-client-core/common/src/io/ktor/client/plugins/websocket/WebSockets.kt
+index a64c671..20de9e8 100644
+--- a/ktor-client/ktor-client-core/common/src/io/ktor/client/plugins/websocket/WebSockets.kt
++++ b/ktor-client/ktor-client-core/common/src/io/ktor/client/plugins/websocket/WebSockets.kt
+@@ -115,3 +115,3 @@ public class WebSockets internal constructor(
+ 
+-        val timeoutMillis = (pingIntervalMillis * 2)
++        val timeoutMillis = pingIntervalMillis.coerceAtMost(Long.MAX_VALUE / 2) * 2
+         return DefaultWebSocketSession(session, pingIntervalMillis, timeoutMillis, channelsConfig).also {

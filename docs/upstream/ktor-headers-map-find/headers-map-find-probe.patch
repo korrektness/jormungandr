@@ -1,0 +1,22 @@
+diff --git a/ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/HttpHeadersMap.kt b/ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/HttpHeadersMap.kt
+index d5048a4..273b78e 100644
+--- a/ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/HttpHeadersMap.kt
++++ b/ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/HttpHeadersMap.kt
+@@ -52,15 +52,10 @@ public class HttpHeadersMap internal constructor(private val builder: CharArrayB
+     public fun find(name: String, fromIndex: Int = 0): Int {
+         if (size == 0) return -1
+ 
+-        var offset = idxToOffset(fromIndex)
+-        var nextIndex = fromIndex
+-
+-        while (headersData.at(offset + OFFSET_NAME_HASH) != EMPTY_INDEX) {
++        offsets().drop(fromIndex).forEachIndexed { index, offset ->
+             if (headerHasName(name, offset)) {
+-                return nextIndex
++                return fromIndex + index
+             }
+-            nextIndex++
+-            offset = (offset / HEADER_SIZE) % headerCapacity
+         }
+         return -1
+     }
