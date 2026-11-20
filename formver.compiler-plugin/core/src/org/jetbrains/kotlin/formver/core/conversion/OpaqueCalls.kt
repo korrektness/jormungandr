@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.common.isLibraryDeclaration
 import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
@@ -48,16 +49,10 @@ internal fun ProgramConversionContext.isOpaqueLibraryCallable(callee: CallableEm
         signature.stdLibPostconditions(signature.returns, typeResolver).isEmpty()
 }
 
-/** Origins of declarations read from compiled dependencies, as opposed to sources and members generated for them. */
-private val libraryOrigins = setOf(
-    FirDeclarationOrigin.Library, FirDeclarationOrigin.Java.Library, FirDeclarationOrigin.BuiltIns,
-    FirDeclarationOrigin.BuiltInsFallback, FirDeclarationOrigin.Precompiled, FirDeclarationOrigin.Enhancement,
-)
-
 /** Whether this library callable may be opaque (SPECIFICATIONS.md, "Verification Control"); SnaKt's own are not. */
 internal fun FirCallableSymbol<*>.isOpaqueCandidate(): Boolean {
     val declaration = unwrapFakeOverrides()
-    return declaration.origin in libraryOrigins && declaration !is FirConstructorSymbol &&
+    return isLibraryDeclaration() && declaration !is FirConstructorSymbol &&
         !resolvedReturnType.isNothing &&
         declaration.callableId?.packageName?.pathSegments()?.map { it.asString() } != SpecialPackages.formver
 }
@@ -66,7 +61,8 @@ internal fun FirCallableSymbol<*>.isOpaqueCandidate(): Boolean {
 internal fun StmtConversionContext.reportOpaqueLibraryCall(
     call: FirFunctionCall, symbol: FirFunctionSymbol<*>, callee: CallableEmbedding,
 ) {
-    if (isOpaqueLibraryCallable(callee)) reportOpaqueCall(call.source, symbol, KotlinCondition.OpaqueReason.NO_MODEL)
+    if (!isOpaqueLibraryCallable(callee)) return
+    reportOpaqueCall(call.source, symbol, KotlinCondition.OpaqueReason.NO_MODEL)
 }
 
 /** Reports [access] as `OPAQUE_CALL` when it reads a library property without a model. */
@@ -74,7 +70,8 @@ internal fun StmtConversionContext.reportOpaqueLibraryRead(access: FirPropertyAc
     val symbol = access.toResolvedCallableSymbol() as? FirPropertySymbol ?: return
     if (symbol.isLocal || !symbol.isOpaqueCandidate() || symbol.externalSpecificationSymbol(session) != symbol) return
     val getter = (embedProperty(symbol).getter as? CustomGetter)?.getterMethod ?: return
-    if (isOpaqueLibraryCallable(getter)) reportOpaqueCall(access.source, symbol, KotlinCondition.OpaqueReason.READ_NO_MODEL)
+    if (!isOpaqueLibraryCallable(getter)) return
+    reportOpaqueCall(access.source, symbol, KotlinCondition.OpaqueReason.READ_NO_MODEL)
 }
 
 /** Reads a property whose value does not depend on a receiver, or returns null for any other access. */
@@ -95,6 +92,7 @@ private fun StmtConversionContext.reportOpaqueCall(
 ) {
     val callee = symbol.callableId?.asSingleFqName()?.asString() ?: symbol.name.asString()
     reportWarning(Failure(FailureKind.OPAQUE_CALL, source, KotlinCondition.OpaqueCall(callee, reason)))
+    if (symbol.isLibraryDeclaration()) trust.recordOpaqueLibraryCall(symbol)
 }
 
 /**
@@ -124,8 +122,8 @@ private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropert
     if (symbol.getterSymbol?.fir !is FirDefaultPropertyGetter) {
         topLevelAccessorAccess(symbol)?.let { return it.getValue(this) }
     }
-    val reason = if (symbol.origin == FirDeclarationOrigin.Source) KotlinCondition.OpaqueReason.TOP_LEVEL_PROPERTY
-        else KotlinCondition.OpaqueReason.READ_NO_MODEL
+    val reason = if (symbol.isLibraryDeclaration()) KotlinCondition.OpaqueReason.READ_NO_MODEL
+        else KotlinCondition.OpaqueReason.TOP_LEVEL_PROPERTY
     reportOpaqueCall(source, symbol, reason)
     return unconstrainedValue(embedType(symbol.resolvedReturnType))
 }

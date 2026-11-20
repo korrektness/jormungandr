@@ -121,15 +121,15 @@ fun <!VIPER_TEXT!>aliasedMapEntryLoop<!>(values: @Unique @Borrowed Counts) {
 }
 
 fun <!VERIFICATION_SKIPPED!>mapAnyRejected<!>(values: Map<Int, Int>) {
-    <!UNSUPPORTED_FEATURE!>values.any { it.value > 0 }<!>
+    <!OPAQUE_CALL!>values.any <!UNSUPPORTED_FEATURE!>{ it.value > 0 }<!><!>
 }
 
 fun <!VERIFICATION_SKIPPED!>mapCountRejected<!>(values: Map<Int, Int>) {
-    <!UNSUPPORTED_FEATURE!>values.count { it.value > 0 }<!>
+    <!OPAQUE_CALL!>values.count <!UNSUPPORTED_FEATURE!>{ it.value > 0 }<!><!>
 }
 
 fun <!VERIFICATION_SKIPPED!>groupingFoldRejected<!>(values: Grouping<Int, Int>) {
-    <!UNSUPPORTED_FEATURE!>values.fold(0) { total, value -> total + value }<!>
+    <!OPAQUE_CALL!>values.fold(0) <!UNSUPPORTED_FEATURE!>{ total, value -> total + value }<!><!>
 }
 
 fun <!VIPER_TEXT!>foldArgumentOrder<!>(values: @Unique @Borrowed List<Int>): Int {
@@ -173,11 +173,11 @@ fun <!VIPER_TEXT!>foldPrefix<!>(values: @Unique @Borrowed List<Int>): Int {
 }
 
 fun <!VERIFICATION_SKIPPED!>javaEntryCallback<!>(values: @Unique @Borrowed Map<Int, Int>) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
-    <!UNSUPPORTED_FEATURE!>values.forEach { key, value -> verify(key == value) }<!>
+    <!OPAQUE_CALL!>values.forEach <!UNSUPPORTED_FEATURE!>{ key, value -> verify(key == value) }<!><!>
 }<!>
 
 fun <!VERIFICATION_SKIPPED!>mapFilterRejected<!>(values: Map<Int, Int>) {
-    <!UNSUPPORTED_FEATURE!>values.filter { true }<!>
+    <!OPAQUE_CALL!>values.filter <!UNSUPPORTED_FEATURE!>{ true }<!><!>
 }
 
 fun <!VIPER_TEXT!>mapKeys<!>(values: @Unique @Borrowed Map<Int, Int>, k: Int) {

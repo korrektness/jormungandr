@@ -20,6 +20,9 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
         SKIPPED("skipped"),
         LIBRARY_CONTRACT("library contract"),
         ELEMENT_EQUALITY("@TrustedElementEquality"),
+        OPAQUE_LIBRARY_CALL("opaque library call"),
+        NON_RETAINING_LIBRARY_CALL("non-retaining library call"),
+        SNAPSHOT_ITERATOR("snapshot iterator"),
     }
 
     override fun compareTo(other: TrustedAssumption): Int = compareValuesBy(this, other, { it.kind }, { it.name })

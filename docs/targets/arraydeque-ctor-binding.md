@@ -10,9 +10,8 @@ claims; SPECIFICATIONS.md, "External specifications", owns the binding rules onc
 The S9 consumer constructs its worklist with `ArrayDeque<Int>()`. The external-specification registry
 (`formver.common/src/org/jetbrains/kotlin/formver/common/ExternalSpecifications.kt`) binds class models, which are
 interfaces and so declare no constructors, and top-level functions and properties. Constructor bindings use the
-form below. Once `ArrayDequeModel` binds the class, `rejectUnsupportedStdlibMember` in
-`conversion/StdlibExternalMembers.kt` rejects every unbound callable of `kotlin.collections` whose receiver or
-result type has a class model.
+form below. Once `ArrayDequeModel` binds the class, a callable of the class that no model binds is the opaque
+library call (SPECIFICATIONS.md, "Verification Control").
 
 The stdlib has no ArrayDeque factory function, so an `@ExternalFunction` model has nothing to bind to.
 
@@ -37,17 +36,17 @@ Contracts attach exactly as for an `@ExternalFunction` model: from leading speci
 holder. The model is a `FirSimpleFunction`, so `ProgramConverter.embedFormverContract`, `SpecVacuityProbes`
 (`FirNamedFunctionSymbol` branch) and the trust classification in `bindingAssumption` take it unchanged.
 
-The other ArrayDeque constructors, `(Int)` and `(Collection)`, stay unbound, so a call of either is
-`UNSUPPORTED_FEATURE`. The port proves the restricted `(Int)` constructor under G12 of
+The other ArrayDeque constructors, `(Int)` and `(Collection)`, stay unbound, so a call of either returns a shared
+deque with no model facts. The port proves the restricted `(Int)` constructor under G12 of
 `docs/targets/arraydeque-gaps-design.md`; its bundled binding is outside this design's scope.
 `(Collection)` is not ported.
 
-### Unbound members stay rejected
+### Unbound members are opaque calls
 
-An ArrayDeque member that `ArrayDequeModel` does not declare is rejected, not converted as an opaque call. The
-rejection is sound and visible in the diagnostics. An opaque-call exception would let a call whose effect on the
-receiver is unknown appear in a verified body without a report, and the consumer needs none. `ArrayDequeModel`
-declares exactly the members whose contracts the spec-equality test compares with the port.
+An ArrayDeque member that `ArrayDequeModel` does not declare is the opaque library call: it is reported as
+`OPAQUE_CALL`, listed in the trust report, and moves an owned receiver, so the caller learns nothing about the
+deque afterwards. `ArrayDequeModel` declares exactly the members whose contracts the spec-equality test compares
+with the port.
 
 ### Supertype presentations
 

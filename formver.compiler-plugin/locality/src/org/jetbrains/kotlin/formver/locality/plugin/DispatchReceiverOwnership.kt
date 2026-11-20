@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.common.isNonRetainingStdlibMember
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.reportAttributeFailure
@@ -58,12 +59,12 @@ fun FirBasedSymbol<*>.specifiesOwnedReceiver(session: FirSession): Boolean {
 }
 
 /**
- * Whether [this] member function borrows its dispatch receiver: it is annotated `@Borrowed`, or it is a `@Pure`
- * function that owns it.
+ * Whether [this] member function borrows its dispatch receiver: it is annotated `@Borrowed`, it is a `@Pure`
+ * function that owns it, or it is a non-retaining standard-library member.
  */
 fun FirBasedSymbol<*>.borrowsDispatchReceiver(session: FirSession): Boolean =
     declared.externalSpecificationSymbol(session).hasAnnotation(defaultLocalityAnnotationId, session) ||
-            ownsDispatchReceiver(session) && declared.isPure(session)
+            ownsDispatchReceiver(session) && declared.isPure(session) || declared.isNonRetainingStdlibMember(session)
 
 /**
  * The declaration that binds `this` of [this] class where [context] checks: a member function or accessor of the class,

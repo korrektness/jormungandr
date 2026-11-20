@@ -199,7 +199,7 @@ fun <!VIPER_TEXT!>stringIndicesPastEnd<!>(s: String): Int {
 
 fun <!VERIFICATION_SKIPPED!>invariantsOfIteratorLoop<!>(s: String): Int {
     var n = 0
-    for (c in <!OPAQUE_CALL, OPAQUE_CALL, OPAQUE_CALL!>s<!>) {
+    for (c in <!OPAQUE_CALL, OPAQUE_CALL, UNCHECKED_LIBRARY_CALL!>s<!>) {
         <!UNSUPPORTED_FEATURE!>loopInvariants { n >= 0 }<!>
         n += 1
     }

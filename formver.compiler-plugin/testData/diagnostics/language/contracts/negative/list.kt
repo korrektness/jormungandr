@@ -23,10 +23,10 @@ fun <!VIPER_TEXT!>add_get<!>(l: @Unique @Borrowed MutableList<Int>) {
     val n = <!VIPER_VERIFICATION_ERROR!>l[1]<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>empty_list_sub<!>() {
-    val l = <!UNSUPPORTED_FEATURE!>emptyList<Int>().subList(0, 1)<!>
+fun <!VIPER_TEXT!>empty_list_sub<!>() {
+    val l = <!VIPER_VERIFICATION_ERROR!>emptyList<Int>().subList(0, 1)<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>empty_list_sub_negative<!>() {
-    val l = <!UNSUPPORTED_FEATURE!>emptyList<Int>().subList(-1, 1)<!>
+fun <!VIPER_TEXT!>empty_list_sub_negative<!>() {
+    val l = <!VIPER_VERIFICATION_ERROR!>emptyList<Int>().subList(-1, 1)<!>
 }

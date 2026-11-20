@@ -18,12 +18,12 @@ fun <!VIPER_TEXT!>peekEmpty<!>() {
     verify(<!VIPER_VERIFICATION_ERROR!>queue[0]<!> == 0)
 }
 
-fun <!VERIFICATION_SKIPPED!>unboundCapacity<!>() {
-    <!UNSUPPORTED_FEATURE!>ArrayDeque<Int>(4)<!>
+fun <!VIPER_TEXT!>unboundCapacity<!>() {
+    ArrayDeque<Int>(4)
 }
 
-fun <!VERIFICATION_SKIPPED!>unboundMember<!>(queue: @Unique ArrayDeque<Int>) {
-    <!UNSUPPORTED_FEATURE!>queue.removeAt(0)<!>
+fun <!VIPER_TEXT!>unboundMember<!>(queue: @Unique ArrayDeque<Int>) {
+    <!OPAQUE_CALL!>queue.removeAt(0)<!>
 }
 
 fun <!VIPER_TEXT!>enqueueOnce<!>(queue: @Unique @Borrowed ArrayDeque<Int>, vertex: Int) {

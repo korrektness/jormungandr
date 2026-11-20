@@ -75,6 +75,14 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
 - `@TrustedElementEquality`: a function's [executed element equality](#executed-element-equality) assumption.
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
+- `opaque library call`: a library callable without a model that the program
+  calls or reads as the opaque library call (SPECIFICATIONS.md, "Verification
+  Control").
+- `non-retaining library call`: a standard-library callable without a model
+  that borrows its receiver and arguments because SnaKt assumes it keeps no
+  reference to them (see "Non-retaining library calls" below).
+- `snapshot iterator`: `List.iterator()` bound to the bundled model, whose contract assumes the
+  list is not mutated through any reference while the iterator is live (see "Snapshot iterators" below).
 
 The report also lists the arithmetic semantic opt-ins described in
 SPECIFICATIONS.md, "Integer arithmetic". Semantic opt-ins are separate from trusted
@@ -416,6 +424,41 @@ returns the predicate; state the callee could change is havocked.
 
 Tests: `verification/classes/unique_borrowed_shared.kt::passToBorrowed,passOneObjectTwice`,
 `verification/classes/interface_borrowed_upcast.kt::lostField,inlineLostField`.
+
+### Non-retaining library calls
+
+A final standard-library callable without a model whose result and value
+parameters are all primitives, `String`, `Unit` or `Nothing`, that has no
+context parameters, no receiver of a function type and some receiver that can
+be owned (one that is none of those types, an array or an object declaration)
+borrows its receivers and arguments
+(`formver.common/src/org/jetbrains/kotlin/formver/common/NonRetainingLibraryCalls.kt`).
+A parameter of any other type could store the receiver or an owned argument,
+so such members are excluded. SnaKt trusts that such a callable keeps no
+reference to its receiver; the trust report lists each callable the program
+calls this way as `non-retaining library call`, whether or not the call is
+also opaque. After the call, an owned receiver keeps only its class invariants
+and laws. A receiver or argument of an interface
+type may reach source code through calls the library makes on it, such as
+`iterator()` inside `Iterable<T>.sum()`; the assumption covers that code too.
+
+Tests: `specifications/external/stdlib_opaque_members.kt::keepsOnlyInvariants,reliesOnChangedState`.
+
+### Snapshot iterators
+
+The bundled model of `List.iterator()`
+(`formver.compiler-plugin/plugin/resources/external-specs/Collections.kt`)
+returns an owned iterator whose remaining elements are the list's elements at
+the call. The real iterator reads the list as it is at each `next()`. SnaKt
+trusts that a `List` is not mutated through any reference while an iterator
+over it is live. A caller that owns the list cannot mutate it through a
+`List`-typed reference, but a `MutableList` passed to a borrowed `List`
+parameter can return such an iterator and be mutated afterwards; the trust report lists the bound callable as
+`snapshot iterator`. `iterator()` on a receiver whose static type is
+`MutableList` or another mutable collection resolves to a different callable,
+which has no model and converts as the opaque library call.
+
+Tests: `specifications/external/stdlib_member_specs.kt::iterates,iteratesTooFar,iteratesMutableList`.
 
 ### Allocation
 

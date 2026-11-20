@@ -46,8 +46,11 @@ fun FirFunctionCall.isPrimitiveArrayElementAccess(): Boolean =
         it != null && it.classId in primitiveArrayClassIds && (it.callableName == getName || it.callableName == setName)
     }
 
-/** A stdlib function that loops over the elements of its receiver, calling its last argument on each. */
-enum class ElementLoop(name: String, val arity: Int = 1, val lambdaArity: Int = 1) {
+/**
+ * A stdlib function that loops over the elements of its receiver, calling its last argument on each. It is called
+ * [name] or one of [aliases], which the library documents as the same operation.
+ */
+enum class ElementLoop(name: String, val arity: Int = 1, val lambdaArity: Int = 1, aliases: List<String> = emptyList()) {
     ForEach("forEach"),
     ForEachIndexed("forEachIndexed", lambdaArity = 2),
     Count("count"),
@@ -58,9 +61,11 @@ enum class ElementLoop(name: String, val arity: Int = 1, val lambdaArity: Int = 
     AllMatch("all"),
     NoneMatch("none"),
     IndexOfFirst("indexOfFirst"),
-    FirstOrNull("firstOrNull");
+    FirstOrNull("firstOrNull", aliases = listOf("find"));
 
     val callableName: Name = Name.identifier(name)
+
+    val callableNames: List<Name> = listOf(callableName) + aliases.map(Name::identifier)
 }
 
 /** Whether the resolved overload iterates an Iterable or Map through the collection template. */
@@ -92,7 +97,7 @@ private fun FirCallableSymbol<*>.collectionElementLoop(): ElementLoop? {
     if (id.packageName != FqName("kotlin.collections") || id.className != null) return null
     val function = this as? FirFunctionSymbol<*> ?: return null
     return ElementLoop.entries.firstOrNull {
-        it.callableName == id.callableName && it.arity == function.valueParameterSymbols.size &&
+        id.callableName in it.callableNames && it.arity == function.valueParameterSymbols.size &&
                 function.valueParameterSymbols.last().resolvedReturnType.classId ==
                 ClassId.topLevel(FqName("kotlin.Function${it.lambdaArity}"))
     }

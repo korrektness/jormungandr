@@ -170,7 +170,7 @@ class ProgramConverter(
 
     override val typeResolver: TypeResolver = TypeResolver()
 
-    override val trust = TrustedAssumptionCollector(session, typeResolver) { it == registeredSymbol }
+    override val trust = TrustedAssumptionCollector(session, typeResolver, { it == registeredSymbol }, { registeredSymbol })
 
     private val terminationMeasures = TerminationMeasures(typeResolver)
 
@@ -598,7 +598,6 @@ class ProgramConverter(
 
         // check if it must be handled specially
         embedSpecialFunction(symbol)?.let { return it }
-        rejectUnsupportedStdlibMember(symbol, session)
 
         // check if it already was embedded
         callable[symbol.embedName(this)]?.let { return it.signature }
@@ -692,7 +691,6 @@ class ProgramConverter(
         if (model != symbol) return embedProperty(model).also { trust.recordBinding(symbol) }
         trust.recordAccessorOptOuts(symbol)
         if (symbol.receiverParameterSymbol != null || symbol.dispatchReceiverType == null) {
-            rejectUnsupportedStdlibMember(symbol, session)
             return embedExtensionProperty(symbol)
         } else {
             val name = symbol.embedMemberPropertyName(this)
@@ -704,7 +702,6 @@ class ProgramConverter(
                     }
                 }
 
-                rejectUnsupportedStdlibMember(symbol, session)
                 val classSymbol = symbol.dispatchReceiverType?.toClassSymbol(session)
 
                 val regularClass = classSymbol as? FirRegularClassSymbol ?: throw SnaktInternalException(

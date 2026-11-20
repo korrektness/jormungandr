@@ -51,6 +51,35 @@ still verified. The call may throw, and its result is some value of its type. Th
 
 A constructor of a library class and a function returning `Nothing` get no such warning.
 
+Such a library call or read is listed in the trust report. A standard-library member without a model counts as one
+even when its receiver or result is a collection or string that has a model; only the members a model declares get
+its contract. The call passes its receiver and arguments as the library declaration's parameters do: an owned value
+passed to a parameter without annotations is moved. A final standard-library member whose result and parameters are
+all primitives, `String`, `Unit` or `Nothing`, that has no context parameters, no receiver of a function type and some
+receiver that can be owned (one that is none of those types, an array or an object declaration), instead borrows its
+receivers, on the trusted assumption that it keeps no reference to them; the trust report lists it as a non-retaining library call. After such a call, every object the
+caller owns that the call can reach through the receiver keeps only its class invariants and laws, and a model's
+observers on it are unknown:
+
+```kotlin
+fun keepsOnlyInvariants(): Int {
+    val list = mutableListOf<Int>()
+    list.add(4)
+    val total = list.sum()           // OPAQUE_CALL; borrows list
+    val before = list.size
+    verify(before >= 0)              // verifies: a law of the model
+    list.remove(total)               // list is still owned and keeps its model
+    return list.size
+}
+
+fun reliesOnChangedState() {
+    val list = mutableListOf<Int>()
+    list.add(4)
+    list.sum()
+    verify(list.size == 1)           // fails: sum may have changed list
+}
+```
+
 Select compilation checks and external specification inputs through the
 [configuration reference](docs/configuration.md).
 
@@ -1004,7 +1033,8 @@ require no ownership of the entry.
 
 The inline collection templates `forEach`, `forEachIndexed`, `map`, `filter`,
 `any`, `all`, `none`, `count`, `indexOfFirst`, `firstOrNull`, and `fold` use this observer
-for `Collection` receivers. The supported Map overloads are `Map.forEach` and
+for `Collection` receivers. `find`, which the library documents as `firstOrNull` with a predicate, uses the
+`firstOrNull` template. The supported Map overloads are `Map.forEach` and
 `Map.map` with a single immutable-entry lambda parameter. A literal
 lambda, or an inline parameter bound to one, is verified through the inline
 call path with Kotlin's calls-in-place ownership analysis. A search whose

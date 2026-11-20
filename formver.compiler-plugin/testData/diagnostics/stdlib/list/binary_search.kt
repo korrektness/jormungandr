@@ -2,14 +2,14 @@
 // USE_STDLIB
 
 
-fun <!VERIFICATION_SKIPPED!>safe_binary_search<!>(arr: List<Int>, target: Int): Boolean {
+fun <!VIPER_TEXT!>safe_binary_search<!>(arr: List<Int>, target: Int): Boolean {
     val size = <!UNCHECKED_LIBRARY_CALL!>arr.size<!>
     val mid = <!UNCHECKED_LIBRARY_CALL!>arr.size<!> / 2 // +1 or -1 throws IndexOutOfBound
     return when {
         <!UNCHECKED_LIBRARY_CALL!>arr.isEmpty()<!> -> false
         <!UNCHECKED_LIBRARY_CALL!>arr[mid]<!> == target -> true
-        <!UNCHECKED_LIBRARY_CALL!>arr[mid]<!> < target -> <!UNSUPPORTED_FEATURE!>safe_binary_search(arr.subList(mid + 1, size), target)<!>
-        else -> <!UNSUPPORTED_FEATURE!>safe_binary_search(arr.subList(0, mid), target)<!> // mid - 1 throws IllegalArgumentException
+        <!UNCHECKED_LIBRARY_CALL!>arr[mid]<!> < target -> safe_binary_search(<!UNCHECKED_LIBRARY_CALL!>arr.subList(mid + 1, size)<!>, target)
+        else -> safe_binary_search(<!UNCHECKED_LIBRARY_CALL!>arr.subList(0, mid)<!>, target) // mid - 1 throws IllegalArgumentException
     }
 }
 

@@ -33,7 +33,7 @@ The retained port covers `ArrayDeque()`, `ArrayDeque(Int)`, `isEmpty`, `get`, `s
 parameter precondition of [G12](arraydeque-gaps-design.md#g12-preconditions-of-secondary-constructors-s5g).
 Public-entry capacity clients cover zero and positive capacities and reject a
 negative capacity. The bundled `(Int)` overload remains unbound; the binding
-consumer explicitly rejects it. The bundled constructor claim covers `()` only.
+consumer calls it as a library constructor whose result is shared. The bundled constructor claim covers `()` only.
 
 The contracts cover representation bounds, access results, size changes,
 pointwise element frames, end insertion/removal, search and clearing on normal
@@ -147,8 +147,8 @@ No complete certification of every other verifying stage is asserted.
 
 A source scan finds no `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE`,
 `INTERNAL_ERROR`, `UNTRACKED_WRITE` or verification exclusions in the port or
-positive BFS. In `arraydeque_binding.kt`, only `unboundCapacity` and
-`unboundMember` are explicitly skipped API-rejection negatives.
+positive BFS. In `arraydeque_binding.kt`, `unboundCapacity` and
+`unboundMember` call unbound API as opaque calls.
 
 The BFS proves the rank-decreasing parent-edge witness and successor closure
 specified by [the consumer design](arraydeque-bfs-design.md), under its owned-array,

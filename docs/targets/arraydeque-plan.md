@@ -194,7 +194,7 @@ still carry the annotation, so that they differ from the upstream body only in t
 ### Bundled model shape
 
 `ArrayDequeModel<E>` declares only the in-scope members and does not extend `MutableListModel`, so an
-out-of-scope member called on an `ArrayDeque` receiver is rejected, not given a contract the port never proved. `ArrayDeque()` binds through a
+out-of-scope member called on an `ArrayDeque` receiver is an opaque call, not given a contract the port never proved. `ArrayDeque()` binds through a
 constructor model (S9a); `docs/targets/arraydeque-ctor-binding.md` owns the constructor binding, the unbound-member
 policy and their fallbacks.
 

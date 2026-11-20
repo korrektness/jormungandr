@@ -50,7 +50,7 @@ private val textPackage = FqName("kotlin.text")
 private val collectionsPackage = FqName("kotlin.collections")
 
 /** A stdlib function that calls its last argument, a lambda, for each index below a bound. */
-private enum class StdlibHof(val callableName: Name, val arity: Int) {
+private enum class StdlibHof(val callableName: Name, val arity: Int, private val loop: ElementLoop? = null) {
     ForEach(ElementLoop.ForEach),
     ForEachIndexed(ElementLoop.ForEachIndexed),
     Count(ElementLoop.Count),
@@ -73,7 +73,10 @@ private enum class StdlibHof(val callableName: Name, val arity: Int) {
     val isScope: Boolean
         get() = this in Let..Context
 
-    constructor(loop: ElementLoop) : this(loop.callableName, arity = loop.arity)
+    constructor(loop: ElementLoop) : this(loop.callableName, arity = loop.arity, loop = loop)
+
+    val callableNames: List<Name>
+        get() = loop?.callableNames ?: listOf(callableName)
 
     /** Whether the loop stops at the first index where the lambda's test holds. */
     val searches: Boolean
@@ -83,7 +86,7 @@ private enum class StdlibHof(val callableName: Name, val arity: Int) {
 private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? {
     val id = symbol.callableId ?: return null
     if (id.className != null) return null
-    val hof = StdlibHof.entries.firstOrNull { it.callableName == id.callableName && it.arity == arity } ?: return null
+    val hof = StdlibHof.entries.firstOrNull { id.callableName in it.callableNames && it.arity == arity } ?: return null
     val receiver = symbol.resolvedReceiverTypeRef?.coneType
     val function = symbol as? FirFunctionSymbol<*> ?: return null
     val lambdaArity = when (hof) {
@@ -113,10 +116,6 @@ private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? 
 /** Whether the declared receiver of [this] is a `Map`, which selects entry-valued Map iteration. */
 private fun FirFunctionCall.hasMapReceiver(): Boolean =
     toResolvedCallableSymbol()?.resolvedReceiverTypeRef?.coneType?.classId == ClassId.topLevel(FqName("kotlin.collections.Map"))
-
-/** Whether a callable belongs to the higher-order conversion path, including its opaque function-value calls. */
-internal fun hasStdlibHofTemplate(symbol: FirFunctionSymbol<*>): Boolean =
-    stdlibHofKind(symbol, symbol.valueParameterSymbols.size) != null
 
 /**
  * The template [call] converts as, with the lambda it calls; `null` when [call] is not a call a template supports or

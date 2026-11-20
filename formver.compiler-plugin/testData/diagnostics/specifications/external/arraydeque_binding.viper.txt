@@ -148,6 +148,83 @@ method peekEmpty() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/arraydeque_binding.kt: info: Generated Viper text for unboundCapacity:
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(initialCapacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initialCapacity), intType())
+  ensures isSubtype(typeOf(ret_1), ArrayDequeModel())
+
+
+method unboundCapacity() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := con(intToRef(4))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for unboundMember:
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method removeAt(this: Ref, par_index: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method unboundMember(queue: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := removeAt(queue, intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /arraydeque_binding.kt: info: Generated Viper text for enqueueOnce:
 function ArrayDequeModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDequeModel())

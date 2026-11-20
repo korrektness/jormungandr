@@ -9,12 +9,12 @@ import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.fir.resolve.lookupSuperTypes
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
 import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.common.isLibraryDeclaration
 import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.FirElement
@@ -60,7 +60,8 @@ fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
 
 /**
  * Resolves the uniqueness of the result of [this] function as its declaration states it. A constructor's result is
- * a fresh object, unique unless the construction lets it escape.
+ * a fresh object, unique unless the construction lets it escape or the constructor is a library constructor that no
+ * model binds of a class that has a model.
  */
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
@@ -78,7 +79,7 @@ context(context: CheckerContext)
 fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
     val model = externalSpecificationSymbol(context.session)
     return if (model != this) model.resolvedReturnType.scopeUniqueness
-    else if (origin != FirDeclarationOrigin.Source && constructsModelledType(context.session)) Uniqueness.Shared
+    else if (isLibraryDeclaration() && constructsModelledType(context.session)) Uniqueness.Shared
     else if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
 }
 

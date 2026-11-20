@@ -43,6 +43,126 @@ internal interface ListModel<out E> : CollectionModel<E> {
             forAll<Int> { i -> (i >= 0 && i < result) implies (element != get(i)) }
         }
     }
+
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/sub-list.html: view of [fromIndex, toIndex);
+    // throws outside 0 <= fromIndex <= toIndex <= size.
+    @Unique @Borrowed fun subList(fromIndex: Int, toIndex: Int): ListModel<E>
+    @SpecOf("subList") @Unique @Borrowed fun subListSpec(fromIndex: Int, toIndex: Int) {
+        preconditions { fromIndex >= 0 && fromIndex <= toIndex && toIndex <= size }
+        postconditions<ListModel<E>> {
+            size == old(size)
+            forAll<Int> { i -> (i >= 0 && i < size) implies (get(i) === old(get(i))) }
+        }
+    }
+
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/iterator.html: iterator over the elements
+    // in index order.
+    @Unique @Borrowed operator fun iterator(): @Unique IteratorModel<E>
+    @SpecOf("iterator") @Unique @Borrowed fun iteratorSpec() {
+        postconditions<@Unique IteratorModel<E>> { result ->
+            size == old(size)
+            forAll<Int> { i -> (i >= 0 && i < size) implies (get(i) === old(get(i))) }
+            result.remaining().size == size
+            forAll<Int> { i -> (i >= 0 && i < size) implies (result.remaining()[i] === get(i)) }
+        }
+    }
+}
+
+@ExternalSpec("kotlin.collections.Iterator")
+internal interface IteratorModel<out T> {
+    @GhostObserver @Pure @Unique fun remaining(): IterationSequence<T> = ghostObserver()
+
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/has-next.html: whether an element remains.
+    @Pure @Unique operator fun hasNext(): Boolean
+    @SpecOf("hasNext") @Unique fun hasNextSpec() {
+        postconditions<Boolean> { result -> result == (remaining().size > 0) }
+    }
+
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/next.html: the next element; throws
+    // when none remains.
+    @Unique @Borrowed operator fun next(): T
+    @SpecOf("next") @Unique @Borrowed fun nextSpec() {
+        preconditions { remaining().size > 0 }
+        postconditions<T> { result ->
+            result === old(remaining()[0])
+            remaining().size == old(remaining().size) - 1
+            forAll<Int> { i ->
+                (i >= 1 && i < old(remaining().size)) implies (remaining()[i - 1] === old(remaining()[i]))
+            }
+        }
+    }
+}
+
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/to-list.html: new list of the elements in iteration
+// order.
+@ExternalFunction("kotlin.collections.toList")
+internal fun <T> (@Unique @Borrowed IterableModel<T>).toListModel(): @Unique ListModel<T> = TODO()
+@SpecOf("toListModel") internal fun <T> (@Unique @Borrowed IterableModel<T>).toListSpec() {
+    postconditions<@Unique ListModel<T>> { result ->
+        iterationSequence().size == old(iterationSequence().size)
+        forAll<Int> { i ->
+            (i >= 0 && i < iterationSequence().size) implies (iterationSequence()[i] === old(iterationSequence()[i]))
+        }
+        result.size == iterationSequence().size
+        forAll<Int> { i -> (i >= 0 && i < result.size) implies (result[i] === iterationSequence()[i]) }
+    }
+}
+
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/plus.html: new list of the elements followed by
+// element.
+@ExternalFunction("kotlin.collections.plus")
+internal fun <T> (@Unique @Borrowed CollectionModel<T>).plusElementModel(element: T): @Unique ListModel<T> = TODO()
+@SpecOf("plusElementModel") internal fun <T> (@Unique @Borrowed CollectionModel<T>).plusElementSpec(element: T) {
+    preconditions { size < 2147483647 }
+    postconditions<@Unique ListModel<T>> { result ->
+        size == old(size)
+        iterationSequence().size == old(iterationSequence().size)
+        forAll<Int> { i ->
+            (i >= 0 && i < iterationSequence().size) implies (iterationSequence()[i] === old(iterationSequence()[i]))
+        }
+        result.size == size + 1
+        result[size] === element
+        forAll<Int> { i ->
+            (i >= 0 && i < size && i < iterationSequence().size) implies (result[i] === iterationSequence()[i])
+        }
+    }
+}
+
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/plus.html: new list of the elements followed by
+// those of elements.
+@ExternalFunction("kotlin.collections.plus")
+internal fun <T> (@Unique @Borrowed CollectionModel<T>).plusAllModel(elements: Iterable<T>): @Unique ListModel<T> = TODO()
+@SpecOf("plusAllModel") internal fun <T> (@Unique @Borrowed CollectionModel<T>).plusAllSpec(elements: Iterable<T>) {
+    postconditions<@Unique ListModel<T>> { result ->
+        size == old(size)
+        iterationSequence().size == old(iterationSequence().size)
+        forAll<Int> { i ->
+            (i >= 0 && i < iterationSequence().size) implies (iterationSequence()[i] === old(iterationSequence()[i]))
+        }
+        result.size >= size
+        forAll<Int> { i ->
+            (i >= 0 && i < size && i < iterationSequence().size) implies (result[i] === iterationSequence()[i])
+        }
+    }
+}
+
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/join-to-string.html: the elements joined with the
+// separator between prefix and postfix; reads the receiver only.
+@ExternalFunction("kotlin.collections.joinToString")
+internal fun <T> (@Unique @Borrowed IterableModel<T>).joinToStringModel(
+    separator: CharSequence, prefix: CharSequence, postfix: CharSequence, limit: Int, truncated: CharSequence,
+    transform: ((T) -> CharSequence)?,
+): String = TODO()
+@SpecOf("joinToStringModel") internal fun <T> (@Unique @Borrowed IterableModel<T>).joinToStringSpec(
+    separator: CharSequence, prefix: CharSequence, postfix: CharSequence, limit: Int, truncated: CharSequence,
+    transform: ((T) -> CharSequence)?,
+) {
+    postconditions<String> {
+        iterationSequence().size == old(iterationSequence().size)
+        forAll<Int> { i ->
+            (i >= 0 && i < iterationSequence().size) implies (iterationSequence()[i] === old(iterationSequence()[i]))
+        }
+    }
 }
 
 @ExternalFunction("kotlin.collections.map")

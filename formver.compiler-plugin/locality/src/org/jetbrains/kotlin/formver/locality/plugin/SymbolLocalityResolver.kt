@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayLastIndexRec
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isArrayIndicesReceiver
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isArrayCopyDestination
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.common.isNonRetainingStdlibMember
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
@@ -42,13 +43,18 @@ private val FirReceiverParameterSymbol.isBorrowedIntrinsicReceiver: Boolean
 
 context(context: CheckerContext)
 private fun FirValueParameterSymbol.isBorrowedParameter(): Boolean =
-    isReadOnlyBorrowed(context.session) || isArrayCopyDestination || isInlinedIntoSpecification(containingDeclarationSymbol)
+    isReadOnlyBorrowed(context.session) || isArrayCopyDestination || isInlinedIntoSpecification(containingDeclarationSymbol) ||
+        containingDeclarationSymbol.isNonRetainingStdlibMember(context.session)
+
+context(context: CheckerContext)
+private fun FirReceiverParameterSymbol.isBorrowedReceiver(): Boolean =
+    isReadOnlyBorrowed(context.session) || isBorrowedIntrinsicReceiver ||
+        isInlinedIntoSpecification(containingDeclarationSymbol) ||
+        containingDeclarationSymbol.isNonRetainingStdlibMember(context.session)
 
 context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
-    if (isReadOnlyBorrowed(context.session) || isBorrowedIntrinsicReceiver ||
-        isInlinedIntoSpecification(containingDeclarationSymbol)
-    ) Locality.Local else externalSpecificationSymbol(context.session).resolvedType.locality
+    if (isBorrowedReceiver()) Locality.Local else externalSpecificationSymbol(context.session).resolvedType.locality
 
 object ReceiverLocalityResolver :
     SymbolTypeFactResolver<Locality, FirReceiverParameterSymbol> {

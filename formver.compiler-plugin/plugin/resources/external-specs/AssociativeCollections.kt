@@ -137,6 +137,39 @@ internal interface MutableMapModel<K, V> : MapModel<K, V> {
     }
 }
 
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/set.html: associate the key, as put.
+@ExternalFunction("kotlin.collections.set")
+internal fun <K, V> (@Unique @Borrowed MutableMapModel<K, V>).setModel(key: K, value: V): Unit = TODO()
+@SpecOf("setModel") internal fun <K, V> (@Unique @Borrowed MutableMapModel<K, V>).setSpec(key: K, value: V) {
+    preconditions { size < 2147483647 }
+    postconditions<Unit> {
+        containsKey(key)
+        get(key) === value
+        size == old(size) + if (old(containsKey(key))) 0 else 1
+    }
+}
+
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-values.html: new map with the same keys in the
+// same iteration order and transformed values.
+@ExternalFunction("kotlin.collections.mapValues")
+internal fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapValuesModel(
+    transform: (EntryModel<K, V>) -> R,
+): @Unique MapModel<K, R> = TODO()
+@SpecOf("mapValuesModel") internal fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapValuesSpec(
+    transform: (EntryModel<K, V>) -> R,
+) {
+    postconditions<@Unique MapModel<K, R>> { result ->
+        size == old(size)
+        keysSequence().size == old(keysSequence().size)
+        forAll<Int> { i -> (i >= 0 && i < keysSequence().size) implies (keysSequence()[i] === old(keysSequence()[i])) }
+        result.size == size
+        forAll<Int> { i ->
+            (i >= 0 && i < size && i < keysSequence().size && i < result.keysSequence().size) implies
+                (result.keysSequence()[i] === keysSequence()[i])
+        }
+    }
+}
+
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/set-of.html: empty read-only set.
 @ExternalFunction("kotlin.collections.setOf")
 internal fun <T> emptySetModel(): @Unique SetModel<T> = TODO()
