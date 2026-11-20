@@ -98,6 +98,47 @@ object IntegerOperators {
         })
     }
 
+    private fun floorQuotient(a: Exp, b: Exp): Exp =
+        Exp.TernaryExp(b gt 0.toExp(), Exp.Div(a, b), Exp.Div(Exp.Minus(a), Exp.Minus(b)))
+
+    private fun flooringValue(operation: String, a: Exp, b: Exp): Exp = when (operation) {
+        "floorDiv" -> floorQuotient(a, b)
+        "mod" -> Exp.Sub(a, Exp.Mul(b, floorQuotient(a, b)))
+        else -> error("Unknown flooring operation $operation")
+    }
+
+    /**
+     * The `kotlin` extensions `floorDiv`, whose result has the promoted width, and `mod`, whose result has the
+     * divisor's width, on signed integer operands.
+     */
+    val flooring: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = buildMap {
+        val signed = IntegerKind.entries.filter { it != IntegerKind.Char }
+        for (a in signed) for (b in signed) {
+            val promoted = if (a == IntegerKind.Long || b == IntegerKind.Long) IntegerKind.Long else IntegerKind.Int
+            for ((operation, result) in listOf("floorDiv" to promoted, "mod" to b)) {
+                put(Binary(a, b, operation, result), buildBinaryOperator {
+                    setName("${operation}${a.name}${b.name}")
+                    withSignature {
+                        withParam { existing(a.pretype) }
+                        withParam { existing(b.pretype) }
+                        withReturnType { existing(result.pretype) }
+                    }
+                    viperImplementation { flooringValue(operation, args[0], args[1]) }
+                    additionalConditions {
+                        val left = a.type.injection.fromRef(args[0])
+                        val right = b.type.injection.fromRef(args[1])
+                        precondition {
+                            Exp.WithInfo(right ne 0.toExp(), SourceRole.Arithmetic(KotlinCondition.DivisionByZero(operation)).asInfo)
+                        }
+                        if (operation == "floorDiv") precondition {
+                            result.checkedRange(flooringValue(operation, left, right), operation)
+                        }
+                    }
+                })
+            }
+        }
+    }
+
     val wrappingBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
         it.result == IntegerKind.Int && it.operation in listOf("plus", "minus")
     }.associateWith { op ->
@@ -194,6 +235,6 @@ object IntegerOperators {
         }
     }
 
-    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
+    val templates get() = binary.values + flooring.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
         BitwiseOperators.templates
 }

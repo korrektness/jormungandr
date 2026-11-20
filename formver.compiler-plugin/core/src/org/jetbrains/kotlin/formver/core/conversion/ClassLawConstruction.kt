@@ -11,6 +11,12 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.isByte
+import org.jetbrains.kotlin.fir.types.isInt
+import org.jetbrains.kotlin.fir.types.isLong
+import org.jetbrains.kotlin.fir.types.isShort
+import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -39,6 +45,8 @@ fun FirRegularClassSymbol.hasSuperclassLaws(session: FirSession): Boolean {
     return resolvedSuperTypes.any { it.toRegularClassSymbol(session)?.let(::visit) == true }
 }
 
+private fun ConeKotlinType.isSignedInteger(): Boolean = isByte || isShort || isInt || isLong
+
 fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCallableSymbol()?.callableId?.let {
     val classes = setOf("Boolean", "Byte", "Short", "Int", "Long", "Float", "Double", "Char", "String")
     val operations = setOf(
@@ -51,6 +59,10 @@ fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCall
                     (it.className == null && it.callableName.asString() in setOf("forAll", "exists", "implies")))) ||
     it.packageName.asString() == "kotlin" &&
             ((this is FirFunctionCall && it.className?.asString() in classes && it.callableName.asString() in operations) ||
+                    (this is FirFunctionCall && it.className == null && it.callableName.asString() in setOf("floorDiv", "mod") &&
+                            listOfNotNull(extensionReceiver, arguments.singleOrNull()).let { operands ->
+                                operands.size == 2 && operands.all { operand -> operand.resolvedType.isSignedInteger() }
+                            }) ||
                     (it.className?.asString() == "String" && it.callableName.asString() == "length") ||
                     ((it.classId in primitiveArrayClassIds || it.className?.asString() == "Array") &&
                             it.callableName.asString() == "size"))

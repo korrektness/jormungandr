@@ -44,19 +44,19 @@ verifier gap. There are therefore no reproducers and no negative fixtures.
 |---|---|---|---|
 | `AbstractList.newCapacity` (`collections/AbstractList.kt`) | `INTEGER_OVERFLOW` on `oldCapacity + (oldCapacity shr 1)` | intentional wrapping ("overflow-conscious") | verifies with wrapping and `result >= minCapacity` (`NewCapacityWrapping.kt`) |
 | `ArrayList.ensureExtraCapacity` / `ensureCapacityInternal` (`native-wasm/.../ArrayList.kt`) | postcondition `result >= minCapacity` not established; `INTEGER_OVERFLOW` in `newCapacity` | `newCapacity`'s KDoc states no result; `length + n` wraps on purpose into the `OutOfMemoryError` check | verifies with wrapping and `newCapacity`'s postcondition (`ArrayListCapacity.kt`) |
-| `Long.addMillisWithoutOverflow` (`time/Duration.kt`) | `INTEGER_OVERFLOW` on `this + other`; postcondition; `sameSign` times out | missing precondition (operands in `±MAX_MILLIS`); gap (`xor` of two variables) | verifies with the precondition and `sameSign` inline (`programs/ports/stdlib/AddMillisWithoutOverflow.kt`) |
-| `durationOfMillisNormalized`, `addValuesMixedRanges` (`time/Duration.kt`) | overflow in `millisToNanos`; representation postcondition | missing preconditions on private helpers; the source comment "resultMillis will never be INVALID" needs `addMillisWithoutOverflow` to say a finite operand never yields `INVALID_RAW_VALUE` | both verify against `Duration.fromRawValue`'s representation check (`programs/ports/stdlib/DurationNormalize.kt`) |
+| `Long.addMillisWithoutOverflow` (`time/Duration.kt`) | `coerceIn` has no model; `INTEGER_OVERFLOW` on `this + other`; postcondition; `sameSign` times out | gap (range/`coerceIn`); missing precondition (operands in `±MAX_MILLIS`); gap (`xor` of two variables) | verifies with the `coerceIn` model, the precondition and `sameSign` inline (`programs/ports/stdlib/AddMillisWithoutOverflow.kt`) |
+| `durationOfMillisNormalized`, `addValuesMixedRanges` (`time/Duration.kt`) | `in` and `coerceIn` have no model; overflow in `millisToNanos`; representation postcondition | gap; missing preconditions on private helpers; the source comment "resultMillis will never be INVALID" needs `addMillisWithoutOverflow` to say a finite operand never yields `INVALID_RAW_VALUE` | both verify with the range models against `Duration.fromRawValue`'s representation check (`programs/ports/stdlib/DurationNormalize.kt`) |
 | `formattedStringLength` (4 and 7 parameters) (`text/HexExtensions.kt`) | `VERIFICATION_TIMEOUT` on both | gap (nonlinear Long arithmetic) | unproved (`HexFormatLength.kt`) |
-| `checkFormatLength` (`text/HexExtensions.kt`) | `toULong` in the exception message has no model | does not affect the result | verifies (`programs/ports/stdlib/CheckFormatLength.kt`) |
+| `checkFormatLength` (`text/HexExtensions.kt`) | `Long in 0..Int.MAX_VALUE` and `toULong` have no model; postcondition and `toInt` narrowing | gap; `toULong` is only in the exception message | verifies with the range model (`programs/ports/stdlib/CheckFormatLength.kt`) |
 | `parsedByteArrayMaxSize`, `charsPerSet`, `wholeElementsPerSet` (`text/HexExtensions.kt`) | timeouts on the first two; `DIVISION_BY_ZERO` and `INTEGER_OVERFLOW` in `wholeElementsPerSet` | gap (nonlinear); missing preconditions (non-negative separator lengths, `charsPerSet <= Int.MAX_VALUE` from its callers) | unproved (`HexParsedSize.kt`) |
 | `Base64.encodeSize` (`io/encoding/Base64.kt`) | `INTEGER_OVERFLOW` on `groups * symbolsPerGroup` and both `+=` | intentional wrapping, caught by the `size < 0` checks; Int `*` has no wrapping mode | verifies `result >= 0` with the product written as a Long truncated by `@WrappingNarrowing` (`Base64EncodeSizeWrapping.kt`) |
 | `Base64.decodeSize` (`io/encoding/Base64.kt`) | `INTEGER_OVERFLOW` on `symbols -= endIndex - index` and `symbols--`; `result >= 0` | missing loop invariant; with `endIndex - index <= symbols` the invariant fails at the `break` exit | unproved: gap (invariant required at `break` without ghost state) (`Base64DecodeSize.kt`) |
-| `String.toIntOrNull(radix)` with `checkRadix` (`text/StringNumberConversions.kt`) | `INTEGER_OVERFLOW` on `result *= radix` and `-result` | missing loop invariant | verifies with invariants `limit <= result <= 0` (`programs/ports/stdlib/ToIntOrNull.kt`) |
+| `String.toIntOrNull(radix)` with `checkRadix` (`text/StringNumberConversions.kt`) | `radix !in 2..36` has no model; `INTEGER_OVERFLOW` on `result *= radix` and `-result` | gap; missing loop invariant | verifies with the range model and invariants `limit <= result <= 0` (`programs/ports/stdlib/ToIntOrNull.kt`) |
 | `ulongCompare` (`jvm/.../UnsignedJVM.kt`) | none | — | verifies (`UnsignedLong.kt`) |
 | `ulongDivide` (`jvm/.../UnsignedJVM.kt`) | `INTEGER_OVERFLOW` on `quotient * divisor` and the subtraction | intentional wrapping | verifies with `@WrappingLongArithmetic`; the postcondition covers only the case `v1 >= 0 && v2 > 0`, since an unsigned quotient needs integers wider than Long (`UnsignedLong.kt`) |
 | `safeAddOrElse` (`time/Instant.kt`) | `INTEGER_OVERFLOW` on `a + b` | intentional wrapping | times out under wrapping: gap (`xor` of two variables) (`InstantSafeAdd.kt`) |
 | `safeMultiplyOrElse`, `Instant.toEpochMilliseconds` (`time/Instant.kt`) | timeouts | gap (nonlinear Long) | unproved (`InstantArithmetic.kt`) |
-| `Instant.fromEpochMilliseconds` (`time/Instant.kt`) | `floorDiv` and `mod` have no model; `INTEGER_OVERFLOW` and range postcondition on the nanosecond part | gap | the seconds part verifies through its clamp; the nanosecond part verifies with `mod` behind a stand-in carrying its KDoc contract (`InstantFromMillis.kt`) |
+| `Instant.fromEpochMilliseconds` (`time/Instant.kt`) | `floorDiv` and `mod` have no model; `INTEGER_OVERFLOW` and range postcondition on the nanosecond part | gap | verifies with the `floorDiv` and `mod` models (`programs/ports/stdlib/InstantFromMillis.kt`) |
 | `Long.floorDiv(Long)`, `Long.mod(Long)` (`util/FloorDivMod.kt`) | timeouts | gap (`xor`, `and`, `or` and `shr` of variables) | unproved (`FloorDivMod.kt`) |
 | `List.binarySearch(element, fromIndex, toIndex)` (`collections/Collections.kt`) | `List.get` bounds in the loop and postcondition; `INTEGER_OVERFLOW` on `low + high` and `-(low + 1)` | missing invariants; `rangeCheck` states no postcondition; `(low + high).ushr(1)` wraps on purpose ("safe from overflows"); unary minus has no wrapping mode | verifies except `-(low + 1)`, with `@WrappingIntArithmetic`, `rangeCheck`'s postcondition, loop invariants that repeat sortedness, and the insertion point decoded in Long (`BinarySearch.kt`) |
 
@@ -71,10 +71,16 @@ a defect.
 |---|---:|---|
 | Nonlinear `Long` arithmetic times out at 300 s | 6 | both `formattedStringLength`, `parsedByteArrayMaxSize`, `charsPerSet`, `safeMultiplyOrElse`, `toEpochMilliseconds` |
 | Bitwise operations on two non-literal operands time out | 4 | `sameSign`, `safeAddOrElse`, `Long.floorDiv`, `Long.mod` |
-| Stdlib `floorDiv` and `mod` have no model | 1 | `fromEpochMilliseconds` |
 | Int `*` and unary minus have no wrapping mode | 2 | `encodeSize`, `binarySearch` |
 | A loop invariant must hold at a `break` exit, with no ghost state to tell the exits apart | 1 | `decodeSize` |
 | Unsigned 64-bit results cannot be stated: specifications have no integers wider than `Long` | 1 | `ulongDivide` (partial postcondition) |
+
+Two further gaps blocked functions in the sweep and are modelled: range
+membership and `coerceIn` (5 functions: `addMillisWithoutOverflow`,
+`checkFormatLength`, `checkRadix`, `durationOfMillisNormalized`,
+`addValuesMixedRanges`; SPECIFICATIONS.md, "Ranges and coercion"), and stdlib
+`floorDiv` and `mod` (1 function: `fromEpochMilliseconds`; SPECIFICATIONS.md,
+"Integer arithmetic").
 
 Diagnostics that cost triage time without blocking:
 

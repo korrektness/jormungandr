@@ -1,0 +1,368 @@
+/floor_division.kt: info: Generated Viper text for literals:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method literals() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (floorDivIntInt(intToRef(7), intToRef(2))) in
+      (intFromRef(intToRef(2)) > 0 ?
+        intFromRef(intToRef(7)) \ intFromRef(intToRef(2)) :
+        -intFromRef(intToRef(7)) \ -intFromRef(intToRef(2)))) ==
+    3
+  assert (let anon ==
+      (floorDivIntInt(intToRef(-7), intToRef(2))) in
+      (intFromRef(intToRef(2)) > 0 ?
+        intFromRef(intToRef(-7)) \ intFromRef(intToRef(2)) :
+        -intFromRef(intToRef(-7)) \ -intFromRef(intToRef(2)))) ==
+    -4
+  assert (let anon ==
+      (floorDivIntInt(intToRef(7), intToRef(-2))) in
+      (intFromRef(intToRef(-2)) > 0 ?
+        intFromRef(intToRef(7)) \ intFromRef(intToRef(-2)) :
+        -intFromRef(intToRef(7)) \ -intFromRef(intToRef(-2)))) ==
+    -4
+  assert (let anon ==
+      (floorDivIntInt(intToRef(-7), intToRef(-2))) in
+      (intFromRef(intToRef(-2)) > 0 ?
+        intFromRef(intToRef(-7)) \ intFromRef(intToRef(-2)) :
+        -intFromRef(intToRef(-7)) \ -intFromRef(intToRef(-2)))) ==
+    3
+  assert (let anon ==
+      (modIntInt(intToRef(7), intToRef(2))) in
+      intFromRef(intToRef(7)) -
+      intFromRef(intToRef(2)) *
+      (intFromRef(intToRef(2)) > 0 ?
+        intFromRef(intToRef(7)) \ intFromRef(intToRef(2)) :
+        -intFromRef(intToRef(7)) \ -intFromRef(intToRef(2)))) ==
+    1
+  assert (let anon ==
+      (modIntInt(intToRef(-7), intToRef(2))) in
+      intFromRef(intToRef(-7)) -
+      intFromRef(intToRef(2)) *
+      (intFromRef(intToRef(2)) > 0 ?
+        intFromRef(intToRef(-7)) \ intFromRef(intToRef(2)) :
+        -intFromRef(intToRef(-7)) \ -intFromRef(intToRef(2)))) ==
+    1
+  assert (let anon ==
+      (modIntInt(intToRef(7), intToRef(-2))) in
+      intFromRef(intToRef(7)) -
+      intFromRef(intToRef(-2)) *
+      (intFromRef(intToRef(-2)) > 0 ?
+        intFromRef(intToRef(7)) \ intFromRef(intToRef(-2)) :
+        -intFromRef(intToRef(7)) \ -intFromRef(intToRef(-2)))) ==
+    -1
+  assert (let anon ==
+      (modIntInt(intToRef(-7), intToRef(-2))) in
+      intFromRef(intToRef(-7)) -
+      intFromRef(intToRef(-2)) *
+      (intFromRef(intToRef(-2)) > 0 ?
+        intFromRef(intToRef(-7)) \ intFromRef(intToRef(-2)) :
+        -intFromRef(intToRef(-7)) \ -intFromRef(intToRef(-2)))) ==
+    -1
+  assert (let anon ==
+      (floorDivIntInt(intToRef(6), intToRef(-3))) in
+      (intFromRef(intToRef(-3)) > 0 ?
+        intFromRef(intToRef(6)) \ intFromRef(intToRef(-3)) :
+        -intFromRef(intToRef(6)) \ -intFromRef(intToRef(-3)))) ==
+    -2
+  assert (let anon ==
+      (modIntInt(intToRef(-6), intToRef(3))) in
+      intFromRef(intToRef(-6)) -
+      intFromRef(intToRef(3)) *
+      (intFromRef(intToRef(3)) > 0 ?
+        intFromRef(intToRef(-6)) \ intFromRef(intToRef(3)) :
+        -intFromRef(intToRef(-6)) \ -intFromRef(intToRef(3)))) ==
+    0
+  assert (let anon ==
+      (floorDivByteByte(byteToRef(-128), convertIntToByte(intToRef(-1)))) in
+      (byteFromRef(convertIntToByte(intToRef(-1))) > 0 ?
+        byteFromRef(byteToRef(-128)) \
+        byteFromRef(convertIntToByte(intToRef(-1))) :
+        -byteFromRef(byteToRef(-128)) \
+        -byteFromRef(convertIntToByte(intToRef(-1))))) ==
+    128
+  assert (let anon ==
+      (floorDivIntLong(intToRef(-2147483648), unaryMinusLong(longToRef(1)))) in
+      (longFromRef(unaryMinusLong(longToRef(1))) > 0 ?
+        intFromRef(intToRef(-2147483648)) \
+        longFromRef(unaryMinusLong(longToRef(1))) :
+        -intFromRef(intToRef(-2147483648)) \
+        -longFromRef(unaryMinusLong(longToRef(1))))) ==
+    2147483648
+  assert (let anon ==
+      (floorDivShortByte(convertIntToShort(intToRef(-7)), convertIntToByte(intToRef(2)))) in
+      (byteFromRef(convertIntToByte(intToRef(2))) > 0 ?
+        shortFromRef(convertIntToShort(intToRef(-7))) \
+        byteFromRef(convertIntToByte(intToRef(2))) :
+        -shortFromRef(convertIntToShort(intToRef(-7))) \
+        -byteFromRef(convertIntToByte(intToRef(2))))) ==
+    -4
+  assert (let anon ==
+      (modByteShort(convertIntToByte(intToRef(-7)), convertIntToShort(intToRef(3)))) in
+      byteFromRef(convertIntToByte(intToRef(-7))) -
+      shortFromRef(convertIntToShort(intToRef(3))) *
+      (shortFromRef(convertIntToShort(intToRef(3))) > 0 ?
+        byteFromRef(convertIntToByte(intToRef(-7))) \
+        shortFromRef(convertIntToShort(intToRef(3))) :
+        -byteFromRef(convertIntToByte(intToRef(-7))) \
+        -shortFromRef(convertIntToShort(intToRef(3))))) ==
+    (let anon ==
+      (convertIntToShort(intToRef(2))) in
+      intFromRef(intToRef(2)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/floor_division.kt: info: Generated Viper text for divisorSign:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method divisorSign(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var s: Ref
+  var anon_1: Ref
+  l0_r := modLongLong(a, longToRef(1000))
+  if ((0 < longFromRef(l0_r) ? -1 : (0 > longFromRef(l0_r) ? 1 : 0)) <= 0) {
+    anon_0 := ltInts(compareToLongLong(l0_r, longToRef(1000)), intToRef(0))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  s := modLongLong(a, unaryMinusLong(longToRef(7)))
+  if (((let anon_builtin ==
+    (unaryMinusLong(longToRef(7))) in
+    -longFromRef(longToRef(7))) <
+  longFromRef(s) ?
+    -1 :
+    ((let anon_builtin ==
+      (unaryMinusLong(longToRef(7))) in
+      -longFromRef(longToRef(7))) >
+    longFromRef(s) ?
+      1 :
+      0)) <
+  0) {
+    anon_1 := leInts(compareToLongLong(s, longToRef(0)), intToRef(0))
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/floor_division.kt: info: Generated Viper text for floorIsNotTruncation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method floorIsNotTruncation(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires 0 <= intFromRef(a) && intFromRef(a) <= 100
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (floorDivIntInt(negInt(a), intToRef(2))) in
+      (intFromRef(intToRef(2)) > 0 ?
+        intFromRef(negInt(a)) \ intFromRef(intToRef(2)) :
+        -intFromRef(negInt(a)) \ -intFromRef(intToRef(2)))) ==
+    (let anon ==
+      (negInt(divInts(a, intToRef(2)))) in
+      -intFromRef(divInts(a, intToRef(2))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/floor_division.kt: info: Generated Viper text for mixedWidths:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method mixedWidths(millis: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(millis), longType())
+  requires isSubtype(typeOf(b), byteType())
+  requires (longFromRef(millis) < 0 ?
+      -1 :
+      (longFromRef(millis) > 0 ? 1 : 0)) >=
+    0
+  requires !(byteFromRef(b) ==
+    (let anon ==
+      (convertIntToByte(intToRef(0))) in
+      intFromRef(intToRef(0))))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var seconds: Ref
+  var rest: Ref
+  var small: Ref
+  seconds := floorDivLongInt(millis, intToRef(1000))
+  rest := modLongInt(millis, intToRef(1000))
+  assert (let anon ==
+      (plusLongInt(timesLongLong(seconds, longToRef(1000)), rest)) in
+      longFromRef(timesLongLong(seconds, longToRef(1000))) +
+      intFromRef(rest)) ==
+    longFromRef(millis)
+  small := modIntByte(intToRef(1000), b)
+  v_ret_0 := plusIntByte(rest, small)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/floor_division.kt: info: Generated Viper text for zeroDivisor:
+method zeroDivisor(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := floorDivIntInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/floor_division.kt: info: Generated Viper text for zeroModulus:
+method zeroModulus(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := modLongInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/floor_division.kt: info: Generated Viper text for minByMinusOne:
+method minByMinusOne(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := floorDivIntInt(a, intToRef(-1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/floor_division.kt: info: Generated Viper text for inSpecification:
+method inSpecification(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (modIntInt(a, intToRef(10))) in
+      intFromRef(a) -
+      intFromRef(intToRef(10)) *
+      (intFromRef(intToRef(10)) > 0 ?
+        intFromRef(a) \ intFromRef(intToRef(10)) :
+        -intFromRef(a) \ -intFromRef(intToRef(10))))
+{
+  v_ret_0 := remInts(a, intToRef(10))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/floor_division.kt: info: Generated Viper text for Slot:
+function slot(this: Ref): Ref
+  requires isSubtype(typeOf(this), Slot())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_index: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_index), longType())
+  ensures isSubtype(typeOf(v_ret_0), Slot())
+  ensures isSubtype(typeOf(v_ret_0), Slot()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef(boolToRef(intFromRef(slot(this)) ==
+      (let anon_builtin ==
+        (modIntInt(slot(this), intToRef(8))) in
+        intFromRef(slot(this)) -
+        intFromRef(intToRef(8)) *
+        (intFromRef(intToRef(8)) > 0 ?
+          intFromRef(slot(this)) \ intFromRef(intToRef(8)) :
+          -intFromRef(slot(this)) \ -intFromRef(intToRef(8)))))))
+  ensures intFromRef(slot(v_ret_0)) ==
+    (let anon_builtin ==
+      (modLongInt(par_index, intToRef(8))) in
+      longFromRef(par_index) -
+      intFromRef(intToRef(8)) *
+      (intFromRef(intToRef(8)) > 0 ?
+        longFromRef(par_index) \ intFromRef(intToRef(8)) :
+        -longFromRef(par_index) \ -intFromRef(intToRef(8))))
+{
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Slot()
+  anon_0 := modLongInt(par_index, intToRef(8))
+  inhale intFromRef(slot(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      boolFromRef(boolToRef(intFromRef(slot(this)) ==
+      (let anon_builtin ==
+        (modIntInt(slot(this), intToRef(8))) in
+        intFromRef(slot(this)) -
+        intFromRef(intToRef(8)) *
+        (intFromRef(intToRef(8)) > 0 ?
+          intFromRef(slot(this)) \ intFromRef(intToRef(8)) :
+          -intFromRef(slot(this)) \ -intFromRef(intToRef(8)))))))
+  fold acc(Slot_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Slot_unique(v_ret_0), write)
+}
+
+/floor_division.kt: info: Generated Viper text for slotInLaw:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function slot(this: Ref): Ref
+  requires isSubtype(typeOf(this), Slot())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_index: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_index), longType())
+  ensures isSubtype(typeOf(ret_1), Slot())
+  ensures isSubtype(typeOf(ret_1), Slot()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef(boolToRef(intFromRef(slot(this)) ==
+      (let anon_builtin ==
+        (modIntInt(slot(this), intToRef(8))) in
+        intFromRef(slot(this)) -
+        intFromRef(intToRef(8)) *
+        (intFromRef(intToRef(8)) > 0 ?
+          intFromRef(slot(this)) \ intFromRef(intToRef(8)) :
+          -intFromRef(slot(this)) \ -intFromRef(intToRef(8)))))))
+  ensures intFromRef(slot(ret_1)) ==
+    (let anon_builtin ==
+      (modLongInt(par_index, intToRef(8))) in
+      longFromRef(par_index) -
+      intFromRef(intToRef(8)) *
+      (intFromRef(intToRef(8)) > 0 ?
+        longFromRef(par_index) \ intFromRef(intToRef(8)) :
+        -longFromRef(par_index) \ -intFromRef(intToRef(8))))
+
+
+method slotInLaw(par_index: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_index), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := con(par_index)
+  fold acc(Slot_unique(anon_0), write)
+  assert intFromRef(slot(anon_0)) < 8
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

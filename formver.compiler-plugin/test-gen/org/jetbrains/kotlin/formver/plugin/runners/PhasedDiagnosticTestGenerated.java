@@ -66,6 +66,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("floor_division.kt")
+        public void testFloor_division() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/floor_division.kt");
+        }
+
+        @Test
         @TestMetadata("ranges.kt")
         public void testRanges() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/ranges.kt");
@@ -2847,6 +2853,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         @TestMetadata("DurationNormalize.kt")
         public void testDurationNormalize() {
           runTest("formver.compiler-plugin/testData/programs/ports/stdlib/DurationNormalize.kt");
+        }
+
+        @Test
+        @TestMetadata("InstantFromMillis.kt")
+        public void testInstantFromMillis() {
+          runTest("formver.compiler-plugin/testData/programs/ports/stdlib/InstantFromMillis.kt");
         }
 
         @Test

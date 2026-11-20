@@ -105,6 +105,16 @@ object SpecialKotlinFunctions {
                 operation(args[0], args[1])
             }
         }
+        for ((op, template) in IntegerOperators.flooring) {
+            val signature = buildFunctionPretype {
+                withExtensionReceiver { existing(op.receiver.pretype) }
+                withParam { existing(op.argument.pretype) }
+                withReturnType { existing(op.result.pretype) }
+            }
+            addFunction(signature, SpecialPackages.kotlin, name = op.operation) { args, _ ->
+                template(args[0], args[1])
+            }
+        }
         for ((op, template) in IntegerOperators.unary) {
             val signature = buildFunctionPretype {
                 withDispatchReceiver { existing(op.receiver.pretype) }
