@@ -19,7 +19,8 @@ are those of ../wire-85803bb99/PROVENANCE.md. Further labels:
   on normal completion. On an exceptional exit the port leaves `recursionDepth` one higher. SnaKt
   checks class laws only at normal exits, so this difference is outside what it checks.
 - D-5: `@NeverVerify` on the constructor, as for the CVE fixture, and on the scalar readers that
-  skipGroup calls (`readVarint64`, `readFixed32`, `readFixed64` and their callees). Their bodies
+  skipGroup calls (`readVarint64`, `readFixed32`, `readFixed64`) and on their callees
+  `afterPackableScalar`, `readIntLe` and `readLongLe`. Their bodies
   are trusted to keep the class law; the fixture does not claim anything about them.
 
 The specification is the class law `0 <= pos <= limit <= source.size` and `0 <= byteCount` on

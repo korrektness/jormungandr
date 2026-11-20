@@ -26,4 +26,4 @@ Labels:
 - D-7: removed members.
 
 The specification is the class law and `0 <= byteCount` on `skip` and `readUtf8`, whose callers
-pass a remaining length.
+other than skipGroup pass a remaining length.
