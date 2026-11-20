@@ -24,6 +24,8 @@ import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Label
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
+import org.jetbrains.kotlin.formver.viper.ast.Type
+import org.jetbrains.kotlin.formver.viper.ast.Var
 
 /**
  * How a Kotlin `==` whose `equals` is not identity or value equality is linearized: as the call that executed code
@@ -78,6 +80,9 @@ interface LinearizationContext {
         get() = null
 
     fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding
+
+    /** A fresh variable of Viper type [type], left undeclared for the caller to bind or quantify. */
+    fun freshViperVar(type: Type): Var = Var(freshAnonVar(buildType { unit() }).name, type)
 
     fun asBlock(action: LinearizationContext.() -> Unit): Stmt.Seqn
     fun <R> withPosition(newSource: KtSourceElement, action: LinearizationContext.() -> R): R

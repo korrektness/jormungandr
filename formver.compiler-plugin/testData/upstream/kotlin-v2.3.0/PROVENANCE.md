@@ -58,7 +58,13 @@ The fixtures in programs/ports/quicksort port the IntArray `partition` and
 PortCorrespondenceTest. Labels in those diffs:
 
 - D-1: test directives, and the formver import in place of the stdlib package.
+- D-2: the midpoint `(left + right).ushr(1)` in place of `(left + right) / 2`.
+  The two agree wherever `left + right` does not overflow; where it overflows,
+  the upstream index is negative and the read throws.
 - D-7: removed members: the merge sorts and every element type except IntArray.
+- D-8: added specification: braces around the scan loop bodies to hold their
+  invariants, and the specification helper `midpoint`.
 
 Erased specification includes the `@Unique @Borrowed` ownership annotations on
-`array`. The proof is of the port, not of the shipped function.
+`array` and the encoding annotations `@WrappingIntArithmetic` and
+`@PointwiseArrayWrites`. The proof is of the port, not of the shipped function.

@@ -49,7 +49,7 @@ fun StmtConversionContext.convertPrimitiveArrayElementAccess(call: FirFunctionCa
         PrimitiveArrayGet(kind, array, args[0], owned, symbol)
     } else {
         warnIfUntrackedWrite(call, receiver, owned)
-        PrimitiveArraySet(array, args[0], args[1], owned, symbol)
+        PrimitiveArraySet(array, args[0], args[1], owned, symbol, writesArraysPointwise)
     }
 }
 
@@ -104,7 +104,7 @@ fun StmtConversionContext.convertPrimitiveArrayInit(call: FirFunctionCall): ExpE
     val shapes = ownedShapes({ it.stateBefore(call) }, inScope) +
             OwnedShape(array, emptyList())
     val fill = withFreshWhile(label = null) {
-        val write = PrimitiveArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true)
+        val write = PrimitiveArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true, pointwise = writesArraysPointwise)
         val step = Assign(index, OperatorExpEmbeddings.AddIntInt(index, IntLit(1)))
         loopOverUsedRoots(
             OperatorExpEmbeddings.LtIntInt(index, size),

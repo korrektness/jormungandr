@@ -20,12 +20,15 @@ import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.toViperGoto
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
+import org.jetbrains.kotlin.formver.viper.ast.Type
+import org.jetbrains.kotlin.formver.viper.ast.Var
 
 /**
  * Standard context for linearization.
@@ -55,6 +58,8 @@ data class Linearizer(
         addDeclaration(variable.toLocalVarDecl())
         return variable
     }
+
+    override fun freshViperVar(type: Type): Var = Var(state.freshAnonVar(buildType { unit() }).name, type)
 
     override fun asBlock(action: LinearizationContext.() -> Unit): Stmt.Seqn {
         val newBuilder = SeqnBuilder(source)

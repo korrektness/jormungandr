@@ -36,13 +36,17 @@ data class GenericArrayGet(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitGenericArrayGet(this)
 }
 
-/** A reference store consumes the value's ownership; only owned receivers track the contents update. */
+/**
+ * A reference store consumes the value's ownership; only owned receivers track the contents update. [pointwise] selects
+ * the encoding of [PrimitiveArraySet.pointwise].
+ */
 data class GenericArraySet(
     val array: ExpEmbedding,
     val index: ExpEmbedding,
     val value: ExpEmbedding,
     val receiverOwned: Boolean,
     val arraySymbol: FirBasedSymbol<*>? = null,
+    val pointwise: Boolean = false,
 ) : ExpEmbedding {
     override val type = buildType { unit() }
     override fun children() = sequenceOf(array, index, value)

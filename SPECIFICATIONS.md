@@ -1118,6 +1118,16 @@ fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
 }
 ```
 
+`@PointwiseArrayWrites` on a function changes how the element writes in its body and its lambdas, on primitive and
+generic arrays and in `IntArray(n) { ... }`, reach the verifier, not what they mean. Without it a write replaces the
+contents by the sequence update. With it the contents become a fresh sequence that has the old length, holds the
+written value at the index and equals the old contents at every other index. The two encodings describe the same
+sequence. The pointwise one keeps the verifier's sequence update and slicing axioms out of the proof of single-element
+writes, which can make a function with many writes and quantified invariants verify where the update encoding times
+out. `fill` and `copyInto` on `Array<T>` keep their slicing encoding under the annotation. It also gives no
+multiset fact about the write, so a statement about `contents(arr)` across a write needs the update
+encoding (see Multisets).
+
 ### `Array<T>`
 
 A unique generic array stores a sequence of references. Indexed reads and writes,

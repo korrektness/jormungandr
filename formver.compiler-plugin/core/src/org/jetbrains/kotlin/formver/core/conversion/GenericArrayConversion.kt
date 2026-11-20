@@ -54,7 +54,7 @@ fun StmtConversionContext.convertGenericArrayElementAccess(call: FirFunctionCall
             .withInvariants(typeResolver) { proven = true; access = true }
     } else {
         warnIfUntrackedWrite(call, receiver, owned)
-        GenericArraySet(array, args[0], args[1], owned, receiver.arraySymbol())
+        GenericArraySet(array, args[0], args[1], owned, receiver.arraySymbol(), writesArraysPointwise)
     }
 }
 

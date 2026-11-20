@@ -54,6 +54,10 @@ class MethodConverter(
     override val trustsElementEquality: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.trustsElementEquality(session) == true
 
+    override val writesArraysPointwise: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.writesArraysPointwise(session) == true ||
+            parent?.writesArraysPointwise == true
+
     init {
         (signature as? NamedFunctionSignature)?.symbol?.let {
             if (it.wrapsIntArithmetic(session)) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_INT)

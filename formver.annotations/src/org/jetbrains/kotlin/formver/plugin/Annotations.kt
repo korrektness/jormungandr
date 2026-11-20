@@ -44,6 +44,11 @@ annotation class WrappingLongArithmetic
 @Retention(AnnotationRetention.BINARY)
 annotation class WrappingNarrowing
 
+/** Selects the pointwise encoding of array element writes; see "Primitive arrays" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class PointwiseArrayWrites
+
 /** Selects trusted executed element equality; see "Equality" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)

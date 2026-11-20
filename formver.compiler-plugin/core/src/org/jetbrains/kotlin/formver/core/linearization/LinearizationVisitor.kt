@@ -1150,10 +1150,7 @@ data class LinearizationVisitor(
             ctx.finishMove(e.value, source, targetOwned = false, target = null)
             if (path == null) return
             ctx.foldState?.openOwn(ctx, path)
-            val contents = array.fieldAccess(GenericArrayEmbedding.contentsField, ctx.source.asPosition)
-            ctx.addStatement {
-                Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
-            }
+            ctx.writeElement(array.fieldAccess(GenericArrayEmbedding.contentsField, ctx.source.asPosition), index, value, e.pointwise)
         }
     }
 
@@ -1348,10 +1345,7 @@ data class LinearizationVisitor(
             ctx.assertInBounds(array, index, e.arraySymbol)
             if (arrayPath == null) return
             ctx.foldState?.openOwn(ctx, arrayPath)
-            val contents = array.fieldAccess(contentsField, ctx.source.asPosition)
-            ctx.addStatement {
-                Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
-            }
+            ctx.writeElement(array.fieldAccess(contentsField, ctx.source.asPosition), index, value, e.pointwise)
         }
     }
 

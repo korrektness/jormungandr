@@ -49,6 +49,7 @@ interface MethodConversionContext : ProgramConversionContext {
     val wrapsLongArithmetic: Boolean
     val wrapsNarrowing: Boolean
     val trustsElementEquality: Boolean
+    val writesArraysPointwise: Boolean
     val defaultResolvedReturnTarget: ReturnTarget
     val isValidForForAllBlock: Boolean
 

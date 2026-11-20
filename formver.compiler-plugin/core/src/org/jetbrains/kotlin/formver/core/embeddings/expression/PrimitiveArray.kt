@@ -49,7 +49,8 @@ data class PrimitiveArrayGet(
 }
 
 /**
- * Writes [value] to element [index] of a modelled primitive array, as [PrimitiveArrayGet] reads it.
+ * Writes [value] to element [index] of a modelled primitive array, as [PrimitiveArrayGet] reads it. With [pointwise]
+ * the contents become a fresh sequence described by its length, the written element and the unchanged others.
  */
 data class PrimitiveArraySet(
     val array: ExpEmbedding,
@@ -57,6 +58,7 @@ data class PrimitiveArraySet(
     val value: ExpEmbedding,
     val receiverOwned: Boolean,
     val arraySymbol: FirBasedSymbol<*>? = null,
+    val pointwise: Boolean = false,
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

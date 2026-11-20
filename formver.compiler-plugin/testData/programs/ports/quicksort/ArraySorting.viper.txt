@@ -1,0 +1,543 @@
+/ArraySorting.kt: info: Generated Viper text for partition:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function midpoint(left: Ref, right: Ref): Ref
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(left) <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(right)
+{
+  plusInts(left, divInts(minusInts(right, left), intToRef(2)))
+}
+
+method partition(array: Ref, left: Ref, right: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(array), IntArray())
+  requires acc(IntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(IntArray_unique(array), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(left) < intFromRef(v_ret_0) &&
+    (intFromRef(v_ret_0) - 1 > 2147483647 ?
+      intFromRef(v_ret_0) - 1 - 4294967296 :
+      (intFromRef(v_ret_0) - 1 < -2147483648 ?
+        intFromRef(v_ret_0) - 1 + 4294967296 :
+        intFromRef(v_ret_0) - 1)) <=
+    intFromRef(right)
+{
+  var i: Ref
+  var j: Ref
+  var pivot: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  i := left
+  j := right
+  assert (intFromRef(left) + intFromRef(right) > 2147483647 ?
+      intFromRef(left) + intFromRef(right) - 4294967296 :
+      (intFromRef(left) + intFromRef(right) < -2147483648 ?
+        intFromRef(left) + intFromRef(right) + 4294967296 :
+        intFromRef(left) + intFromRef(right))) %
+    4294967296 \
+    2 >=
+    0
+  assert (intFromRef(left) + intFromRef(right) > 2147483647 ?
+      intFromRef(left) + intFromRef(right) - 4294967296 :
+      (intFromRef(left) + intFromRef(right) < -2147483648 ?
+        intFromRef(left) + intFromRef(right) + 4294967296 :
+        intFromRef(left) + intFromRef(right))) %
+    4294967296 \
+    2 <
+    arraySize(array)
+  unfold acc(IntArray_unique(array), write)
+  anon_4 := intToRef(array.contents[(intFromRef(left) + intFromRef(right) >
+    2147483647 ?
+      intFromRef(left) + intFromRef(right) - 4294967296 :
+      (intFromRef(left) + intFromRef(right) < -2147483648 ?
+        intFromRef(left) + intFromRef(right) + 4294967296 :
+        intFromRef(left) + intFromRef(right))) %
+    4294967296 \
+    2])
+  pivot := anon_4
+  fold acc(IntArray_unique(array), write)
+  label cont_0
+    invariant acc(IntArray_unique(array), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(j), intType())
+    invariant isSubtype(typeOf(pivot), intType())
+    invariant isSubtype(typeOf(array), IntArray())
+    invariant isSubtype(typeOf(left), intType())
+    invariant isSubtype(typeOf(right), intType())
+    invariant intFromRef(left) <= intFromRef(i) &&
+      (intFromRef(i) - 1 > 2147483647 ?
+        intFromRef(i) - 1 - 4294967296 :
+        (intFromRef(i) - 1 < -2147483648 ?
+          intFromRef(i) - 1 + 4294967296 :
+          intFromRef(i) - 1)) <=
+      intFromRef(right) &&
+      (intFromRef(left) - 1 > 2147483647 ?
+        intFromRef(left) - 1 - 4294967296 :
+        (intFromRef(left) - 1 < -2147483648 ?
+          intFromRef(left) - 1 + 4294967296 :
+          intFromRef(left) - 1)) <=
+      intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right) &&
+      (intFromRef(i) - 1 > 2147483647 ?
+        intFromRef(i) - 1 - 4294967296 :
+        (intFromRef(i) - 1 < -2147483648 ?
+          intFromRef(i) - 1 + 4294967296 :
+          intFromRef(i) - 1)) <=
+      (intFromRef(j) + 1 > 2147483647 ?
+        intFromRef(j) + 1 - 4294967296 :
+        (intFromRef(j) + 1 < -2147483648 ?
+          intFromRef(j) + 1 + 4294967296 :
+          intFromRef(j) + 1))
+    invariant (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+          anon_builtin_0 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+          intFromRef(left) <= anon_builtin_0 &&
+          anon_builtin_0 < intFromRef(i) ==>
+          array.contents[anon_builtin_0] <= intFromRef(pivot)))
+    invariant (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          intFromRef(j) < anon_builtin_1 &&
+          anon_builtin_1 <= intFromRef(right) ==>
+          array.contents[anon_builtin_1] >= intFromRef(pivot)))
+    invariant intFromRef(i) == intFromRef(left) &&
+      intFromRef(j) == intFromRef(right) ||
+      intFromRef(left) < intFromRef(i) && intFromRef(j) < intFromRef(right)
+    invariant (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+          anon_builtin_2 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          intFromRef(j) == intFromRef(right) &&
+          anon_builtin_2 == intFromRef(midpoint(left, right)) ==>
+          array.contents[anon_builtin_2] == intFromRef(pivot)))
+  anon_5 := leInts(i, j)
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_9: Ref
+    label cont_1
+      invariant acc(IntArray_unique(array), write)
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(pivot), intType())
+      invariant isSubtype(typeOf(array), IntArray())
+      invariant isSubtype(typeOf(left), intType())
+      invariant isSubtype(typeOf(right), intType())
+      invariant intFromRef(left) <= intFromRef(i) &&
+        (intFromRef(i) - 1 > 2147483647 ?
+          intFromRef(i) - 1 - 4294967296 :
+          (intFromRef(i) - 1 < -2147483648 ?
+            intFromRef(i) - 1 + 4294967296 :
+            intFromRef(i) - 1)) <=
+        intFromRef(right) &&
+        (intFromRef(left) - 1 > 2147483647 ?
+          intFromRef(left) - 1 - 4294967296 :
+          (intFromRef(left) - 1 < -2147483648 ?
+            intFromRef(left) - 1 + 4294967296 :
+            intFromRef(left) - 1)) <=
+        intFromRef(j) &&
+        intFromRef(j) <= intFromRef(right)
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+            anon_builtin_3 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+            intFromRef(left) <= anon_builtin_3 &&
+            anon_builtin_3 < intFromRef(i) ==>
+            intFromRef(pivot) >= array.contents[anon_builtin_3]))
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+            anon_builtin_4 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+            intFromRef(j) < anon_builtin_4 &&
+            anon_builtin_4 <= intFromRef(right) ==>
+            intFromRef(pivot) <= array.contents[anon_builtin_4]))
+      invariant intFromRef(j) == intFromRef(right) &&
+        intFromRef(left) <= intFromRef(i) &&
+        intFromRef(i) <= intFromRef(midpoint(left, right)) ||
+        intFromRef(j) < intFromRef(right) &&
+        intFromRef(left) < intFromRef(i) &&
+        intFromRef(i) <=
+        (intFromRef(j) + 1 > 2147483647 ?
+          intFromRef(j) + 1 - 4294967296 :
+          (intFromRef(j) + 1 < -2147483648 ?
+            intFromRef(j) + 1 + 4294967296 :
+            intFromRef(j) + 1))
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+            anon_builtin_5 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+            intFromRef(j) == intFromRef(right) &&
+            anon_builtin_5 == intFromRef(midpoint(left, right)) ==>
+            intFromRef(pivot) == array.contents[anon_builtin_5]))
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(array)
+    unfold acc(IntArray_unique(array), write)
+    anon_7 := intToRef(array.contents[intFromRef(i)])
+    anon_6 := ltInts(anon_7, pivot)
+    fold acc(IntArray_unique(array), write)
+    if (boolFromRef(anon_6)) {
+      var anon_0: Ref
+      anon_0 := i
+      i := plusInts(anon_0, intToRef(1))
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(pivot), intType())
+    assert isSubtype(typeOf(array), IntArray())
+    assert isSubtype(typeOf(left), intType())
+    assert isSubtype(typeOf(right), intType())
+    assert intFromRef(left) <= intFromRef(i) &&
+      (intFromRef(i) - 1 > 2147483647 ?
+        intFromRef(i) - 1 - 4294967296 :
+        (intFromRef(i) - 1 < -2147483648 ?
+          intFromRef(i) - 1 + 4294967296 :
+          intFromRef(i) - 1)) <=
+      intFromRef(right) &&
+      (intFromRef(left) - 1 > 2147483647 ?
+        intFromRef(left) - 1 - 4294967296 :
+        (intFromRef(left) - 1 < -2147483648 ?
+          intFromRef(left) - 1 + 4294967296 :
+          intFromRef(left) - 1)) <=
+      intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right)
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+          anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          intFromRef(left) <= anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(i) ==>
+          intFromRef(pivot) >= array.contents[anon_builtin_3]))
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+          anon_builtin_4 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          intFromRef(j) < anon_builtin_4 &&
+          anon_builtin_4 <= intFromRef(right) ==>
+          intFromRef(pivot) <= array.contents[anon_builtin_4]))
+    assert intFromRef(j) == intFromRef(right) &&
+      intFromRef(left) <= intFromRef(i) &&
+      intFromRef(i) <= intFromRef(midpoint(left, right)) ||
+      intFromRef(j) < intFromRef(right) && intFromRef(left) < intFromRef(i) &&
+      intFromRef(i) <=
+      (intFromRef(j) + 1 > 2147483647 ?
+        intFromRef(j) + 1 - 4294967296 :
+        (intFromRef(j) + 1 < -2147483648 ?
+          intFromRef(j) + 1 + 4294967296 :
+          intFromRef(j) + 1))
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+          anon_builtin_5 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+          intFromRef(j) == intFromRef(right) &&
+          anon_builtin_5 == intFromRef(midpoint(left, right)) ==>
+          intFromRef(pivot) == array.contents[anon_builtin_5]))
+    label cont_2
+      invariant acc(IntArray_unique(array), write)
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(pivot), intType())
+      invariant isSubtype(typeOf(array), IntArray())
+      invariant isSubtype(typeOf(left), intType())
+      invariant isSubtype(typeOf(right), intType())
+      invariant intFromRef(left) <= intFromRef(i) &&
+        (intFromRef(i) - 1 > 2147483647 ?
+          intFromRef(i) - 1 - 4294967296 :
+          (intFromRef(i) - 1 < -2147483648 ?
+            intFromRef(i) - 1 + 4294967296 :
+            intFromRef(i) - 1)) <=
+        intFromRef(right) &&
+        (intFromRef(left) - 1 > 2147483647 ?
+          intFromRef(left) - 1 - 4294967296 :
+          (intFromRef(left) - 1 < -2147483648 ?
+            intFromRef(left) - 1 + 4294967296 :
+            intFromRef(left) - 1)) <=
+        intFromRef(j) &&
+        intFromRef(j) <= intFromRef(right)
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+            anon_builtin_6 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+            intFromRef(left) <= anon_builtin_6 &&
+            anon_builtin_6 < intFromRef(i) ==>
+            array.contents[anon_builtin_6] <= intFromRef(pivot)))
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_7: Int ::anon_builtin_7 >= -2147483648 &&
+            anon_builtin_7 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+            intFromRef(j) < anon_builtin_7 &&
+            anon_builtin_7 <= intFromRef(right) ==>
+            array.contents[anon_builtin_7] >= intFromRef(pivot)))
+      invariant intFromRef(i) <= intFromRef(midpoint(left, right)) &&
+        intFromRef(midpoint(left, right)) <= intFromRef(j) ||
+        intFromRef(left) < intFromRef(i) &&
+        intFromRef(i) <=
+        (intFromRef(j) + 1 > 2147483647 ?
+          intFromRef(j) + 1 - 4294967296 :
+          (intFromRef(j) + 1 < -2147483648 ?
+            intFromRef(j) + 1 + 4294967296 :
+            intFromRef(j) + 1)) &&
+        intFromRef(j) < intFromRef(right)
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          (forall anon_builtin_8: Int ::anon_builtin_8 >= -2147483648 &&
+            anon_builtin_8 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+            intFromRef(i) == intFromRef(left) &&
+            anon_builtin_8 == intFromRef(midpoint(left, right)) ==>
+            array.contents[anon_builtin_8] == intFromRef(pivot)))
+      invariant (unfolding acc(IntArray_unique(array), write) in
+          array.contents[intFromRef(i)] >= intFromRef(pivot))
+    assert intFromRef(j) >= 0
+    assert intFromRef(j) < arraySize(array)
+    unfold acc(IntArray_unique(array), write)
+    anon_9 := intToRef(array.contents[intFromRef(j)])
+    anon_8 := gtInts(anon_9, pivot)
+    fold acc(IntArray_unique(array), write)
+    if (boolFromRef(anon_8)) {
+      var anon_1: Ref
+      anon_1 := j
+      j := minusInts(anon_1, intToRef(1))
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(pivot), intType())
+    assert isSubtype(typeOf(array), IntArray())
+    assert isSubtype(typeOf(left), intType())
+    assert isSubtype(typeOf(right), intType())
+    assert intFromRef(left) <= intFromRef(i) &&
+      (intFromRef(i) - 1 > 2147483647 ?
+        intFromRef(i) - 1 - 4294967296 :
+        (intFromRef(i) - 1 < -2147483648 ?
+          intFromRef(i) - 1 + 4294967296 :
+          intFromRef(i) - 1)) <=
+      intFromRef(right) &&
+      (intFromRef(left) - 1 > 2147483647 ?
+        intFromRef(left) - 1 - 4294967296 :
+        (intFromRef(left) - 1 < -2147483648 ?
+          intFromRef(left) - 1 + 4294967296 :
+          intFromRef(left) - 1)) <=
+      intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right)
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+          anon_builtin_6 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+          intFromRef(left) <= anon_builtin_6 &&
+          anon_builtin_6 < intFromRef(i) ==>
+          array.contents[anon_builtin_6] <= intFromRef(pivot)))
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_7: Int ::anon_builtin_7 >= -2147483648 &&
+          anon_builtin_7 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+          intFromRef(j) < anon_builtin_7 &&
+          anon_builtin_7 <= intFromRef(right) ==>
+          array.contents[anon_builtin_7] >= intFromRef(pivot)))
+    assert intFromRef(i) <= intFromRef(midpoint(left, right)) &&
+      intFromRef(midpoint(left, right)) <= intFromRef(j) ||
+      intFromRef(left) < intFromRef(i) &&
+      intFromRef(i) <=
+      (intFromRef(j) + 1 > 2147483647 ?
+        intFromRef(j) + 1 - 4294967296 :
+        (intFromRef(j) + 1 < -2147483648 ?
+          intFromRef(j) + 1 + 4294967296 :
+          intFromRef(j) + 1)) &&
+      intFromRef(j) < intFromRef(right)
+    assert (unfolding acc(IntArray_unique(array), write) in
+        (forall anon_builtin_8: Int ::anon_builtin_8 >= -2147483648 &&
+          anon_builtin_8 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+          intFromRef(i) == intFromRef(left) &&
+          anon_builtin_8 == intFromRef(midpoint(left, right)) ==>
+          array.contents[anon_builtin_8] == intFromRef(pivot)))
+    assert (unfolding acc(IntArray_unique(array), write) in
+        array.contents[intFromRef(i)] >= intFromRef(pivot))
+    if (intFromRef(i) <= intFromRef(j)) {
+      var tmp: Ref
+      var anon_10: Ref
+      var anon_11: Ref
+      var anon_12: Seq[Int]
+      var anon_13: Seq[Int]
+      var anon_15: Seq[Int]
+      var anon_16: Seq[Int]
+      var anon_2: Ref
+      var anon_3: Ref
+      assert intFromRef(i) >= 0
+      assert intFromRef(i) < arraySize(array)
+      unfold acc(IntArray_unique(array), write)
+      anon_10 := intToRef(array.contents[intFromRef(i)])
+      tmp := anon_10
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(array)
+      anon_11 := intToRef(array.contents[intFromRef(j)])
+      assert intFromRef(i) >= 0
+      assert intFromRef(i) < arraySize(array)
+      anon_12 := array.contents
+      array.contents := anon_13
+      inhale |array.contents| == |anon_12| &&
+        array.contents[intFromRef(i)] == intFromRef(anon_11) &&
+        (forall anon_14: Int ::
+          { array.contents[anon_14] }
+          { anon_12[anon_14] }
+          0 <= anon_14 && anon_14 < |anon_12| && anon_14 != intFromRef(i) ==>
+          array.contents[anon_14] == anon_12[anon_14])
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(array)
+      anon_15 := array.contents
+      array.contents := anon_16
+      inhale |array.contents| == |anon_15| &&
+        array.contents[intFromRef(j)] == intFromRef(tmp) &&
+        (forall anon_17: Int ::
+          { array.contents[anon_17] }
+          { anon_15[anon_17] }
+          0 <= anon_17 && anon_17 < |anon_15| && anon_17 != intFromRef(j) ==>
+          array.contents[anon_17] == anon_15[anon_17])
+      anon_2 := i
+      i := plusInts(anon_2, intToRef(1))
+      anon_3 := j
+      j := minusInts(anon_3, intToRef(1))
+      fold acc(IntArray_unique(array), write)
+    }
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(j), intType())
+  assert isSubtype(typeOf(pivot), intType())
+  assert isSubtype(typeOf(array), IntArray())
+  assert isSubtype(typeOf(left), intType())
+  assert isSubtype(typeOf(right), intType())
+  assert intFromRef(left) <= intFromRef(i) &&
+    (intFromRef(i) - 1 > 2147483647 ?
+      intFromRef(i) - 1 - 4294967296 :
+      (intFromRef(i) - 1 < -2147483648 ?
+        intFromRef(i) - 1 + 4294967296 :
+        intFromRef(i) - 1)) <=
+    intFromRef(right) &&
+    (intFromRef(left) - 1 > 2147483647 ?
+      intFromRef(left) - 1 - 4294967296 :
+      (intFromRef(left) - 1 < -2147483648 ?
+        intFromRef(left) - 1 + 4294967296 :
+        intFromRef(left) - 1)) <=
+    intFromRef(j) &&
+    intFromRef(j) <= intFromRef(right) &&
+    (intFromRef(i) - 1 > 2147483647 ?
+      intFromRef(i) - 1 - 4294967296 :
+      (intFromRef(i) - 1 < -2147483648 ?
+        intFromRef(i) - 1 + 4294967296 :
+        intFromRef(i) - 1)) <=
+    (intFromRef(j) + 1 > 2147483647 ?
+      intFromRef(j) + 1 - 4294967296 :
+      (intFromRef(j) + 1 < -2147483648 ?
+        intFromRef(j) + 1 + 4294967296 :
+        intFromRef(j) + 1))
+  assert (unfolding acc(IntArray_unique(array), write) in
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        intFromRef(left) <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(i) ==>
+        array.contents[anon_builtin_0] <= intFromRef(pivot)))
+  assert (unfolding acc(IntArray_unique(array), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        intFromRef(j) < anon_builtin_1 &&
+        anon_builtin_1 <= intFromRef(right) ==>
+        array.contents[anon_builtin_1] >= intFromRef(pivot)))
+  assert intFromRef(i) == intFromRef(left) &&
+    intFromRef(j) == intFromRef(right) ||
+    intFromRef(left) < intFromRef(i) && intFromRef(j) < intFromRef(right)
+  assert (unfolding acc(IntArray_unique(array), write) in
+      (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+        anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        intFromRef(j) == intFromRef(right) &&
+        anon_builtin_2 == intFromRef(midpoint(left, right)) ==>
+        array.contents[anon_builtin_2] == intFromRef(pivot)))
+  v_ret_0 := i
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ArraySorting.kt: info: Generated Viper text for quickSort:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method partition(array: Ref, left: Ref, right: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(array), IntArray())
+  requires acc(IntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(IntArray_unique(array), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(left) < intFromRef(ret_2) &&
+    (intFromRef(ret_2) - 1 > 2147483647 ?
+      intFromRef(ret_2) - 1 - 4294967296 :
+      (intFromRef(ret_2) - 1 < -2147483648 ?
+        intFromRef(ret_2) - 1 + 4294967296 :
+        intFromRef(ret_2) - 1)) <=
+    intFromRef(right)
+
+
+method quickSort(array: Ref, left: Ref, right: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(array), IntArray())
+  requires acc(IntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(IntArray_unique(array), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_index: Ref
+  l0_index := partition(array, left, right)
+  if (intFromRef(left) <
+  (let anon_builtin ==
+    (minusInts(l0_index, intToRef(1))) in
+    intFromRef(l0_index) - intFromRef(intToRef(1)))) {
+    var anon_0: Ref
+    anon_0 := quickSort(array, left, minusInts(l0_index, intToRef(1)))
+  }
+  if (intFromRef(l0_index) < intFromRef(right)) {
+    var anon_1: Ref
+    anon_1 := quickSort(array, l0_index, right)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ArraySorting.kt: info: Generated Viper text for midpoint:
+function midpoint(left: Ref, right: Ref): Ref
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(left) <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(right)
+{
+  plusInts(left, divInts(minusInts(right, left), intToRef(2)))
+}
