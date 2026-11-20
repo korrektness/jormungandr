@@ -746,6 +746,11 @@ val b = Node(2, null)             // shared: writes to b.next are dropped, with 
 val c: @Unique Node = Node(3, null)  // unique
 ```
 
+A property declared without a type at the top level or in an `object` is
+shared, whatever its initializer, since any function can reach it. `@Unique`
+written on its type makes it owned, and its moves are checked as for any
+unique path.
+
 A constructor call gives a shared object, and no facts about its fields, when the class lets `this` escape
 while it is constructed. That happens when a constructor body, an `init` block
 or a property initializer, of the class or of a superclass, uses `this` in executable code other

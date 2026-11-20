@@ -36,6 +36,10 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
@@ -85,6 +89,11 @@ private fun FirConstructorSymbol.constructsModelledType(session: FirSession): Bo
         .any { session.externalSpecifications?.modelClass(it) != null }
 }
 
+/**
+ * Resolves the uniqueness of [this] variable: as its written type states it, or, for a variable declared without a
+ * type, from its initializer. A property of the top level or of an object, declared without a type, is shared, since
+ * any function can reach it.
+ */
 context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {
     if (resolvedReturnType is ConeErrorType) return Uniqueness.Shared
@@ -97,7 +106,16 @@ fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {
         return resolvedReturnType.scopeUniqueness
     }
 
+    if (this is FirPropertySymbol && isGloballyReachable()) return Uniqueness.Shared
+
     return resolvedInitializer?.resolveInitializerUniqueness() ?: Uniqueness.Shared
+}
+
+context(context: CheckerContext)
+private fun FirPropertySymbol.isGloballyReachable(): Boolean {
+    if (isLocal) return false
+    val owner = callableId?.classId ?: return true
+    return (context.session.symbolProvider.getClassLikeSymbolByClassId(owner) as? FirRegularClassSymbol)?.classKind == ClassKind.OBJECT
 }
 
 /**

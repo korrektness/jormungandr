@@ -1,0 +1,145 @@
+/top_level_properties.kt: info: Generated Viper text for Counter:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_n := par_n
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/top_level_properties.kt: info: Generated Viper text for make:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method make() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures acc(Counter_unique(v_ret_0), write)
+{
+  v_ret_0 := con(intToRef(0))
+  fold acc(Counter_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/top_level_properties.kt: info: Generated Viper text for keep:
+field n: Ref
+
+method keep(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/top_level_properties.kt: info: Generated Viper text for read twice:
+field n: Ref
+
+method _read@20@twice() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_0: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_0), Counter())
+  anon_4 := anon_0
+  anon_3 := keep(anon_4)
+  inhale isSubtype(typeOf(anon_1), Counter())
+  anon_6 := anon_1
+  anon_5 := keep(anon_6)
+  inhale isSubtype(typeOf(anon_2), Counter())
+  v_ret_0 := havoc(intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method keep(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/top_level_properties.kt: info: Generated Viper text for Paths:
+field n: Ref
+
+function root(this: Ref): Ref
+  requires isSubtype(typeOf(this), Paths())
+  ensures isSubtype(typeOf(result), Counter())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Paths())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Paths()
+  anon := make()
+  inhale root(v_ret_0) == anon
+  fold acc(Paths_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Paths_unique(v_ret_0), write)
+}
+
+method make() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures acc(Counter_unique(ret_2), write)
+
+
+/top_level_properties.kt: info: Generated Viper text for read an object property twice:
+field n: Ref
+
+function root(this: Ref): Ref
+  requires isSubtype(typeOf(this), Paths())
+  ensures isSubtype(typeOf(result), Counter())
+
+
+method _read@20@an@20@object@20@property@20@twice() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_0: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_1: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_0), Paths())
+  anon_4 := anon_0
+  anon_3 := keep(root(anon_4))
+  inhale isSubtype(typeOf(anon_1), Paths())
+  anon_6 := anon_1
+  anon_5 := keep(root(anon_6))
+  inhale isSubtype(typeOf(anon_2), Paths())
+  anon_8 := anon_2
+  anon_7 := root(anon_8)
+  v_ret_0 := havoc(intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method keep(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
