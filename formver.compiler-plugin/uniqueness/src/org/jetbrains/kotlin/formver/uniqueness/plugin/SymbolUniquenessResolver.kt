@@ -5,6 +5,11 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.common.externalSpecifications
+import org.jetbrains.kotlin.fir.resolve.lookupSuperTypes
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
@@ -58,11 +63,26 @@ fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
     else if (isGenericArrayFactory()) Uniqueness.Unique
     else externalSpecificationSymbol(context.session).resolvedReturnType.scopeUniqueness
 
+/**
+ * Resolves the uniqueness of [this] constructor's result: as its `@ExternalConstructor` model declares it; `Shared`
+ * for another constructor of a class without source that is externally modelled or has such a supertype, since nothing
+ * establishes that model's laws and observers for the new object; otherwise unique unless the construction lets the
+ * object escape.
+ */
 context(context: CheckerContext)
 fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
     val model = externalSpecificationSymbol(context.session)
     return if (model != this) model.resolvedReturnType.scopeUniqueness
+    else if (origin != FirDeclarationOrigin.Source && constructsModelledType(context.session)) Uniqueness.Shared
     else if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
+}
+
+private fun FirConstructorSymbol.constructsModelledType(session: FirSession): Boolean {
+    val classSymbol = resolvedReturnType.toRegularClassSymbol(session) ?: return false
+    return lookupSuperTypes(classSymbol, lookupInterfaces = true, deep = true, useSiteSession = session)
+        .mapNotNull { it.toRegularClassSymbol(session) }
+        .plus(classSymbol)
+        .any { session.externalSpecifications?.modelClass(it) != null }
 }
 
 context(context: CheckerContext)

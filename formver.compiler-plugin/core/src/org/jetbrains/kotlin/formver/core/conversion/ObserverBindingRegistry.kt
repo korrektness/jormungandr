@@ -7,6 +7,10 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.resolve.lookupSuperTypes
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.scopes.ScopeFunctionRequiresPrewarm
@@ -43,11 +47,18 @@ class ObserverBindingRegistry {
         }
     }
 
+    /**
+     * Binds each registered class's observers to their implementations. A library class that binds an observer of its
+     * own also binds every observer of its supertypes' external models that its own members do not bind, since the
+     * models' contracts relate their observers.
+     */
     @OptIn(ScopeFunctionRequiresPrewarm::class)
     fun registerBindings(
         ctx: ProgramConversionContext,
         signature: (SymbolicName) -> NonInlineFunctionSignature,
     ) {
+        val bound = mutableSetOf<SymbolicName>()
+        var inherited = false
         // An impure implementation, such as an unmodeled library body, cannot define an observation, so the class
         // binds none: its observations stay opaque calls.
         fun bindObserver(
@@ -57,15 +68,22 @@ class ObserverBindingRegistry {
             dynamicDispatch: Boolean,
             hasImplementation: Boolean,
         ) {
-            if (implementation.isPure) ctx.typeResolver.bindObserver(type, observer, implementation, dynamicDispatch, hasImplementation)
+            if (!implementation.isPure || (inherited && observer in bound)) return
+            bound += observer
+            ctx.typeResolver.bindObserver(type, observer, implementation, dynamicDispatch, hasImplementation)
         }
         val visited = mutableSetOf<SymbolicName>()
         while (true) {
             val entry = classSymbols.entries.firstOrNull { it.key !in visited } ?: break
             visited += entry.key
             val type = ctx.typeResolver.lookupClassTypeEmbedding(entry.key)!!
-            context(ctx.checkerContext) {
-                val scope = entry.value.unsubstitutedScope()
+            bound.clear()
+            val scopes = listOf(entry.value) + (if (entry.value.origin == FirDeclarationOrigin.Source) emptyList()
+                else modelSupertypes(ctx, entry.value))
+            for ((index, owner) in scopes.withIndex()) context(ctx.checkerContext) {
+                inherited = index > 0
+                if (inherited && bound.isEmpty()) return@context
+                val scope = owner.unsubstitutedScope()
                 for (name in scope.getCallableNames()) {
                     scope.processPropertiesByName(name) { member ->
                         // Mutable properties are diagnosed by the observer checker and cannot supply a binding.
@@ -105,4 +123,11 @@ class ObserverBindingRegistry {
             }
         }
     }
+
+    /** The external models of [symbol]'s supertypes. */
+    private fun modelSupertypes(ctx: ProgramConversionContext, symbol: FirRegularClassSymbol): List<FirRegularClassSymbol> =
+        lookupSuperTypes(symbol, lookupInterfaces = true, deep = true, useSiteSession = ctx.session)
+            .mapNotNull { supertype ->
+                supertype.toRegularClassSymbol(ctx.session)?.let { ctx.session.externalSpecifications?.modelClass(it) }
+            }.distinct()
 }

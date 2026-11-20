@@ -2294,6 +2294,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("library_constructor_shared.kt")
+        public void testLibrary_constructor_shared() {
+          runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/library_constructor_shared.kt");
+        }
+
+        @Test
         @TestMetadata("list_extensions.kt")
         public void testList_extensions() {
           runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/list_extensions.kt");

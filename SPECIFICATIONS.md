@@ -268,6 +268,11 @@ Its type parameters and bounds match the dependency class's in order. Its non-nu
 model applied to the function's own type parameters in order, without projections or additional nullability.
 Its value parameters match the constructor by count, type and vararg status. The result's `@Unique` annotation is
 the model's ownership claim; a result without it is shared. Its contracts use the function-model machinery below.
+A library constructor without such a binding, of a bound class or one with a bound supertype (such as
+`LinkedHashMap()`), gives a shared object: nothing establishes the model's laws and observers for it, so calls on it
+are unchecked library calls.
+A library type that binds an observer of a bound supertype through its own members, such as `java.util.SequencedMap`,
+has every observer of that supertype's model.
 
 ```kotlin
 package models
