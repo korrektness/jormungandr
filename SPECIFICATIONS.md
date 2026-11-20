@@ -199,6 +199,20 @@ element held by the collection itself is contained. These specifications assume 
 equivalence relation consistent with `hashCode` that does not change while the element is in the collection
 (docs/soundness.md, "Element equality in collections").
 
+## Types
+
+A value has the facts of its Kotlin type: its class and whether it can be null. A type parameter gives only
+nullability. These types have no class of their own:
+
+- `T & Any` is `T` without null.
+- An intersection type, such as the `A & B` that a value of type `A` gets when smart cast to `B`, has every
+  component type.
+- An anonymous object type has its declared supertypes.
+- A captured type, such as the type of a read through a star projection, has its upper bounds: reading `value`
+  from `Box<*>`, where `Box<T : Number>`, gives a `Number`.
+- A Java platform type is its upper bound, which admits null: `String!` is `String?`, and the platform collection
+  type `(Mutable)List<String!>!` is `List<String!>?`.
+
 ## Preconditions and Postconditions
 
 ```kotlin

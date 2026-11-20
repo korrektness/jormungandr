@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
@@ -21,6 +22,13 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     type is ConeTypeParameterType -> {
         isNullable = type.canBeNull(converter.session); any()
     }
+    type is ConeDefinitelyNotNullType -> embedTypeWithBuilder(type.original).also { isNullable = false }
+    type is ConeFlexibleType -> embedTypeWithBuilder(type.upperBound)
+    type is ConeCapturedType -> embedComponents(
+        type.constructor.supertypes.orEmpty().ifEmpty { listOf(converter.session.builtinTypes.nullableAnyType.coneType) },
+        type.isMarkedNullable,
+    )
+    type is ConeIntersectionType -> embedComponents(type.intersectedTypes.toList(), markedNullable = false)
 
     type.isString -> {
         val stringClassSymbol = type.toClassSymbol(converter.session) as FirRegularClassSymbol
@@ -66,13 +74,10 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
         converter.typeResolver.markMultisetUsed()
         multiset()
     }
-    type is ConeClassLikeType -> {
-        val classLikeSymbol = type.toClassSymbol(converter.session)
-        if (classLikeSymbol is FirRegularClassSymbol) {
-            existing(converter.embedClass(classLikeSymbol))
-        } else {
-            unimplementedTypeEmbedding(type)
-        }
+    type is ConeClassLikeType -> when (val classLikeSymbol = type.toClassSymbol(converter.session)) {
+        is FirRegularClassSymbol -> existing(converter.embedClass(classLikeSymbol))
+        is FirAnonymousObjectSymbol -> embedComponents(classLikeSymbol.resolvedSuperTypes, type.isMarkedNullable)
+        else -> unimplementedTypeEmbedding(type)
     }
 
     else -> unimplementedTypeEmbedding(type)
@@ -93,6 +98,16 @@ internal fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirF
     }
     withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
     returnsUnique = context(converter.checkerContext) { symbol.returnsUnique() }
+}
+
+context(converter: ProgramConverter)
+private fun TypeBuilder.embedComponents(components: List<ConeKotlinType>, markedNullable: Boolean): PretypeBuilder {
+    val session = converter.session
+    isNullable = isNullable || markedNullable || components.all { it.canBeNull(session) }
+    val pretypes = components.map { converter.embedType(it.withNullability(false, session.typeContext)) }
+        .flatMap { listOf(it.pretype) + it.otherComponents }.filter { it != AnyTypeEmbedding }.distinct()
+    otherComponents = pretypes.drop(1)
+    return pretypes.firstOrNull()?.let { existing(it) } ?: any()
 }
 
 private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =

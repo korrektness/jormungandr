@@ -202,7 +202,11 @@ data class FunctionTypeName(val args: ListOfNames<TypeName>, val returns: TypeNa
     override val children: List<AnyName> = listOf(args, returns)
 }
 
-data class TypeName(val pretype: PretypeEmbedding, val nullable: Boolean) : SymbolicName {
+data class TypeName(
+    val pretype: PretypeEmbedding,
+    val nullable: Boolean,
+    val otherComponents: List<PretypeEmbedding> = emptyList(),
+) : SymbolicName {
     override val nameType: NameType = NameType.TypeCategory.GeneralType
     override val inViper: Boolean = false
 
@@ -210,6 +214,10 @@ data class TypeName(val pretype: PretypeEmbedding, val nullable: Boolean) : Symb
         candidateNoSeparator {
             if (nullable) +"N"
             +pretype.name
+            otherComponents.forEach {
+                +"And"
+                +it.name
+            }
         }
     }
 

@@ -16,11 +16,14 @@ package org.jetbrains.kotlin.formver.core.embeddings.types
 class TypeBuilder {
     var isNullable = false
 
+    /** The pretypes of an intersection besides the one [complete] builds; see [TypeEmbedding.otherComponents]. */
+    var otherComponents: List<PretypeEmbedding> = emptyList()
+
     fun complete(init: TypeBuilder.() -> PretypeBuilder): TypeEmbedding = completeWithPretypeBuilder(init())
 
     private fun completeWithPretypeBuilder(subBuilder: PretypeBuilder): TypeEmbedding {
         val subResult = subBuilder.complete()
-        return TypeEmbedding(subResult, TypeEmbeddingFlags(isNullable))
+        return TypeEmbedding(subResult, TypeEmbeddingFlags(isNullable), otherComponents)
     }
 
     fun unit() = UnitPretypeBuilder

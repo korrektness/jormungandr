@@ -19,9 +19,16 @@ import org.jetbrains.kotlin.formver.viper.mangled
  * Represents our representation of a Kotlin type.
  *
  * Due to name mangling, the mapping between Kotlin types and TypeEmbeddings must be 1:1.
+ *
+ * A value of an intersection type has [pretype] and every pretype in [otherComponents] as well; its subtype, pure and
+ * access invariants are those of all of them. Its runtime type and unique predicate are those of [pretype], and its
+ * name includes every component.
  */
-data class TypeEmbedding(val pretype: PretypeEmbedding, val flags: TypeEmbeddingFlags) : RuntimeTypeHolder,
-    TypeInvariantHolder {
+data class TypeEmbedding(
+    val pretype: PretypeEmbedding,
+    val flags: TypeEmbeddingFlags,
+    val otherComponents: List<PretypeEmbedding> = emptyList(),
+) : RuntimeTypeHolder, TypeInvariantHolder {
     /**
      * Name representing the type, used for distinguishing overloads.
      *
@@ -29,7 +36,7 @@ data class TypeEmbedding(val pretype: PretypeEmbedding, val flags: TypeEmbedding
      * represent these names, but we do it inline for now.
      */
     val name: TypeName
-        get() = TypeName(pretype, flags.nullable)
+        get() = TypeName(pretype, flags.nullable, otherComponents)
 
     /**
      * Get a nullable version of this type embedding.
@@ -49,14 +56,19 @@ data class TypeEmbedding(val pretype: PretypeEmbedding, val flags: TypeEmbedding
     override val runtimeType: Exp = flags.adjustRuntimeType(pretype.runtimeType)
 
     override fun accessInvariants(ctx: TypeResolver): List<TypeInvariantEmbedding> =
-        flags.adjustManyInvariants(pretype.accessInvariants(ctx))
+        flags.adjustManyInvariants((listOf(pretype) + otherComponents).flatMap { it.accessInvariants(ctx) })
 
-    override fun pureInvariants(): List<TypeInvariantEmbedding> = flags.adjustManyInvariants(pretype.pureInvariants())
+    override fun pureInvariants(): List<TypeInvariantEmbedding> =
+        flags.adjustManyInvariants((listOf(pretype) + otherComponents).flatMap { it.pureInvariants() })
 
     override fun uniquePredicateAccessInvariant(ctx: TypeResolver): TypeInvariantEmbedding? =
         flags.adjustOptionalInvariant(pretype.uniquePredicateAccessInvariant(ctx))
 
-    override fun subTypeInvariant(): TypeInvariantEmbedding = SubTypeInvariantEmbedding(this)
+    override fun subTypeInvariant(): TypeInvariantEmbedding =
+        if (otherComponents.isEmpty()) SubTypeInvariantEmbedding(this)
+        else AllInvariants(listOf(SubTypeInvariantEmbedding(this)) + otherComponents.map {
+            SubTypeInvariantEmbedding(TypeEmbedding(it, flags))
+        })
 
     context(nameResolver: NameResolver)
     override val debugTreeView: TreeView

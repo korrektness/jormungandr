@@ -31,6 +31,12 @@ data class SubTypeInvariantEmbedding(val type: RuntimeTypeHolder) : TypeInvarian
     override fun fillHole(exp: ExpEmbedding): ExpEmbedding = Is(exp, type)
 }
 
+/** Every one of [invariants]; [invariants] is not empty. */
+data class AllInvariants(val invariants: List<TypeInvariantEmbedding>) : TypeInvariantEmbedding {
+    override fun fillHole(exp: ExpEmbedding): ExpEmbedding =
+        invariants.map { it.fillHole(exp) }.reduce { left, right -> OperatorExpEmbeddings.And(left, right) }
+}
+
 data class IfNonNullInvariant(val invariant: TypeInvariantEmbedding) : TypeInvariantEmbedding {
     override fun fillHole(exp: ExpEmbedding): ExpEmbedding =
         OperatorExpEmbeddings.Implies(NeCmp(exp, NullLit), invariant.fillHole(exp.withType(exp.type.getNonNullable())))

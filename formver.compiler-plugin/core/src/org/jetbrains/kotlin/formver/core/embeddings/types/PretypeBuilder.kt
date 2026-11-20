@@ -63,6 +63,10 @@ class FunctionPretypeBuilder : PretypeBuilder {
         paramTypes.add(buildType { paramInit() })
     }
 
+    fun withParam(paramType: TypeEmbedding) {
+        paramTypes.add(paramType)
+    }
+
     fun withDispatchReceiver(receiverInit: TypeBuilder.() -> PretypeBuilder) {
         require(dispatchReceiverType == null) { "Receiver already set" }
         dispatchReceiverType = buildType { receiverInit() }

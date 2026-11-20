@@ -185,7 +185,7 @@ fun SpecifiedLambda.lift(): LiftedLambda {
         PlaceholderVariableEmbedding(ScopedName(name.asScope(), PretypeName("captureArg$index")), property.type, property.isUnique)
     }
     val callableType = buildFunctionPretype {
-        params.forEach { param -> withParam { isNullable = param.type.isNullable; existing(param.type.pretype) } }
+        params.forEach { param -> withParam(param.type) }
         withReturnType { existing(type) }
         returnsUnique = true
     }
@@ -245,7 +245,7 @@ private fun LiftedLambda.bindObserver(observer: FirNamedFunctionSymbol, value: F
     val target = ReturnTarget.createForPureFunction(returns)
     val callableType = buildFunctionPretype {
         withDispatchReceiver { existing(type) }
-        withReturnType { isNullable = returns.isNullable; existing(returns.pretype) }
+        withReturnType(returns)
     }
     val signature = SignatureWithTarget<FunctionSignature>(
         FunctionSignatureImpl(callableType, dispatch, null, emptyList(), target.variable, true), target,
@@ -266,9 +266,9 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
     val target = converter.returnTargetProducer.getFresh(inherited.returns.type)
     val callableType = buildFunctionPretype {
         withDispatchReceiver { existing(type) }
-        inherited.extensionReceiver?.let { withExtensionReceiver { isNullable = it.type.isNullable; existing(it.type.pretype) } }
-        inherited.params.forEach { withParam { isNullable = it.type.isNullable; existing(it.type.pretype) } }
-        withReturnType { isNullable = inherited.returns.type.isNullable; existing(inherited.returns.type.pretype) }
+        inherited.extensionReceiver?.let { withExtensionReceiver(it.type) }
+        inherited.params.forEach { withParam(it.type) }
+        withReturnType(inherited.returns.type)
         returnsUnique = inherited.callableType.returnsUnique
     }
     val named = SignatureWithTarget<FunctionSignature>(
