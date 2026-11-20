@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.UserFieldEmbedding
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.SubTypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
@@ -55,12 +56,12 @@ fun constructionStore(
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 context(program: ProgramConversionContext)
-private fun constructionFields(owner: FirRegularClassSymbol): List<FieldEmbedding> {
+private fun constructionFields(owner: FirRegularClassSymbol, withLateinit: Boolean = true): List<FieldEmbedding> {
     val fields = linkedSetOf<FieldEmbedding>()
     fun collect(symbol: FirRegularClassSymbol) {
         symbol.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(program.session) }
             .filter { it.classKind == ClassKind.CLASS }.forEach(::collect)
-        symbol.instancePropertySymbols.forEach { property ->
+        symbol.instancePropertySymbols.filter { withLateinit || !it.resolvedStatus.isLateInit }.forEach { property ->
             (program.embedProperty(property).getter as? BackingFieldGetter)?.field?.let { fields += it }
         }
     }
@@ -68,7 +69,24 @@ private fun constructionFields(owner: FirRegularClassSymbol): List<FieldEmbeddin
     return fields.toList()
 }
 
-/** Executes construction on one allocation, in delegation and declaration order. */
+/**
+ * The declared types of the fields of [parent]'s class and its ancestors when that class is a library class, except
+ * `lateinit` fields, which the library constructor may leave unassigned.
+ */
+context(program: ProgramConversionContext)
+private fun libraryFieldTypes(parent: FirConstructorSymbol?, receiver: VariableEmbedding): List<ExpEmbedding> {
+    val library = parent?.resolvedReturnType?.toRegularClassSymbol(program.session)
+        ?.takeIf { it.origin != FirDeclarationOrigin.Source } ?: return emptyList()
+    return constructionFields(library, withLateinit = false).map { field ->
+        InhaleDirect(SubTypeInvariantEmbedding(field.type).fillHole(PrimitiveFieldAccess(receiver, field)))
+    }
+}
+
+/**
+ * Executes construction on one allocation, in delegation and declaration order. A library superclass constructor's
+ * body is not converted: its classes' fields other than `lateinit` ones are assumed to hold values of their declared
+ * types.
+ */
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 context(program: ProgramConversionContext)
 fun constructionBody(
@@ -134,6 +152,8 @@ fun constructionBody(
                 parentArguments[key] = value
             }
             initialize(parent, parentArguments, delegated = true)
+        } else {
+            actions += libraryFieldTypes(parent, receiver)
         }
         val delegatesWithinClass = parent?.resolvedReturnType?.toRegularClassSymbol(program.session) == declaring
         for (declaration in declaring.fir.declarations.takeUnless { delegatesWithinClass }.orEmpty()) {

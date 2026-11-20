@@ -1,0 +1,111 @@
+/library_superclass_override.kt: info: Generated Viper text for Counter:
+field changes: Ref
+
+field value: Ref
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) &&
+    acc(v_ret_0.changes, write) &&
+    isSubtype(typeOf(v_ret_0.changes), intType()) &&
+    (isSubtype(typeOf(v_ret_0), ObservableProperty()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), nullable(anyType())))
+  ensures intFromRef(v_ret_0.changes) == 0
+{
+  v_ret_0 := new(value, changes)
+  inhale typeOf(v_ret_0) == Counter()
+  inhale isSubtype(typeOf(v_ret_0.value), nullable(anyType()))
+  v_ret_0.changes := intToRef(0)
+  fold acc(ObservableProperty_unique(v_ret_0), write)
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+  unfold acc(ObservableProperty_unique(v_ret_0), write)
+}
+
+/library_superclass_override.kt: info: Generated Viper text for Share:
+field each: Ref
+
+field value: Ref
+
+method con(total: Ref, parts: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(total), intType())
+  requires isSubtype(typeOf(parts), intType())
+  ensures isSubtype(typeOf(v_ret_0), Share())
+  ensures isSubtype(typeOf(v_ret_0), Share()) && acc(v_ret_0.each, write) &&
+    isSubtype(typeOf(v_ret_0.each), intType()) &&
+    (isSubtype(typeOf(v_ret_0), ObservableProperty()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), nullable(anyType())))
+  ensures intFromRef(v_ret_0.each) ==
+    (let anon ==
+      (divInts(total, parts)) in
+      (intFromRef(total) < 0 != intFromRef(parts) < 0 ?
+        -((intFromRef(total) < 0 ? -intFromRef(total) : intFromRef(total)) \
+        (intFromRef(parts) < 0 ? -intFromRef(parts) : intFromRef(parts))) :
+        (intFromRef(total) < 0 ? -intFromRef(total) : intFromRef(total)) \
+        (intFromRef(parts) < 0 ? -intFromRef(parts) : intFromRef(parts))))
+{
+  v_ret_0 := new(value, each)
+  inhale typeOf(v_ret_0) == Share()
+  inhale isSubtype(typeOf(v_ret_0.value), nullable(anyType()))
+  v_ret_0.each := divInts(total, parts)
+  fold acc(ObservableProperty_unique(v_ret_0), write)
+  fold acc(Share_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Share_unique(v_ret_0), write)
+  unfold acc(ObservableProperty_unique(v_ret_0), write)
+}
+
+/library_superclass_override.kt: info: Generated Viper text for makeCounter:
+field changes: Ref
+
+field value: Ref
+
+method con(start: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.changes, write) &&
+    isSubtype(typeOf(ret_1.changes), intType()) &&
+    (isSubtype(typeOf(ret_1), ObservableProperty()) &&
+    acc(ret_1.value, write) &&
+    isSubtype(typeOf(ret_1.value), nullable(anyType())))
+  ensures intFromRef(ret_1.changes) == 0
+
+
+method makeCounter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var c: Ref
+  c := con(intToRef(3))
+  fold acc(ObservableProperty_unique(c), write)
+  fold acc(Counter_unique(c), write)
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/library_superclass_override.kt: info: Generated Viper text for Named:
+field name: Ref
+
+field uses: Ref
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Named())
+  ensures isSubtype(typeOf(v_ret_0), Named()) && acc(v_ret_0.uses, write) &&
+    isSubtype(typeOf(v_ret_0.uses), intType()) &&
+    (isSubtype(typeOf(v_ret_0), LateBase()) && acc(v_ret_0.name, write) &&
+    isSubtype(typeOf(v_ret_0.name), stringType()))
+  ensures intFromRef(v_ret_0.uses) == 0
+{
+  v_ret_0 := new(name, uses)
+  inhale typeOf(v_ret_0) == Named()
+  v_ret_0.uses := intToRef(0)
+  fold acc(LateBase_unique(v_ret_0), write)
+  fold acc(Named_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Named_unique(v_ret_0), write)
+  unfold acc(LateBase_unique(v_ret_0), write)
+}

@@ -605,6 +605,8 @@ those members are held to the same rule. It may not pass `this` to another funct
 
 Constructor proofs allocate fresh field permissions, execute delegated construction, and execute property
 initializers and init blocks in declaration order. Secondary constructors execute phase-two bodies after delegation.
+Delegation to a library superclass constructor is not executed: the fields of that superclass and its ancestors,
+except `lateinit` fields, are assumed to hold values of their declared types.
 The returned representation and its opened-predicate description include the invariants. A violating proof reports
 `VERIFICATION_CONDITION_NOT_ESTABLISHED` naming the law. Delegated properties in law-bearing classes are rejected with `INVALID_LAW`.
 
