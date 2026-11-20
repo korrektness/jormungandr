@@ -30,7 +30,8 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.expressions.FirExpression
-import org.jetbrains.kotlin.fir.expressions.FirWhileLoop
+import org.jetbrains.kotlin.fir.expressions.FirDoWhileLoop
+import org.jetbrains.kotlin.fir.expressions.FirLoop
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
@@ -106,10 +107,11 @@ class FunctionUniquenessAnalysis internal constructor(
     fun ownsBefore(element: FirElement, path: Path): Boolean = owns(stateBefore(element), path)
 
     /**
-     * The state at the head of [loop]: before its condition, where the entry and back edges join. The state before
-     * [loop] itself is the entry state alone.
+     * The state at the head of [loop], where the entry and back edges join: before the condition of a `while` loop,
+     * before the body of a `do`-`while` loop. The state before [loop] itself is the entry state alone.
      */
-    fun stateAtLoopHead(loop: FirWhileLoop): UniquenessState = stateBefore(loop.condition)
+    fun stateAtLoopHead(loop: FirLoop): UniquenessState =
+        stateBefore(if (loop is FirDoWhileLoop) loop.block else loop.condition)
 
     /**
      * Whether [path] is `Unique` in [state]. With [rootOwned], the root of [path] counts as `Unique` unless [state] has

@@ -860,6 +860,115 @@ method violatingGetter(v_this: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
+/accessors.kt: info: Generated Viper text for topLevelGetter:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method topLevelGetter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  assert false
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/accessors.kt: info: Generated Viper text for topLevelViolatingSetter:
+method g_topLevelViolatingSetter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method s_topLevelViolatingSetter(arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/accessors.kt: info: Generated Viper text for topLevelViolatingSetter:
+method g_topLevelViolatingSetter() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method needsPositive(d: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(d), intType())
+  requires intFromRef(d) > 0
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method s_topLevelViolatingSetter(arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  var anon: Ref
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  anon := needsPositive(par_v)
+  label lbl_ret_1
+}
+
+/accessors.kt: info: Generated Viper text for topLevelGuarded:
+method g_topLevelGuarded() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  refute false
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method s_topLevelGuarded(arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/accessors.kt: info: Generated Viper text for topLevelGuarded:
+method g_topLevelGuarded() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method needsPositive(d: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(d), intType())
+  requires intFromRef(d) > 0
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method s_topLevelGuarded(arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  if (intFromRef(par_v) > 0) {
+    var anon: Ref
+    anon := needsPositive(par_v)
+  }
+  refute false
+  label lbl_ret_1
+}
+
+/accessors.kt: info: Generated Viper text for topLevelCustomSetter:
+method g_topLevelCustomSetter() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_topLevelCustomSetter(arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  refute false
+  label lbl_ret_1
+}
+
 /accessors.kt: info: Generated Viper text for setterCaller:
 field value: Ref
 
@@ -985,3 +1094,96 @@ method guardedGetter(v_this: Ref) returns (ret_3: Ref)
 method violatingGetter(v_this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this), anyType())
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/accessors.kt: info: Generated Viper text for topLevelCaller:
+method g_topLevelCustomSetter() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method g_topLevelGuarded() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method g_topLevelViolatingSetter() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method s_topLevelCustomSetter(arg_0: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_8), nullable(anyType()))
+
+
+method s_topLevelGuarded(arg_0: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method s_topLevelViolatingSetter(arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method topLevelCaller() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var read: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var defaultRead: Ref
+  var anon_0: Ref
+  var anon_5: Ref
+  anon_1 := s_topLevelViolatingSetter(intToRef(0))
+  anon_2 := s_topLevelGuarded(intToRef(0))
+  anon_3 := g_topLevelGuarded()
+  read := anon_3
+  inhale isSubtype(typeOf(read), intType())
+  anon_4 := s_topLevelCustomSetter(intToRef(1))
+  inhale isSubtype(typeOf(anon_0), intType())
+  defaultRead := anon_0
+  refute false
+  anon_5 := topLevelGetter()
+  v_ret_0 := anon_5
+  inhale isSubtype(typeOf(v_ret_0), intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method topLevelGetter() returns (ret_9: Ref)
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+/accessors.kt: info: Generated Viper text for topLevelReadsDiffer:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method g_topLevelGuarded() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method s_topLevelGuarded(arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method topLevelReadsDiffer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  var anon_0: Ref
+  var b: Ref
+  var anon_1: Ref
+  anon_0 := g_topLevelGuarded()
+  a := anon_0
+  inhale isSubtype(typeOf(a), intType())
+  anon_1 := g_topLevelGuarded()
+  b := anon_1
+  inhale isSubtype(typeOf(b), intType())
+  assert intFromRef(a) == intFromRef(b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.utils.isStatic
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
@@ -29,8 +30,10 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionS
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomGetter
+import org.jetbrains.kotlin.formver.core.embeddings.properties.TopLevelPropertyAccess
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.names.SpecialPackages
+import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 
 /**
  * Whether [callee], from [ProgramConversionContext.embedAnyFunction] or a property's getter, is an opaque library
@@ -94,16 +97,32 @@ private fun StmtConversionContext.reportOpaqueCall(
     reportWarning(Failure(FailureKind.OPAQUE_CALL, source, KotlinCondition.OpaqueCall(callee, reason)))
 }
 
+/**
+ * The access to the top-level [symbol] through calls of its accessors, when it is declared in source with a custom
+ * accessor. A default accessor of such a property is a method without a body.
+ */
+internal fun StmtConversionContext.topLevelAccessorAccess(symbol: FirPropertySymbol): TopLevelPropertyAccess? {
+    if (symbol.isLocal || symbol.dispatchReceiverType != null || symbol.receiverParameterSymbol != null) return null
+    if (symbol.origin != FirDeclarationOrigin.Source || !symbol.isCustom) return null
+    return TopLevelPropertyAccess(embedProperty(symbol), embedType(symbol.resolvedReturnType))
+}
+
 private fun FirPropertyAccessExpression.topLevelPropertySymbol(): FirPropertySymbol? =
     (calleeReference.symbol as? FirPropertySymbol)?.takeIf {
         !it.isLocal && boundDispatchReceiver == null && extensionReceiver == null
     }
 
-/** A property without a receiver is read as an unconstrained value of its type. */
+/**
+ * A property without a receiver is read through its getter when the getter is pure or is a custom getter in source,
+ * and as an unconstrained value of its type otherwise.
+ */
 @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
 private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropertySymbol, source: KtSourceElement?): ExpEmbedding {
     if (symbol.isPure(session) && symbol.getterSymbol?.fir?.body != null) {
         return embedAnyFunction(symbol.getterSymbol!!).insertCall(emptyList(), this)
+    }
+    if (symbol.getterSymbol?.fir !is FirDefaultPropertyGetter) {
+        topLevelAccessorAccess(symbol)?.let { return it.getValue(this) }
     }
     val reason = if (symbol.origin == FirDeclarationOrigin.Source) KotlinCondition.OpaqueReason.TOP_LEVEL_PROPERTY
         else KotlinCondition.OpaqueReason.READ_NO_MODEL

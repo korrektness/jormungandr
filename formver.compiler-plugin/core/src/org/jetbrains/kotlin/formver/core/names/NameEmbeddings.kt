@@ -89,6 +89,12 @@ fun CallableId.embedMemberPropertyName(scopePolicy: MemberEmbeddingPolicy): Prop
     return PropertyKotlinName(scope, callableName)
 }
 
+/** The name of an accessor of a top-level property, scoped by the property's package. */
+fun CallableId.embedTopLevelAccessorName(action: (Name) -> KotlinName): ScopedName = buildName {
+    embedScope(this@embedTopLevelAccessorName)
+    action(callableName)
+}
+
 fun CallableId.embedMemberGetterName(scopePolicy: MemberEmbeddingPolicy) =
     embedMemberPropertyNameBase(scopePolicy, ::GetterKotlinName)
 
@@ -126,6 +132,8 @@ fun FirValueParameterSymbol.embedName(): ScopedName = name.embedParameterName()
 fun FirPropertySymbol.embedGetterName(ctx: ProgramConversionContext): ScopedName =
     if (receiverParameterSymbol != null) {
         callableId!!.embedExtensionGetterName(ctx.embedFunctionPretype(getterSymbol!!))
+    } else if (callableId!!.classId == null) {
+        callableId!!.embedTopLevelAccessorName(::GetterKotlinName)
     } else {
         callableId!!.embedMemberGetterName(scopePolicy(this, ctx))
     }
@@ -137,6 +145,8 @@ fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName
                 setterSymbol ?: error("Embedding setter of read-only extension property.")
             )
         )
+    } else if (callableId!!.classId == null) {
+        callableId!!.embedTopLevelAccessorName(::SetterKotlinName)
     } else {
         callableId!!.embedMemberSetterName(scopePolicy(this, ctx))
     }

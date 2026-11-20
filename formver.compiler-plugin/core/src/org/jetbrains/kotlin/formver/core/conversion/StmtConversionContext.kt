@@ -231,11 +231,14 @@ fun StmtConversionContext.embedPropertyAccess(
                     ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
                 }
 
-                else -> embedLocalProperty(calleeSymbol)
+                else -> topLevelAccessorAccess(calleeSymbol) ?: embedLocalProperty(calleeSymbol)
             }
         }
 
         is FirBackingFieldSymbol -> {
+            if (calleeSymbol.propertySymbol.dispatchReceiverType == null) {
+                throw UnsupportedFeatureException(accessExpression.source, "the backing field of a top-level property")
+            }
             val field = embedBackingField(calleeSymbol.propertySymbol)
             val property = PropertyEmbedding(
                 BackingFieldGetter(field), BackingFieldSetter(field), hasDefaultBehaviour = true,
@@ -717,7 +720,7 @@ fun StmtConversionContext.mayThrow(): Boolean = activeCatchLabels.isNotEmpty() |
  * [headLabelName] names the head there. [exitGuard] is the [While]'s.
  */
 fun StmtConversionContext.convertLoop(
-    loop: FirWhileLoop,
+    loop: FirLoop,
     condition: ExpEmbedding,
     userInvariants: FirBlock?,
     boundInvariants: List<ExpEmbedding> = emptyList(),

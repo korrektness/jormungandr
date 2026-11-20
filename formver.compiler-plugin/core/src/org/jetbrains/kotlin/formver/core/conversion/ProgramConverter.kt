@@ -287,9 +287,6 @@ class ProgramConverter(
     fun registerAccessor(declaration: FirPropertyAccessor) {
         registeredSymbol = declaration.symbol
         val property = declaration.propertySymbol
-        if (property.receiverParameterSymbol == null && property.dispatchReceiverType == null) {
-            throw UnsupportedFeatureException(declaration.source, "a custom accessor of a top-level property")
-        }
         val embedding = embedProperty(property)
         val header = if (declaration.isGetter) (embedding.getter as? CustomGetter)?.getterMethod
             else (embedding.setter as? CustomSetter)?.setterMethod
@@ -679,7 +676,7 @@ class ProgramConverter(
         val model = symbol.externalSpecificationSymbol(session)
         if (model != symbol) return embedProperty(model).also { trust.recordBinding(symbol) }
         trust.recordAccessorOptOuts(symbol)
-        if (symbol.receiverParameterSymbol != null) {
+        if (symbol.receiverParameterSymbol != null || symbol.dispatchReceiverType == null) {
             rejectUnsupportedStdlibMember(symbol, session)
             return embedExtensionProperty(symbol)
         } else {
@@ -828,6 +825,7 @@ class ProgramConverter(
         } ?: call
     }
 
+    /** An extension or top-level property, read and written through calls of its accessors. */
     private fun embedExtensionProperty(symbol: FirPropertySymbol): PropertyEmbedding {
         if (symbol.isPure(session)) {
             val callable = embedAnyFunction(symbol.getterSymbol ?: error("Pure property has no getter")) as NamedCallableEmbedding
@@ -837,8 +835,11 @@ class ProgramConverter(
                 isVal = symbol.isVal, type = embedType(symbol.resolvedReturnType),
             )
         }
-        val getter = embedAccessorFunction(symbol, extensionGetterType(), defaultBehaviour = false)
-        val setter = symbol.isVar.ifTrue { embedAccessorFunction(symbol, extensionSetterType(), defaultBehaviour = false) }
+        val extension = symbol.receiverParameterSymbol != null
+        val getterType = if (extension) extensionGetterType() else topLevelGetterType()
+        val setterType = if (extension) extensionSetterType() else topLevelSetterType()
+        val getter = embedAccessorFunction(symbol, getterType, defaultBehaviour = false)
+        val setter = symbol.isVar.ifTrue { embedAccessorFunction(symbol, setterType, defaultBehaviour = false) }
 
         return PropertyEmbedding(
             CustomGetter(getter),

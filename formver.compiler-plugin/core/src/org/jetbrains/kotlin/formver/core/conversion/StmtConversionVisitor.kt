@@ -502,6 +502,22 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
     }
 
+    /**
+     * A `do`-`while` loop runs its body, then, at the label `continue` reaches, evaluates its condition in the body's
+     * scope and leaves when it is false. The invariants leading the body hold at the head, before the first run and
+     * after each run that continues, and are checked on every exit, as for a `while` loop.
+     */
+    override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop, data: StmtConversionContext): ExpEmbedding =
+        data.convertLoop(
+            doWhileLoop, BooleanLit(true), data.extractLoopInvariants(doWhileLoop.block.statements), emptyList(),
+            { loopHeadLabelName() },
+        ) {
+            val body = convert(doWhileLoop.block)
+            val condition = convert(doWhileLoop.condition).withType { boolean() }
+            val exit = If(condition, UnitLit, Goto(LabelLink(breakLabelName())), buildType { unit() })
+            blockOf(body, LabelExp(LabelEmbedding(continueLabelName())), exit)
+        }
+
     override fun visitBreakExpression(
         breakExpression: FirBreakExpression,
         data: StmtConversionContext,

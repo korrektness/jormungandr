@@ -467,13 +467,15 @@ Tests: `verification/control_flow/throw.kt::throwCaughtSkipsState`,
 
 ### Property reads
 
-A read of a top-level property, of a property that is not a backing field, or
-of a Java static field gives an arbitrary value of its type; a platform type is
-nullable. A reference to an `object` gives an arbitrary value of the object's
+A read of a top-level property without a custom getter, of a property that is
+not a backing field, or of a Java static field gives an arbitrary value of its
+type; a platform type is nullable. A read of a top-level property with a custom
+getter calls the getter: a `@Pure` getter with a body calls that pure function, and any other custom getter is called and its result is an arbitrary value of its type. A reference to an `object` gives an arbitrary value of the object's
 type at each read. A getter cannot write to state the caller owns, because
 locality rejects passing it an owned receiver.
 
 Tests: `verification/soundness/property_reads.kt`,
+`verification/soundness/accessors.kt::topLevelReadsDiffer`,
 `verification/java_static_calls.kt::staticFieldIsOpaque`,
 `verification/classes/companion_objects.kt::objectPropertyIsOpaque`.
 

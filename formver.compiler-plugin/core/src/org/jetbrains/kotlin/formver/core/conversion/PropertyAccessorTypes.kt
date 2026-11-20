@@ -16,6 +16,17 @@ internal fun propertyGetterType(receiverType: TypeEmbedding, returnType: TypeEmb
         withReturnType(returnType)
     }
 
+/** The type of a top-level property's getter. */
+internal fun topLevelGetterType(): FunctionTypeEmbedding = buildFunctionPretype {
+    withReturnType { nullableAny() }
+}
+
+/** The type of a top-level property's setter. */
+internal fun topLevelSetterType(): FunctionTypeEmbedding = buildFunctionPretype {
+    withParam { nullableAny() }
+    withReturnType { nullableAny() }
+}
+
 /** The type of an extension property's getter, which SnaKt treats as opaque. */
 internal fun extensionGetterType(): FunctionTypeEmbedding = buildFunctionPretype {
     withExtensionReceiver { nullableAny() }

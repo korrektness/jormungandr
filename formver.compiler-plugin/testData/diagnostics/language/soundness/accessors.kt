@@ -81,7 +81,27 @@ var GetterBody.guardedExtension: Int
     }
 
 val topLevelGetter: Int
-    <!UNSUPPORTED_FEATURE!><!VERIFICATION_SKIPPED!>get<!>() { verify(false); return 0 }<!>
+    <!VIPER_TEXT!>get<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>); return 0 }
+
+var topLevelViolatingSetter: Int
+    <!VIPER_TEXT!>get<!>() = 1
+    <!VIPER_TEXT!>set<!>(v) { <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>needsPositive(v)<!> }
+
+var topLevelGuarded: Int
+    <!VIPER_TEXT!>get<!>() {
+        refute(false)
+        return 1
+    }
+    <!VIPER_TEXT!>set<!>(v) {
+        if (v > 0) needsPositive(v)
+        refute(false)
+    }
+
+var topLevelCustomSetter: Int = 0
+    <!VIPER_TEXT!>set<!>(v) { refute(false) }
+
+var topLevelBackingField: Int = 0
+    <!VERIFICATION_SKIPPED!>get<!>() = <!UNSUPPORTED_FEATURE!>field<!>
 
 // Callers rely on the header only.
 fun <!VIPER_TEXT!>setterCaller<!>(s: SetterBody, g: GetterBody) {
@@ -93,4 +113,21 @@ fun <!VIPER_TEXT!>setterCaller<!>(s: SetterBody, g: GetterBody) {
 fun <!VIPER_TEXT!>getterCaller<!>(g: GetterBody): Long {
     refute(false)
     return g.violatingGetter.toLong() + g.guardedExtension.toLong()
+}
+
+fun <!VIPER_TEXT!>topLevelCaller<!>(): Int {
+    topLevelViolatingSetter = 0
+    topLevelGuarded = 0
+    val read = topLevelGuarded
+    topLevelCustomSetter = 1
+    val defaultRead = <!OPAQUE_CALL!>topLevelCustomSetter<!>
+    refute(false)
+    return topLevelGetter
+}
+
+// A read calls the getter, whose result is any value of its type.
+fun <!VIPER_TEXT!>topLevelReadsDiffer<!>() {
+    val a = topLevelGuarded
+    val b = topLevelGuarded
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>a == b<!>)
 }

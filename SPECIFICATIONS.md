@@ -28,7 +28,10 @@ classes.
 
 The body of a custom property getter or setter is verified too, against the contract its callers use, which states
 nothing beyond the Kotlin types of its receivers, parameters and result. A `@Pure` getter is a pure function instead.
-A custom accessor of a top-level property is an unsupported construct.
+A read of a top-level property with a custom getter calls the getter, and a write to a top-level property with a
+custom accessor calls the setter. A default setter of such a property is a method without a body, so later reads do
+not know the written value. An accessor of a top-level property that reads or writes `field` is an unsupported
+construct.
 
 The constructors, property initializers and `init` blocks of every class are verified as one construction against
 the constructor's header. A construction that SnaKt cannot convert, that breaks the construction discipline
@@ -43,8 +46,8 @@ A call that SnaKt translates without knowing what it computes gets an `OPAQUE_CA
 still verified. The call may throw, and its result is some value of its type. These are:
 - a call of a library function, or a read of a library property, that SnaKt gives no model: no built-in
   translation, external specification, library contract or Kotlin contract. Library operators are calls too;
-- a read of a top-level property other than a `const val` or a `@Pure` property with a getter body, and a read of a
-  Java static field.
+- a read of a top-level property other than a `const val`, a `@Pure` property with a getter body or a property with
+  a custom getter, and a read of a Java static field.
 
 A constructor of a library class and a function returning `Nothing` get no such warning.
 
@@ -578,9 +581,27 @@ range is empty. When the value one step past the last element is not an `Int`, a
 the loop leaves after the last iteration without stepping, as Kotlin does, and the invariants are not checked after
 it. The body may assume the variable lies within the range. A step that is not positive throws.
 
-A `loopInvariants` call that does not lead the body of a `while` loop, of a `for` loop described here or of a
-lambda passed to a collection template (Collection iteration) is an `UNSUPPORTED_FEATURE`, as in `for (c in s)` over a
-String.
+A `do`-`while` loop runs its body once, then again while its condition holds; `continue` goes to the condition,
+which may read the body's local variables. Its `loopInvariants` lead the body. They must hold when the loop is
+entered, after every run, the last included, and when the loop is exited by `break`. Code after a loop that its
+condition ends may assume the condition fails.
+
+```kotlin
+fun countTo(n: Int): Int {
+    preconditions { 1 <= n && n <= 100 }
+    var i = 0
+    do {
+        loopInvariants { 0 <= i && i <= n }
+        if (i < n) i++
+    } while (i < n)
+    verify(i == n)
+    return i
+}
+```
+
+A `loopInvariants` call that does not lead the body of a `while` or `do`-`while` loop, of a `for` loop described here
+or of a lambda passed to a collection template (Collection iteration) is an `UNSUPPORTED_FEATURE`, as in `for (c in s)`
+over a String.
 
 ## Universal Quantification
 
