@@ -1,0 +1,862 @@
+/shared_inferred_locals.kt: info: Generated Viper text for Counter:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_n := par_n
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/shared_inferred_locals.kt: info: Generated Viper text for Holder:
+field bf_item: Ref
+
+field n: Ref
+
+method con(par_item: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_item), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_item, write) &&
+    isSubtype(typeOf(v_ret_0.bf_item), Counter())
+  ensures v_ret_0.bf_item == par_item
+  ensures v_ret_0.bf_item == par_item
+{
+  v_ret_0 := new(bf_item)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_item := par_item
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
+/shared_inferred_locals.kt: info: Generated Viper text for make:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method make() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures acc(Counter_unique(v_ret_0), write)
+{
+  v_ret_0 := con(intToRef(0))
+  fold acc(Counter_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/shared_inferred_locals.kt: info: Generated Viper text for keep:
+field n: Ref
+
+method keep(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shared_inferred_locals.kt: info: Generated Viper text for peek:
+field n: Ref
+
+method peek(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/shared_inferred_locals.kt: info: Generated Viper text for read after passing to a shared parameter:
+field n: Ref
+
+method _read@20@after@20@passing@20@to@20@a@20@shared@20@parameter()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_c: Ref
+  var anon: Ref
+  l0_c := make()
+  anon := keep(l0_c)
+  v_ret_0 := havoc(intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for read after passing as a shared receiver:
+field n: Ref
+
+method _read@20@after@20@passing@20@as@20@a@20@shared@20@receiver()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var c: Ref
+  var anon: Ref
+  c := make()
+  anon := peek(c)
+  v_ret_0 := havoc(intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+method peek(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts before sharing hold:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@before@20@sharing@20@hold() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_c := make()
+  unfold acc(Counter_unique(l0_c), write)
+  l0_c.n := intToRef(1)
+  anon_0 := l0_c.n
+  assert intFromRef(anon_0) == 1
+  anon_1 := keep(l0_c)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts after sharing are lost:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@after@20@sharing@20@are@20@lost() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var anon: Ref
+  var k: Ref
+  l0_c := make()
+  unfold acc(Counter_unique(l0_c), write)
+  l0_c.n := intToRef(1)
+  anon := keep(l0_c)
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for shared on one branch:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _shared@20@on@20@one@20@branch(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), boolType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var k: Ref
+  l0_c := make()
+  unfold acc(Counter_unique(l0_c), write)
+  l0_c.n := intToRef(1)
+  fold acc(Counter_unique(l0_c), write)
+  if (boolFromRef(b)) {
+    var anon: Ref
+    anon := keep(l0_c)
+  }
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for shared in a loop:
+field n: Ref
+
+method _shared@20@in@20@a@20@loop(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var i: Ref
+  var anon_1: Ref
+  l0_c := make()
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(l0_c), Counter())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(k), intType())
+  anon_1 := ltInts(i, k)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    anon_2 := keep(l0_c)
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(l0_c), Counter())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(k), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for assigned a shared value:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _assigned@20@a@20@shared@20@value(other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(other), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var k: Ref
+  c := make()
+  unfold acc(Counter_unique(c), write)
+  c.n := intToRef(1)
+  c := other
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for alias of a shared local:
+field n: Ref
+
+method _alias@20@of@20@a@20@shared@20@local() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_c: Ref
+  var anon: Ref
+  var d: Ref
+  l0_c := make()
+  anon := keep(l0_c)
+  d := l0_c
+  v_ret_0 := havoc(intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts are lost after copying into an inferred local:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@are@20@lost@20@after@20@copying@20@into@20@an@20@inferred@20@local()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var d: Ref
+  var anon: Ref
+  var k: Ref
+  l0_c := make()
+  unfold acc(Counter_unique(l0_c), write)
+  l0_c.n := intToRef(1)
+  d := l0_c
+  anon := keep(d)
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts are lost after assigning to an inferred local:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@are@20@lost@20@after@20@assigning@20@to@20@an@20@inferred@20@local()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var d: Ref
+  var k: Ref
+  c := make()
+  unfold acc(Counter_unique(c), write)
+  c.n := intToRef(1)
+  d := make()
+  d := c
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts are lost after storing in a shared property:
+field item: Ref
+
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@are@20@lost@20@after@20@storing@20@in@20@a@20@shared@20@property(h: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var k: Ref
+  c := make()
+  unfold acc(Counter_unique(c), write)
+  c.n := intToRef(1)
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for facts are lost after storing in a shared local:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _facts@20@are@20@lost@20@after@20@storing@20@in@20@a@20@shared@20@local()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_c: Ref
+  var d: Ref
+  var anon: Ref
+  var k: Ref
+  l0_c := make()
+  unfold acc(Counter_unique(l0_c), write)
+  l0_c.n := intToRef(1)
+  d := l0_c
+  anon := keep(d)
+  k := havoc(intType())
+  assert intFromRef(k) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keep(par_c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_c), Counter())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method make() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for modelled member on a shared collection:
+function CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_1)) ==
+      element ==>
+      boolFromRef(result))
+
+
+function MutableListModel_c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function MutableListModel_c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, MutableListModel_c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2))))
+
+
+function MutableListModel_c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableListModel_c_ListModel_g_size(this)) == 0)
+
+
+function MutableListModel_c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(c_ListModel_g_size(this)) &&
+      equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(c_ListModel_g_size(this)) &&
+      c_ListModel_f_get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_2))))
+
+
+function c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_ListModel_g_size(this)) == 0)
+
+
+function c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _modelled@20@member@20@on@20@a@20@shared@20@collection()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_xs: Ref
+  var anon_10: Ref
+  var anon_0: Ref
+  l0_xs := emptyMutableListModel()
+  anon_10 := keepList(l0_xs)
+  inhale isSubtype(typeOf(anon_0), boolType())
+  v_ret_0 := (unfolding acc(MutableListModel_unique(l0_xs), wildcard) in
+      MutableListModel_c_ListModel_g_size(l0_xs))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method emptyMutableListModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), MutableListModel())
+  ensures acc(MutableListModel_unique(ret_1), write)
+  ensures (unfolding acc(MutableListModel_unique(ret_1), wildcard) in
+      intFromRef(MutableListModel_c_ListModel_g_size(ret_1)) == 0)
+
+
+method keepList(par_xs: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_xs), MutableListModel())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/shared_inferred_locals.kt: info: Generated Viper text for keepList:
+function CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_1)) ==
+      element ==>
+      boolFromRef(result))
+
+
+function MutableListModel_c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function MutableListModel_c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, MutableListModel_c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2))))
+
+
+function MutableListModel_c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableListModel_c_ListModel_g_size(this)) == 0)
+
+
+function MutableListModel_c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(c_ListModel_g_size(this)) &&
+      equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(c_ListModel_g_size(this)) &&
+      c_ListModel_f_get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_2))))
+
+
+function c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_ListModel_g_size(this)) == 0)
+
+
+function c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method keepList(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), MutableListModel())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

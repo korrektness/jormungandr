@@ -362,6 +362,25 @@ no ownership and no laws.
 
 Test: `verification/classes/untracked_write.kt::writeThroughSharedParameter,storeThroughSharedParameter`.
 
+### Shared inferred locals
+
+A local declared without a type that is passed to a parameter that neither
+owns nor borrows it, stored in a property or local that neither owns nor
+borrows it, or assigned a shared value, becomes shared instead of being
+reported. A local declared without a type that receives it is shared as well,
+so the two aliases are never both unique (SPECIFICATIONS.md, "Inferred
+locals"). The uniqueness checker records it as shared from that point, joining
+over control flow, and the encoding reads its `var` fields as havocked from
+there. Where a declaration requires a unique value, the checker compares
+against the flow-sensitive state of the local and rejects a shared one
+(`uniqueness/plugin/SharedInferredLocalChecker.kt` under
+`formver.compiler-plugin/uniqueness/src/org/jetbrains/kotlin/formver/`). A
+call on it to a library member whose model owns its receiver is the opaque
+library call, which assumes no contract.
+
+Tests: `ownership/inference/shared_inferred_locals.kt::facts after sharing are lost,shared on one branch,assigned a shared value,facts are lost after storing in a shared property,facts are lost after storing in a shared local,facts are lost after copying into an inferred local,facts are lost after assigning to an inferred local,modelled member on a shared collection`,
+`ownership/inference/shared_inferred_locals_rejected.kt`.
+
 ### Unique borrows
 
 After a call that borrows an owned value, the callee's verified postcondition

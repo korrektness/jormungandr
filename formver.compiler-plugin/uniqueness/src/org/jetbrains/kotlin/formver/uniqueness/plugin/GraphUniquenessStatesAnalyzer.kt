@@ -215,10 +215,23 @@ class GraphUniquenessStatesAnalyzer(
             val rightAccessState = initializer?.resolveAccessState()
             val isWhenSubject = leftSymbol.source?.kind == KtFakeSourceElementKind.WhenGeneratedSubject
             val movesInitializer = !isWhenSubject && declaration !in readOnlyContext
+            val sharesInitializer = movesInitializer &&
+                    (leftSymbol.hasInferredUniqueness || leftSymbol.resolveDeclaredUniqueness() == Uniqueness.Shared)
+            val source = initializer?.takeIf { sharesInitializer }?.wholeInferredLocal()
 
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
-                data.put(Unit, uniquenessState.assign(leftAccessState, rightAccessState, movesInitializer))
+                var newUniquenessState = uniquenessState.assign(leftAccessState, rightAccessState, movesInitializer)
+                if (initializer != null && leftSymbol.hasInferredUniqueness) {
+                    newUniquenessState = newUniquenessState.weakenInferredLocal(leftSymbol, initializer, uniquenessState)
+                }
+                if (source != null) {
+                    newUniquenessState = newUniquenessState.shareInferredLocal(source, uniquenessState)
+                    if (leftSymbol.hasInferredUniqueness) {
+                        newUniquenessState = newUniquenessState.shareInferredLocal(leftSymbol, newUniquenessState)
+                    }
+                }
+                data.put(Unit, newUniquenessState)
             }
         }
     }
@@ -237,9 +250,19 @@ class GraphUniquenessStatesAnalyzer(
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
                 val rightAccessState = rightValue.resolveAccessState()
-                data.put(Unit, uniquenessState.assign(leftAccessState, rightAccessState, movesSource = true) {
+                var newUniquenessState = uniquenessState.assign(leftAccessState, rightAccessState, movesSource = true) {
                     if (leftValue is FirQualifiedAccessExpression) it.passReceiversToAccessor(leftValue) else it
-                })
+                }
+                val target = leftValue.wholeInferredLocal()
+                if (target != null) {
+                    newUniquenessState = newUniquenessState.weakenInferredLocal(target, rightValue, uniquenessState)
+                }
+                val source = rightValue.wholeInferredLocal()
+                if (source != null && (target != null || leftValue.resolveUniqueness() == Uniqueness.Shared)) {
+                    newUniquenessState = newUniquenessState.shareInferredLocal(source, uniquenessState)
+                    if (target != null) newUniquenessState = newUniquenessState.shareInferredLocal(target, newUniquenessState)
+                }
+                data.put(Unit, newUniquenessState)
             }
         }
     }
@@ -298,8 +321,10 @@ class GraphUniquenessStatesAnalyzer(
         if (!call.movesArguments) return visitNode(node, data)
 
         with(context) {
+            val sharedLocals = call.sharedInferredLocals(callArgumentLocalitiesMapper)
             return data.transformValues { data ->
-                var newUniquenessState = data.getOrInitialize()
+                val before = data.getOrInitialize()
+                var newUniquenessState = before
 
                 // NOTE: `allReceiverExpressions` also includes context arguments.
                 for (receiver in call.allReceiverExpressions) {
@@ -308,6 +333,10 @@ class GraphUniquenessStatesAnalyzer(
 
                 for (argument in call.arguments) {
                     newUniquenessState = argument.resolveAccessState().move(newUniquenessState)
+                }
+
+                for (symbol in sharedLocals) {
+                    newUniquenessState = newUniquenessState.shareInferredLocal(symbol, before)
                 }
 
                 data.put(Unit, newUniquenessState)

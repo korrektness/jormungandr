@@ -15,6 +15,9 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
+import org.jetbrains.kotlin.formver.type.plugin.ExpressionTypeFactResolver
+import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.AssignmentTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.CallTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.PropertyTypeFactChecker
@@ -25,10 +28,28 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactMismatchExplainer
 import org.jetbrains.kotlin.formver.type.plugin.ValueParameterTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.removeCast
 
+/**
+ * The uniqueness an assignment or initializer requires of the value written to a variable. An inferred local accepts
+ * any value, and is weakened to what it holds.
+ */
+private object WrittenVariableUniquenessResolver : SymbolTypeFactResolver<Uniqueness, FirVariableSymbol<*>> {
+    context(context: CheckerContext)
+    override fun resolveTypeFactOf(symbol: FirVariableSymbol<*>): Uniqueness =
+        if (symbol.hasInferredUniqueness) Uniqueness.Shared else symbol.resolveUniqueness()
+}
+
+private object AssignmentTargetUniquenessResolver : ExpressionTypeFactResolver<Uniqueness> {
+    context(context: CheckerContext)
+    override fun resolveTypeFactOf(expression: FirExpression): Uniqueness {
+        return if (expression.wholeInferredLocal() != null) Uniqueness.Shared else expression.resolveUniqueness()
+    }
+}
+
 val AssignmentUniquenessChecker = AssignmentTypeFactChecker(
     kind = MppCheckerKind.Common,
     typeFactJudgment = UniquenessJudgment,
     expressionTypeFactResolver = ExpressionUniquenessResolver,
+    leftTypeFactResolver = AssignmentTargetUniquenessResolver,
     diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
     mismatchExplainer = SharedConstructionExplainer,
 )
@@ -47,7 +68,7 @@ val PropertyUniquenessChecker = PropertyTypeFactChecker(
     kind = MppCheckerKind.Common,
     typeFactJudgment = UniquenessJudgment,
     expressionTypeFactResolver = ExpressionUniquenessResolver,
-    variableTypeFactResolver = VariableUniquenessResolver,
+    variableTypeFactResolver = WrittenVariableUniquenessResolver,
     diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
     mismatchExplainer = SharedConstructionExplainer,
 )

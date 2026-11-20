@@ -708,7 +708,8 @@ fun make(v: Int): @Unique Node = Node(v, null)
 ```
 
 An inferred local is unique exactly when its initializer is a unique path or a
-call to a function returning `@Unique`. A constructor call does not count, so
+call to a function returning `@Unique`, until it is used as a shared value (see
+[Inferred locals](#inferred-locals)). A constructor call does not count, so
 a fresh object that should be owned needs the annotation:
 
 ```kotlin
@@ -806,6 +807,51 @@ A conditional, `when` or block moves a fresh unique value when every branch
 yields one or leaves abnormally (`throw`, `return`, `break` or `continue`).
 A call returning `Nothing` as an arm of an owned conditional move is rejected,
 including calls with an `@Unique` result annotation.
+
+### Inferred locals
+
+A local declared without a type takes its uniqueness from its initializer, as
+described in [Annotations](#annotations). Its author did not ask for that
+uniqueness, so where the local is used as a shared value SnaKt weakens it
+instead of reporting an error:
+
+- Passing the local itself to a parameter or receiver that is neither
+  `@Unique` nor `@Borrowed`, or storing it in a property or local that is
+  neither `@Unique` nor `@Borrowed`, makes it shared from that point on
+  instead of moving it. The callee or the object may keep it. A local
+  declared without a type that receives it, as in `val d = c`, is shared
+  too. Passing or storing a property of the local, such as `c.next`, still
+  moves that property.
+- Assigning the local a shared value makes it shared from that point on.
+  Assigning it a borrowed value makes it borrowed, and the rules for
+  `@Borrowed` values apply.
+
+Where control flow joins, the local is shared if it is shared on any incoming
+path. Through a shared local every `var` read yields an arbitrary value, as
+through any shared path. A shared local is still rejected where a declaration
+requires a unique value: as the argument of a `@Unique` parameter, as the
+result of a function returning `@Unique`, or as the value of a `@Unique` local
+or property. A call on it to a library member whose model owns its receiver is
+the opaque library call (see [External specifications](#external-specifications)).
+A local whose type is written, such as `val c: @Unique Counter`,
+follows the rules for moves above.
+
+```kotlin
+fun keep(c: Counter) { }
+
+fun f(): Int {
+    val c = make()                // unique
+    c.n = 1
+    keep(c)                       // c is shared from here on
+    return c.n                    // accepted; the value is unknown
+}
+
+fun g() {
+    val c = make()
+    keep(c)
+    consume(c)                    // error: consume requires a unique value
+}
+```
 
 ### Inline functions and default arguments
 
