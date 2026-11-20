@@ -12,7 +12,7 @@ fun main() {
     generateTestGroupSuiteWithJUnit5 {
         testGroup(
             testDataRoot = "formver.compiler-plugin/locality/testData",
-            testsRoot = "formver.compiler-plugin/locality/test-gen"
+            testsRoot = "formver.compiler-plugin/locality/build/generated/test-gen"
         ) {
             testClass<AbstractLocalityDiagnosticTest> {
                 model("diagnostics")

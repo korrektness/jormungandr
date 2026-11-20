@@ -14,7 +14,7 @@ sourceSets {
         java.setSrcDirs(listOf("test-fixtures"))
     }
     test {
-        java.setSrcDirs(listOf("test", "test-gen"))
+        java.setSrcDirs(listOf("test", "build/generated/test-gen"))
         resources.setSrcDirs(listOf("testData"))
     }
 }
@@ -38,7 +38,7 @@ dependencies {
 }
 
 idea {
-    module.generatedSourceDirs.add(projectDir.resolve("test-gen"))
+    module.generatedSourceDirs.add(projectDir.resolve("build/generated/test-gen"))
 }
 
 fun Test.configureFormverTest() {
@@ -69,12 +69,16 @@ val generateTests by tasks.registering(JavaExec::class) {
     inputs.dir(layout.projectDirectory.dir("testData"))
         .withPropertyName("testData")
         .withPathSensitivity(PathSensitivity.RELATIVE)
-    outputs.dir(layout.projectDirectory.dir("test-gen"))
+    outputs.dir(layout.buildDirectory.dir("generated/test-gen"))
         .withPropertyName("generatedTests")
 
     classpath = sourceSets.testFixtures.get().runtimeClasspath
     mainClass.set("org.jetbrains.kotlin.formver.plugin.GenerateTestsKt")
     workingDir = rootDir
+}
+
+tasks.compileTestKotlin {
+    dependsOn(generateTests)
 }
 
 // Run locality checks

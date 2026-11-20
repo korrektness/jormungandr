@@ -18,7 +18,7 @@ sourceSets {
         java.setSrcDirs(listOf("test-fixtures"))
     }
     test {
-        java.setSrcDirs(listOf("test-gen"))
+        java.setSrcDirs(listOf("build/generated/test-gen"))
         resources.setSrcDirs(listOf("testData", "test-resources"))
     }
 }
@@ -43,7 +43,7 @@ handwrittenTiers.getValue("programs").apply {
 }
 
 idea {
-    module.generatedSourceDirs.add(projectDir.resolve("test-gen"))
+    module.generatedSourceDirs.add(projectDir.resolve("build/generated/test-gen"))
 }
 
 val annotationsRuntimeClasspath: Configuration by configurations.creating { isTransitive = false }
@@ -232,7 +232,7 @@ val generateTests by tasks.registering(JavaExec::class) {
     inputs.dir(layout.projectDirectory.dir("testData"))
         .withPropertyName("testData")
         .withPathSensitivity(PathSensitivity.RELATIVE)
-    outputs.dir(layout.projectDirectory.dir("test-gen"))
+    outputs.dir(layout.buildDirectory.dir("generated/test-gen"))
         .withPropertyName("generatedTests")
 
     classpath = sourceSets.testFixtures.get().runtimeClasspath

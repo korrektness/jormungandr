@@ -478,8 +478,6 @@ report "diagnostic markers changed:" "$marker_cap" \
     'formver.compiler-plugin/testData/diagnostics/*.kt' \
     'formver.compiler-plugin/testData/programs/*.kt' \
     'formver.compiler-plugin/locality/testData/*.kt'
-report "regenerated test registration; commit as-is:" 0 \
-    '*TestGenerated.java'
 
 echo
 echo "=== check-testdata.sh ==="

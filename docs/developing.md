@@ -65,7 +65,9 @@ checking, Viper consistency checking) and verification:
 Without a pattern, selection covers all generated fixtures. These modes check
 goldens; they do not regenerate them. The driver also selects locality fixtures,
 which have no verification stage. `sourceSets.test` contains generated runners
-in `test-gen`; handwritten tiers have separate tasks and discovery roots.
+in `build/generated/test-gen`, which the `generateTests` task writes from
+`testData` before the tests compile; handwritten tiers have separate tasks and
+discovery roots.
 
 For regeneration and its outcome-change safeguard, see
 [Regenerating](agents-dev.md#regenerating).
