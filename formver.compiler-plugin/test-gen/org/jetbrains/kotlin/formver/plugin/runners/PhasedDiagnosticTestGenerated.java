@@ -2793,6 +2793,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
           runTest("formver.compiler-plugin/testData/programs/ports/datetime/LongClamp.kt");
         }
       }
+
+      @Nested
+      @TestMetadata("formver.compiler-plugin/testData/programs/ports/quicksort")
+      @TestDataPath("$PROJECT_ROOT")
+      public class Quicksort {
+        @Test
+        public void testAllFilesPresentInQuicksort() {
+          KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/ports/quicksort"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        }
+
+        @Test
+        @TestMetadata("partitionMidpointOverflow.kt")
+        public void testPartitionMidpointOverflow() {
+          runTest("formver.compiler-plugin/testData/programs/ports/quicksort/partitionMidpointOverflow.kt");
+        }
+      }
     }
   }
 }

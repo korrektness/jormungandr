@@ -66,6 +66,18 @@ class PortCorrespondenceTest {
     }
 
     @Test
+    fun `quicksort fixtures match the vendored ArraySorting source and their labelled deviations`() = checker { checker ->
+        val upstream = data.resolve("upstream/kotlin-v2.3.0/ArraySorting.kt").readBytes()
+        val hash = MessageDigest.getInstance("SHA-256").digest(upstream).joinToString("") { "%02x".format(it) }
+        assertEquals("f2c3a298874ee7efeb1a79ce6eae49a38318eb63a6413be3463d0c3512b9b0a9", hash)
+        val directory = data.resolve("programs/ports/quicksort")
+        for (name in listOf("partitionMidpointOverflow")) {
+            val source = checker.portSource(directory.resolve("$name.kt").readText())
+            checker.checkPort(upstream.toString(Charsets.UTF_8), source, directory.resolve("$name.port.diff").readText())
+        }
+    }
+
+    @Test
     fun `real port matches labelled deviations and retained assignment sites`() {
         val port = data.resolve("programs/ports/arraydeque/ArrayDeque.kt")
         assumeTrue(port.exists(), "ArrayDeque port is absent")

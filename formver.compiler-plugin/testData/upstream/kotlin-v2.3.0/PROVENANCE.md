@@ -1,4 +1,6 @@
-# ArrayDeque source provenance
+# Kotlin v2.3.0 stdlib source provenance
+
+## ArrayDeque
 
 Upstream: https://github.com/JetBrains/kotlin
 Tag: v2.3.0
@@ -7,7 +9,7 @@ Source: libraries/stdlib/src/kotlin/collections/ArrayDeque.kt
 SHA-256: 1369874f80ec51c6c484276aacc53fe4a401870b1de0e907cc1217278d6c40ae
 License: Apache-2.0. LICENSE.txt and NOTICE.txt are copied from license/ at this tag.
 
-## Residual trust
+### Residual trust
 
 The stripped diff is assumed behaviour-preserving for its listed hunks:
 
@@ -41,3 +43,22 @@ The proof is of the port, not of the shipped class.
 The committed ArrayDeque.port.diff is the deviation list; this file labels its
 residual trust. See docs/targets/arraydeque-plan.md, “D2, D-6 and residual trust:
 port correspondence”, for the correspondence check and the scope of the proof.
+
+## ArraySorting
+
+Upstream: https://github.com/JetBrains/kotlin
+Tag: v2.3.0
+Commit: f95cb2f7693a15966fd8fd9b1d78d440545e7b66
+Source: libraries/stdlib/native-wasm/src/kotlin/collections/ArraySorting.kt
+SHA-256: f2c3a298874ee7efeb1a79ce6eae49a38318eb63a6413be3463d0c3512b9b0a9
+License: Apache-2.0, as above.
+
+The fixtures in programs/ports/quicksort port the IntArray `partition` and
+`quickSort`. Each fixture's `.port.diff` is its deviation list, checked by
+PortCorrespondenceTest. Labels in those diffs:
+
+- D-1: test directives, and the formver import in place of the stdlib package.
+- D-7: removed members: the merge sorts and every element type except IntArray.
+
+Erased specification includes the `@Unique @Borrowed` ownership annotations on
+`array`. The proof is of the port, not of the shipped function.
