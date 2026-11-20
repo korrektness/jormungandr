@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import java.math.BigInteger
 
 interface LiteralEmbedding : ExpEmbedding {
     val value: Any?
@@ -44,6 +45,12 @@ data class ShortLit(override val value: Short) : LiteralEmbedding {
 data class ByteLit(override val value: Byte) : LiteralEmbedding {
     override val type = buildType { byte() }
     override val debugName = "Byte"
+}
+
+/** A literal of the unsigned integer [kind]; [value] is its mathematical value. */
+data class UnsignedLit(val kind: IntegerKind, override val value: BigInteger) : LiteralEmbedding {
+    override val type = kind.type
+    override val debugName = kind.name
 }
 
 data class BooleanLit(

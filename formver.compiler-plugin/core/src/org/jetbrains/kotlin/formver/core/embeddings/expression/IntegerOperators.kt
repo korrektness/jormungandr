@@ -6,14 +6,23 @@ import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.viper.ast.*
+import java.math.BigInteger
 
-/** Kotlin overload widths, including promotion of Byte and Short arithmetic to Int. */
-enum class IntegerKind(val lower: Long, val upper: Long) {
+/** Kotlin overload widths, including promotion of Byte and Short arithmetic to Int and of UByte and UShort to UInt. */
+enum class IntegerKind(val lower: BigInteger, val upper: BigInteger) {
     Byte(kotlin.Byte.MIN_VALUE.toLong(), kotlin.Byte.MAX_VALUE.toLong()),
     Short(kotlin.Short.MIN_VALUE.toLong(), kotlin.Short.MAX_VALUE.toLong()),
     Int(kotlin.Int.MIN_VALUE.toLong(), kotlin.Int.MAX_VALUE.toLong()),
     Long(kotlin.Long.MIN_VALUE, kotlin.Long.MAX_VALUE),
-    Char(kotlin.Char.MIN_VALUE.code.toLong(), kotlin.Char.MAX_VALUE.code.toLong());
+    Char(kotlin.Char.MIN_VALUE.code.toLong(), kotlin.Char.MAX_VALUE.code.toLong()),
+    UByte(0, kotlin.UByte.MAX_VALUE.toLong()),
+    UShort(0, kotlin.UShort.MAX_VALUE.toLong()),
+    UInt(0, kotlin.UInt.MAX_VALUE.toLong()),
+    ULong(BigInteger.ZERO, BigInteger(kotlin.ULong.MAX_VALUE.toString()));
+
+    constructor(lower: kotlin.Long, upper: kotlin.Long) : this(BigInteger.valueOf(lower), BigInteger.valueOf(upper))
+
+    val unsigned get() = this in listOf(UByte, UShort, UInt, ULong)
 
     val pretype: PretypeEmbedding
         get() = when (this) {
@@ -22,10 +31,15 @@ enum class IntegerKind(val lower: Long, val upper: Long) {
             Int -> IntTypeEmbedding
             Long -> LongTypeEmbedding
             Char -> CharTypeEmbedding
+            UByte -> UByteTypeEmbedding
+            UShort -> UShortTypeEmbedding
+            UInt -> UIntTypeEmbedding
+            ULong -> ULongTypeEmbedding
         }
     val type get() = pretype.asTypeEmbedding()
 
-    fun range(value: Exp) = IntegerBounds.between(value, lower, upper)
+    fun contains(other: IntegerKind) = lower <= other.lower && other.upper <= upper
+    fun range(value: Exp) = Exp.And(value ge IntegerBounds.literal(lower), value le IntegerBounds.literal(upper))
     fun checkedRange(value: Exp, operation: String): Exp {
         val bounds = range(value) as Exp.And
         val info = SourceRole.Arithmetic(KotlinCondition.IntegerOverflow(operation, name, lower.toString(), upper.toString())).asInfo
@@ -44,12 +58,13 @@ object IntegerOperators {
         return Exp.TernaryExp(Exp.NeCmp(a lt 0.toExp(), b lt 0.toExp()), Exp.Minus(q), q)
     }
 
-    private fun binaryValue(operation: String, a: Exp, b: Exp): Exp = when (operation) {
+    /** Kotlin's [operation] on [a] and [b]; [unsigned] operands are non-negative, where Viper's `\` and `%` agree with Kotlin's. */
+    private fun binaryValue(operation: String, a: Exp, b: Exp, unsigned: Boolean = false): Exp = when (operation) {
+        "div" -> if (unsigned) Exp.Div(a, b) else quotient(a, b)
+        "rem" -> if (unsigned) Exp.Mod(a, b) else Exp.Sub(a, Exp.Mul(quotient(a, b), b))
         "plus" -> Exp.Add(a, b)
         "minus" -> Exp.Sub(a, b)
         "times" -> Exp.Mul(a, b)
-        "div" -> quotient(a, b)
-        "rem" -> Exp.Sub(a, Exp.Mul(quotient(a, b), b))
         "compareTo" -> Exp.TernaryExp(a lt b, (-1).toExp(), Exp.TernaryExp(a gt b, 1.toExp(), 0.toExp()))
         else -> error("Unknown integer operation $operation")
     }
@@ -62,9 +77,10 @@ object IntegerOperators {
     }
 
     val binary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = buildMap {
-        val signed = IntegerKind.entries.filter { it != IntegerKind.Char }
-        for (a in signed) for (b in signed) {
-            val promoted = if (a == IntegerKind.Long || b == IntegerKind.Long) IntegerKind.Long else IntegerKind.Int
+        val signed = listOf(IntegerKind.Byte, IntegerKind.Short, IntegerKind.Int, IntegerKind.Long)
+        val unsigned = IntegerKind.entries.filter { it.unsigned }
+        for (family in listOf(signed, unsigned)) for (a in family) for (b in family) {
+            val promoted = if (a == family.last() || b == family.last()) family.last() else family[family.lastIndex - 1]
             for (operation in listOf("plus", "minus", "times", "div", "rem", "compareTo")) {
                 // Int/Int uses the shared templates in OperatorExpEmbeddings.
                 if (a == IntegerKind.Int && b == IntegerKind.Int) continue
@@ -77,14 +93,15 @@ object IntegerOperators {
                         withParam { existing(b.pretype) }
                         withReturnType { existing(result.pretype) }
                     }
-                    viperImplementation { binaryValue(operation, args[0], args[1]) }
+                    viperImplementation { binaryValue(operation, args[0], args[1], a.unsigned) }
                     if (operation != "compareTo") additionalConditions {
                         val left = a.type.injection.fromRef(args[0])
                         val right = b.type.injection.fromRef(args[1])
-                        if (operation == "div" || operation == "rem") precondition {
+                        val division = operation == "div" || operation == "rem"
+                        if (division) precondition {
                             Exp.WithInfo(right ne 0.toExp(), SourceRole.Arithmetic(KotlinCondition.DivisionByZero(operation)).asInfo)
                         }
-                        precondition { result.checkedRange(binaryValue(operation, left, right), operation) }
+                        if (!(division && a.unsigned)) precondition { result.checkedRange(binaryValue(operation, left, right), operation) }
                     }
                 })
             }
@@ -112,7 +129,7 @@ object IntegerOperators {
      * divisor's width, on signed integer operands.
      */
     val flooring: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = buildMap {
-        val signed = IntegerKind.entries.filter { it != IntegerKind.Char }
+        val signed = IntegerKind.entries.filter { it != IntegerKind.Char && !it.unsigned }
         for (a in signed) for (b in signed) {
             val promoted = if (a == IntegerKind.Long || b == IntegerKind.Long) IntegerKind.Long else IntegerKind.Int
             for ((operation, result) in listOf("floorDiv" to promoted, "mod" to b)) {
@@ -140,24 +157,25 @@ object IntegerOperators {
     }
 
     val wrappingBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
-        it.result == IntegerKind.Int && it.operation in listOf("plus", "minus", "times")
+        it.result in listOf(IntegerKind.Int, IntegerKind.UInt) && it.operation in listOf("plus", "minus", "times")
     }.associateWith { op ->
         buildBinaryOperator {
             setName("wrapping${op.operation}${op.receiver.name}${op.argument.name}")
             withSignature {
                 withParam { existing(op.receiver.pretype) }
                 withParam { existing(op.argument.pretype) }
-                withReturnType { int() }
+                withReturnType { existing(op.result.pretype) }
             }
             viperImplementation {
                 val value = binaryValue(op.operation, args[0], args[1])
-                if (op.operation == "times") wrapInto(IntegerKind.Int, value, pos, info) else OperatorExpEmbeddings.wrapInt(value)
+                if (op.result == IntegerKind.Int && op.operation != "times") OperatorExpEmbeddings.wrapInt(value)
+                else wrapInto(op.result, value, pos, info)
             }
         }
     }
 
     /** Unary minus with two's-complement wrapping, keyed like [unary]; an `Int` receiver is keyed too. */
-    val wrappingUnaryMinus: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = IntegerKind.entries.filter { it != IntegerKind.Char }
+    val wrappingUnaryMinus: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = IntegerKind.entries.filter { it != IntegerKind.Char && !it.unsigned }
         .associate { a ->
             val result = if (a == IntegerKind.Long) IntegerKind.Long else IntegerKind.Int
             Unary(a, "unaryMinus", result) to buildUnaryOperator {
@@ -180,22 +198,25 @@ object IntegerOperators {
     }
 
     val wrappingLongBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
-        it.result == IntegerKind.Long && it.operation in listOf("plus", "minus", "times")
+        it.result in listOf(IntegerKind.Long, IntegerKind.ULong) && it.operation in listOf("plus", "minus", "times")
     }.associateWith { op ->
         buildBinaryOperator {
             setName("wrapping${op.operation}${op.receiver.name}${op.argument.name}")
             withSignature {
                 withParam { existing(op.receiver.pretype) }
                 withParam { existing(op.argument.pretype) }
-                withReturnType { existing(IntegerKind.Long.pretype) }
+                withReturnType { existing(op.result.pretype) }
             }
-            viperImplementation { wrapLong(binaryValue(op.operation, args[0], args[1]), pos, info) }
+            viperImplementation {
+                val value = binaryValue(op.operation, args[0], args[1])
+                if (op.result == IntegerKind.Long) wrapLong(value, pos, info) else wrapInto(op.result, value, pos, info)
+            }
         }
     }
 
     val unary: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = buildMap {
         for (a in IntegerKind.entries) {
-            val operations = if (a == IntegerKind.Char) listOf("inc", "dec")
+            val operations = if (a == IntegerKind.Char || a.unsigned) listOf("inc", "dec")
             else listOf("inc", "dec", "unaryMinus", "unaryPlus")
             for (operation in operations) {
                 if (a == IntegerKind.Int) continue
@@ -215,13 +236,14 @@ object IntegerOperators {
             }
         }
         for (a in IntegerKind.entries) for (b in IntegerKind.entries) {
+            if (IntegerKind.Char in listOf(a, b) && (a.unsigned || b.unsigned)) continue
             put(Unary(a, "to${b.name}", b), buildUnaryOperator {
                 setName("convert${a.name}To${b.name}")
                 withSignature {
                     withParam { existing(a.pretype) }; withReturnType { existing(b.pretype) }
                 }
                 viperImplementation { args[0] }
-                if (a.lower < b.lower || a.upper > b.upper) additionalConditions {
+                if (!b.contains(a)) additionalConditions {
                     precondition { b.checkedRange(a.type.injection.fromRef(args[0]), "to${b.name}") }
                 }
             })
@@ -236,14 +258,17 @@ object IntegerOperators {
     /** [value] reduced into [target]'s range modulo its width, as a two's-complement truncation. */
     fun wrapInto(target: IntegerKind, value: Exp, pos: Position, info: Info): Exp {
         // Mathematical integers: Viper division by a positive modulus rounds down.
-        val modulus = Exp.IntLit(target.upper - target.lower + 1)
-        val lower = Exp.IntLit(target.lower)
+        val modulus = IntegerBounds.literal(target.upper - target.lower + BigInteger.ONE)
+        val lower = IntegerBounds.literal(target.lower)
         return Exp.Sub(value, Exp.Mul(modulus, Exp.Div(Exp.Sub(value, lower), modulus)), pos, info)
     }
 
-    /** The narrowing `to` conversions, which truncate to the target width instead of checking its range. */
+    /**
+     * The `to` conversions whose target cannot represent every receiver value, which reinterpret the receiver's low
+     * bits in the target's width instead of checking its range.
+     */
     val wrappingNarrowing: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = unary.keys.filter {
-        it.operation == "to${it.result.name}" && (it.receiver.lower < it.result.lower || it.receiver.upper > it.result.upper)
+        it.operation == "to${it.result.name}" && !it.result.contains(it.receiver)
     }.associateWith { op ->
         buildUnaryOperator {
             setName("wrappingConvert${op.receiver.name}To${op.result.name}")

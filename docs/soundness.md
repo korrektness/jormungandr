@@ -275,7 +275,8 @@ Tests: `stdlib/string_builder/string_builder.kt::wrongLength,appendSharedForgets
 ### Value ranges
 
 `domains/IntegerBounds.kt` and the injections of `domains/Injection.kt` give
-each `Int`, `Long`, `Short`, `Byte` and `Char` its JVM range, and each String at
+each `Int`, `Long`, `Short`, `Byte` and `Char` its JVM range, each `UByte`, `UShort`,
+`UInt` and `ULong` its unsigned range, and each String at
 most `Int.MAX_VALUE` characters, each a `Char`. A quantified variable of these
 types ranges over the same values. The injection into `Ref` is one-to-one, so
 equal values are equal references; "Boxed identity" says why `===` cannot
@@ -290,7 +291,15 @@ full-range products. The constants are mathematical AST expressions. Injection
 therefore asserts bounds on the normalized value, rather than the raw product.
 The mode selection rules live in SPECIFICATIONS.md, "Integer arithmetic".
 
-Tests: `verification/checked_integer.kt::addOverflow,constantOverflow`,
+Unsigned values are mathematical integers, not reinterpreted signed bits. Their wrapping arithmetic and
+`@WrappingNarrowing` conversions reduce the result into the target range modulo 2^8, 2^16, 2^32 or 2^64
+(`IntegerOperators.kt::wrapInto`), which is Kotlin's reinterpretation of the low bits. Division and remainder use
+Viper's `\` and `%`, which agree with Kotlin's truncating division on non-negative operands. Unsigned bounds above `Long.MAX_VALUE`
+are sums of literals (`IntegerBounds.literal`). The runtime types and injections of unsigned types are declared only
+in programs that use one.
+
+Tests: `language/arithmetic/unsigned_arithmetic.kt`, `stdlib/array/unsigned_arrays.kt`,
+`programs/ports/uarray_sorting/UArraySorting.kt`, `verification/checked_integer.kt::addOverflow,constantOverflow`,
 `verification/wrapping_arithmetic.kt`, `verification/wrapping_long_arithmetic.kt`
 (endpoint products, signed negative products, checked isolation and branch-local
 nonvacuity probes), `verification/string_domain.kt::overlongPureResult`.

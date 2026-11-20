@@ -51,11 +51,11 @@ fun FirRegularClassSymbol.hasSuperclassLaws(session: FirSession): Boolean {
 private fun ConeKotlinType.isSignedInteger(): Boolean = isByte || isShort || isInt || isLong
 
 fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCallableSymbol()?.callableId?.let {
-    val classes = setOf("Boolean", "Byte", "Short", "Int", "Long", "Float", "Double", "Char", "String")
+    val classes = setOf("Boolean", "Byte", "Short", "Int", "Long", "Float", "Double", "Char", "String", "UByte", "UShort", "UInt", "ULong")
     val operations = setOf(
         "plus", "minus", "times", "div", "rem", "unaryMinus", "unaryPlus", "not", "compareTo", "equals", "get",
         "and", "or", "xor", "inv", "shl", "shr", "ushr",
-        "toByte", "toShort", "toInt", "toLong", "toFloat", "toDouble", "toChar",
+        "toByte", "toShort", "toInt", "toLong", "toFloat", "toDouble", "toChar", "toUByte", "toUShort", "toUInt", "toULong",
     )
     (it.packageName.asString() == "org.jetbrains.kotlin.formver.plugin" &&
             ((it.className?.asString() == "IterationSequence" && it.callableName.asString() in setOf("size", "get", "take", "contains")) ||

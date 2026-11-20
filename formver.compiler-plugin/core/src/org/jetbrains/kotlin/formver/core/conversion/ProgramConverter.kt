@@ -70,8 +70,11 @@ import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkNoSpecificationValues
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
+import org.jetbrains.kotlin.formver.viper.AnyName
+import org.jetbrains.kotlin.formver.viper.NameResolver
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
+import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.withoutUncalledFunctions
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
@@ -203,9 +206,16 @@ class ProgramConverter(
     private val usesStringBuilder: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
 
+    /** The Viper program; its runtime type domain declares the unsigned types only when the rest of the program uses one. */
+    fun buildProgram(): Program {
+        val program = buildProgramWithoutRuntimeTypes()
+        val runtimeTypes = RuntimeTypeDomain(typeResolver, usesUnsigned = program.refersToAny(RuntimeTypeDomain.unsignedNames))
+        return program.copy(domains = listOf(runtimeTypes) + program.domains)
+    }
+
     // Arguments are evaluated in the order written, and the domains go last: converting the other members
     // may find that a specification states the relation of an `==`, which needs its domain.
-    fun buildProgram(): Program = Program(
+    private fun buildProgramWithoutRuntimeTypes(): Program = Program(
         functions = TerminationMeasures.withTerminationSpecifications(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
@@ -223,8 +233,7 @@ class ProgramConverter(
                 listOfNotNull(contentsField.takeIf { usesPrimitiveArray || usesStringBuilder },
                     GenericArrayEmbedding.contentsField.takeIf { usesGenericArray }),
         adts = emptyList(),
-        domains = listOf(RuntimeTypeDomain(typeResolver)) +
-                listOfNotNull(SeqMultisetDomain.takeIf { uses(PrimitiveArrayEmbedding.INT) && typeResolver.usesMultiset }) +
+        domains = listOfNotNull(SeqMultisetDomain.takeIf { uses(PrimitiveArrayEmbedding.INT) && typeResolver.usesMultiset }) +
                 listOfNotNull(typeResolver.equalsRelationDomain()) +
                 TerminationMeasures.domains(linearizedBodyResolver.functions),
     ).withoutUncalledFunctions(SpecialFunctions.allNames)
@@ -916,4 +925,18 @@ class ProgramConverter(
     }
 
     // endregion
+}
+
+/** Whether any declaration of this program uses one of [names]. */
+private fun Program.refersToAny(names: Set<SymbolicName>): Boolean {
+    var found = false
+    val collector = object : NameResolver {
+        override fun lookup(name: SymbolicName): String = error("Names are only collected here.")
+        override fun resolve() {}
+        override fun register(name: AnyName) {
+            if (name in names) found = true
+        }
+    }
+    with(collector) { registerAllNames() }
+    return found
 }

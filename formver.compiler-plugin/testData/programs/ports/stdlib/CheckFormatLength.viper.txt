@@ -1,11 +1,6 @@
 /CheckFormatLength.kt: info: Generated Viper text for checkFormatLength:
-function data(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), ULong())
-  ensures isSubtype(typeOf(result), longType())
-
-
-method cause(v_this: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(v_this), anyType())
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
 
 
@@ -25,9 +20,7 @@ method checkFormatLength(formatLength: Ref) returns (v_ret_0: Ref)
   0)) {
     var anon_0: Ref
     var anon_1: Ref
-    var anon_2: Ref
-    anon_2 := toULong(formatLength)
-    anon_1 := plus(stringLit(), anon_2)
+    anon_1 := plus(stringLit(), wrappingConvertLongToULong(formatLength))
     anon_0 := con(anon_1)
     fold acc(Throwable_unique(anon_0), write)
     fold acc(Exception_unique(anon_0), write)
@@ -35,7 +28,7 @@ method checkFormatLength(formatLength: Ref) returns (v_ret_0: Ref)
     fold acc(IllegalArgumentException_unique(anon_0), write)
     inhale false
   }
-  v_ret_0 := convertLongToInt(formatLength)
+  v_ret_0 := wrappingConvertLongToInt(formatLength)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -49,17 +42,12 @@ method con(p0: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4), Throwable())))
 
 
-method message(v_this: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(v_this), anyType())
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
-method plus(v_this: Ref, other: Ref) returns (ret_5: Ref)
-  requires isSubtype(typeOf(v_this), stringType())
+method plus(this: Ref, other: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), stringType())
   requires isSubtype(typeOf(other), nullable(anyType()))
   ensures isSubtype(typeOf(ret_5), stringType())
-
-
-method toULong(v_this_extension: Ref) returns (ret_6: Ref)
-  requires isSubtype(typeOf(v_this_extension), longType())
-  ensures isSubtype(typeOf(ret_6), ULong())

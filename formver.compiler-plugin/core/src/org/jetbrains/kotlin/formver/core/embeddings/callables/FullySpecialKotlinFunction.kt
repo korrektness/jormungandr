@@ -116,11 +116,14 @@ object SpecialKotlinFunctions {
             }
         }
         for ((op, template) in IntegerOperators.unary) {
+            val extension = op.result.unsigned && !op.receiver.unsigned
             val signature = buildFunctionPretype {
-                withDispatchReceiver { existing(op.receiver.pretype) }
+                if (extension) withExtensionReceiver { existing(op.receiver.pretype) }
+                else withDispatchReceiver { existing(op.receiver.pretype) }
                 withReturnType { existing(op.result.pretype) }
             }
-            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, ctx ->
+            val className = op.receiver.name.takeUnless { extension }
+            addFunction(signature, SpecialPackages.kotlin, className = className, name = op.operation) { args, ctx ->
                 val wrapsNegation = op.result == IntegerKind.Long && ctx.wrapsLongArithmetic ||
                         op.result == IntegerKind.Int && ctx.wrapsIntArithmetic
                 val operation = (if (ctx.wrapsNarrowing) IntegerOperators.wrappingNarrowing[op] else null)

@@ -63,14 +63,15 @@ private sealed interface EqualityKind {
 
 private val valuePretypes = setOf(
     UnitTypeEmbedding, NothingTypeEmbedding, IntTypeEmbedding, LongTypeEmbedding, ShortTypeEmbedding,
-    ByteTypeEmbedding, BooleanTypeEmbedding, CharTypeEmbedding, StringTypeEmbedding, MultisetTypeEmbedding,
-    IterationSequenceTypeEmbedding,
+    ByteTypeEmbedding, UByteTypeEmbedding, UShortTypeEmbedding, UIntTypeEmbedding, ULongTypeEmbedding, BooleanTypeEmbedding,
+    CharTypeEmbedding, StringTypeEmbedding, MultisetTypeEmbedding, IterationSequenceTypeEmbedding,
 )
 
 /** The classes whose values are injected into `Ref` and boxed on the JVM. */
 private val injectedClassIds = listOf(
     StandardClassIds.Int, StandardClassIds.Long, StandardClassIds.Short, StandardClassIds.Byte,
     StandardClassIds.Char, StandardClassIds.Boolean, StandardClassIds.String,
+    StandardClassIds.UByte, StandardClassIds.UShort, StandardClassIds.UInt, StandardClassIds.ULong,
 )
 
 /**

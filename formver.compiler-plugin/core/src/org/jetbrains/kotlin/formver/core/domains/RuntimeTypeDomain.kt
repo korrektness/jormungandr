@@ -20,7 +20,7 @@ const val RUNTIME_TYPE_DOMAIN_NAME = "rt"
 
 
 /** Runtime type membership, nullability and primitive value injections. */
-class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(RUNTIME_TYPE_DOMAIN_NAME)) {
+class RuntimeTypeDomain(typeResolver: TypeResolver, usesUnsigned: Boolean = false) : BuiltinDomain(DomainName(RUNTIME_TYPE_DOMAIN_NAME)) {
     override val typeVars: List<Type.TypeVar> = emptyList()
 
     // Define types that are not dependent on the user defined classes in a companion object.
@@ -76,6 +76,10 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val shortType: DomainFunc = createNewTypeDomainFunc("shortType")
         val byteType: DomainFunc = createNewTypeDomainFunc("byteType")
         val boolType: DomainFunc = createNewTypeDomainFunc("boolType")
+        val ubyteType: DomainFunc = createNewTypeDomainFunc("ubyteType")
+        val ushortType: DomainFunc = createNewTypeDomainFunc("ushortType")
+        val uintType: DomainFunc = createNewTypeDomainFunc("uintType")
+        val ulongType: DomainFunc = createNewTypeDomainFunc("ulongType")
         val unitType: DomainFunc = createNewTypeDomainFunc("unitType")
         val stringType: DomainFunc = createNewTypeDomainFunc("stringType")
         val multisetType: DomainFunc = createNewTypeDomainFunc("multisetType")
@@ -92,6 +96,12 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val longInjection = Injection(UnqualifiedDomainFuncName("long"), Type.Int, longType, IntegerBounds::long)
         val shortInjection = Injection(UnqualifiedDomainFuncName("short"), Type.Int, shortType, IntegerBounds::short)
         val byteInjection = Injection(UnqualifiedDomainFuncName("byte"), Type.Int, byteType, IntegerBounds::byte)
+        val ubyteInjection = Injection(UnqualifiedDomainFuncName("ubyte"), Type.Int, ubyteType, IntegerBounds::ubyte)
+        val ushortInjection = Injection(UnqualifiedDomainFuncName("ushort"), Type.Int, ushortType, IntegerBounds::ushort)
+        val uintInjection = Injection(UnqualifiedDomainFuncName("uint"), Type.Int, uintType, IntegerBounds::uint)
+        val ulongInjection = Injection(UnqualifiedDomainFuncName("ulong"), Type.Int, ulongType, IntegerBounds::ulong)
+        val unsignedInjections = listOf(ubyteInjection, ushortInjection, uintInjection, ulongInjection)
+        val unsignedNames: Set<SymbolicName> = unsignedInjections.flatMap { listOf(it.typeFunction.name, it.toRef.name, it.fromRef.name) }.toSet()
         val boolInjection = Injection(UnqualifiedDomainFuncName("bool"), Type.Bool, boolType)
         val charInjection = Injection(UnqualifiedDomainFuncName("char"), Type.Int, charType, IntegerBounds::char)
         val stringInjection = Injection(UnqualifiedDomainFuncName("string"), Type.Seq(Type.Int), stringType, IntegerBounds::string)
@@ -110,12 +120,13 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
 
     private val usesMultiset = typeResolver.usesMultiset
     private val allInjections: List<Injection> =
-        primitiveTypeInjections + listOfNotNull(
+        primitiveTypeInjections + unsignedInjections.takeIf { usesUnsigned }.orEmpty() + listOfNotNull(
             multisetInjection.takeIf { usesMultiset },
             iterationSequenceInjection.takeIf { typeResolver.usesIterationSequence },
         )
     val builtinTypes: List<DomainFunc> =
         listOf(intType, longType, shortType, byteType, boolType, charType, unitType, nothingType, anyType, functionType, stringType) +
+                unsignedInjections.takeIf { usesUnsigned }.orEmpty().map { it.typeFunction } +
                 listOfNotNull(multisetType.takeIf { usesMultiset }, iterationSequenceType.takeIf { typeResolver.usesIterationSequence })
     private val userTypes: List<DomainFunc> =
         typeResolver.classTypeEmbeddings().map { it.embedClassTypeFunc() }

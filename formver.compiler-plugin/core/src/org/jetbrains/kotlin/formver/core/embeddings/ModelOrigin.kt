@@ -44,7 +44,8 @@ fun TypeEmbedding.modelOrigin(
     readOnly: Boolean = false,
 ): ModelOrigin {
     val kind = when (pretype) {
-        IntTypeEmbedding, LongTypeEmbedding, ShortTypeEmbedding, ByteTypeEmbedding -> ModelOrigin.Kind.INT
+        IntTypeEmbedding, LongTypeEmbedding, ShortTypeEmbedding, ByteTypeEmbedding,
+        UByteTypeEmbedding, UShortTypeEmbedding, UIntTypeEmbedding, ULongTypeEmbedding -> ModelOrigin.Kind.INT
         BooleanTypeEmbedding -> ModelOrigin.Kind.BOOLEAN
         CharTypeEmbedding -> ModelOrigin.Kind.CHAR
         else -> ModelOrigin.Kind.REFERENCE

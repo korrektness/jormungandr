@@ -112,5 +112,9 @@ val TypeEmbedding.injectionOrNull: Injection?
             ShortTypeEmbedding -> RuntimeTypeDomain.shortInjection
             ByteTypeEmbedding -> RuntimeTypeDomain.byteInjection
             BooleanTypeEmbedding -> RuntimeTypeDomain.boolInjection
+            UByteTypeEmbedding -> RuntimeTypeDomain.ubyteInjection
+            UShortTypeEmbedding -> RuntimeTypeDomain.ushortInjection
+            UIntTypeEmbedding -> RuntimeTypeDomain.uintInjection
+            ULongTypeEmbedding -> RuntimeTypeDomain.ulongInjection
             else -> null
         }

@@ -15,6 +15,10 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.byteArrayClassId
 import org.jetbrains.kotlin.formver.intrinsics.plugin.charArrayClassId
 import org.jetbrains.kotlin.formver.intrinsics.plugin.intArrayClassId
 import org.jetbrains.kotlin.formver.intrinsics.plugin.longArrayClassId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.uByteArrayClassId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.uIntArrayClassId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.uLongArrayClassId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.uShortArrayClassId
 import org.jetbrains.kotlin.formver.viper.ast.*
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.name.ClassId
@@ -74,7 +78,11 @@ class PrimitiveArrayEmbedding private constructor(val classId: ClassId, val elem
         val BYTE = PrimitiveArrayEmbedding(byteArrayClassId, IntegerKind.Byte)
         val CHAR = PrimitiveArrayEmbedding(charArrayClassId, IntegerKind.Char)
         val LONG = PrimitiveArrayEmbedding(longArrayClassId, IntegerKind.Long)
-        val all = listOf(INT, BYTE, CHAR, LONG)
+        val UBYTE = PrimitiveArrayEmbedding(uByteArrayClassId, IntegerKind.UByte)
+        val USHORT = PrimitiveArrayEmbedding(uShortArrayClassId, IntegerKind.UShort)
+        val UINT = PrimitiveArrayEmbedding(uIntArrayClassId, IntegerKind.UInt)
+        val ULONG = PrimitiveArrayEmbedding(uLongArrayClassId, IntegerKind.ULong)
+        val all = listOf(INT, BYTE, CHAR, LONG, UBYTE, USHORT, UINT, ULONG)
 
         fun of(classId: ClassId?): PrimitiveArrayEmbedding? = all.firstOrNull { it.classId == classId }
         fun of(type: PretypeEmbedding): PrimitiveArrayEmbedding? = all.firstOrNull { it.classType == type }

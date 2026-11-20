@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
+import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
@@ -70,8 +71,8 @@ fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
 /**
  * Resolves the uniqueness of [this] constructor's result: as its `@ExternalConstructor` model declares it; `Shared`
  * for another constructor of a class without source that is externally modelled or has such a supertype, since nothing
- * establishes that model's laws and observers for the new object; otherwise unique unless the construction lets the
- * object escape.
+ * establishes that model's laws and observers for the new object, unless the class is a primitive array, which the
+ * converter models itself; otherwise unique unless the construction lets the object escape.
  */
 context(context: CheckerContext)
 fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
@@ -83,6 +84,7 @@ fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
 
 private fun FirConstructorSymbol.constructsModelledType(session: FirSession): Boolean {
     val classSymbol = resolvedReturnType.toRegularClassSymbol(session) ?: return false
+    if (classSymbol.classId in primitiveArrayClassIds) return false
     return lookupSuperTypes(classSymbol, lookupInterfaces = true, deep = true, useSiteSession = session)
         .mapNotNull { it.toRegularClassSymbol(session) }
         .plus(classSymbol)

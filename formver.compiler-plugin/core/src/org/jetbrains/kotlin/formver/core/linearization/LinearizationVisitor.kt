@@ -485,7 +485,8 @@ data class LinearizationVisitor(
             else if (e is StringLit) ctx.typeResolver.stringLiteral(e.value)
                 .toFuncApp(emptyList(), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
             else e.type.injection.toRef(
-                e.value.viperLiteral(ctx.source.asPosition, e.sourceRole.asInfo),
+                if (e is UnsignedLit) IntegerBounds.literal(e.value)
+                else e.value.viperLiteral(ctx.source.asPosition, e.sourceRole.asInfo),
                 pos = ctx.source.asPosition,
                 info = e.sourceRole.asInfo,
             )
@@ -1537,7 +1538,7 @@ data class LinearizationVisitor(
                 // The `RuntimeType` axiom on the injection implies membership, so a trigger set makes it redundant.
                 // The bounds are written lower bound first: Silicon's proof search over the array quantifiers of a
                 // permutation swap does not finish within the budget when the lower bound is written `v >= lower`.
-                Exp.And(Exp.IntLit(it.lower) le variableUse, variableUse le Exp.IntLit(it.upper))
+                Exp.And(IntegerBounds.literal(it.lower) le variableUse, variableUse le IntegerBounds.literal(it.upper))
             }
         }
     }

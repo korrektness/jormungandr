@@ -1,0 +1,596 @@
+/UArraySorting.kt: info: Generated Viper text for partition:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method partition(array: Ref, left: Ref, right: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(array), UIntArray())
+  requires acc(UIntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(UIntArray_unique(array), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(left) <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin ==
+      (plusInts(right, intToRef(1))) in
+      intFromRef(right) + intFromRef(intToRef(1)))
+{
+  var i: Ref
+  var j: Ref
+  var pivot: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  i := left
+  j := right
+  assert (let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2)))) >=
+    0
+  assert (let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2)))) <
+    arraySize(array)
+  unfold acc(UIntArray_unique(array), write)
+  anon_4 := uintToRef(array.contents[(let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2))))])
+  pivot := anon_4
+  fold acc(UIntArray_unique(array), write)
+  label cont_0
+    invariant acc(UIntArray_unique(array), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(j), intType())
+    invariant isSubtype(typeOf(pivot), uintType())
+    invariant isSubtype(typeOf(array), UIntArray())
+    invariant isSubtype(typeOf(left), intType())
+    invariant isSubtype(typeOf(right), intType())
+    invariant intFromRef(left) <= intFromRef(i) &&
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(right, intToRef(1))) in
+        intFromRef(right) + intFromRef(intToRef(1))) &&
+      (let anon_builtin ==
+        (minusInts(left, intToRef(1))) in
+        intFromRef(left) - intFromRef(intToRef(1))) <=
+      intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right)
+    invariant intFromRef(j) == intFromRef(right) ==>
+      intFromRef(i) == intFromRef(left) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        array.contents[(let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+        uintFromRef(pivot))
+    invariant intFromRef(i) == intFromRef(left) ==>
+      intFromRef(j) == intFromRef(right)
+    invariant (unfolding acc(UIntArray_unique(array), write) in
+        intFromRef(i) > intFromRef(left) ==>
+        (array.contents[(let anon_builtin ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) <=
+        0)
+    invariant (unfolding acc(UIntArray_unique(array), write) in
+        intFromRef(j) < intFromRef(right) ==>
+        (array.contents[(let anon_builtin ==
+          (plusInts(j, intToRef(1))) in
+          intFromRef(j) + intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (plusInts(j, intToRef(1))) in
+            intFromRef(j) + intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) >=
+        0)
+  anon_5 := leInts(i, j)
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_9: Ref
+    label cont_1
+      invariant acc(UIntArray_unique(array), write)
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(pivot), uintType())
+      invariant isSubtype(typeOf(array), UIntArray())
+      invariant isSubtype(typeOf(left), intType())
+      invariant isSubtype(typeOf(right), intType())
+      invariant intFromRef(left) <= intFromRef(i) &&
+        intFromRef(i) <= intFromRef(right) &&
+        intFromRef(left) <= intFromRef(j) &&
+        intFromRef(j) <= intFromRef(right)
+      invariant intFromRef(j) == intFromRef(right) ==>
+        intFromRef(i) <=
+        (let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2)))) &&
+        (unfolding acc(UIntArray_unique(array), write) in
+          array.contents[(let anon_builtin ==
+            (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+            intFromRef(left) +
+            intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+          uintFromRef(pivot))
+      invariant intFromRef(j) < intFromRef(right) ==>
+        intFromRef(i) <=
+        (let anon_builtin ==
+          (plusInts(j, intToRef(1))) in
+          intFromRef(j) + intFromRef(intToRef(1))) &&
+        (unfolding acc(UIntArray_unique(array), write) in
+          (array.contents[(let anon_builtin ==
+            (plusInts(j, intToRef(1))) in
+            intFromRef(j) + intFromRef(intToRef(1)))] <
+          uintFromRef(pivot) ?
+            -1 :
+            (array.contents[(let anon_builtin ==
+              (plusInts(j, intToRef(1))) in
+              intFromRef(j) + intFromRef(intToRef(1)))] >
+            uintFromRef(pivot) ?
+              1 :
+              0)) >=
+          0)
+      invariant intFromRef(i) == intFromRef(left) ==>
+        intFromRef(j) == intFromRef(right)
+      invariant (unfolding acc(UIntArray_unique(array), write) in
+          intFromRef(i) > intFromRef(left) ==>
+          (array.contents[(let anon_builtin ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))] <
+          uintFromRef(pivot) ?
+            -1 :
+            (array.contents[(let anon_builtin ==
+              (minusInts(i, intToRef(1))) in
+              intFromRef(i) - intFromRef(intToRef(1)))] >
+            uintFromRef(pivot) ?
+              1 :
+              0)) <=
+          0)
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(array)
+    unfold acc(UIntArray_unique(array), write)
+    anon_7 := uintToRef(array.contents[intFromRef(i)])
+    anon_6 := ltInts(compareToUIntUInt(anon_7, pivot), intToRef(0))
+    fold acc(UIntArray_unique(array), write)
+    if (boolFromRef(anon_6)) {
+      var anon_0: Ref
+      anon_0 := i
+      i := plusInts(anon_0, intToRef(1))
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(pivot), uintType())
+    assert isSubtype(typeOf(array), UIntArray())
+    assert isSubtype(typeOf(left), intType())
+    assert isSubtype(typeOf(right), intType())
+    assert intFromRef(left) <= intFromRef(i) &&
+      intFromRef(i) <= intFromRef(right) &&
+      intFromRef(left) <= intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right)
+    assert intFromRef(j) == intFromRef(right) ==>
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+        intFromRef(left) +
+        intFromRef(divInts(minusInts(right, left), intToRef(2)))) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        array.contents[(let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+        uintFromRef(pivot))
+    assert intFromRef(j) < intFromRef(right) ==>
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(j, intToRef(1))) in
+        intFromRef(j) + intFromRef(intToRef(1))) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        (array.contents[(let anon_builtin ==
+          (plusInts(j, intToRef(1))) in
+          intFromRef(j) + intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (plusInts(j, intToRef(1))) in
+            intFromRef(j) + intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) >=
+        0)
+    assert intFromRef(i) == intFromRef(left) ==>
+      intFromRef(j) == intFromRef(right)
+    assert (unfolding acc(UIntArray_unique(array), write) in
+        intFromRef(i) > intFromRef(left) ==>
+        (array.contents[(let anon_builtin ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) <=
+        0)
+    label cont_2
+      invariant acc(UIntArray_unique(array), write)
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(pivot), uintType())
+      invariant isSubtype(typeOf(array), UIntArray())
+      invariant isSubtype(typeOf(left), intType())
+      invariant isSubtype(typeOf(right), intType())
+      invariant intFromRef(left) <= intFromRef(i) &&
+        intFromRef(i) <= intFromRef(right) &&
+        intFromRef(left) <= intFromRef(j) &&
+        intFromRef(j) <= intFromRef(right)
+      invariant (unfolding acc(UIntArray_unique(array), write) in
+          (array.contents[intFromRef(i)] < uintFromRef(pivot) ?
+            -1 :
+            (array.contents[intFromRef(i)] > uintFromRef(pivot) ? 1 : 0)) >=
+          0)
+      invariant intFromRef(j) == intFromRef(right) ==>
+        intFromRef(i) <=
+        (let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2)))) &&
+        (unfolding acc(UIntArray_unique(array), write) in
+          array.contents[(let anon_builtin ==
+            (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+            intFromRef(left) +
+            intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+          uintFromRef(pivot))
+      invariant intFromRef(i) == intFromRef(left) ==>
+        (let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2)))) <=
+        intFromRef(j) &&
+        (unfolding acc(UIntArray_unique(array), write) in
+          array.contents[(let anon_builtin ==
+            (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+            intFromRef(left) +
+            intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+          uintFromRef(pivot))
+      invariant intFromRef(i) > intFromRef(left) ==>
+        (let anon_builtin ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1))) <=
+        intFromRef(j) &&
+        (unfolding acc(UIntArray_unique(array), write) in
+          (array.contents[(let anon_builtin ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))] <
+          uintFromRef(pivot) ?
+            -1 :
+            (array.contents[(let anon_builtin ==
+              (minusInts(i, intToRef(1))) in
+              intFromRef(i) - intFromRef(intToRef(1)))] >
+            uintFromRef(pivot) ?
+              1 :
+              0)) <=
+          0)
+      invariant (unfolding acc(UIntArray_unique(array), write) in
+          intFromRef(j) < intFromRef(right) ==>
+          (array.contents[(let anon_builtin ==
+            (plusInts(j, intToRef(1))) in
+            intFromRef(j) + intFromRef(intToRef(1)))] <
+          uintFromRef(pivot) ?
+            -1 :
+            (array.contents[(let anon_builtin ==
+              (plusInts(j, intToRef(1))) in
+              intFromRef(j) + intFromRef(intToRef(1)))] >
+            uintFromRef(pivot) ?
+              1 :
+              0)) >=
+          0)
+    assert intFromRef(j) >= 0
+    assert intFromRef(j) < arraySize(array)
+    unfold acc(UIntArray_unique(array), write)
+    anon_9 := uintToRef(array.contents[intFromRef(j)])
+    anon_8 := gtInts(compareToUIntUInt(anon_9, pivot), intToRef(0))
+    fold acc(UIntArray_unique(array), write)
+    if (boolFromRef(anon_8)) {
+      var anon_1: Ref
+      anon_1 := j
+      j := minusInts(anon_1, intToRef(1))
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(pivot), uintType())
+    assert isSubtype(typeOf(array), UIntArray())
+    assert isSubtype(typeOf(left), intType())
+    assert isSubtype(typeOf(right), intType())
+    assert intFromRef(left) <= intFromRef(i) &&
+      intFromRef(i) <= intFromRef(right) &&
+      intFromRef(left) <= intFromRef(j) &&
+      intFromRef(j) <= intFromRef(right)
+    assert (unfolding acc(UIntArray_unique(array), write) in
+        (array.contents[intFromRef(i)] < uintFromRef(pivot) ?
+          -1 :
+          (array.contents[intFromRef(i)] > uintFromRef(pivot) ? 1 : 0)) >=
+        0)
+    assert intFromRef(j) == intFromRef(right) ==>
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+        intFromRef(left) +
+        intFromRef(divInts(minusInts(right, left), intToRef(2)))) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        array.contents[(let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+        uintFromRef(pivot))
+    assert intFromRef(i) == intFromRef(left) ==>
+      (let anon_builtin ==
+        (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+        intFromRef(left) +
+        intFromRef(divInts(minusInts(right, left), intToRef(2)))) <=
+      intFromRef(j) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        array.contents[(let anon_builtin ==
+          (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+          intFromRef(left) +
+          intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+        uintFromRef(pivot))
+    assert intFromRef(i) > intFromRef(left) ==>
+      (let anon_builtin ==
+        (minusInts(i, intToRef(1))) in
+        intFromRef(i) - intFromRef(intToRef(1))) <=
+      intFromRef(j) &&
+      (unfolding acc(UIntArray_unique(array), write) in
+        (array.contents[(let anon_builtin ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) <=
+        0)
+    assert (unfolding acc(UIntArray_unique(array), write) in
+        intFromRef(j) < intFromRef(right) ==>
+        (array.contents[(let anon_builtin ==
+          (plusInts(j, intToRef(1))) in
+          intFromRef(j) + intFromRef(intToRef(1)))] <
+        uintFromRef(pivot) ?
+          -1 :
+          (array.contents[(let anon_builtin ==
+            (plusInts(j, intToRef(1))) in
+            intFromRef(j) + intFromRef(intToRef(1)))] >
+          uintFromRef(pivot) ?
+            1 :
+            0)) >=
+        0)
+    if (intFromRef(i) <= intFromRef(j)) {
+      var tmp: Ref
+      var anon_10: Ref
+      var anon_11: Ref
+      var anon_2: Ref
+      var anon_3: Ref
+      assert intFromRef(i) >= 0
+      assert intFromRef(i) < arraySize(array)
+      unfold acc(UIntArray_unique(array), write)
+      anon_10 := uintToRef(array.contents[intFromRef(i)])
+      tmp := anon_10
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(array)
+      anon_11 := uintToRef(array.contents[intFromRef(j)])
+      assert intFromRef(i) >= 0
+      assert intFromRef(i) < arraySize(array)
+      array.contents := array.contents[intFromRef(i) :=
+        uintFromRef(anon_11)]
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(array)
+      array.contents := array.contents[intFromRef(j) := uintFromRef(tmp)]
+      anon_2 := i
+      i := plusInts(anon_2, intToRef(1))
+      anon_3 := j
+      j := minusInts(anon_3, intToRef(1))
+      fold acc(UIntArray_unique(array), write)
+    }
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(j), intType())
+  assert isSubtype(typeOf(pivot), uintType())
+  assert isSubtype(typeOf(array), UIntArray())
+  assert isSubtype(typeOf(left), intType())
+  assert isSubtype(typeOf(right), intType())
+  assert intFromRef(left) <= intFromRef(i) &&
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(right, intToRef(1))) in
+      intFromRef(right) + intFromRef(intToRef(1))) &&
+    (let anon_builtin ==
+      (minusInts(left, intToRef(1))) in
+      intFromRef(left) - intFromRef(intToRef(1))) <=
+    intFromRef(j) &&
+    intFromRef(j) <= intFromRef(right)
+  assert intFromRef(j) == intFromRef(right) ==>
+    intFromRef(i) == intFromRef(left) &&
+    (unfolding acc(UIntArray_unique(array), write) in
+      array.contents[(let anon_builtin ==
+        (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+        intFromRef(left) +
+        intFromRef(divInts(minusInts(right, left), intToRef(2))))] ==
+      uintFromRef(pivot))
+  assert intFromRef(i) == intFromRef(left) ==>
+    intFromRef(j) == intFromRef(right)
+  assert (unfolding acc(UIntArray_unique(array), write) in
+      intFromRef(i) > intFromRef(left) ==>
+      (array.contents[(let anon_builtin ==
+        (minusInts(i, intToRef(1))) in
+        intFromRef(i) - intFromRef(intToRef(1)))] <
+      uintFromRef(pivot) ?
+        -1 :
+        (array.contents[(let anon_builtin ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1)))] >
+        uintFromRef(pivot) ?
+          1 :
+          0)) <=
+      0)
+  assert (unfolding acc(UIntArray_unique(array), write) in
+      intFromRef(j) < intFromRef(right) ==>
+      (array.contents[(let anon_builtin ==
+        (plusInts(j, intToRef(1))) in
+        intFromRef(j) + intFromRef(intToRef(1)))] <
+      uintFromRef(pivot) ?
+        -1 :
+        (array.contents[(let anon_builtin ==
+          (plusInts(j, intToRef(1))) in
+          intFromRef(j) + intFromRef(intToRef(1)))] >
+        uintFromRef(pivot) ?
+          1 :
+          0)) >=
+      0)
+  v_ret_0 := i
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/UArraySorting.kt: info: Generated Viper text for overflowingMidpoint:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method overflowingMidpoint(array: Ref, left: Ref, right: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(array), UIntArray())
+  requires acc(UIntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && intFromRef(left) <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(UIntArray_unique(array), write)
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  var anon_0: Ref
+  assert (let anon_builtin ==
+      (divInts(plusInts(left, right), intToRef(2))) in
+      (intFromRef(plusInts(left, right)) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) >=
+    0
+  assert (let anon_builtin ==
+      (divInts(plusInts(left, right), intToRef(2))) in
+      (intFromRef(plusInts(left, right)) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) <
+    arraySize(array)
+  unfold acc(UIntArray_unique(array), write)
+  anon_0 := uintToRef(array.contents[(let anon_builtin ==
+      (divInts(plusInts(left, right), intToRef(2))) in
+      (intFromRef(plusInts(left, right)) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(plusInts(left, right)) < 0 ?
+          -intFromRef(plusInts(left, right)) :
+          intFromRef(plusInts(left, right))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))))])
+  v_ret_0 := anon_0
+  fold acc(UIntArray_unique(array), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/UArraySorting.kt: info: Generated Viper text for missingBound:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method missingBound(array: Ref, left: Ref, right: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(array), UIntArray())
+  requires acc(UIntArray_unique(array), write)
+  requires isSubtype(typeOf(left), intType())
+  requires isSubtype(typeOf(right), intType())
+  requires 0 <= intFromRef(left) && 0 <= intFromRef(right) &&
+    intFromRef(right) < arraySize(array)
+  ensures acc(UIntArray_unique(array), write)
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  var anon_0: Ref
+  assert (let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2)))) >=
+    0
+  assert (let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2)))) <
+    arraySize(array)
+  unfold acc(UIntArray_unique(array), write)
+  anon_0 := uintToRef(array.contents[(let anon_builtin ==
+      (plusInts(left, divInts(minusInts(right, left), intToRef(2)))) in
+      intFromRef(left) +
+      intFromRef(divInts(minusInts(right, left), intToRef(2))))])
+  v_ret_0 := anon_0
+  fold acc(UIntArray_unique(array), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

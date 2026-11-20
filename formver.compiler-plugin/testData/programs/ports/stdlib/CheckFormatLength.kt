@@ -3,10 +3,11 @@ package stdlibports
 
 import org.jetbrains.kotlin.formver.plugin.*
 
+@WrappingNarrowing
 private fun <!VIPER_TEXT!>checkFormatLength<!>(formatLength: Long): Int {
     postconditions<Int> { result -> result >= 0 && result.toLong() == formatLength }
     if (formatLength !in 0..Int.MAX_VALUE) {
-        throw IllegalArgumentException("The resulting string length is too big: ${<!OPAQUE_CALL!>formatLength.toULong()<!>}")
+        throw IllegalArgumentException("The resulting string length is too big: ${formatLength.toULong()}")
     }
     return formatLength.toInt()
 }

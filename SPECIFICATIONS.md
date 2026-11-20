@@ -130,7 +130,29 @@ its failing values uniquely.
 
 Division truncates toward zero; remainder has the dividend's sign. A zero divisor reports `DIVISION_BY_ZERO`. `MIN_VALUE / -1` overflows; `MIN_VALUE % -1` is zero. The `floorDiv` and `mod` extensions round toward negative infinity: `floorDiv` has the promoted width, `mod` has the divisor's width and sign, and both report `DIVISION_BY_ZERO` for a zero divisor. `floorDiv` overflows when its result leaves that width, as `Int.MIN_VALUE.floorDiv(-1)` does. Widening conversions are exact, and narrowing conversions must prove the target range. Char arithmetic and conversions must stay within 0 through 65535. Arithmetic failures are proof obligations, not catchable exits.
 
-`@WrappingIntArithmetic` selects two's-complement wrapping for resolved primitive binary `+`, `-` and `*` and unary `-` with an `Int` result, so `-Int.MIN_VALUE` is `Int.MIN_VALUE`. `@WrappingLongArithmetic` selects it for the same operations with a `Long` result. `@WrappingNarrowing` selects two's-complement truncation for narrowing `toByte`, `toShort`, `toInt` and `toChar` conversions, so `200.toByte()` is `-56` and `(-1).toChar()` has code 65535; widening stays exact. Mixed Byte/Short/Int/Long operands follow Kotlin's overload resolution and exact widening. The annotations are independent and may coexist. They include compound assignments, the annotated function's body, its specifications and its `@Pure` body. In the body of a member function that overrides `Any.hashCode`, `Int` results of these operations wrap with no annotation, since `hashCode` may return any `Int`. This covers only that function's own body; inlined callees and lambdas keep their own mode. Other operations, including increment/decrement, division/remainder and `floorDiv`, retain their checks. User-defined operators remain ordinary calls. Each converted function (including an inline callee) and separately converted lambda uses its own declaration's mode; specification DSL blocks use their containing declaration's mode. Callers evaluate callee contracts in the callee's mode and subsequent caller arithmetic in their own mode. The trust report lists these semantic opt-ins, and `hashCode` overrides that wrap, separately; they encode Kotlin semantics exactly and introduce no assumption.
+`@WrappingIntArithmetic` selects two's-complement wrapping for resolved primitive binary `+`, `-` and `*` and unary `-` with an `Int` result, so `-Int.MIN_VALUE` is `Int.MIN_VALUE`, and modular wrapping for binary `+`, `-` and `*` with a `UInt` result. `@WrappingLongArithmetic` selects them for the same operations with a `Long` or `ULong` result. `@WrappingNarrowing` selects two's-complement truncation for narrowing `toByte`, `toShort`, `toInt` and `toChar` conversions, so `200.toByte()` is `-56` and `(-1).toChar()` has code 65535; widening stays exact. Mixed Byte/Short/Int/Long operands follow Kotlin's overload resolution and exact widening. The annotations are independent and may coexist. They include compound assignments, the annotated function's body, its specifications and its `@Pure` body. In the body of a member function that overrides `Any.hashCode`, `Int` results of these operations wrap with no annotation, since `hashCode` may return any `Int`; so do the operations `@WrappingIntArithmetic` selects for `UInt`. This covers only that function's own body; inlined callees and lambdas keep their own mode. Other operations, including increment/decrement, division/remainder and `floorDiv`, retain their checks. User-defined operators remain ordinary calls. Each converted function (including an inline callee) and separately converted lambda uses its own declaration's mode; specification DSL blocks use their containing declaration's mode. Callers evaluate callee contracts in the callee's mode and subsequent caller arithmetic in their own mode. The trust report lists these semantic opt-ins, and `hashCode` overrides that wrap, separately; they encode Kotlin semantics exactly and introduce no assumption.
+
+### Unsigned integers
+
+`UByte`, `UShort`, `UInt` and `ULong` values are the integers from 0 through 255, 65535, 2^32 - 1 and 2^64 - 1, with the
+checks above: comparisons, literals such as `1u` and `0xFFuL`, `/` and `%` are exact, a zero divisor reports
+`DIVISION_BY_ZERO`, and `+`, `-`, `*`, `++` and `--` report `INTEGER_OVERFLOW` when the result leaves the range, so
+`0u - 1u` fails. `UByte` and `UShort` arithmetic is promoted to `UInt` as Kotlin resolves it. The wrapping
+annotations select the result modulo 2^32 or 2^64 instead.
+
+A conversion between a signed and an unsigned type, or between unsigned widths, such as `x.toUInt()`, `u.toInt()`
+or `u.toUByte()`, is exact and must prove that the value is representable in the target type. `@WrappingNarrowing`
+selects Kotlin's reinterpretation of the low bits instead, so `(-1).toUInt()` is `UInt.MAX_VALUE` and
+`UInt.MAX_VALUE.toInt()` is `-1`. Other members of the unsigned types, such as the bitwise operations, shifts,
+`floorDiv` and `mod`, have no model: a call is an opaque library call. Unsigned ranges are not converted.
+
+```kotlin
+fun midpoint(lo: UInt, hi: UInt): UInt {
+    preconditions { lo <= hi }
+    postconditions<UInt> { r -> lo <= r && r <= hi }
+    return lo + (hi - lo) / 2u
+}
+```
 
 ### Bitwise operations
 
@@ -161,7 +183,7 @@ another way is a library call.
 Kotlin `a == b` is `a.equals(b)`, or `b === null` when `a` is null; `a != b` is its negation, and a `when` branch
 compares its subject with `==`. SnaKt picks the meaning of `equals` from the static type of `a`:
 
-- `Int`, `Long`, `Short`, `Byte`, `Char`, `Boolean`, `String` and `Unit` compare by value.
+- `Int`, `Long`, `Short`, `Byte`, the unsigned integer types, `Char`, `Boolean`, `String` and `Unit` compare by value.
 - A class whose `equals` is `Any.equals` or `Enum.equals` for every value of the type compares by identity: a final
   class, an enum class, an `object`, and a sealed class whose inheritors all qualify.
 - A source data class that does not override `equals` compares as its generated `equals`: `a === b`, or `b` is of
@@ -293,7 +315,8 @@ Its value parameters match the constructor by count, type and vararg status. The
 the model's ownership claim; a result without it is shared. Its contracts use the function-model machinery below.
 A library constructor without such a binding, of a bound class or one with a bound supertype (such as
 `LinkedHashMap()`), gives a shared object: nothing establishes the model's laws and observers for it, so calls on it
-are unchecked library calls.
+are unchecked library calls. The [primitive arrays](#primitive-arrays), such as `UIntArray`, which implements
+`Collection`, are exempt: their constructors give unique arrays.
 A library type that binds an observer of a bound supertype through its own members, such as `java.util.SequencedMap`,
 has every observer of that supertype's model.
 
@@ -591,7 +614,7 @@ The rules are as follows:
   holds.
 
 A `for` loop over an `Int` progression written with `until`, `..<`, `..` or `downTo`, optionally followed by
-`step`, or over `indices` of a `String`, an `Array<T>` or an `IntArray`, `ByteArray`, `CharArray` or `LongArray`, which is `0 until` its length or size,
+`step`, or over `indices` of a `String`, an `Array<T>` or a [modelled primitive array](#primitive-arrays), which is `0 until` its length or size,
 puts its `loopInvariants` at the start of its body:
 
 ```kotlin
@@ -1109,8 +1132,8 @@ fun set(c: @Unique @Borrowed Cell) {
 
 ### Primitive arrays
 
-`IntArray`, `ByteArray`, `CharArray` and `LongArray` hold their elements as a
-sequence of `Int`, `Byte`, `Char` and `Long` values respectively. Each element
+`IntArray`, `ByteArray`, `CharArray`, `LongArray`, `UByteArray`, `UShortArray`, `UIntArray` and `ULongArray` hold
+their elements as a sequence of values of their element type. Each element
 stays within its type's range, so `bytes[i].toInt()` lies in -128 through 127:
 widening an element is exact, which for `Byte` is sign extension. Other
 primitive array types have no element model. The rules below are stated for
@@ -1132,6 +1155,8 @@ primitive array types have no element model. The rules below are stated for
   otherwise only the size is known. The loop keeps ownership of the unique
   data around it, and keeps facts about that data as any loop does (see Loop
   Invariants).
+- `UIntArray(n) { init }` and its unsigned siblings are library functions, not constructors; a call is an opaque
+  library call, and its lambda is unsupported.
 
 ```kotlin
 fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {

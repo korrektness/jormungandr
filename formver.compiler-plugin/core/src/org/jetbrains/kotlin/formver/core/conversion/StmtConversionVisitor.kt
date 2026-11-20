@@ -52,6 +52,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.FullySpecialKotlin
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.callables.isVerifyFunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import java.math.BigInteger
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GeCharChar
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GeIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GtCharChar
@@ -124,20 +125,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitLiteralExpression(
         literalExpression: FirLiteralExpression,
         data: StmtConversionContext,
-    ): ExpEmbedding = when (literalExpression.kind) {
-        // A literal parsed from source holds a Long; one deserialized from a library's const holds its own type.
-        ConstantValueKind.Int -> IntLit((literalExpression.value as Number).toInt())
-        ConstantValueKind.Long -> LongLit((literalExpression.value as Number).toLong())
-        ConstantValueKind.Short -> ShortLit((literalExpression.value as Number).toShort())
-        ConstantValueKind.Byte -> ByteLit((literalExpression.value as Number).toByte())
-        ConstantValueKind.Boolean -> BooleanLit(literalExpression.value as Boolean)
-        ConstantValueKind.Char -> CharLit(literalExpression.value as Char)
-        ConstantValueKind.String -> StringLit(literalExpression.value as String)
-        ConstantValueKind.Null -> NullLit
-        else -> throw UnsupportedFeatureException(
-            literalExpression.source, "constant of kind ${literalExpression.kind}"
-        )
-    }
+    ): ExpEmbedding = literalExpression.embedding()
 
     /**
      * Converts a string template to a chain of `String.plus` calls, one per part, merging adjacent literal parts.
@@ -792,5 +780,30 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     ): ExpEmbedding = data.checkedSafeCallSubject ?: throw SnaktInternalException(
         checkedSafeCallSubject.source,
         "Trying to resolve checked subject ${checkedSafeCallSubject.description} which was not captured in StmtConversionContext"
+    )
+}
+
+/** The value of an unsigned literal, which holds the literal's bits in a signed host integer. */
+private fun unsignedLiteral(kind: IntegerKind, literal: FirLiteralExpression): ExpEmbedding {
+    val bits = java.lang.Long.toUnsignedString((literal.value as Number).toLong())
+    return UnsignedLit(kind, BigInteger(bits).and(kind.upper))
+}
+
+private fun FirLiteralExpression.embedding(): ExpEmbedding = when (kind) {
+    // A literal parsed from source holds a Long; one deserialized from a library's const holds its own type.
+    ConstantValueKind.Int -> IntLit((value as Number).toInt())
+    ConstantValueKind.Long -> LongLit((value as Number).toLong())
+    ConstantValueKind.Short -> ShortLit((value as Number).toShort())
+    ConstantValueKind.Byte -> ByteLit((value as Number).toByte())
+    ConstantValueKind.UnsignedByte -> unsignedLiteral(IntegerKind.UByte, this)
+    ConstantValueKind.UnsignedShort -> unsignedLiteral(IntegerKind.UShort, this)
+    ConstantValueKind.UnsignedInt -> unsignedLiteral(IntegerKind.UInt, this)
+    ConstantValueKind.UnsignedLong -> unsignedLiteral(IntegerKind.ULong, this)
+    ConstantValueKind.Boolean -> BooleanLit(value as Boolean)
+    ConstantValueKind.Char -> CharLit(value as Char)
+    ConstantValueKind.String -> StringLit(value as String)
+    ConstantValueKind.Null -> NullLit
+    else -> throw UnsupportedFeatureException(
+        source, "constant of kind $kind"
     )
 }

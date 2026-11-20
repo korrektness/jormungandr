@@ -42,10 +42,8 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     type.isUnit -> unit()
     type.isChar -> char()
     type.isInt -> int()
-    type.isLong -> long()
-    type.isShort -> short()
-    type.isByte -> byte()
     type.isBoolean -> boolean()
+    integerPretype(type) != null -> existing(integerPretype(type)!!)
     type.isNothing -> nothing()
     type.isSomeFunctionType(converter.session) -> function {
         check(type is ConeClassLikeType) { "Expected a ConeClassLikeType for a function type, got $type" }
@@ -113,3 +111,14 @@ private fun TypeBuilder.embedComponents(components: List<ConeKotlinType>, marked
 
 private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =
     throw UnsupportedFeatureException(null, "type `${type.renderReadable()}`")
+
+private fun integerPretype(type: ConeKotlinType): PretypeEmbedding? = when {
+    type.isLong -> LongTypeEmbedding
+    type.isShort -> ShortTypeEmbedding
+    type.isByte -> ByteTypeEmbedding
+    type.isUByte -> UByteTypeEmbedding
+    type.isUShort -> UShortTypeEmbedding
+    type.isUInt -> UIntTypeEmbedding
+    type.isULong -> ULongTypeEmbedding
+    else -> null
+}

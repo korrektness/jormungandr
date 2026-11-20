@@ -1,0 +1,473 @@
+/unsigned_arithmetic.kt: info: Generated Viper text for literalsAndComparisons:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method literalsAndComparisons() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (1 < 2 ? -1 : (1 > 2 ? 1 : 0)) < 0
+  assert ((let anon ==
+      (convertUIntToUByte(uintToRef(255))) in
+      uintFromRef(uintToRef(255))) <
+    (let anon ==
+      (convertUIntToUByte(uintToRef(1))) in
+      uintFromRef(uintToRef(1))) ?
+      -1 :
+      ((let anon ==
+        (convertUIntToUByte(uintToRef(255))) in
+        uintFromRef(uintToRef(255))) >
+      (let anon ==
+        (convertUIntToUByte(uintToRef(1))) in
+        uintFromRef(uintToRef(1))) ?
+        1 :
+        0)) >
+    0
+  assert 4294967295 == 4294967295
+  assert 9223372036854775807 + (9223372036854775807 + 1) ==
+    9223372036854775807 + (9223372036854775807 + 1)
+  assert (9223372036854775807 + (9223372036854775807 + 1) <
+    9223372036854775807 ?
+      -1 :
+      (9223372036854775807 + (9223372036854775807 + 1) >
+      9223372036854775807 ?
+        1 :
+        0)) >
+    0
+  assert 255 == 255
+  assert 65535 == 65535
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for exactDivision:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method exactDivision(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  requires isSubtype(typeOf(b), uintType())
+  requires (uintFromRef(b) < 0 ? -1 : (uintFromRef(b) > 0 ? 1 : 0)) > 0
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+  ensures uintFromRef(b) == 1 ==> uintFromRef(v_ret_0) == uintFromRef(a)
+{
+  assert (let anon ==
+      (divUIntUInt(uintToRef(7), uintToRef(2))) in
+      uintFromRef(uintToRef(7)) \ uintFromRef(uintToRef(2))) ==
+    3
+  assert (let anon ==
+      (remUIntUInt(uintToRef(7), uintToRef(2))) in
+      uintFromRef(uintToRef(7)) % uintFromRef(uintToRef(2))) ==
+    1
+  assert (let anon ==
+      (divUIntUInt(uintToRef(4294967295), uintToRef(4294967295))) in
+      uintFromRef(uintToRef(4294967295)) \
+      uintFromRef(uintToRef(4294967295))) ==
+    1
+  v_ret_0 := divUIntUInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for largeDivision:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method largeDivision() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (divULongULong(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1)), ulongToRef(2))) in
+      ulongFromRef(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1))) \
+      ulongFromRef(ulongToRef(2))) ==
+    9223372036854775807
+  assert (let anon ==
+      (remULongULong(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1)), ulongToRef(10))) in
+      ulongFromRef(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1))) %
+      ulongFromRef(ulongToRef(10))) ==
+    5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for divisionByZero:
+method divisionByZero(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  requires isSubtype(typeOf(b), uintType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := divUIntUInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for checkedPlus:
+method checkedPlus(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  requires isSubtype(typeOf(b), uintType())
+  requires (uintFromRef(a) < 100 ? -1 : (uintFromRef(a) > 100 ? 1 : 0)) <=
+    0 &&
+    (uintFromRef(b) < 100 ? -1 : (uintFromRef(b) > 100 ? 1 : 0)) <= 0
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := plusUIntUInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for plusOverflow:
+method plusOverflow(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := plusUIntUInt(a, uintToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for minusUnderflow:
+method minusUnderflow(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  requires isSubtype(typeOf(b), uintType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := minusUIntUInt(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for promotedTimes:
+method promotedTimes(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ubyteType())
+  requires isSubtype(typeOf(b), ubyteType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+  ensures (uintFromRef(v_ret_0) < 65025 ?
+      -1 :
+      (uintFromRef(v_ret_0) > 65025 ? 1 : 0)) <=
+    0
+{
+  v_ret_0 := timesUByteUByte(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for promotedTimesBound:
+method promotedTimesBound(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ubyteType())
+  requires isSubtype(typeOf(b), ubyteType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+  ensures (uintFromRef(v_ret_0) < 255 ?
+      -1 :
+      (uintFromRef(v_ret_0) > 255 ? 1 : 0)) <=
+    0
+{
+  v_ret_0 := timesUByteUByte(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for ulongTimesOverflow:
+method ulongTimesOverflow(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ulongType())
+  ensures isSubtype(typeOf(v_ret_0), ulongType())
+{
+  v_ret_0 := timesULongULong(a, ulongToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for incrementInRange:
+method incrementInRange(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ushortType())
+  requires (ushortFromRef(a) < 65535 ?
+      -1 :
+      (ushortFromRef(a) > 65535 ? 1 : 0)) <
+    0
+  ensures isSubtype(typeOf(v_ret_0), ushortType())
+{
+  var b: Ref
+  var anon: Ref
+  b := a
+  anon := b
+  b := incUShort(anon)
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for decrementUnderflow:
+method decrementUnderflow(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ubyteType())
+  ensures isSubtype(typeOf(v_ret_0), ubyteType())
+{
+  var b: Ref
+  var anon: Ref
+  b := a
+  anon := b
+  b := decUByte(anon)
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for wrappingMinus:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrappingMinus(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+  ensures uintFromRef(a) == 0 ==> uintFromRef(v_ret_0) == 4294967295
+{
+  assert 4294967295 * 2 - 4294967296 * ((4294967295 * 2 - 0) \ 4294967296) ==
+    4294967295 - 1 - 4294967296 * ((4294967295 - 1 - 0) \ 4294967296)
+  v_ret_0 := wrappingminusUIntUInt(a, uintToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for wrongUIntWrap:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongUIntWrap() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 0 - 1 - 4294967296 * ((0 - 1 - 0) \ 4294967296) == 2147483647
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for wrappingTimes:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrappingTimes() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (9223372036854775807 + (9223372036854775807 + 1)) *
+    (9223372036854775807 + (9223372036854775807 + 1)) -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    (((9223372036854775807 + (9223372036854775807 + 1)) *
+    (9223372036854775807 + (9223372036854775807 + 1)) -
+    0) \
+    (9223372036854775807 + (9223372036854775807 + 2))) ==
+    1
+  assert 9223372036854775807 + (9223372036854775807 + 1) + 2 -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    ((9223372036854775807 + (9223372036854775807 + 1) + 2 - 0) \
+    (9223372036854775807 + (9223372036854775807 + 2))) ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for wrongWrap:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongWrap() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 9223372036854775807 + (9223372036854775807 + 1) + 1 -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    ((9223372036854775807 + (9223372036854775807 + 1) + 1 - 0) \
+    (9223372036854775807 + (9223372036854775807 + 2))) ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for exactConversions:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method exactConversions(b: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), ubyteType())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(v_ret_0), longType())
+  ensures (0 < longFromRef(v_ret_0) ?
+      -1 :
+      (0 > longFromRef(v_ret_0) ? 1 : 0)) <=
+    0 &&
+    (longFromRef(v_ret_0) < 255 ?
+      -1 :
+      (longFromRef(v_ret_0) > 255 ? 1 : 0)) <=
+    0
+{
+  assert (let anon ==
+      (convertUIntToInt(convertIntToUInt(x))) in
+      uintFromRef(convertIntToUInt(x))) ==
+    intFromRef(x)
+  assert (let anon ==
+      (convertULongToLong(convertIntToULong(x))) in
+      ulongFromRef(convertIntToULong(x))) ==
+    intFromRef(x)
+  assert (let anon ==
+      (convertUIntToUByte(convertUByteToUInt(b))) in
+      uintFromRef(convertUByteToUInt(b))) ==
+    ubyteFromRef(b)
+  v_ret_0 := convertUByteToLong(b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for negativeToUnsigned:
+method negativeToUnsigned(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := convertIntToUInt(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for largeToSigned:
+method largeToSigned(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), uintType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := convertUIntToInt(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for narrowUnsigned:
+method narrowUnsigned(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), uintType())
+  ensures isSubtype(typeOf(v_ret_0), ubyteType())
+{
+  v_ret_0 := convertUIntToUByte(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for reinterpretations:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reinterpretations() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert -1 - 4294967296 * ((-1 - 0) \ 4294967296) == 4294967295
+  assert (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    (((let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    0) \
+    (9223372036854775807 + (9223372036854775807 + 2))) ==
+    9223372036854775807 + (9223372036854775807 + 1)
+  assert -1 - 256 * ((-1 - -128) \ 256) -
+    256 * ((-1 - 256 * ((-1 - -128) \ 256) - 0) \ 256) ==
+    255
+  assert 4294967295 -
+    4294967296 * ((4294967295 - -2147483648) \ 4294967296) ==
+    -1
+  assert 2147483648 -
+    4294967296 * ((2147483648 - -2147483648) \ 4294967296) ==
+    -2147483648
+  assert 9223372036854775807 + (9223372036854775807 + 1) -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    ((9223372036854775807 + (9223372036854775807 + 1) -
+    -9223372036854775808) \
+    (9223372036854775807 + (9223372036854775807 + 2))) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  assert 300 - 256 * ((300 - 0) \ 256) == 44 - 256 * ((44 - 0) \ 256)
+  assert 305419896 - 65536 * ((305419896 - 0) \ 65536) ==
+    22136 - 65536 * ((22136 - 0) \ 65536)
+  assert -2 -
+    (9223372036854775807 + (9223372036854775807 + 2)) *
+    ((-2 - 0) \ (9223372036854775807 + (9223372036854775807 + 2))) ==
+    (let anon ==
+      (minusULongULong(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1)), ulongToRef(1))) in
+      ulongFromRef(ulongToRef(9223372036854775807 +
+      (9223372036854775807 + 1))) -
+      ulongFromRef(ulongToRef(1)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for wrongReinterpretation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongReinterpretation(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -1
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(x) - 4294967296 * ((intFromRef(x) - 0) \ 4294967296) ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for unmodelledBitwise:
+method and(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), uintType())
+  requires isSubtype(typeOf(other), uintType())
+  ensures isSubtype(typeOf(ret_1), uintType())
+
+
+method unmodelledBitwise(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), uintType())
+  requires isSubtype(typeOf(b), uintType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := and(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unsigned_arithmetic.kt: info: Generated Viper text for midpoint:
+method midpoint(lo: Ref, hi: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(lo), uintType())
+  requires isSubtype(typeOf(hi), uintType())
+  requires (uintFromRef(lo) < uintFromRef(hi) ?
+      -1 :
+      (uintFromRef(lo) > uintFromRef(hi) ? 1 : 0)) <=
+    0
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+  ensures (uintFromRef(lo) < uintFromRef(v_ret_0) ?
+      -1 :
+      (uintFromRef(lo) > uintFromRef(v_ret_0) ? 1 : 0)) <=
+    0 &&
+    (uintFromRef(v_ret_0) < uintFromRef(hi) ?
+      -1 :
+      (uintFromRef(v_ret_0) > uintFromRef(hi) ? 1 : 0)) <=
+    0
+{
+  v_ret_0 := plusUIntUInt(lo, divUIntUInt(minusUIntUInt(hi, lo), uintToRef(2)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}

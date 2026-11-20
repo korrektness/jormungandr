@@ -20,9 +20,16 @@ val intArrayClassId = ClassId.topLevel(FqName("kotlin.IntArray"))
 val byteArrayClassId = ClassId.topLevel(FqName("kotlin.ByteArray"))
 val charArrayClassId = ClassId.topLevel(FqName("kotlin.CharArray"))
 val longArrayClassId = ClassId.topLevel(FqName("kotlin.LongArray"))
+val uByteArrayClassId = ClassId.topLevel(FqName("kotlin.UByteArray"))
+val uShortArrayClassId = ClassId.topLevel(FqName("kotlin.UShortArray"))
+val uIntArrayClassId = ClassId.topLevel(FqName("kotlin.UIntArray"))
+val uLongArrayClassId = ClassId.topLevel(FqName("kotlin.ULongArray"))
 
 /** The primitive array classes with an element model. */
-val primitiveArrayClassIds = setOf(intArrayClassId, byteArrayClassId, charArrayClassId, longArrayClassId)
+val primitiveArrayClassIds = setOf(
+    intArrayClassId, byteArrayClassId, charArrayClassId, longArrayClassId,
+    uByteArrayClassId, uShortArrayClassId, uIntArrayClassId, uLongArrayClassId,
+)
 
 private val getName = Name.identifier("get")
 private val setName = Name.identifier("set")
