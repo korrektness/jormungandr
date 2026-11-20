@@ -2855,6 +2855,28 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
           runTest("formver.compiler-plugin/testData/programs/ports/stdlib/ToIntOrNull.kt");
         }
       }
+
+      @Nested
+      @TestMetadata("formver.compiler-plugin/testData/programs/ports/wire")
+      @TestDataPath("$PROJECT_ROOT")
+      public class Wire {
+        @Test
+        public void testAllFilesPresentInWire() {
+          KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/ports/wire"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        }
+
+        @Test
+        @TestMetadata("lengthOverflowPreCve63126.kt")
+        public void testLengthOverflowPreCve63126() {
+          runTest("formver.compiler-plugin/testData/programs/ports/wire/lengthOverflowPreCve63126.kt");
+        }
+
+        @Test
+        @TestMetadata("negativeLengthPreGhsa7xpr.kt")
+        public void testNegativeLengthPreGhsa7xpr() {
+          runTest("formver.compiler-plugin/testData/programs/ports/wire/negativeLengthPreGhsa7xpr.kt");
+        }
+      }
     }
   }
 }

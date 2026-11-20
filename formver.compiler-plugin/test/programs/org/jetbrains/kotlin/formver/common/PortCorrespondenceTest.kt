@@ -78,6 +78,22 @@ class PortCorrespondenceTest {
     }
 
     @Test
+    fun `wire pre-fix fixtures match their vendored revisions and labelled deviations`() = checker { checker ->
+        val fixtures = listOf(
+            Triple("wire-85803bb99", "7b4aeac3ef0acb19cb248f5ffbc3cb0c4b5d5c09ca2558801407893d625059f3", "lengthOverflowPreCve63126"),
+            Triple("wire-50ba803e8", "1096d83f2b173efaadb3adfa0cc24439fafdeba279c95b7cd6f1cdc4d47aa52b", "negativeLengthPreGhsa7xpr"),
+        )
+        val directory = data.resolve("programs/ports/wire")
+        for ((revision, sha256, name) in fixtures) {
+            val upstream = data.resolve("upstream/$revision/ByteArrayProtoReader32.kt").readBytes()
+            val hash = MessageDigest.getInstance("SHA-256").digest(upstream).joinToString("") { "%02x".format(it) }
+            assertEquals(sha256, hash, revision)
+            val source = checker.portSource(directory.resolve("$name.kt").readText())
+            checker.checkPort(upstream.toString(Charsets.UTF_8), source, directory.resolve("$name.port.diff").readText())
+        }
+    }
+
+    @Test
     fun `real port matches labelled deviations and retained assignment sites`() {
         val port = data.resolve("programs/ports/arraydeque/ArrayDeque.kt")
         assumeTrue(port.exists(), "ArrayDeque port is absent")
