@@ -16,6 +16,6 @@ fun <!VIPER_TEXT!>borrowThroughCallResult<!>() {
     <!OWNERSHIP_NOT_ESTABLISHED!>bump(makeHolder().leaf)<!>
 }
 
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>writeThroughCallResult<!>() {
-    <!UNSUPPORTED_OWNERSHIP!>makeHolder().leaf.n = 3<!>
+fun <!VIPER_TEXT!>writeThroughCallResult<!>() {
+    makeHolder().leaf.n = 3
 }

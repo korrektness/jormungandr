@@ -166,5 +166,11 @@ method makeHolder() returns (ret_1: Ref)
   ensures acc(Holder_unique(ret_1), write)
 
 
-method writeThroughCallResult() returns (ret_0: Ref)
-  ensures isSubtype(typeOf(ret_0), unitType())
+method writeThroughCallResult() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := makeHolder()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

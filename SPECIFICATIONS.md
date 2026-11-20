@@ -726,6 +726,12 @@ nullable forms) is rejected, since such values own nothing.
 
 ### Unique and shared paths
 
+A unique path starts at a local, a parameter or an owned receiver. Outside
+construction, a property of a shared `this` or of a call result, and a
+top-level property, is shared, even when it is `@Unique` or takes uniqueness
+from its initializer: a member call on it whose model owns its receiver is the
+opaque library call, and its `var` properties and array elements are shared.
+
 Through a unique path, `var` reads and writes are real, and the verifier
 tracks their values. Through a shared path, every `var` read yields an
 arbitrary value. Shared `var` writes follow the law-bound field rule in Class laws;

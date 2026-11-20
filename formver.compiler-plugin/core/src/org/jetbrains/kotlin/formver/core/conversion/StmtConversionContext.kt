@@ -267,7 +267,9 @@ fun StmtConversionContext.establishBeforeExposure(value: ExpEmbedding): ExpEmbed
 
 /**
  * Whether the uniqueness checker finds the path [expression] denotes `Unique` on entry to [element]. The checked
- * subject of a safe call denotes the path of the safe call's receiver.
+ * subject of a safe call denotes the path of the safe call's receiver. Apart from the object under construction, a
+ * path rooted at a non-local property is a field of a shared `this`, of a call result or a top-level property, which
+ * no receiver the function owns holds, so it is not owned.
  */
 fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
@@ -280,6 +282,8 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
         }
     }
     val path = ownershipFrame.pathOf(denoted) ?: return false
+    val root = path.first()
+    if (root is FirPropertySymbol && !root.isLocal) return false
     return ownershipFrame.ownsBefore(element, path)
 }
 

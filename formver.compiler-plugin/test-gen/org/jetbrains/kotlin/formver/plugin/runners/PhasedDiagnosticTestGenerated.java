@@ -2294,6 +2294,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("shared_property_receiver.kt")
+        public void testShared_property_receiver() {
+          runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/shared_property_receiver.kt");
+        }
+
+        @Test
         @TestMetadata("spec_partial_vacuity.kt")
         public void testSpec_partial_vacuity() {
           runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/spec_partial_vacuity.kt");
