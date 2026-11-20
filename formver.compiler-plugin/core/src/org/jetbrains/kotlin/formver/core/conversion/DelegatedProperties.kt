@@ -64,7 +64,7 @@ private fun isCalledThroughDelegate(symbol: Any?): Boolean =
 /**
  * A read of the delegated property [access] denotes, or a write of the value [value] converts to it: the `getValue` or
  * `setValue` call of its accessor, under that function's contract, with the receiver of [access] as `thisRef`. The
- * receiver is evaluated before [value].
+ * receiver is evaluated before [value], and null-checked as an [CallOperand] after it.
  */
 private fun StmtConversionContext.callDelegate(
     access: FirPropertyAccessExpression,
@@ -76,15 +76,20 @@ private fun StmtConversionContext.callDelegate(
     val parameter = accessor?.valueParameterSymbols?.singleOrNull()
     val callee = call.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
         ?: throw SnaktInternalException(call.source, "A delegated property accessor calls no function.")
-    val receiverExpression = access.dispatchReceiver ?: access.extensionReceiver
-    val receiver = receiverExpression?.let { declareAnonVar(embedType(it), convert(it)) }
-    val written = value?.invoke(this)
+    val receiver = access.dispatchReceiver?.let { operand(it, symbol.dispatchReceiverType) }
+        ?: access.extensionReceiver?.let { operand(it, symbol.resolvedReceiverType) }
+    val receiverDeclaration = receiver?.let { declareAnonVar(it.value.type, it.value) }
+    val check = receiver?.deferredCheck
+    val writtenValue = value?.invoke(this)
+    val writtenDeclaration = writtenValue?.takeIf { check != null }?.let { declareAnonVar(it.type, it) }
+    val written = writtenDeclaration?.variable ?: writtenValue
+    val thisRef = receiverDeclaration?.variable?.let { variable -> check?.let { checkedCast(variable, embedType(it)) } ?: variable }
     val embedding = embedAnyFunction(callee)
     reportOpaqueLibraryCall(call, callee, embedding)
     val args = call.functionCallArguments.map { argument ->
         val argumentSymbol = (argument as? FirPropertyAccessExpression)?.calleeReference?.symbol
         when {
-            argument is FirThisReceiverExpression -> receiver?.variable ?: throw SnaktInternalException(
+            argument is FirThisReceiverExpression -> thisRef ?: throw SnaktInternalException(
                 argument.source, "A delegated property accessor reads a receiver its access does not have."
             )
             argumentSymbol == parameter && written != null -> written
@@ -93,7 +98,7 @@ private fun StmtConversionContext.callDelegate(
         }
     }
     val result = withCallSite(call) { embedding.insertCall(args, this, embedType(call.resolvedType)) }
-    return listOfNotNull(receiver, result).toBlock()
+    return listOfNotNull(receiverDeclaration, writtenDeclaration, result).toBlock()
 }
 
 @OptIn(SymbolInternals::class)

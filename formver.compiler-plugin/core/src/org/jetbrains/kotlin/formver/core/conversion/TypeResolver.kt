@@ -292,6 +292,21 @@ class TypeResolver {
     }.add(supertype)
 
 
+    private val runtimeSuperTypes = mutableMapOf<SymbolicName, MutableSet<SymbolicName>>()
+    private val modelHierarchies = mutableSetOf<SymbolicName>()
+
+    /** Whether this is the first request to record the Kotlin supertypes of the model [name]. */
+    fun markModelHierarchy(name: SymbolicName): Boolean = modelHierarchies.add(name)
+
+    /** Records that values of [subtype] also have the runtime type [supertype], without relating their ownership. */
+    fun addRuntimeSubtypeRelation(subtype: SymbolicName, supertype: SymbolicName) {
+        if (subtype != supertype) runtimeSuperTypes.getOrPut(subtype) { mutableSetOf() }.add(supertype)
+    }
+
+    /** The embedded types recorded by [addRuntimeSubtypeRelation] for values of [name]. */
+    fun lookupRuntimeSuperTypes(name: SymbolicName) =
+        runtimeSuperTypes[name].orEmpty().mapNotNull { lookupClassTypeEmbedding(it) }
+
     /**
      * Returns the set of super types of a given class or interface.
      * These are only the direct super types, transitive closure is not included.

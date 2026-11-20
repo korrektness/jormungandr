@@ -30,7 +30,7 @@ internal fun StmtConversionContext.convertIntrinsicPropertyRead(access: FirPrope
     ) {
         return IntegerOperators.unary.getValue(
             IntegerOperators.Unary(IntegerKind.Char, "<get-code>", IntegerKind.Int)
-        )(convert(extensionReceiver))
+        )(convertArgumentOf(access, extensionReceiver))
     }
     return null
 }

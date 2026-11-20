@@ -11,7 +11,10 @@ import org.jetbrains.kotlin.formver.core.parameterArguments
 import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
 
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
+import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
@@ -21,6 +24,7 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -83,6 +87,44 @@ private fun libraryFieldTypes(parent: FirConstructorSymbol?, receiver: VariableE
     return constructionFields(library, withLateinit = false).map { field ->
         InhaleDirect(SubTypeInvariantEmbedding(field.type).fillHole(PrimitiveFieldAccess(receiver, field)))
     }
+}
+
+/**
+ * Passes the explicit arguments of [delegation] to [parent] in order, adding their evaluation to [actions] and binding
+ * each parameter in [arguments]. Gives the parameters whose null check [CallOperand] defers, each with its unchecked
+ * value, which [arguments] binds until the check.
+ */
+private fun StmtConversionContext.passSuperArguments(
+    delegation: FirDelegatedConstructorCall,
+    parent: FirConstructorSymbol,
+    actions: MutableList<ExpEmbedding>,
+    arguments: MutableMap<SubstitutedArgument, ExpEmbedding>,
+): List<Pair<FirValueParameterSymbol, ExpEmbedding>> =
+    delegation.parameterArguments(parent).mapNotNull { (parameter, argument) ->
+        val variable = freshAnonVar(embedType(parameter.resolvedReturnType))
+        val operand = if (argument is FirVarargArgumentsExpression) {
+            CallOperand(argument, convertVarargArray(delegation, argument, variable.type))
+        } else operand(argument, parameter.resolvedReturnType)
+        if (operand.deferredCheck == null) {
+            passSuperArgument(parameter, variable, operand.value, actions, arguments)
+            return@mapNotNull null
+        }
+        val evaluated = declareAnonVar(operand.value.type, operand.value)
+        actions += evaluated
+        arguments[SubstitutedArgument.ValueParameter(parameter)] = evaluated.variable
+        parameter to evaluated.variable
+    }
+
+/** Declares [variable] as [value], the argument for [parameter], in [actions] and binds it in [arguments]. */
+private fun ProgramConversionContext.passSuperArgument(
+    parameter: FirValueParameterSymbol,
+    variable: VariableEmbedding,
+    value: ExpEmbedding,
+    actions: MutableList<ExpEmbedding>,
+    arguments: MutableMap<SubstitutedArgument, ExpEmbedding>,
+) {
+    actions += Declare(variable, value, targetOwned = context(checkerContext) { parameter.isUnique() })
+    arguments[SubstitutedArgument.ValueParameter(parameter)] = variable
 }
 
 /**
@@ -158,12 +200,7 @@ fun constructionBody(
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
         if (parent != null && parent.origin == FirDeclarationOrigin.Source) {
             val parentArguments = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
-            for ((parameter, argument) in delegation.parameterArguments(parent)) {
-                val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
-                actions += Declare(value, context.convertArgument(delegation, argument, value.type),
-                    targetOwned = context(program.checkerContext) { parameter.isUnique() })
-                parentArguments[SubstitutedArgument.ValueParameter(parameter)] = value
-            }
+            val deferredChecks = context.passSuperArguments(delegation, parent, actions, parentArguments)
             for (parameter in parent.signatureParameterSymbols) {
                 val key = SubstitutedArgument.ValueParameter(parameter)
                 if (key in parentArguments) continue
@@ -172,11 +209,15 @@ fun constructionBody(
                     OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()),
                     captures = capturesOf(parent), constructionReceiver = receiver).statementCtxt()
                 val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
-                val converted = parameter.fir.defaultValue?.let { defaultContext.convert(it) }
+                val converted = parameter.fir.defaultValue?.let { defaultContext.convertExpecting(it, parameter.resolvedReturnType) }
                     ?: context.omittedArgument(delegation, parameter, value.type)
                 actions += Declare(value, converted,
                     targetOwned = context(program.checkerContext) { parameter.isUnique() })
                 parentArguments[key] = value
+            }
+            deferredChecks.forEach { (parameter, evaluated) ->
+                val variable = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
+                program.passSuperArgument(parameter, variable, context.checkedCast(evaluated, variable.type), actions, parentArguments)
             }
             initialize(parent, parentArguments, delegated = true)
         } else {
@@ -186,7 +227,7 @@ fun constructionBody(
         for (declaration in declaring.fir.declarations.takeUnless { delegatesWithinClass }.orEmpty()) {
             when (declaration) {
                 is FirProperty -> declaration.initializer?.let { initializer ->
-                    val value = initializerContext(declaration).convert(initializer)
+                    val value = initializerContext(declaration).convertExpecting(initializer, declaration.returnTypeRef.coneType)
                     val property = program.embedProperty(declaration.symbol)
                     val field = (property.getter as? BackingFieldGetter)?.field
                     if (field != null && field !is UserFieldEmbedding) throw UnsupportedFeatureException(

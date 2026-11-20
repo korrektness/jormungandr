@@ -105,12 +105,12 @@ fun StmtConversionContext.convertOwnObserverCall(
     symbol: FirFunctionSymbol<*>,
 ): ExpEmbedding {
     val arguments = if (call.resolvedArgumentMapping == null) {
-        call.contextAndExplicitArguments.map { convert(it) }
+        call.contextAndExplicitArguments.map { convertArgumentOf(call, it) }
     } else {
-        val values = call.parameterArguments(symbol).associate { (parameter, argument) -> parameter to convert(argument) }
+        val values = call.parameterArguments(symbol).associate { (parameter, argument) -> parameter to convertArgumentOf(call, argument) }
         symbol.signatureParameterSymbols.map { parameter ->
             values[parameter] ?: throw UnsupportedFeatureException(call.source, "Omitted observer argument in class law")
         }
     }
-    return expansion.call(symbol, listOf(convert(call.dispatchReceiver!!)) + arguments)
+    return expansion.call(symbol, listOf(convertArgumentOf(call, call.dispatchReceiver!!)) + arguments)
 }

@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirSpreadArgumentExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
@@ -31,7 +30,7 @@ fun StmtConversionContext.convertVarargArray(
         if (element is FirSpreadArgumentExpression) {
             VarargPart.Spread(convert(element.expression), ownsBefore(call, element.expression))
         } else {
-            VarargPart.Element(convert(element))
+            VarargPart.Element(convertExpecting(element, argument?.coneElementTypeOrNull))
         }
     }
     val array = freshAnonVar(type)
@@ -40,10 +39,6 @@ fun StmtConversionContext.convertVarargArray(
         access = true
     })
 }
-
-/** [argument] as [call] passes it for a parameter of type [type]: arguments for a vararg parameter become its array. */
-fun StmtConversionContext.convertArgument(call: FirElement, argument: FirExpression, type: TypeEmbedding): ExpEmbedding =
-    if (argument is FirVarargArgumentsExpression) convertVarargArray(call, argument, type) else convert(argument)
 
 /** The value [call] passes for [parameter] of type [type], which it omits and which has no default value. */
 fun StmtConversionContext.omittedArgument(call: FirElement, parameter: FirValueParameterSymbol, type: TypeEmbedding): ExpEmbedding {

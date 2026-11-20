@@ -252,7 +252,7 @@ class RuntimeTypeDomain(typeResolver: TypeResolver, usesUnsigned: Boolean = fals
             }
         }
         typeResolver.classTypeEmbeddings().forEach { type ->
-            typeResolver.lookupSuperTypes(type.name).forEach { superType ->
+            (typeResolver.lookupSuperTypes(type.name) + typeResolver.lookupRuntimeSuperTypes(type.name)).distinct().forEach { superType ->
                 axiom {
                     type.runtimeType subtype superType.runtimeType
                 }

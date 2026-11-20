@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
+import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.common.PurityCondition
 import org.jetbrains.kotlin.formver.common.PurityRule
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
@@ -20,7 +21,7 @@ import org.jetbrains.kotlin.formver.core.purity.isPure
 internal fun StmtConversionContext.convertReturn(expression: FirReturnExpression): ExpEmbedding {
     val value = when (expression.result) {
         is FirUnitExpression -> UnitLit
-        else -> convert(expression.result)
+        else -> convertExpecting(expression.result, expression.target.labeledElement.returnTypeRef.coneType)
     }
     checkPureResult(expression, value)
     val target = resolveReturnTarget(expression.target.labelName)

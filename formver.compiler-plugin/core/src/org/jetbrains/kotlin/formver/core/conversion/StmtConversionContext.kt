@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.isBoolean
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
@@ -198,10 +199,15 @@ fun FirPropertySymbol.findFinalParentProperty(): FirPropertySymbol? =
  *
  * If final backing field is not found, we lazily create a getter/setter pair for this
  * `FirIntersectionOverrideProperty`.
+ *
+ * An explicit receiver is converted by [convertReceiver] where Kotlin expects the type the property declares for it.
  */
 fun StmtConversionContext.embedPropertyAccess(
     accessExpression: FirPropertyAccessExpression,
     accessElement: FirElement = accessExpression,
+    convertReceiver: StmtConversionContext.(FirExpression, ConeKotlinType?) -> ExpEmbedding = { receiver, expected ->
+        convertExpecting(receiver, expected)
+    },
 ): PropertyAccessEmbedding {
     accessExpression.calleeReference.symbol?.let { capturedAccess(it) }?.let { return it }
     return when (val calleeSymbol = accessExpression.calleeReference.symbol) {
@@ -221,7 +227,7 @@ fun StmtConversionContext.embedPropertyAccess(
                     val uncast = receiver.withoutCasts()
                     val converted = if (constructing != null && hasConstructionStorage && uncast is FirThisReceiverExpression)
                         convertConstructionStorageReceiver(receiver)
-                    else convert(receiver)
+                    else convertReceiver(receiver, calleeSymbol.dispatchReceiverType)
                     val usesConstructionStorage = hasConstructionStorage && constructionPhases?.phaseTwoBefore(accessElement) != true
                     if (constructing != null && converted.ignoringCastsAndMetaNodes() == constructing && usesConstructionStorage) {
                         object : PropertyAccessEmbedding {
@@ -237,7 +243,8 @@ fun StmtConversionContext.embedPropertyAccess(
                 accessExpression.extensionReceiver != null -> {
                     val property = embedProperty(calleeSymbol)
                     val receiver = accessExpression.extensionReceiver!!
-                    ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
+                    val converted = convertReceiver(receiver, calleeSymbol.resolvedReceiverType)
+                    ClassPropertyAccess(converted, property, type, ownsFor(accessElement, receiver, property))
                 }
 
                 else -> topLevelAccessorAccess(calleeSymbol) ?: embedLocalProperty(calleeSymbol).let { variable ->
@@ -263,7 +270,7 @@ fun StmtConversionContext.embedPropertyAccess(
 
         is FirDelegateFieldSymbol -> delegateAccess(accessExpression, calleeSymbol)
 
-        is FirFieldSymbol -> javaFieldAccess(accessExpression, calleeSymbol)
+        is FirFieldSymbol -> javaFieldAccess(accessExpression, calleeSymbol, convertReceiver)
 
         else ->
             error("Property access symbol $calleeSymbol has unsupported type.")
@@ -337,9 +344,11 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
     val member = callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString()
     reportWarning(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, access.source, KotlinCondition.UncheckedLibraryCall(member)))
     val arguments = (access as? FirFunctionCall)?.contextAndExplicitArguments.orEmpty()
+    val expected = access.declaredArgumentTypes(callee)
+    val evaluated = evaluateOperands((listOf(receiver) + arguments).map { operand(it, expected[it]) })
     return Block {
-        add(convert(receiver))
-        arguments.forEach { add(convert(it)) }
+        addAll(evaluated.declarations)
+        addAll(evaluated.values)
         if (mayThrow()) add(NonDeterministically(exceptionalExit()))
         add(unconstrainedValue(embedType(access.resolvedType)))
     }

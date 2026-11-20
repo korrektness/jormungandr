@@ -200,21 +200,27 @@ method lazyLabel(v_this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(v_this), anyType())
   ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
 {
-  var anon_11: Ref
   var anon_12: Ref
+  var anon_2: Ref
   var anon_13: Ref
-  var anon_0: Ref
   var anon_14: Ref
+  var anon_0: Ref
+  var anon_15: Ref
   var anon_1: Ref
   inhale isSubtype(typeOf(v_this), NamedFile())
   inhale isSubtype(typeOf(anon_0), Lazy())
-  anon_13 := anon_0
+  anon_14 := anon_0
   inhale isSubtype(typeOf(anon_1), KProperty1())
-  anon_14 := anon_1
-  anon_12 := getValue(anon_13, v_this, anon_14)
-  anon_11 := anon_12
-  inhale isSubtype(typeOf(anon_11), nullable(stringType()))
-  v_ret_0 := anon_11
+  anon_15 := anon_1
+  anon_13 := getValue(anon_14, v_this, anon_15)
+  anon_2 := anon_13
+  inhale isSubtype(typeOf(anon_2), nullable(stringType()))
+  if (isSubtype(typeOf(anon_2), stringType())) {
+    inhale isSubtype(typeOf(anon_2), stringType())
+    anon_12 := anon_2
+  } else {
+    inhale false}
+  v_ret_0 := anon_12
   goto lbl_ret_0
   label lbl_ret_0
 }

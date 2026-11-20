@@ -159,7 +159,7 @@ fun constructorInitializerConditions(
             }
         if (superConstructor != null && superArgumentsStable) {
             val superArguments = delegation.parameterArguments(superConstructor).map { (parameter, argument) ->
-                SubstitutedArgument.ValueParameter(parameter) to context.convert(argument)
+                SubstitutedArgument.ValueParameter(parameter) to context.convertExpecting(argument, parameter.resolvedReturnType)
             }.toMap().toMutableMap<SubstitutedArgument, ExpEmbedding>()
             superArguments[SubstitutedArgument.DispatchThis] = receiver
             for (parameter in superConstructor.signatureParameterSymbols) {

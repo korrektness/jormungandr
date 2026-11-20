@@ -26,6 +26,16 @@ fun divide(numerator: Int, denominator: Int): Int {
 An annotation on a class applies to every declaration in the class: its construction, its members and its nested
 classes.
 
+Every value has its static Kotlin type. A value of a type bound to an external-specification model also has that
+type's Kotlin supertypes. A platform-typed value, such as the result of a Java call, may be null. Used as the receiver
+of a call or property read, as an argument or vararg element for a non-null parameter (including a default and a
+`super` constructor argument), as a comparison operand, as a returned value, or as an initializer or assigned value of
+a non-null type, a null platform-typed value throws, and evaluation otherwise continues with a value of the expected
+type. A receiver or explicit argument of a non-primitive type throws once every receiver and explicit argument of its
+call or write, including the assigned value, is evaluated, where the call or write would happen; one of a primitive
+type throws as it is evaluated. As a condition, or as an operand of an array, range, `StringBuilder`, `Map.Entry`
+component or collection higher-order operation that SnaKt translates directly, it is a possibly null value.
+
 The body of a custom property getter or setter is verified too, against the contract its callers use, which states
 nothing beyond the Kotlin types of its receivers, parameters and result. A `@Pure` getter is a pure function instead.
 A read of a top-level property with a custom getter calls the getter, and a write to a top-level property with a
@@ -51,7 +61,7 @@ still verified. The call may throw, and its result is some value of its type. Th
 
 A write to a Java field is dropped, as a write through a shared path is (see
 [Unique and shared paths](#unique-and-shared-paths)); a later read gives an arbitrary value. An access of a Java field
-through a receiver of platform type may throw, since the receiver may be null.
+through a null receiver of platform type throws.
 
 A read of a local or final delegated property calls its delegate's `getValue`, and a write calls `setValue`, under
 that function's contract; with none, the call is opaque. The delegate of a property that is not local is an arbitrary
@@ -1199,7 +1209,7 @@ verify(visited == values.size)
 Verification establishes postconditions and Kotlin return effects on normal
 return. `throw`, failed `require` and `check`, `error`, `!!` on null,
 failed `as` casts, a read of an unassigned `lateinit` property, and a null
-platform-typed value assigned to a declared non-null type leave abnormally.
+platform-typed value at a use listed under [Verification Control](#verification-control) leave abnormally.
 Their operands are evaluated first.
 Casts and `!!` in specifications and `@Pure` bodies follow
 [Pure functions and specifications](#pure-functions-and-specifications).

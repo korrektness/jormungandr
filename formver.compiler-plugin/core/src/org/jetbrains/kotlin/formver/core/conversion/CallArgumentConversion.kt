@@ -8,10 +8,12 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.formver.core.parameterArguments
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
@@ -26,10 +28,10 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  *
  * The arguments are evaluated in Kotlin's order: receivers, context arguments, the explicit arguments as written, then
  * the default of each omitted parameter in parameter order; an omitted vararg parameter without a default receives an
- * empty array. A default may read the parameters before it, so it is converted with those parameters bound to the
- * arguments already evaluated, and with the callee's uniqueness facts, which own a path through a `@Unique` parameter.
- * An argument omitted for a function compiled without its source follows SPECIFICATIONS.md, "Inline functions and
- * default arguments".
+ * empty array. The null checks that [CallOperand] defers follow them all. A default may read the parameters before it, so
+ * it is converted with those parameters bound to the arguments already evaluated, and with the callee's uniqueness
+ * facts, which own a path through a `@Unique` parameter. An argument omitted for a function compiled without its source
+ * follows SPECIFICATIONS.md, "Inline functions and default arguments".
  */
 @OptIn(SymbolInternals::class)
 fun StmtConversionContext.insertCallWithMappedArguments(
@@ -47,16 +49,22 @@ fun StmtConversionContext.insertCallWithMappedArguments(
 
     val declarations = mutableListOf<Declare>()
     val bound = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
-    fun bind(parameter: SubstitutedArgument, value: ExpEmbedding) {
-        val (declaration, usage) = argumentDeclaration(value, formalTypes.getValue(parameter))
+    val deferredChecks = mutableMapOf<SubstitutedArgument, ConeKotlinType>()
+    fun bind(parameter: SubstitutedArgument, operand: CallOperand) {
+        val type = if (operand.deferredCheck == null) formalTypes.getValue(parameter) else operand.value.type
+        val (declaration, usage) = argumentDeclaration(operand.value, type)
         declarations.addIfNotNull(declaration)
         bound[parameter] = usage
+        operand.deferredCheck?.let { deferredChecks[parameter] = it }
     }
+    fun bind(parameter: SubstitutedArgument, value: ExpEmbedding) = bind(parameter, CallOperand(null, value))
 
-    receivers.forEach { (parameter, receiver) -> bind(parameter, convert(receiver)) }
+    val expected = call.declaredArgumentTypes(symbol)
+    receivers.forEach { (parameter, receiver) -> bind(parameter, operand(receiver, expected[receiver])) }
     call.parameterArguments(symbol).forEach { (parameterSymbol, argument) ->
         val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
-        bind(parameter, convertArgument(call, argument, formalTypes.getValue(parameter)))
+        if (argument is FirVarargArgumentsExpression) bind(parameter, convertVarargArray(call, argument, formalTypes.getValue(parameter)))
+        else bind(parameter, operand(argument, expected[argument]))
     }
     val calleeAnalysis = uniquenessAnalysisOf(symbol)
     for (parameterSymbol in symbol.signatureParameterSymbols) {
@@ -79,9 +87,10 @@ fun StmtConversionContext.insertCallWithMappedArguments(
             ),
             parent = this,
         )
-        bind(parameter, withMethodCtx(defaultCtx) { convert(defaultValue) })
+        bind(parameter, withMethodCtx(defaultCtx) { convertExpecting(defaultValue, parameterSymbol.resolvedReturnType) })
     }
 
+    deferredChecks.forEach { (parameter, type) -> bound[parameter] = checkedCast(bound.getValue(parameter), embedType(type)) }
     val result = withCallSite(call) { callee.insertCall(parameters.map { bound.getValue(it) }, this, returnType) }
     return if (declarations.isEmpty()) result else Block {
         addAll(declarations)

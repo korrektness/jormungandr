@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.utils.isStatic
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirGetClassCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
@@ -21,6 +22,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFieldSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.types.ConeFlexibleType
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.isNothing
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
@@ -137,25 +140,25 @@ private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropert
 
 /**
  * An access of the Java field [symbol] other than a static read: a read gives an arbitrary value of the field's type and
- * reports `OPAQUE_CALL`, and a write is dropped, as a write to shared state is. Through a receiver of platform type,
- * which may be null, the access may throw.
+ * reports `OPAQUE_CALL`, and a write is dropped, as a write to shared state is. A null receiver of platform type throws.
+ * The receiver is converted by [convertReceiver] where Kotlin expects the field's declaring class.
  */
 internal fun StmtConversionContext.javaFieldAccess(
     access: FirPropertyAccessExpression,
     symbol: FirFieldSymbol,
+    convertReceiver: StmtConversionContext.(FirExpression, ConeKotlinType?) -> ExpEmbedding,
 ): PropertyAccessEmbedding {
     val receiver = access.dispatchReceiver?.takeIf { !symbol.isStatic }
-    val evaluated = receiver?.let { convert(it) }
-    val dereference = receiver?.let { platformDereferenceMayThrow(it) }
+    val evaluated = receiver?.let { convertReceiver(it, symbol.dispatchReceiverType) }
     return object : PropertyAccessEmbedding {
         override fun getValue(ctx: StmtConversionContext): ExpEmbedding {
             ctx.reportOpaqueCall(access.source, symbol, KotlinCondition.OpaqueReason.READ_NO_MODEL)
             val value = ctx.unconstrainedValue(ctx.embedType(symbol.resolvedReturnType))
-            return listOfNotNull(evaluated, dereference, value).toBlock()
+            return listOfNotNull(evaluated, value).toBlock()
         }
 
         override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding =
-            listOfNotNull(evaluated, value, dereference, UnitLit).toBlock()
+            listOfNotNull(evaluated, value, UnitLit).toBlock()
     }
 }
 
@@ -164,6 +167,6 @@ internal fun StmtConversionContext.convertGetClassCall(getClassCall: FirGetClass
     val value = unconstrainedValue(embedType(getClassCall.resolvedType))
     return when (val argument = getClassCall.argument) {
         is FirResolvedQualifier, is FirResolvedReifiedParameterReference -> value
-        else -> listOfNotNull(convert(argument), platformDereferenceMayThrow(argument), value).toBlock()
+        else -> listOf(convertExpecting(argument, (argument.resolvedType as? ConeFlexibleType)?.lowerBound), value).toBlock()
     }
 }

@@ -242,7 +242,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             if (symbol != null && expansion.isOwnAccess(propertyAccessExpression)) {
                 if (data.isGuaranteedDefaultProperty(symbol)) {
                     expansion.initializedField(symbol)?.let { return it }
-                } else return expansion.call(symbol, listOf(data.convert(propertyAccessExpression.dispatchReceiver!!)))
+                } else return expansion.call(symbol, listOf(data.convertArgumentOf(propertyAccessExpression, propertyAccessExpression.dispatchReceiver!!)))
             }
         }
         data.reportOpaqueLibraryRead(propertyAccessExpression)
@@ -297,9 +297,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (arguments.size != 2) {
             throw SnaktInternalException(comparisonExpression.source, "Comparison has ${arguments.size} operands.")
         }
-        val left = data.convert(arguments[0])
-        val right = data.convert(arguments[1])
-        return comparisonTemplate.retrieve(comparisonExpression.operation)(left, right)
+        val operands = arguments.map { data.operandOf(comparisonExpression.compareToCall, it) }
+        return data.evaluateOperands(operands).around { (left, right) ->
+            comparisonTemplate.retrieve(comparisonExpression.operation)(left, right)
+        }
     }
 
     private interface ComparisonExpEmbeddingsTemplate {
@@ -329,9 +330,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     private fun List<FirExpression>.withVarargsHandled(data: StmtConversionContext, call: FirElement, function: CallableEmbedding?) =
         flatMap { arg ->
             when {
-                arg !is FirVarargArgumentsExpression -> listOf(data.convert(arg))
-                function?.isVerifyFunction == true -> data.withNoScope { arg.arguments.map { this.convert(it) } }
-                else -> listOf(data.convertVarargArray(call, arg, data.embedType(arg.resolvedType)))
+                arg !is FirVarargArgumentsExpression -> listOf(data.operandOf(call, arg))
+                function?.isVerifyFunction == true -> data.withNoScope { arg.arguments.map { operand(it, arg.coneElementTypeOrNull) } }
+                else -> listOf(CallOperand(arg, data.convertVarargArray(call, arg, data.embedType(arg.resolvedType))))
             }
         }
 
@@ -381,7 +382,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                     ?: functionCall.arguments.getOrNull(1)
                 val message = messageArg?.let { data.convert(it).ignoringMetaNodes() }
                 if (message == null || message is LambdaExp) {
-                    val condition = data.convert(conditionArg)
+                    val condition = data.convertArgumentOf(functionCall, conditionArg)
                     val failure = Block {
                         if (message is LambdaExp) add(data.withCallSite(functionCall) { message.insertCall(emptyList(), this) })
                         add(data.exceptionalExit())
@@ -391,7 +392,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
             if (id.callableName.asString() == "error") {
                 return Block {
-                    functionCall.arguments.forEach { add(data.convert(it)) }
+                    functionCall.arguments.forEach { add(data.convertArgumentOf(functionCall, it)) }
                     add(data.exceptionalExit())
                 }
             }
@@ -407,8 +408,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (!passedPositionally) {
             return data.insertCallWithMappedArguments(functionCall, symbol, callee, returnType)
         }
-        val args = functionCall.functionCallArguments.withVarargsHandled(data, functionCall, callee)
-        return data.withCallSite(functionCall) { callee.insertCall(args, this, returnType) }
+        val operands = functionCall.functionCallArguments.withVarargsHandled(data, functionCall, callee)
+        return data.evaluateOperands(operands).around { args ->
+            data.withCallSite(functionCall) { callee.insertCall(args, this, returnType) }
+        }
     }
 
     override fun visitImplicitInvokeCall(
@@ -424,19 +427,23 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         val returnType = data.embedType(implicitInvokeCall.resolvedType)
         val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
-        val args = implicitInvokeCall.contextAndExplicitArguments.withVarargsHandled(data, implicitInvokeCall, function = null)
+        val arguments = implicitInvokeCall.contextAndExplicitArguments.withVarargsHandled(data, implicitInvokeCall, function = null)
         val isMember = receiverSymbol is FirPropertySymbol && !receiverSymbol.isLocal
         return when (val exp = if (isMember || data.capturedAccess(receiverSymbol) != null) null
             else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
             is LambdaExp -> {
                 // The lambda is already the receiver, so we do not need to convert it.
                 // TODO: do this more uniformly: convert the receiver, see it is a lambda, use insertCall on it.
-                data.withCallSite(implicitInvokeCall) { exp.insertCall(args, this, returnType) }
+                data.evaluateOperands(arguments).around { args ->
+                    data.withCallSite(implicitInvokeCall) { exp.insertCall(args, this, returnType) }
+                }
             }
 
             else -> {
-                InvokeFunctionObject(data.convert(receiver), args, returnType,
-                    data.exceptionalExit().takeIf { data.mayThrow() })
+                val operands = listOf(data.operandOf(implicitInvokeCall, receiver)) + arguments
+                data.evaluateOperands(operands).around { values ->
+                    InvokeFunctionObject(values.first(), values.drop(1), returnType, data.exceptionalExit().takeIf { data.mayThrow() })
+                }
             }
         }
     }
@@ -529,10 +536,16 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         }
         data.delegatedWrite(lValue, variableAssignment.rValue)?.let { return it }
-        val embedding = data.embedPropertyAccess(lValue, variableAssignment)
-        val convertedRValue = data.platformNullCheck(
-            variableAssignment.rValue, data.convert(variableAssignment.rValue), lValue.resolvedType,
-        )
+        val evaluations = mutableListOf<Declare>()
+        val embedding = data.embedPropertyAccess(lValue, variableAssignment) { receiver, expected ->
+            val operand = operand(receiver, expected)
+            val check = operand.deferredCheck ?: return@embedPropertyAccess operand.value
+            val evaluated = declareAnonVar(operand.value.type, operand.value).also(evaluations::add)
+            checkedCast(evaluated.variable, embedType(check))
+        }
+        val rValue = data.convertExpecting(variableAssignment.rValue, lValue.resolvedType)
+        val convertedRValue = if (evaluations.isEmpty()) rValue
+            else data.declareAnonVar(rValue.type, rValue).also(evaluations::add).variable
         val assignment = embedding.setValue(convertedRValue, data)
         val sharedSetterCall = embedding is ClassPropertyAccess && embedding.property.setter is CustomSetter &&
             !embedding.receiverOwned
@@ -549,9 +562,13 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (droppedWrite != null) {
             lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, droppedWrite.receiverOwned) }
         }
-        if (assignment !is Assign) return assignment
-        val lValuePath = data.ownershipFrame.pathOf(lValue) ?: return assignment
-        return assignment.copy(targetOwned = data.ownershipFrame.ownsAfter(variableAssignment, lValuePath))
+        val owned = (assignment as? Assign)?.let { assign ->
+            data.ownershipFrame.pathOf(lValue)?.let { assign.copy(targetOwned = data.ownershipFrame.ownsAfter(variableAssignment, it)) }
+        } ?: assignment
+        return if (evaluations.isEmpty()) owned else Block {
+            addAll(evaluations)
+            add(owned)
+        }
     }
 
     override fun visitSmartCastExpression(

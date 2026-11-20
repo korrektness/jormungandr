@@ -891,10 +891,13 @@ class ProgramConverter(
     private val observerBindingRegistry = ObserverBindingRegistry()
     internal val lawEncoding = LawEncoding(this)
 
-    /** Returns an embedding of the class type, with details set. */
+    /**
+     * Returns an embedding of the class type, with details set. A class bound to an external-specification model embeds
+     * as the model, whose values also have the class's Kotlin supertypes.
+     */
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
         localCaptures.names.require(symbol.classId.embedName(), symbol, symbol.classId.isLocal, symbol.name)
-        session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it).also { trust.recordBinding(symbol) } }
+        session.externalSpecifications?.modelClass(symbol)?.let { return embedModelClass(symbol, it) }
         observerBindingRegistry.registerClass(this, symbol)
         if (symbol.classId == GenericArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, GenericArrayEmbedding.classType)
