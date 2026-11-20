@@ -78,10 +78,11 @@ class PortCorrespondenceTest {
     }
 
     @Test
-    fun `wire pre-fix fixtures match their vendored revisions and labelled deviations`() = checker { checker ->
+    fun `wire fixtures match their vendored revisions and labelled deviations`() = checker { checker ->
         val fixtures = listOf(
             Triple("wire-85803bb99", "7b4aeac3ef0acb19cb248f5ffbc3cb0c4b5d5c09ca2558801407893d625059f3", "lengthOverflowPreCve63126"),
             Triple("wire-50ba803e8", "1096d83f2b173efaadb3adfa0cc24439fafdeba279c95b7cd6f1cdc4d47aa52b", "negativeLengthPreGhsa7xpr"),
+            Triple("wire-bb1dd687f", "d6598eda86e71e8eff5be798e40a8100e0777a1f501b111e963fc2115a081e15", "ByteArrayProtoReader32"),
         )
         val directory = data.resolve("programs/ports/wire")
         for ((revision, sha256, name) in fixtures) {
