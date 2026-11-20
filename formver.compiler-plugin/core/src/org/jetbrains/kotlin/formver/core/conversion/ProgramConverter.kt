@@ -628,7 +628,7 @@ class ProgramConverter(
         terminationMeasures.embed(signature, measureCalls.mapNotNull { it.decreasesCall() }, preconditionContext) { source, rule ->
             if (symbol == registeredSymbol) emit(Failure(FailureKind.INVALID_TERMINATION_MEASURE, source, TerminationCondition(rule)))
         }
-        val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it, preconditionStatements) } ?: emptyList()
+        val preconditions = firSpec.precond?.let { preconditionContext.collectPreconditions(symbol, it, preconditionStatements) } ?: emptyList()
         val postconditions = firSpec.postcond?.let { postconditionContext.collectInvariants(it) } ?: emptyList()
 
         checkVarReads(declaration, holderAnalysis) { source ->

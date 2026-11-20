@@ -33,6 +33,9 @@ object OperatorExpEmbeddings {
         value ne 0.toExp(), SourceRole.Arithmetic(KotlinCondition.DivisionByZero(operation)).asInfo
     )
 
+    private fun stringIndex(bound: Exp, kind: KotlinCondition.StringBound): Exp =
+        Exp.WithInfo(bound, SourceRole.StringIndexCheck(KotlinCondition.StringIndex("get", "index", kind)).asInfo)
+
     private fun quotient(a: Exp, b: Exp): Exp {
         fun abs(x: Exp) = Exp.TernaryExp(x lt 0.toExp(), Exp.Minus(x), x)
         val magnitude = Exp.Div(abs(a), abs(b))
@@ -310,9 +313,10 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.SeqIndex(args[0], args[1], pos, info) }
         additionalConditions {
             precondition {
+                val index = intInjection.fromRef(args[1])
                 listOf(
-                    intInjection.fromRef(args[1]) ge 0.toExp(),
-                    intInjection.fromRef(args[1]) lt Exp.SeqLength(stringInjection.fromRef(args[0]))
+                    stringIndex(index ge 0.toExp(), KotlinCondition.StringBound.NEGATIVE),
+                    stringIndex(index lt Exp.SeqLength(stringInjection.fromRef(args[0])), KotlinCondition.StringBound.NOT_BELOW_LENGTH),
                 ).toConjunction()
             }
         }

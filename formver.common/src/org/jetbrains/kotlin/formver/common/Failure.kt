@@ -136,6 +136,9 @@ sealed interface KotlinCondition {
     enum class Bound { NEGATIVE, NOT_BELOW_SIZE, ABOVE_SIZE }
     data class Index(val collection: Collection, val symbol: FirBasedSymbol<*>?, val bound: Bound) : KotlinCondition
     data class SubList(val symbol: FirBasedSymbol<*>?, val negative: Boolean) : KotlinCondition
+    enum class StringBound { NEGATIVE, NOT_BELOW_LENGTH, ABOVE_LENGTH, START_AFTER_END }
+    /** A bound on [index], the index parameter of the `String` member [member], that a call must respect. */
+    data class StringIndex(val member: String, val index: String, val bound: StringBound) : KotlinCondition
     enum class OwnershipSite { UNFOLD, FOLD, CONSTRUCTION, HAVOC, LOOP_HEAD, PRECONDITION, POSTCONDITION }
     data class Ownership(val path: String, val site: OwnershipSite, val function: String? = null) : KotlinCondition
     enum class OverrideClause { PRECONDITION, POSTCONDITION, THROWS_ONLY_IF }

@@ -220,6 +220,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 "Could not establish `${predicate(condition.predicate)}` when the function returns$value."
             }
             is KotlinCondition.Index -> indexMessage(condition)
+            is KotlinCondition.StringIndex -> stringIndexMessage(condition)
             is KotlinCondition.SubList -> {
                 val bound = if (condition.negative) "has no negative index" else "ends within its size"
                 "Could not establish that the sub-list range of ${collection(KotlinCondition.Collection.LIST, condition.symbol)} $bound."
@@ -259,6 +260,16 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.Bound.NOT_BELOW_SIZE, KotlinCondition.Bound.ABOVE_SIZE -> "is less than its size"
         }
         return "Could not establish that the index into ${collection(condition.collection, condition.symbol)} $bound."
+    }
+
+    private fun stringIndexMessage(condition: KotlinCondition.StringIndex): String {
+        val bound = when (condition.bound) {
+            KotlinCondition.StringBound.NEGATIVE -> "is not negative"
+            KotlinCondition.StringBound.NOT_BELOW_LENGTH -> "is less than the string's length"
+            KotlinCondition.StringBound.ABOVE_LENGTH -> "is at most the string's length"
+            KotlinCondition.StringBound.START_AFTER_END -> "is at most the end index"
+        }
+        return "Could not establish that '${condition.index}' of 'String.${condition.member}' $bound."
     }
 
     private fun proofMessage(condition: KotlinCondition.Proof): String {

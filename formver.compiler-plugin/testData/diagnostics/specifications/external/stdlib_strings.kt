@@ -15,7 +15,7 @@ fun <!VIPER_TEXT!>substringBasics<!>() {
 }
 
 fun <!VIPER_TEXT!>substringBounds<!>() {
-    <!VIPER_VERIFICATION_ERROR!>"hello".substring(2, 6)<!>
+    <!POSSIBLE_INDEX_OUT_OF_BOUND!>"hello".substring(2, 6)<!>
 }
 
 fun <!VIPER_TEXT!>substringWrongCharacter<!>() {

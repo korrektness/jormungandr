@@ -41,6 +41,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
                 SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE -> KotlinCondition.Bound.NOT_BELOW_SIZE
             },
         )
+        is SourceRole.StringIndexCheck -> role.condition
         is SourceRole.SubListCreation -> KotlinCondition.SubList(collectionSymbol(), role is SourceRole.SubListCreation.CheckNegativeIndices)
         is SourceRole.Ownership -> role.toCondition()
         is SourceRole.OverrideRefinement -> KotlinCondition.Override(
@@ -89,7 +90,7 @@ private fun KotlinCondition.failureKind(): FailureKind = when (this) {
     is KotlinCondition.DivisionByZero -> FailureKind.DIVISION_BY_ZERO
     is KotlinCondition.CastFailure -> FailureKind.CAST_NOT_ESTABLISHED
     KotlinCondition.NullAssertion -> FailureKind.NULL_ASSERTION_NOT_ESTABLISHED
-    is KotlinCondition.Index -> FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND
+    is KotlinCondition.Index, is KotlinCondition.StringIndex -> FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND
     is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
     is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
     is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
@@ -151,7 +152,7 @@ private fun VerificationError.collectionSymbol() =
 private fun VerificationError.lookupSourceRole(): SourceRole? {
     fun applicable(role: SourceRole?): SourceRole? = when (role) {
         is SourceRole.Arithmetic, is SourceRole.CastCheck, is SourceRole.Proof, is SourceRole.ReturnsEffect, is SourceRole.ConditionalEffect,
-        is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck,
+        is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck, is SourceRole.StringIndexCheck,
         is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
         is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
         is SourceRole.Condition, SourceRole.ThrowsAssumption, null -> null
@@ -160,7 +161,7 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
     // A termination failure's reason names the function whose measure does not decrease, not a proposition.
     val proposition = if (result.reason().offendingNode() !is viper.silver.ast.Exp) null
         else applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
-    return if (proposition is SourceRole.Arithmetic || proposition is SourceRole.CastCheck) proposition
+    return if (proposition is SourceRole.Arithmetic || proposition is SourceRole.CastCheck || proposition is SourceRole.StringIndexCheck) proposition
         else if (location is SourceRole.Proof && proposition is SourceRole.ObserverAccess) proposition
         else location ?: proposition
 }

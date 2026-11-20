@@ -30,8 +30,10 @@ data class WithPosition(
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
 }
 
+/** Marks each of these contract clauses of [declaration] as a [clause], except a clause that states a `String` index bound. */
 fun List<ExpEmbedding>.withProofClause(clause: KotlinCondition.ProofClause, declaration: FirFunctionSymbol<*>): List<ExpEmbedding> =
     map { exp ->
+        if (exp is WithPosition && exp.sourceRole is SourceRole.StringIndexCheck) return@map exp
         val source = (exp as? WithPosition)?.source ?: declaration.source
             ?: throw SnaktInternalException(null, "An explicit specification has no Kotlin source.")
         WithPosition(exp, source, SourceRole.Proof(clause, declaration))

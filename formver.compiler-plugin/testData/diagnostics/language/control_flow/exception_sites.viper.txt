@@ -578,8 +578,8 @@ method message(this: Ref) returns (ret_2: Ref)
 function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
   requires isSubtype(typeOf(v_this_extension), stringType())
   requires isSubtype(typeOf(startIndex), intType())
-  requires intFromRef(startIndex) >= 0 &&
-    intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
   ensures isSubtype(typeOf(result), stringType())
   ensures |stringFromRef(result)| ==
     (let anon_builtin_neg1 ==

@@ -46,6 +46,9 @@ sealed interface SourceRole {
         }
     }
 
+    /** A bound on an index argument that a modelled `String` member requires. */
+    data class StringIndexCheck(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition.StringIndex) : SourceRole
+
     /**
      * A permission SnaKt generates for an owned path, which the uniqueness checker guarantees is available. [path] is
      * the path as the Kotlin source spells it, ready for messages.

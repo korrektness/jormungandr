@@ -1,0 +1,297 @@
+/string_index_bounds.kt: info: Generated Viper text for getNegative:
+method getNegative(s: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := stringGet(s, i)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for getPastLength:
+method getPastLength(s: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := stringGet(s, i)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for getGuarded:
+method getGuarded(s: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := stringGet(s, i)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for substringNegativeStart:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method substringNegativeStart(s: Ref, a: Ref, b: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) <= intFromRef(b) &&
+    intFromRef(b) <= |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := substringModel(s, a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for substringStartAfterEnd:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method substringStartAfterEnd(s: Ref, a: Ref, b: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0 && intFromRef(b) <= |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := substringModel(s, a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for substringEndPastLength:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method substringEndPastLength(s: Ref, a: Ref, b: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0 && intFromRef(a) <= intFromRef(b)
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := substringModel(s, a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for substringGuarded:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method substringGuarded(s: Ref, a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0 && intFromRef(a) <= intFromRef(b) &&
+    intFromRef(b) <= |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := substringModel(s, a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for suffixNegative:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method suffixNegative(s: Ref, a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) <= |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := suffixModel(s, a)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for suffixPastLength:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method suffixPastLength(s: Ref, a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := suffixModel(s, a)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_index_bounds.kt: info: Generated Viper text for suffixGuarded:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method suffixGuarded(s: Ref, a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) >= 0 && intFromRef(a) <= |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := suffixModel(s, a)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
