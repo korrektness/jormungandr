@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings.properties
 
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
+import org.jetbrains.kotlin.formver.core.conversion.mayThrow
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.withNewTypeInvariants
@@ -24,7 +25,7 @@ class ClassPropertyAccess(
 ) : PropertyAccessEmbedding {
     override fun getValue(ctx: StmtConversionContext): ExpEmbedding {
         val getter = property.getter!!
-        val value = if (getter is CustomGetter && ctx.activeCatchLabels.isNotEmpty())
+        val value = if (getter is CustomGetter && ctx.mayThrow())
             getter.getterMethod.insertCall(listOf(receiver), ctx, type)
         else getter.getValue(receiver, ctx.typeResolver, receiverOwned)
         return value.withNewTypeInvariants(type, ctx.typeResolver) {

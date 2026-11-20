@@ -11,6 +11,12 @@ import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.Position
 
 sealed interface SourceRole {
+    /**
+     * The assumption of a callee's `throwsOnlyIf` condition on a call's exceptional path. It is made in the state the
+     * call starts from, so a failure of the condition's precondition is a failure of the call's precondition there.
+     */
+    data object ThrowsAssumption : SourceRole
+
     data class CastCheck(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     data class Arithmetic(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     /**
@@ -79,7 +85,10 @@ sealed interface SourceRole {
             PRECONDITION,
 
             /** The override's postcondition must establish the overridden postcondition. */
-            POSTCONDITION
+            POSTCONDITION,
+
+            /** The override may throw only where the overridden `throwsOnlyIf` condition permits it. */
+            THROWS_ONLY_IF,
         }
     }
 

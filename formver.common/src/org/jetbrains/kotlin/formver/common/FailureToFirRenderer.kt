@@ -225,13 +225,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 "Could not establish that the sub-list range of ${collection(KotlinCondition.Collection.LIST, condition.symbol)} $bound."
             }
             is KotlinCondition.Ownership -> ownershipMessage(condition)
-            is KotlinCondition.Override -> {
-                val reason = when (condition.clause) {
-                    KotlinCondition.OverrideClause.PRECONDITION -> "its precondition may not follow from the overridden one"
-                    KotlinCondition.OverrideClause.POSTCONDITION -> "its postcondition may not establish the overridden one"
-                }
-                "Could not establish that this override satisfies the contract of '${condition.overridden}': $reason."
-            }
+            is KotlinCondition.Override -> overrideMessage(condition)
             is KotlinCondition.Skipped -> skippedMessage(condition)
             is KotlinCondition.Translation -> translationMessage(failure.kind, condition)
             is KotlinCondition.Tool -> toolMessage(failure.kind, condition)
@@ -248,6 +242,15 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.SpecOf, is KotlinCondition.Law, is KotlinCondition.Observer, is KotlinCondition.Exposes,
             is KotlinCondition.ExternalSpec ->
                 error("Specification conditions must use their specification renderer")
+    }
+
+    private fun overrideMessage(condition: KotlinCondition.Override): String {
+        val reason = when (condition.clause) {
+            KotlinCondition.OverrideClause.PRECONDITION -> "its precondition may not follow from the overridden one"
+            KotlinCondition.OverrideClause.POSTCONDITION -> "its postcondition may not establish the overridden one"
+            KotlinCondition.OverrideClause.THROWS_ONLY_IF -> "it may throw where the overridden 'throwsOnlyIf' condition does not permit it"
+        }
+        return "Could not establish that this override satisfies the contract of '${condition.overridden}': $reason."
     }
 
     private fun indexMessage(condition: KotlinCondition.Index): String {
@@ -276,6 +279,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 null -> "Could not establish the loop invariant."
             }
             KotlinCondition.ProofClause.EXHAUSTIVE_WHEN -> "Could not establish that a branch of this exhaustive 'when' matches."
+            KotlinCondition.ProofClause.THROWS_ONLY_IF ->
+                "Could not establish the 'throwsOnlyIf' condition${condition.declaration?.let { " of '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }.orEmpty()} where an exception may leave it here."
         }
         val clause = condition.clauseSource ?: return message
         val text = clause.text?.toString()?.replace(Regex("\\s+"), " ")?.trim()?.takeIf { it.isNotEmpty() } ?: return message

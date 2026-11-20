@@ -211,6 +211,10 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
                 link(entity.overridden, Relation.IS_PART_OF, entity)
             }
 
+            is ThrowsConditionName -> {
+                link(entity.subject, Relation.IS_PART_OF, entity)
+            }
+
             is VacuityProbeName -> {
                 link(entity.subject, Relation.IS_PART_OF, entity)
             }
@@ -224,7 +228,7 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
             FunctionResultVariableName, ExtensionReceiverName, DispatchReceiverName,
             is AnonymousBuiltinName, is AnonymousName, is BitwiseOperandName, is PlaceholderArgumentName,
             is ReturnVariableName, is BreakLabelName, is CatchLabelName,
-            is ContinueLabelName, is LoopHeadLabelName, is TryExitLabelName, is ReturnLabelName,
+            is ContinueLabelName, is LoopHeadLabelName, is TryExitLabelName, is CallStateLabelName, is ReturnLabelName,
             is DomainAssociatedFuncName, is DomainFuncParameterName, is PredicateName, is SpecialFieldName,
             is StringLiteralName, is UnmatchedWhenName -> {
             }

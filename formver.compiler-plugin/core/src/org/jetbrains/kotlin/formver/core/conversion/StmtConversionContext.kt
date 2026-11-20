@@ -76,6 +76,17 @@ interface StmtConversionContext : MethodConversionContext {
     val checkedSafeCallSubject: ExpEmbedding?
     val activeCatchLabels: List<LabelEmbedding>
 
+    /**
+     * The check that an exception leaving the function is permitted, for a function with a `throwsOnlyIf`
+     * condition; `null` when exceptions leaving the function are unchecked.
+     */
+    val exceptionEscape: ExpEmbedding?
+
+    /** Whether `old` reads the state it is evaluated in: in a `throwsOnlyIf` condition, that is the entry state. */
+    val readsEntryState: Boolean
+    fun <R> withExceptionEscape(escape: ExpEmbedding?, action: StmtConversionContext.() -> R): R
+    fun <R> withEntryStateReads(action: StmtConversionContext.() -> R): R
+
     /** The call being inserted, once its arguments are converted. Bodies inlined at it are bound there. */
     val callSite: FirElement?
 
@@ -313,7 +324,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
     return Block {
         add(convert(receiver))
         arguments.forEach { add(convert(it)) }
-        if (activeCatchLabels.isNotEmpty()) add(NonDeterministically(exceptionalExit()))
+        if (mayThrow()) add(NonDeterministically(exceptionalExit()))
         add(unconstrainedValue(embedType(access.resolvedType)))
     }
 }
@@ -685,8 +696,15 @@ fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEm
  */
 fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
     activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
+    exceptionEscape?.let(::add)
     add(Unreachable)
 }
+
+/**
+ * Whether conversion models the exceptional exits of operations that may throw: inside a `try`, and everywhere in a
+ * function with a `throwsOnlyIf` condition.
+ */
+fun StmtConversionContext.mayThrow(): Boolean = activeCatchLabels.isNotEmpty() || exceptionEscape != null
 
 /**
  * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an

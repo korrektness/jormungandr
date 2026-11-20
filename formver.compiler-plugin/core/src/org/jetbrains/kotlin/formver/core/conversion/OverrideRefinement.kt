@@ -27,10 +27,12 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.NestedPredicates
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.hierarchyPredicateAccess
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
+import org.jetbrains.kotlin.formver.core.names.CallStateLabelName
 import org.jetbrains.kotlin.formver.core.names.RefinementName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
+import org.jetbrains.kotlin.formver.viper.ast.Type
 import org.jetbrains.kotlin.formver.viper.ast.UserMethod
 
 /**
@@ -101,6 +103,16 @@ internal data class Refinement(
         ) else chain.dropLast(1).map { cls ->
             Stmt.Unfold(hierarchyPredicateAccess(receiver!!.toLocalVarUse(), cls, source), position)
         }
+        val permitted = (overridden as? NonInlineFunctionSignature)?.throwsCondition
+        val callChecked = if (permitted == null) listOf(call) else {
+            val label = CallStateLabelName(0)
+            val own = override.throwsCondition?.let {
+                Exp.LabelledOld(Exp.FuncApp(it, parameters, Type.Bool, position), label, position)
+            }
+            val base = Exp.Old(Exp.FuncApp(permitted, parameters, Type.Bool, position), position)
+            listOf(Stmt.Label(label, emptyList(), position), call, Stmt.Assert(own?.let { Exp.Implies(it, base, position) } ?: base,
+                position, role(SourceRole.OverrideRefinement.Clause.THROWS_ONLY_IF)))
+        }
         return UserMethod(
             RefinementName(overridden.name),
             overridden.formalArgs.map { it.toLocalVarDecl() },
@@ -112,7 +124,7 @@ internal data class Refinement(
                     pre.copy(perm = PermExp.FullPerm()) else pre
             },
             emptyList(),
-            Stmt.Seqn(promotion + call + demotion + assertions),
+            Stmt.Seqn(promotion + callChecked + demotion + assertions),
             position,
         )
     }

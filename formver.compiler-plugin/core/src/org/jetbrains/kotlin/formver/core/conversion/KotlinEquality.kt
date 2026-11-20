@@ -262,7 +262,7 @@ private class EqualityLowering(val ctx: StmtConversionContext, val call: FirEqua
     }
 
     private fun dynamic(left: ExpEmbedding, right: ExpEmbedding, trusted: Boolean): ExpEmbedding = Block {
-        if (ctx.activeCatchLabels.isNotEmpty()) add(NonDeterministically(ctx.exceptionalExit()))
+        if (ctx.mayThrow()) add(NonDeterministically(ctx.exceptionalExit()))
         add(if (trusted) EqualsRelation(left, right) else ctx.unconstrainedValue(buildType { boolean() }))
     }
 

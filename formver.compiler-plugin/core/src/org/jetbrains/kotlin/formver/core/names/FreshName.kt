@@ -141,6 +141,7 @@ data class ContinueLabelName(override val n: Int) : LabelName("cont")
 data class LoopHeadLabelName(override val n: Int) : LabelName("head")
 data class CatchLabelName(override val n: Int) : LabelName("catch")
 data class TryExitLabelName(override val n: Int) : LabelName("tryExit")
+data class CallStateLabelName(override val n: Int) : LabelName("call")
 
 
 data class DomainAssociatedFuncName(val name: String) : FreshName {
@@ -232,6 +233,21 @@ data class VacuityProbeName(val subject: SymbolicName) : FreshName {
     override val candidates: List<CandidateName> = buildCandidates {
         candidate {
             +"vacuity"
+            +subject
+        }
+    }
+
+    override val children: List<AnyName> = listOf(nameType, subject)
+}
+
+/** The Viper function giving the `throwsOnlyIf` condition of [subject], a function, at its arguments. */
+data class ThrowsConditionName(val subject: SymbolicName) : FreshName {
+    override val inViper: Boolean = true
+    override val nameType: NameType = NameType.Base.Function
+
+    override val candidates: List<CandidateName> = buildCandidates {
+        candidate {
+            +"throws"
             +subject
         }
     }

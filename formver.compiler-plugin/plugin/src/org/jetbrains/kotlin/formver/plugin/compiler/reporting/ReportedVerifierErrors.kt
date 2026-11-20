@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.formver.plugin.compiler.reporting
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import java.util.concurrent.ConcurrentHashMap
@@ -22,9 +23,15 @@ class ReportedVerifierErrors {
         Key(failure.kind, failure.primary, failure.obligation, failure.backend?.errorId, failure.backend?.reasonId),
     )
 
-    fun add(error: VerifierError, source: KtSourceElement?): Boolean = add(
-        when (error) {
-            is VerificationError -> error.toFailure(source)
-        },
-    )
+    /**
+     * Records [error] and says whether to report it. A failure at a [SourceRole.ThrowsAssumption] is not reported:
+     * the call it belongs to checks the same precondition in the same state, and that failure is reported.
+     */
+    fun add(error: VerifierError, source: KtSourceElement?): Boolean = when (error) {
+        is VerificationError -> !error.atThrowsAssumption() && add(error.toFailure(source))
+    }
 }
+
+private fun VerificationError.atThrowsAssumption(): Boolean =
+    locationNode.getInfoOrNull<SourceRole>() == SourceRole.ThrowsAssumption ||
+        unverifiableProposition.getInfoOrNull<SourceRole>() == SourceRole.ThrowsAssumption

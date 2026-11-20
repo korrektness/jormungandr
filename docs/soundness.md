@@ -197,6 +197,36 @@ Tests: `verification/exception_sites.kt::midTry,castCatch,sharedGetCatch,shortAr
 `verification/soundness/implicit_throws.kt`,
 `verification/soundness/equality.kt::equalsCatch`.
 
+### Conditions for throwing
+
+A function `f` with `throwsOnlyIf` has a Viper function `throws_f` whose
+precondition is the method's and whose body is the condition
+(`throwsConditionFunction`). Each exceptional exit of `f` asserts
+`old(throws_f(parameters))` before its `inhale false`, and every site that may
+throw, calls included, gets an exceptional exit (`mayThrow`), so no escaping
+path skips the assertion. A catch may still receive any exception, so the
+paths into a `catch` are unchanged. The exit after the assertion ends in
+`inhale false`, so the ownership state it carries reaches no other path.
+
+A call to a callee with a condition branches, just before the Viper call,
+into `inhale throws_g(arguments)`, for a callee `g`, followed by the caller's exceptional
+exit. The callee proved its condition in its entry state, which is the state
+at that point. Inhaling the function application checks its precondition,
+which is the callee's precondition in the same state; the call checks the
+same precondition, so a failure of the inhale is not reported
+(`ReportedVerifierErrors.add`) and the call reports it. A call that dispatches
+to an override assumes the condition of the declaration it names: the
+refinement method of each override asserts, after calling it, that the
+override's condition in the call's state implies the overridden condition in
+the entry state (`OverrideRefinement.kt`).
+
+The assertion uses entry state, while the condition's precondition is the
+method's; `old(...)` evaluates both in the entry heap, where the precondition
+held. JVM failures such as `StackOverflowError` can leave any method and are
+outside the claim, as SPECIFICATIONS.md, "Conditions for throwing", states.
+
+Tests: `specifications/throws_only_if.kt::throwTooOften,requireTooStrict,callerTooStrict,callerBreaksPrecondition,callerOfUnspecifiedForbidden,currentStateIsNotEntryState,caughtStillChecked,Loose,Unclaused`.
+
 ### Arrays
 
 A primitive array's predicate holds a sequence of integers bounded by its element type. An `Array<T>`'s
@@ -422,9 +452,10 @@ Tests: `verification/classes/override_contracts_negative.kt`,
 ### Unreachable points
 
 A site's exceptional exit ends in `inhale false` after its edges to the
-enclosing `catch` blocks (`StmtConversionContext.exceptionalExit`). Outside a
-`try`, a call has no exceptional exit: the exception leaves the function, where
-no postcondition is claimed. `throw` and a call that returns `Nothing` have no
+enclosing `catch` blocks (`StmtConversionContext.exceptionalExit`), and after
+the `throwsOnlyIf` check described in "Conditions for throwing". Outside a
+`try`, in a function without `throwsOnlyIf`, a call has no exceptional exit:
+the exception leaves the function, where no postcondition is claimed. `throw` and a call that returns `Nothing` have no
 normal successor, so `inhale false` follows them too. Ownership bookkeeping
 marks an explicit `throw` exit dead and emits no ownership operations there; a merge takes
 its state from the edges that reach it. For the supported abnormal arms of

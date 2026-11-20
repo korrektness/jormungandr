@@ -47,6 +47,7 @@ enum class FailureKind(
     CONDITIONAL_EFFECT_ERROR,
     VIPER_VERIFICATION_ERROR,
     VERIFICATION_CONDITION_NOT_ESTABLISHED,
+    THROWS_CONDITION_NOT_ESTABLISHED,
     POSSIBLE_INDEX_OUT_OF_BOUND,
     INTEGER_OVERFLOW,
     DIVISION_BY_ZERO,
@@ -111,6 +112,8 @@ sealed interface KotlinCondition {
     enum class ProofClause {
         ASSERTION, REFUTATION, LAW, CLASS_LAW, PRECONDITION, POSTCONDITION, POSTCONDITION_AT_RETURN, POSTCONDITION_AT_END,
         LOOP_INVARIANT, EXHAUSTIVE_WHEN,
+        /** Where an exception may leave a function, its `throwsOnlyIf` condition. */
+        THROWS_ONLY_IF,
     }
     /** The point of a loop at which its invariant is checked. */
     enum class LoopPhase { ENTRY, PRESERVATION, EXIT }
@@ -135,7 +138,7 @@ sealed interface KotlinCondition {
     data class SubList(val symbol: FirBasedSymbol<*>?, val negative: Boolean) : KotlinCondition
     enum class OwnershipSite { UNFOLD, FOLD, CONSTRUCTION, HAVOC, LOOP_HEAD, PRECONDITION, POSTCONDITION }
     data class Ownership(val path: String, val site: OwnershipSite, val function: String? = null) : KotlinCondition
-    enum class OverrideClause { PRECONDITION, POSTCONDITION }
+    enum class OverrideClause { PRECONDITION, POSTCONDITION, THROWS_ONLY_IF }
     data class Override(val overridden: String, val clause: OverrideClause) : KotlinCondition
     enum class SkipReason {
         CONVERSION_ERRORS, UNIQUENESS_OR_LOCALITY_ERRORS, UNSUPPORTED_OWNERSHIP, INTERNAL_ERROR, MISSING_TERMINATION_MEASURE,

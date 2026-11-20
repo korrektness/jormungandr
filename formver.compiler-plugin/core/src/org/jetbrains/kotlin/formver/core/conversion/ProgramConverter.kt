@@ -450,7 +450,7 @@ class ProgramConverter(
 
     private val uniquenessOutcomes = UniquenessOutcomes(session, checkerContext)
 
-    private fun uniquenessOutcomeOf(declaration: FirFunction): UniquenessOutcome = uniquenessOutcomes[declaration]
+    internal fun uniquenessOutcomeOf(declaration: FirFunction): UniquenessOutcome = uniquenessOutcomes[declaration]
 
     @OptIn(SymbolInternals::class)
     override fun uniquenessAnalysisOf(symbol: FirFunctionSymbol<*>): FunctionUniquenessAnalysis? =
@@ -462,7 +462,7 @@ class ProgramConverter(
      * are registered themselves. Without an analysis every receiver counts as not owned, and the function is not
      * verified anyway.
      */
-    private fun checkVarReads(
+    internal fun checkVarReads(
         declaration: FirFunction,
         analysis: FunctionUniquenessAnalysis? = uniquenessOutcomeOf(declaration).analysis,
         check: (KtSourceElement) -> Unit,
@@ -523,7 +523,9 @@ class ProgramConverter(
             checkVarReads(declaration) { body.checkReadOnlyVarReads(it, this) }
             convertedBodyResolver.storePure(signature.signature.name, body)
         } else {
-            val body = context.convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget)
+            val body = context.withExceptionEscape(signature.signature.exceptionEscape(symbol)) {
+                convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget)
+            }
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
             body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
@@ -610,20 +612,14 @@ class ProgramConverter(
 
     // region contracts
 
+    override fun embedThrowsCondition(symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget) =
+        throwsConditionOf(symbol, signature, returnTarget, reported = symbol == registeredSymbol)
+
     private fun embedFormverContract(
         symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
         @OptIn(SymbolInternals::class) val declaration = symbol.unwrapUseSiteSubstitutionOverrides().fir
-
-        // Constructor requirements are parameter-only; property models carry their getter contracts.
-        val specification = when {
-            declaration is FirConstructor -> declaration.constructorSpecification()
-            declaration is FirSimpleFunction -> context(checkerContext) { declaration.symbol.specificationOwner() }
-                ?.let { @OptIn(SymbolInternals::class) it.fir.userSpecification(session) }
-            declaration is FirPropertyAccessor && declaration.isGetter -> declaration.propertySymbol.userSpecification(session)
-            else -> null
-        }
-        val (holder, firSpec) = specification ?: return Pair(emptyList(), emptyList())
+        val (holder, firSpec) = symbol.checkedSpecification(session, checkerContext) ?: return Pair(emptyList(), emptyList())
         val holderAnalysis = uniquenessOutcomeOf(holder).analysis
 
         // The holder's parameters resolve to this function's parameters by position.

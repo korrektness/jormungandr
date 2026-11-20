@@ -54,7 +54,8 @@ Select compilation checks and external specification inputs through the
 ## Diagnostics
 
 A verification error means SnaKt could not establish a Kotlin obligation; it does not by itself establish a
-counterexample. `VERIFICATION_CONDITION_NOT_ESTABLISHED` identifies explicit Kotlin proof clauses. Backend obligations without a Kotlin classification use `VIPER_VERIFICATION_ERROR` and
+counterexample. `VERIFICATION_CONDITION_NOT_ESTABLISHED` identifies explicit Kotlin proof clauses, and
+`THROWS_CONDITION_NOT_ESTABLISHED` a `throwsOnlyIf` condition (see [Exceptions](#exceptions)). Backend obligations without a Kotlin classification use `VIPER_VERIFICATION_ERROR` and
 include backend error and reason codes. The `errorStyle` option selects Kotlin wording, backend evidence, or both
 for the same diagnostic.
 
@@ -71,8 +72,8 @@ The structured payload, counterexample bindings and typed values are defined in 
 is the Kotlin diagnostic rendering boundary.
 
 The registry groups user-visible problems as follows:
-- Proof conditions: assertions, refutations, laws, preconditions, postconditions, loop invariants and exhaustive
-  `when` expressions;
+- Proof conditions: assertions, refutations, laws, preconditions, postconditions, `throwsOnlyIf` conditions, loop
+  invariants and exhaustive `when` expressions;
   Kotlin returns effects and conditional effects; collection bounds and sub-list ranges;
   ownership obligations and override refinement. Unclassified backend obligations retain their Silver identifiers.
 - Specification declarations: invalid specification functions, external specification bindings, observer bindings,
@@ -909,6 +910,43 @@ primitive array type, such as `ShortArray`, is an ordinary library call, which m
 fragment is described under Integer arithmetic. Verification does not establish freedom
 from exceptions in opaque library operations or from JVM resource, linkage,
 or asynchronous failures.
+
+#### Conditions for throwing
+
+A `throwsOnlyIf` block after a function's `preconditions` and `postconditions` blocks states when an exception may
+leave the function:
+
+```kotlin
+fun digit(d: Int): Int {
+    postconditions<Int> { !(d < 0 || d > 9) }
+    throwsOnlyIf { d < 0 || d > 9 }
+    if (d < 0 || d > 9) throw IllegalArgumentException()
+    return d
+}
+```
+
+The condition follows the rules for preconditions and is read in the function's entry state: it reads the parameters
+and the heap as they were on entry, and `old(e)` there means `e`. It says nothing about the state after the throw.
+Together with the postcondition `!c`, `throwsOnlyIf { c }` states that the function throws exactly when `c` holds.
+
+At each point where an exception may leave the function, the condition must hold, or
+`THROWS_CONDITION_NOT_ESTABLISHED` is reported there. These points are the abnormal exits listed above and, in a
+function with the condition, the exceptional exit of every call that is not `@Pure`, including a constructor call such
+as `IllegalArgumentException()`. On a call's exceptional exit, a callee with its own `throwsOnlyIf` condition gives the
+assumption that its condition held for the call's arguments when the call started; a callee without one, a function
+object, and an opaque library call give no assumption. Catch selection keeps its over-approximation: an exception
+thrown inside a `try` may escape the function even when a `catch` would receive it, so the condition must hold at
+that point too. A call resolves to the condition of the declaration it names. A declaration in a dependency carries
+none, so calls into it give no assumption.
+
+An override without a specification of its own inherits the overridden declaration's, including its condition. An
+override with a specification throws only where the overridden condition permits: its own condition must imply the
+overridden one, and an override with a specification but no condition must establish the overridden condition
+wherever it may throw. A failure is reported as `OVERRIDE_NOT_REFINING`.
+
+A function without `throwsOnlyIf` is unchanged: nothing is checked where an exception leaves it. `throwsOnlyIf` is an
+unsupported construct on a `@Pure` function and on a constructor. JVM resource, linkage and asynchronous failures,
+such as `StackOverflowError` and `OutOfMemoryError`, may leave any function whatever its condition.
 
 ### Folding
 

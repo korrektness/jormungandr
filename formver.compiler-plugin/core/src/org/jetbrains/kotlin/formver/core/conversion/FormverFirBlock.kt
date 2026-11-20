@@ -51,7 +51,13 @@ fun ProgramConversionContext.extractLoopInvariants(loopBody: List<FirStatement>)
 fun ProgramConversionContext.extractLoopInvariantsCall(statement: FirStatement): FirAnonymousFunction? =
     statement.extractFormverFirBlock { isFormverFunctionNamed("loopInvariants") }?.also { attachLoopInvariants(statement) }
 
-data class FirSpecification(val precond: FirBlock?, val postcond: FirBlock?, val returnVar: FirValueParameterSymbol?) {
+/** [throwsOnlyIf] is the body of the `throwsOnlyIf` block that follows the precondition and postcondition blocks. */
+data class FirSpecification(
+    val precond: FirBlock?,
+    val postcond: FirBlock?,
+    val returnVar: FirValueParameterSymbol?,
+    val throwsOnlyIf: FirBlock? = null,
+) {
     constructor() : this(null, null, null)
 }
 
@@ -72,26 +78,31 @@ fun ConeKotlinType.sameUpToAttributes(other: ConeKotlinType): Boolean = withoutA
  * The type of the result parameter of the `postconditions` block among this block's leading specification blocks,
  * or `null` when there is no such block.
  */
-fun FirBlock.postconditionsResultType(): ConeKotlinType? {
-    val pre = statements.firstOrNull()?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
-    val post = statements.getOrNull(if (pre != null) 1 else 0)
-        ?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
-    return post?.valueParameters?.firstOrNull()?.symbol?.resolvedReturnType
-}
+fun FirBlock.postconditionsResultType(): ConeKotlinType? =
+    leadingSpecificationBlocks(statements).post?.valueParameters?.firstOrNull()?.symbol?.resolvedReturnType
 
 fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): FirSpecification =
     extractFirSpecification(parentBlock.statements, returnType)
 
+/** The leading `preconditions`, `postconditions` and `throwsOnlyIf` blocks of a body, each optional, in this order. */
+data class LeadingSpecificationBlocks(
+    val pre: FirAnonymousFunction?,
+    val post: FirAnonymousFunction?,
+    val throwsOnlyIf: FirAnonymousFunction?,
+) {
+    val count: Int get() = listOfNotNull(pre, post, throwsOnlyIf).size
+}
+
+fun leadingSpecificationBlocks(statements: List<FirStatement>): LeadingSpecificationBlocks {
+    val pre = statements.getOrNull(0)?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
+    var next = if (pre != null) 1 else 0
+    val post = statements.getOrNull(next)?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
+    if (post != null) next++
+    val throws = statements.getOrNull(next)?.extractFormverFirBlock { isFormverFunctionNamed("throwsOnlyIf") }
+    return LeadingSpecificationBlocks(pre, post, throws)
+}
+
 fun extractFirSpecification(statements: List<FirStatement>, returnType: ConeKotlinType): FirSpecification {
-    val firstStmt = statements.firstOrNull() ?: return FirSpecification()
-
-    firstStmt.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }?.let { lambda ->
-        return FirSpecification(null, lambda.body, lambda.extractFormverReturnVar(returnType))
-    }
-
-    val precond = firstStmt.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
-        ?: return FirSpecification()
-    val postcond =
-        statements.getOrNull(1)?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
-    return FirSpecification(precond.body, postcond?.body, postcond?.extractFormverReturnVar(returnType))
+    val (pre, post, throws) = leadingSpecificationBlocks(statements)
+    return FirSpecification(pre?.body, post?.body, post?.extractFormverReturnVar(returnType), throws?.body)
 }

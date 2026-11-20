@@ -85,6 +85,11 @@ interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttach
         symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>>
 
+    /** The `throwsOnlyIf` condition of [symbol] over the parameters of [signature], or `null` when it has none. */
+    fun embedThrowsCondition(
+        symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget
+    ): ExpEmbedding?
+
     /**
      * Returns true if the property has default behavior. That is:
      * It cannot be overwritten and does not have custom getters or setters

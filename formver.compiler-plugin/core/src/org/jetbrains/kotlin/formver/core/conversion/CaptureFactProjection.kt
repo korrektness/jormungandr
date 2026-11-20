@@ -56,7 +56,7 @@ internal fun Exp.captureValueKey(): Any = capturePath() ?: when (this) {
     is Exp.Result -> listOf(javaClass, type)
     is Exp.DecreasesWildcard -> javaClass
     is BinaryExp, is UnaryExp, is Exp.ExplicitSeq, is Exp.ExplicitMultiset, is Exp.SeqLength,
-    is Exp.SeqTake, is Exp.SeqDrop, is Exp.SeqIndex, is Exp.SeqUpdate, is Exp.Old, is Exp.PermissionCheck,
+    is Exp.SeqTake, is Exp.SeqDrop, is Exp.SeqIndex, is Exp.SeqUpdate, is Exp.Old, is Exp.LabelledOld, is Exp.PermissionCheck,
     is Exp.TernaryExp, is Exp.DecreasesTuple -> listOf(javaClass, subExps().map { it.captureValueKey() })
     is Exp.LocalVar -> error("A local variable has a capture path")
 }
@@ -123,6 +123,7 @@ internal fun Exp.rewriteCaptureValues(
             rewriteSequenceOperands { it.rewrite() }
         is Exp.MultisetSize -> copy(arg = arg.rewrite())
         is Exp.Old -> copy(exp = exp.rewrite())
+        is Exp.LabelledOld -> copy(exp = exp.rewrite())
         is Exp.PredicateAccess -> copy(formalArgs = formalArgs.rewrite())
         is Exp.PermissionCheck -> copy(access = access.rewrite() as Exp.PredicateAccess)
         is Exp.Unfolding -> copy(predicateAccess = predicateAccess.rewrite() as Exp.PredicateAccess, body = body.rewrite())

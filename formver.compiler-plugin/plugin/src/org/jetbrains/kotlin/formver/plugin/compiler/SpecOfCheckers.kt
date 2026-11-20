@@ -27,8 +27,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
-import org.jetbrains.kotlin.formver.core.conversion.extractFormverFirBlock
 import org.jetbrains.kotlin.formver.core.conversion.functionsDeclaredBeside
+import org.jetbrains.kotlin.formver.core.conversion.leadingSpecificationBlocks
 import org.jetbrains.kotlin.formver.core.conversion.ownSpecification
 import org.jetbrains.kotlin.formver.core.conversion.postconditionsResultType
 import org.jetbrains.kotlin.formver.core.conversion.specificationResultMatches
@@ -37,7 +37,6 @@ import org.jetbrains.kotlin.formver.core.conversion.specOfTargetName
 import org.jetbrains.kotlin.formver.core.conversion.specOfPropertyTargets
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargets
 import org.jetbrains.kotlin.formver.core.isBorrowed
-import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.formver.core.isUnique
 
 /** Reports a `@SpecOf` function that fails one of the checks below. */
@@ -91,10 +90,7 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
 
     private fun bodyViolation(declaration: FirSimpleFunction, target: FirCallableSymbol<*>): KotlinCondition.SpecOf? {
         val statements = declaration.body?.statements.orEmpty()
-        val pre = statements.getOrNull(0)?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
-        val post = statements.getOrNull(if (pre != null) 1 else 0)
-            ?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
-        if (statements.size != listOfNotNull(pre, post).size) {
+        if (statements.size != leadingSpecificationBlocks(statements).count) {
             return KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)
         }
         val resultType = declaration.body?.postconditionsResultType() ?: return null

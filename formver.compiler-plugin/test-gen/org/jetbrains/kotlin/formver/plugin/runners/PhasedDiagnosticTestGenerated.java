@@ -2182,6 +2182,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/specifications"), Pattern.compile("^(.+)\\.kt$"), null, true);
       }
 
+      @Test
+      @TestMetadata("throws_only_if.kt")
+      public void testThrows_only_if() {
+        runTest("formver.compiler-plugin/testData/diagnostics/specifications/throws_only_if.kt");
+      }
+
+      @Test
+      @TestMetadata("throws_only_if_unsupported.kt")
+      public void testThrows_only_if_unsupported() {
+        runTest("formver.compiler-plugin/testData/diagnostics/specifications/throws_only_if_unsupported.kt");
+      }
+
       @Nested
       @TestMetadata("formver.compiler-plugin/testData/diagnostics/specifications/external")
       @TestDataPath("$PROJECT_ROOT")

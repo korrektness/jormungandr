@@ -408,7 +408,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         symbol: FirFunctionSymbol<*>,
     ): ExpEmbedding {
         val id = symbol.callableId
-        if (data.activeCatchLabels.isNotEmpty() && id.packageName == FqName("kotlin") && id.className == null) {
+        if (data.mayThrow() && id.packageName == FqName("kotlin") && id.className == null) {
             if (id.callableName.asString() in listOf("require", "check")) {
                 val mapping = functionCall.resolvedArgumentMapping
                 val conditionArg = mapping?.entries?.singleOrNull { it.value.name.asString() == "value" }?.key
@@ -471,7 +471,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
             else -> {
                 InvokeFunctionObject(data.convert(receiver), args, returnType,
-                    data.exceptionalExit().takeIf { data.activeCatchLabels.isNotEmpty() })
+                    data.exceptionalExit().takeIf { data.mayThrow() })
             }
         }
     }

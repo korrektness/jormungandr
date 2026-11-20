@@ -241,8 +241,8 @@ object SpecialKotlinFunctions {
             withParam { nullableAny() }
             withReturnType { nullableAny() }
         }
-        addFunction(oldCallableType, SpecialPackages.formver, name = "old") { args, _ ->
-            Old(args[0])
+        addFunction(oldCallableType, SpecialPackages.formver, name = "old") { args, ctx ->
+            if (ctx.readsEntryState) args[0] else Old(args[0])
         }
 
         val verifyCallableType = buildFunctionPretype {
@@ -375,6 +375,7 @@ object SpecialKotlinFunctions {
         withCallableType(invariantsBuilderCallableType) {
             addNoOpFunction(SpecialPackages.formver, name = "loopInvariants")
             addNoOpFunction(SpecialPackages.formver, name = "preconditions")
+            addNoOpFunction(SpecialPackages.formver, name = "throwsOnlyIf")
         }
 
         val prefixInvariantsBuilderCallableType = buildFunctionPretype {

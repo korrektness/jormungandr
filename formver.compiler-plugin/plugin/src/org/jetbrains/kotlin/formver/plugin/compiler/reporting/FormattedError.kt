@@ -47,6 +47,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
             role.overridden, when (role.clause) {
                 SourceRole.OverrideRefinement.Clause.PRECONDITION -> KotlinCondition.OverrideClause.PRECONDITION
                 SourceRole.OverrideRefinement.Clause.POSTCONDITION -> KotlinCondition.OverrideClause.POSTCONDITION
+                SourceRole.OverrideRefinement.Clause.THROWS_ONLY_IF -> KotlinCondition.OverrideClause.THROWS_ONLY_IF
             },
         )
         is SourceRole.ObserverAccess -> KotlinCondition.Ownership("the observer receiver", KotlinCondition.OwnershipSite.UNFOLD)
@@ -80,7 +81,8 @@ private fun VerificationError.loopPhase(): KotlinCondition.LoopPhase? = when (re
 }
 
 private fun KotlinCondition.failureKind(): FailureKind = when (this) {
-    is KotlinCondition.Proof -> FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
+    is KotlinCondition.Proof -> if (clause == KotlinCondition.ProofClause.THROWS_ONLY_IF) FailureKind.THROWS_CONDITION_NOT_ESTABLISHED
+        else FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
     is KotlinCondition.Returns -> FailureKind.UNEXPECTED_RETURNED_VALUE
     is KotlinCondition.Conditional -> FailureKind.CONDITIONAL_EFFECT_ERROR
     is KotlinCondition.IntegerOverflow -> FailureKind.INTEGER_OVERFLOW
@@ -152,7 +154,7 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
         is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck,
         is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
         is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
-        is SourceRole.Condition, null -> null
+        is SourceRole.Condition, SourceRole.ThrowsAssumption, null -> null
     }
     val location = applicable(locationNode.getInfoOrNull<SourceRole>())
     // A termination failure's reason names the function whose measure does not decrease, not a proposition.

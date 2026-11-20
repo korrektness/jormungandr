@@ -98,6 +98,7 @@ private fun Exp.hoist(): Hoisted = when (this) {
     }
 
     is Exp.Old -> Hoisted(copy(exp = exp.hoistUnfoldings(predicateParameters)), emptyList())
+    is Exp.LabelledOld -> Hoisted(copy(exp = exp.hoistUnfoldings(predicateParameters)), emptyList())
     is Exp.LetBinding -> bound()
 
     is Exp.Not -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
@@ -276,6 +277,7 @@ private fun Exp.mentionedVariables(permissionFree: Boolean = false): Set<Symboli
             predicateAccess.formalArgs + body
         }
         is Exp.Old -> listOf(exp)
+        is Exp.LabelledOld -> listOf(exp)
         else -> return null
     }
     return children.fold(emptySet<SymbolicName>() as Set<SymbolicName>?) { acc, child ->

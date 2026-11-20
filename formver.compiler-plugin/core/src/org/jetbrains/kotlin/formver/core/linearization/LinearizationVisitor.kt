@@ -213,7 +213,8 @@ data class LinearizationVisitor(
                 args += value
                 value.linearize().toViper(ctx)
             }
-            e.exceptionalExit?.let { exit ->
+            val throwsCondition = e.method.throwsCondition
+            if (throwsCondition == null) e.exceptionalExit?.let { exit ->
                 NonDeterministically(exit).linearize().toViperUnusedResult(ctx)
             }
             val freshLoans = ctx.coerceFreshArguments(args, e.method.formalArgs, argsViper)
@@ -223,6 +224,19 @@ data class LinearizationVisitor(
                     formal.isUnique -> ctx.exposeFor(path, formal)
                     formal.isBorrowed -> if (ctx.foldState?.isConstructionRoot(path) == true) ctx.foldState?.tidy(ctx, path)
                         else ctx.foldState?.close(ctx, path)
+                }
+            }
+            if (throwsCondition != null) e.exceptionalExit?.let { exit ->
+                ctx.addStatement {
+                    val choice = ctx.freshAnonVar { boolean() }
+                    val (thrown, skip) = ctx.branchBlocks({
+                        addStatement {
+                            Stmt.Inhale(Exp.FuncApp(throwsCondition, argsViper, Type.Bool, source.asPosition,
+                                SourceRole.ThrowsAssumption.asInfo), source.asPosition, SourceRole.ThrowsAssumption.asInfo)
+                        }
+                        exit.linearize().toViperUnusedResult(this)
+                    }, {})
+                    Stmt.If(choice.linearize().toViperBuiltinType(ctx), thrown, skip, ctx.source.asPosition)
                 }
             }
             ctx.addStatement {
@@ -511,6 +525,17 @@ data class LinearizationVisitor(
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Assert(e.exp.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition,
                 SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.ASSERTION).asInfo) }
+        }
+    }
+
+    override fun visitThrowsConditionCheck(e: ThrowsConditionCheck): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val pos = ctx.source.asPosition
+            val condition = Exp.FuncApp(e.function, e.args.map { it.toLocalVarUse(pos) }, Type.Bool, pos)
+            ctx.addStatement {
+                Stmt.Assert(Exp.Old(condition, pos), pos,
+                    SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.THROWS_ONLY_IF, e.declaration).asInfo)
+            }
         }
     }
 

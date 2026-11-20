@@ -55,6 +55,7 @@ interface ExpVisitor<R> {
     fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): R
     fun visitUnaryOperatorExpEmbedding(e: UnaryOperatorExpEmbedding): R
     fun visitUnreachable(e: Unreachable): R
+    fun visitThrowsConditionCheck(e: ThrowsConditionCheck): R
     fun visitUnsupportedPlaceholder(e: UnsupportedPlaceholder): R
     fun visitGoto(e: Goto): R
     fun visitBindOwnedField(e: BindOwnedField): R
@@ -150,6 +151,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): R = visitDefault(e)
     override fun visitUnaryOperatorExpEmbedding(e: UnaryOperatorExpEmbedding): R = visitDefault(e)
     override fun visitUnreachable(e: Unreachable): R = visitDefault(e)
+    override fun visitThrowsConditionCheck(e: ThrowsConditionCheck): R = visitDefault(e)
     override fun visitUnsupportedPlaceholder(e: UnsupportedPlaceholder): R = visitDefault(e)
     override fun visitGoto(e: Goto): R = visitDefault(e)
     override fun visitBindOwnedField(e: BindOwnedField): R = visitDefault(e)

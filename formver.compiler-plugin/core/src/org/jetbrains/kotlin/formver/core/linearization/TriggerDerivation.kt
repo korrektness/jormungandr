@@ -132,6 +132,7 @@ internal fun Exp.subExps(): List<Exp> = when (this) {
     is Exp.SeqIndex -> listOf(seq, idx)
     is Exp.SeqUpdate -> listOf(seq, idx, elem)
     is Exp.Old -> listOf(exp)
+    is Exp.LabelledOld -> listOf(exp)
     is Exp.PredicateAccess -> formalArgs
     is Exp.PermissionCheck -> listOf(access)
     is Exp.Unfolding -> listOf(predicateAccess, body)

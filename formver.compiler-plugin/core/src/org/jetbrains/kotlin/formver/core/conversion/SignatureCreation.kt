@@ -311,7 +311,9 @@ fun SignatureWithTarget<NonInlineCallable>.toNormalSignature(symbol: FirFunction
             addPreconditions(preconditions)
             addPostconditions(postconditions)
         }
-        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source)
+        val throwsOnlyIf = converter.embedThrowsCondition(symbol, current.signature, returnTarget)
+        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source,
+            throwsOnlyIf = throwsOnlyIf)
     }
 
 @OptIn(SymbolInternals::class)

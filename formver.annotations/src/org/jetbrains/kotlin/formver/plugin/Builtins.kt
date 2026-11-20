@@ -37,6 +37,12 @@ fun decreases(@Suppress("UNUSED_PARAMETER") vararg measures: Any?) = Unit
 
 fun <T> postconditions(@Suppress("UNUSED_PARAMETER") body: (T) -> Unit) = Unit
 
+/**
+ * The condition under which the function may throw, read in the function's entry state; see "Exceptions" in
+ * SPECIFICATIONS.md. Written after the function's [preconditions] and [postconditions] blocks.
+ */
+fun throwsOnlyIf(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
+
 /** Placeholder body for [GhostObserver]; see "Callable specifications" in SPECIFICATIONS.md. */
 fun <T> ghostObserver(): T = throw FormverFunctionCalledInRuntimeException("ghostObserver")
 

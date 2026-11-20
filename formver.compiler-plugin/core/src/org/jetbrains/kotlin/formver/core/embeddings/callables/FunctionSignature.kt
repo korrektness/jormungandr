@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.conversion.dispatchReceiverRoot
 import org.jetbrains.kotlin.formver.core.conversion.insertInlineFunctionCall
 import org.jetbrains.kotlin.formver.core.conversion.exceptionalExit
+import org.jetbrains.kotlin.formver.core.conversion.mayThrow
+import org.jetbrains.kotlin.formver.core.names.ThrowsConditionName
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.MethodCall
@@ -93,9 +95,11 @@ interface NamedCallableEmbedding : NamedFunctionSignature, CallableEmbedding
 
 
 interface NonInlineCallable : NamedCallableEmbedding {
+    /** The Viper function giving this callable's `throwsOnlyIf` condition at its arguments, when it has one. */
+    val throwsCondition: SymbolicName? get() = null
 
     override fun insertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding =
-        if (isPure || ctx.activeCatchLabels.isEmpty()) insertCall(args)
+        if (isPure || !ctx.mayThrow()) insertCall(args)
         else MethodCall(this, args, ctx.exceptionalExit())
 
     // When the function does not need to be inlined, we do not need a context to call it. This is helpful, because
@@ -127,13 +131,17 @@ fun NonInlineCallable.toFuncApp(
 ) = Exp.FuncApp(name, parameters, Type.Ref, pos, info)
 
 
+/** [throwsOnlyIf] is the `throwsOnlyIf` condition over the formal arguments, read in the entry state. */
 data class NonInlineFunctionSignature(
     val signature: NamedFunctionSignature,
     override val preconditions: List<ExpEmbedding>,
     override val postconditions: List<ExpEmbedding>,
     override val declarationSource: KtSourceElement?,
     val openConstructedClass: ClassTypeEmbedding? = null,
-) : CompleteFunctionSignature, NonInlineCallable, NamedFunctionSignature by signature
+    val throwsOnlyIf: ExpEmbedding? = null,
+) : CompleteFunctionSignature, NonInlineCallable, NamedFunctionSignature by signature {
+    override val throwsCondition: SymbolicName? get() = throwsOnlyIf?.let { ThrowsConditionName(name) }
+}
 
 
 interface CompleteFunctionSignature : NamedFunctionSignatureWithContract, NamedCallableEmbedding
@@ -161,6 +169,23 @@ fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?,
         postconditions.map { post -> post.pureToViper(toBuiltin = true, ctx).let { returnSites?.tagged(post, it) ?: it } },
         body,
         declarationSource.asPosition
+    )
+}
+
+/**
+ * The function [NonInlineFunctionSignature.throwsCondition] names: the `throwsOnlyIf` condition at the arguments, in
+ * a state where the precondition holds. `null` when the signature has no such condition.
+ */
+fun NonInlineFunctionSignature.throwsConditionFunction(ctx: TypeResolver): UserFunction? {
+    val condition = throwsOnlyIf ?: return null
+    return UserFunction(
+        ThrowsConditionName(name),
+        formalArgs.map { it.toLocalVarDecl() },
+        Type.Bool,
+        preconditions.pureToViper(toBuiltin = true, ctx),
+        emptyList(),
+        condition.pureToViper(toBuiltin = true, ctx),
+        declarationSource.asPosition,
     )
 }
 

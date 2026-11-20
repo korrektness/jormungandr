@@ -74,7 +74,7 @@ private fun Exp.isNullValue() = this is Exp.DomainFuncApp && function.name == Ru
 private fun Exp.isHeapFree(heapFreeFunctions: Set<SymbolicName>): Boolean = when (this) {
     is Exp.FuncApp -> functionName in heapFreeFunctions && args.all { it.isHeapFree(heapFreeFunctions) }
     is Exp.FieldAccess, is Exp.Unfolding, is Exp.PredicateAccess, is Exp.Acc, is AccessPredicate.FieldAccessPredicate,
-    is Exp.Old -> false
+    is Exp.Old, is Exp.LabelledOld -> false
 
     else -> subExps().all { it.isHeapFree(heapFreeFunctions) }
 }

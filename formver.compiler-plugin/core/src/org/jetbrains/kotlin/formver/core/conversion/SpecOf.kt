@@ -9,6 +9,9 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
@@ -46,9 +49,24 @@ val specOfId = annotationId("SpecOf")
  */
 data class UserSpecification(val holder: FirFunction, val spec: FirSpecification)
 
+/** The specification this function is checked against, with its holder, or `null` when it has none. */
+@OptIn(SymbolInternals::class)
+fun FirFunctionSymbol<*>.checkedSpecification(session: FirSession, checkerContext: CheckerContext): UserSpecification? {
+    // Constructor requirements are parameter-only; property models carry their getter contracts.
+    return when (val declaration = unwrapUseSiteSubstitutionOverrides().fir) {
+        is FirConstructor -> declaration.constructorSpecification()
+        is FirSimpleFunction -> context(checkerContext) { declaration.symbol.specificationOwner() }?.fir?.userSpecification(session)
+        is FirPropertyAccessor -> if (declaration.isGetter) declaration.propertySymbol.userSpecification(session) else null
+        else -> null
+    }
+}
+
 /** Parameter-only entry requirements of a secondary constructor. */
 fun FirConstructor.constructorSpecification(): UserSpecification? {
     if (isPrimary) return null
+    leadingSpecificationBlocks(body?.statements.orEmpty()).throwsOnlyIf?.let { block ->
+        throw UnsupportedFeatureException(block.source, "`throwsOnlyIf` on a constructor")
+    }
     val precond = body?.statements?.firstOrNull()
         ?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }?.body ?: return null
     precond.accept(object : FirVisitorVoid() {
@@ -154,7 +172,8 @@ fun FirNamedFunctionSymbol.specificationResultMatches(type: ConeKotlinType, targ
 /** The specification written as the leading statements of this function's body, or `null` when it has none. */
 fun FirSimpleFunction.ownSpecification(returnType: ConeKotlinType = symbol.resolvedReturnType): FirSpecification? {
     val body = body ?: return null
-    return extractFirSpecification(body, returnType).takeIf { it.precond != null || it.postcond != null }
+    return extractFirSpecification(body, returnType)
+        .takeIf { it.precond != null || it.postcond != null || it.throwsOnlyIf != null }
 }
 
 /**

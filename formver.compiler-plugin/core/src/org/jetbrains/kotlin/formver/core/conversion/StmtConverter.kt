@@ -36,6 +36,8 @@ data class StmtConverter(
     override val checkedSafeCallSubject: ExpEmbedding? = null,
     private val scopeIndex: ScopeIndex = ScopeIndex.Indexed(0),
     override val activeCatchLabels: List<LabelEmbedding> = listOf(),
+    override val exceptionEscape: ExpEmbedding? = null,
+    override val readsEntryState: Boolean = false,
     override val callSite: FirElement? = null,
     override var creationPathFacts: List<ExpEmbedding> =
         (methodCtx.signature as? NamedFunctionSignatureWithContract)?.preconditions.orEmpty().toList(),
@@ -119,6 +121,11 @@ data class StmtConverter(
 
     override fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R =
         copy(checkedSafeCallSubject = subject).action()
+
+    override fun <R> withExceptionEscape(escape: ExpEmbedding?, action: StmtConversionContext.() -> R): R =
+        copy(exceptionEscape = escape).action()
+
+    override fun <R> withEntryStateReads(action: StmtConversionContext.() -> R): R = copy(readsEntryState = true).action()
 
     override fun <R> withActiveCatchLabels(labels: List<LabelEmbedding>, action: StmtConversionContext.() -> R): R =
         copy(activeCatchLabels = activeCatchLabels + labels).action()

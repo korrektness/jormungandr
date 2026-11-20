@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.purity.PurityContext
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 
 /**
  * Especially when working with type information, there are a number of expressions that do not have a corresponding `ExpEmbedding`.
@@ -103,6 +105,19 @@ data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
     override fun isValid(ctx: PurityContext): Boolean = exp.isPure(admitsInlinedCalls = true).also {
         if (!it) ctx.addPurityError(exp, PurityCondition(PurityRule.ASSERT_CONDITION))
     }
+}
+
+/**
+ * Asserts, where an exception may leave the function [declaration], the `throwsOnlyIf` condition [function] of its
+ * parameters [args] in the function's entry state.
+ */
+data class ThrowsConditionCheck(
+    val function: SymbolicName,
+    val args: List<VariableEmbedding>,
+    val declaration: FirBasedSymbol<*>?,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = buildType { unit() }
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitThrowsConditionCheck(this)
 }
 
 /**

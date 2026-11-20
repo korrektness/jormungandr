@@ -15,6 +15,8 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.UserFunction
 import org.jetbrains.kotlin.formver.viper.ast.UserMethod
 import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialFunctions
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.callables.throwsConditionFunction
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toViperFunction
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toViperMethod
 import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
@@ -90,6 +92,9 @@ internal class ProgramBodyProcessor(
                 onOwnershipError(e, signature)
                 null
             }
+        }
+        (signature as? NonInlineFunctionSignature)?.throwsConditionFunction(converter.typeResolver)?.let {
+            converter.linearizedBodyResolver.storeFunction(it.name, it)
         }
         val method = body?.toViperMethod(signature, converter.typeResolver) ?: signature.toViperMethod(converter.typeResolver, null)
         val receiver = signature.dispatchReceiver

@@ -76,7 +76,7 @@ fun StmtConversionContext.platformNullCheck(
 /** [read], converted from [access], with the throw of an unassigned `lateinit` property visible to an enclosing catch. */
 fun StmtConversionContext.lateinitReadMayThrow(access: FirPropertyAccessExpression, read: ExpEmbedding): ExpEmbedding {
     val symbol = access.calleeReference.symbol as? FirPropertySymbol
-    if (symbol?.resolvedStatus?.isLateInit != true || activeCatchLabels.isEmpty()) return read
+    if (symbol?.resolvedStatus?.isLateInit != true || !mayThrow()) return read
     // A read of an unassigned `lateinit` property throws once its receiver is evaluated; a read that returns gives a
     // value of the property's type.
     val value = declareAnonVar(read.type, read)

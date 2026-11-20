@@ -785,6 +785,24 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         }
     }
 
+    /** [exp] evaluated in the state at the label [label]. */
+    data class LabelledOld(
+        val exp: Exp,
+        val label: SymbolicName,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        override val type = exp.type
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.LabelledOld =
+            viper.silver.ast.LabelledOld(exp.toSilver(), label.mangled, pos.toSilver(), info.toSilver(), silverNoTrafos)
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {
+            exp.registerNames()
+        }
+    }
+
     data class PredicateAccess(
         val predicateName: SymbolicName,
         val formalArgs: List<Exp>,
