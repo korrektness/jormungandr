@@ -161,6 +161,8 @@ sealed interface KotlinCondition {
     data class OpaqueCall(val callee: String, val reason: OpaqueReason) : KotlinCondition
     /** A recursive call that may not decrease the caller's termination measure. */
     data object Termination : KotlinCondition
+    /** A loop iteration that may not decrease the loop's termination measure. */
+    data object LoopTermination : KotlinCondition
     /** Backend obligations without Kotlin provenance remain explicitly unclassified. */
     data object Unclassified : KotlinCondition
 }

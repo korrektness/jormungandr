@@ -120,6 +120,8 @@ class ProgramConverter(
 
     override fun reportWarning(warning: Failure) = context(checkerContext) { reporter.reportFailure(warning) }
 
+    override fun reportTerminationFailure(failure: Failure) = context(checkerContext) { reporter.reportFailure(failure) }
+
     override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: UnsupportedReason) =
         emit(Failure(ConversionErrors.UNSUPPORTED_FEATURE, source, KotlinCondition.Translation(reason.name, msg)))
 
@@ -173,6 +175,8 @@ class ProgramConverter(
     override val trust = TrustedAssumptionCollector(session, typeResolver, { it == registeredSymbol }, { registeredSymbol })
 
     private val terminationMeasures = TerminationMeasures(typeResolver)
+
+    override val checksTermination: Boolean get() = terminationMeasures.isChecked(registeredSymbol)
 
     val debugExpEmbeddings: Map<SymbolicName, ExpEmbedding>
         get() = buildMap {
@@ -282,6 +286,7 @@ class ProgramConverter(
         val signature = embedCompleteSignature(declaration.symbol)
         if (!declaration.symbol.neverVerify(session) &&
             (!signature.signature.isPure || convertedBodyResolver.lookupPure(signature.signature.name) == null)) {
+            terminationMeasures.checkCalls(signature.signature, declaration.symbol, session, trust, ::reportTerminationFailure)
             embedFunctionBody(declaration.symbol, signature)
         }
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
@@ -419,7 +424,7 @@ class ProgramConverter(
 
 
     private val bodyProcessor by lazy {
-        ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements, terminationMeasures.measures,
+        ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements, terminationMeasures,
             onOwnershipError = { error, signature ->
                 hadOwnershipError = true
                 context(checkerContext) {

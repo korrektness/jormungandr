@@ -1456,8 +1456,7 @@ decrease the measure; the verifier reports `TERMINATION_NOT_ESTABLISHED` at a
 call where it does not. A recursive function with no measure is reported as
 `MISSING_TERMINATION_MEASURE`, together with the call cycle, and is not
 verified; its callers see no definition for it. `INVALID_TERMINATION_MEASURE`
-rejects `decreases` on a function that is not `@Pure`, a second `decreases` in
-one function, and a measure of any other type.
+rejects a second `decreases` in one function and a measure of any other type.
 
 Recursion over shared objects has no measure: a shared node can reach itself
 through its `next` chain, so `length(n.next)` need not be smaller.
@@ -1466,6 +1465,103 @@ A measure can decrease through arithmetic rather than subtraction. The
 [`remainder_decreases.kt`](formver.compiler-plugin/testData/diagnostics/language/pure_functions/remainder_decreases.kt)
 fixture encodes Euclid's recursion with measure `n`: when `m >= 0` and `n > 0`,
 `m % n` is nonnegative and strictly smaller than `n`.
+
+### Termination of functions and loops
+
+A function that is not `@Pure` keeps partial correctness: its contract holds
+when it returns. With `decreases(...)` in its `preconditions` block it is
+termination-checked: the proof also shows that every call returns or exits
+abnormally, by an exception or by `Nothing`. Its measures must be `Int`s.
+
+```kotlin
+fun countDown(n: Int): Int {
+    preconditions {
+        n >= 0
+        decreases(n)
+    }
+    return if (n == 0) 0 else countDown(n - 1)
+}
+```
+
+A termination-checked function obeys these rules; each broken rule is
+reported as `TERMINATION_NOT_ESTABLISHED` at the call:
+
+- A call of a function in its recursion cycle, one that can call it back
+  through calls of source functions, must decrease its measure. The callee's
+  measure, given the call's arguments, must be lexicographically smaller than
+  the caller's measure on entry, compared over the positions both have. Each
+  function of the cycle needs a measure, and a call of an `inline` function
+  of the cycle is rejected, since inlining it leaves no call to check.
+  A call of a member that may be overridden is rejected, in the cycle or not.
+- Any other source callee must be termination-checked, or be final, not
+  recursive, have no loop other than a `for` over a range, contain no rejected
+  construct, and call only such functions. A source constructor includes its
+  class's property initializers and `init` blocks; a function includes its
+  parameters' default values; a top-level function, an object member or a
+  constructor includes the initializers of its file, object or companion
+  object, which calling it may run. So does the checked function itself. A property
+  read is a call of its getter. An open or abstract member may be overridden by
+  one that does not terminate, and is never known to terminate. A measure counts
+  only when it is a single `decreases` with `Int` measures; the trust report
+  lists a measured callee as `skipped` or `@NeverVerify` when nothing verifies it.
+- No lambda in it may call a function of its recursion cycle.
+- Library calls, opaque calls and library operators among them, are assumed to
+  terminate, also when a source callee makes them. The trust report lists each
+  as `assumed terminating` under the checked function.
+
+The analysis visits every element of the body and rejects, with
+`TERMINATION_NOT_ESTABLISHED` naming the construct, any construct that can run
+code and that it does not handle. The `preconditions`, `postconditions`
+and `loopInvariants` blocks and `decreases` are not executed and are not
+analysed; the arguments of `verify` and similar calls are. The rejected
+constructs include:
+
+- callable references, such as `::f`;
+- delegated properties, local or read through a member;
+- function values: reading one, passing one to a library function, or invoking
+  one;
+- `==` and `!=` between class instances, which call `equals`, unless one side
+  is `null`;
+- string templates of class instances, which call `toString`;
+- a library call with a receiver or argument whose type is not a primitive, a
+  `String`, a lambda or a final library class with such type arguments, since
+  the library may call back into source code, as `toString` on an `Any` does;
+  this covers a setter's assigned value, and the iterator of a `for` loop over
+  anything other than a range;
+- a delegation from a source constructor to a library superclass constructor
+  other than `Any()`, which may call an overridden member on the new object;
+- calls of generated members, such as a data class's `copy`;
+- loops inside lambdas;
+- naming a source object that has initializers, and reading an entry of a source
+  enum;
+- anonymous objects, local classes and any other construct not listed as
+  handled in `conversion/TerminationGraph.kt`.
+
+A loop declares its variant with `decreases(...)` in its `loopInvariants`
+block, with `Int` measures compared lexicographically. Each iteration that goes
+back to the loop head, at the end of the body or by `continue`, must make the
+variant smaller than at the start of the iteration and the start value
+non-negative; otherwise `TERMINATION_NOT_ESTABLISHED` is reported at the loop. A
+variant is checked in any function. In a termination-checked function each
+`while` or `do`-`while` loop needs one, or `MISSING_TERMINATION_MEASURE` is reported at the
+loop; a `for` over a range terminates by construction.
+
+```kotlin
+var i = 0
+while (i < n) {
+    loopInvariants {
+        i >= 0
+        decreases(n - i)
+    }
+    i++
+}
+```
+
+The fixtures in
+[`termination/`](formver.compiler-plugin/testData/diagnostics/language/termination/)
+cover recursion, mutual recursion, loops and callees, each with failing cases.
+
+Limits: object measures are available only to `@Pure` functions.
 
 ### Rejected constructs
 

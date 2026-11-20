@@ -8,8 +8,11 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.formver.core.contextAndExplicitArguments
 import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.TerminationCondition
+import org.jetbrains.kotlin.formver.common.TerminationRule
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirFunction
@@ -577,6 +580,7 @@ fun ProgramConversionContext.linearizeImpureBody(
     source: KtSourceElement?,
     converted: ConvertedMethodBody,
     tracksOwnership: Boolean,
+    termination: MethodTermination? = null,
 ): FunctionBodyEmbedding {
     val seqnBuilder = SeqnBuilder(source)
     val foldState = if (tracksOwnership) FoldState(typeResolver) else null
@@ -584,7 +588,7 @@ fun ProgramConversionContext.linearizeImpureBody(
     val postconditions = bodyExp.signature?.postconditions.orEmpty().filter { it.userPostconditionRole != null }
     val returnSites = if (postconditions.isEmpty()) null else ReturnSites.of(bodyExp.body, bodyExp.returnLabel,
         converted.bodySource ?: source) { freshAnonBuiltinVar(buildType { int() }).name }
-    val linearizer = Linearizer(SharedLinearizationState(anonVarProducer, returnSites), seqnBuilder, source, typeResolver, foldState)
+    val linearizer = Linearizer(SharedLinearizationState(anonVarProducer, returnSites, termination), seqnBuilder, source, typeResolver, foldState)
     returnSites?.declare(linearizer)
     bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
     // note: we must guarantee somewhere that returned value is Unit
@@ -719,8 +723,9 @@ fun StmtConversionContext.mayThrow(): Boolean = activeCatchLabels.isNotEmpty() |
 /**
  * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an
  * inlined body, then [boundInvariants], then the user's [userInvariants], then the invariants of the paths retained
- * by inlined calls in progress, as [loopOverUsedRoots] builds it. The body is converted in the loop's own context;
- * [headLabelName] names the head there. [exitGuard] is the [While]'s.
+ * by inlined calls in progress, as [loopOverUsedRoots] builds it. A `decreases` call among [userInvariants] gives the
+ * loop's variant; a loop of a termination-checked function needs one unless [boundInvariants] bound it. The body is
+ * converted in the loop's own context; [headLabelName] names the head there. [exitGuard] is the [While]'s.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirLoop,
@@ -733,16 +738,34 @@ fun StmtConversionContext.convertLoop(
 ): ExpEmbedding {
     val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
     val typeInvariants = inScope.flatMap { it.provenInvariants() }
+    val (variantCalls, invariantStatements) = userInvariants?.statements.orEmpty().partition { it.decreasesCall() != null }
     val invariants = buildList {
         addAll(boundInvariants)
         userInvariants?.let {
-            addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it) })
+            addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it, invariantStatements) })
         }
+    }
+    val variant = withScopeImpl(ScopeIndex.NoScope) {
+        loopVariant(loop, variantCalls.mapNotNull { it.decreasesCall() }, boundInvariants.isNotEmpty())
     }
     val headShapes = ownedShapes({ it.stateAtLoopHead(loop) }, inScope)
     val exitShapes = ownedShapes({ it.stateAfter(loop) }, inScope)
     return withFreshWhile(loop.label) {
-        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes, exitGuard)
+        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes, exitGuard, variant)
+    }
+}
+
+private fun StmtConversionContext.loopVariant(loop: FirLoop, calls: List<FirFunctionCall>, bounded: Boolean): LoopVariant? {
+    fun report(kind: FailureKind, source: KtSourceElement?, rule: TerminationRule) =
+        reportTerminationFailure(Failure(kind, source, TerminationCondition(rule)))
+    if (calls.size > 1) return null.also { report(FailureKind.INVALID_TERMINATION_MEASURE, calls[1].source, TerminationRule.DUPLICATE) }
+    val call = calls.singleOrNull() ?: return null.also {
+        if (checksTermination && !bounded) report(FailureKind.MISSING_TERMINATION_MEASURE, loop.source, TerminationRule.MISSING_VARIANT)
+    }
+    return typeResolver.convertMeasure(call, this, intOnly = true) { source, rule ->
+        report(FailureKind.INVALID_TERMINATION_MEASURE, source, rule)
+    }?.parts?.map { it.measure }?.let { measures ->
+        LoopVariant(measures, measures.map { anonBuiltinVarProducer.getFresh(buildType { int() }) }, loop.source)
     }
 }
 
@@ -752,7 +775,7 @@ fun StmtConversionContext.convertLoop(
  * roots the loop does not use are left out of its invariant, so Viper keeps their permissions and the values below
  * them across the loop. [typeInvariants] are facts about the types of variables; they need no permission and are not
  * uses. For each path retained by an inlined call in progress whose root the loop uses, an invariant says that the
- * path still reads its temporary. [exitGuard] is the [While]'s.
+ * path still reads its temporary. [exitGuard] and [variant] are the [While]'s; the variant is a use too.
  */
 fun StmtConversionContext.loopOverUsedRoots(
     condition: ExpEmbedding,
@@ -763,8 +786,9 @@ fun StmtConversionContext.loopOverUsedRoots(
     headShapes: List<OwnedShape>,
     exitShapes: List<OwnedShape>,
     exitGuard: ExpEmbedding? = null,
+    variant: LoopVariant? = null,
 ): While {
-    val used = (listOf(condition, body) + invariants).flatMapTo(mutableSetOf()) { it.usedVariableNames() }
+    val used = (listOf(condition, body) + invariants + variant?.measures.orEmpty()).flatMapTo(mutableSetOf()) { it.usedVariableNames() }
     val (held, framed) = headShapes.partition { it.root.name in used }
     return While(
         condition,
@@ -776,6 +800,7 @@ fun StmtConversionContext.loopOverUsedRoots(
         framed,
         exitShapes.filter { it.root.name in used },
         exitGuard,
+        variant,
     )
 }
 

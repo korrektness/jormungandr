@@ -20,6 +20,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     val condition = when (role) {
         is SourceRole.Arithmetic -> role.condition
         is SourceRole.CastCheck -> role.condition
+        is SourceRole.Termination -> role.condition
         is SourceRole.Proof -> KotlinCondition.Proof(
             role.clause, role.declaration, role.subject,
             position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source },
@@ -94,7 +95,7 @@ private fun KotlinCondition.failureKind(): FailureKind = when (this) {
     is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
     is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
     is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
-    KotlinCondition.Termination -> FailureKind.TERMINATION_NOT_ESTABLISHED
+    KotlinCondition.Termination, KotlinCondition.LoopTermination -> FailureKind.TERMINATION_NOT_ESTABLISHED
     KotlinCondition.Unclassified -> FailureKind.VIPER_VERIFICATION_ERROR
     else -> error("A proof adapter produced a non-proof condition")
 }
@@ -151,8 +152,8 @@ private fun VerificationError.collectionSymbol() =
 
 private fun VerificationError.lookupSourceRole(): SourceRole? {
     fun applicable(role: SourceRole?): SourceRole? = when (role) {
-        is SourceRole.Arithmetic, is SourceRole.CastCheck, is SourceRole.Proof, is SourceRole.ReturnsEffect, is SourceRole.ConditionalEffect,
-        is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck, is SourceRole.StringIndexCheck,
+        is SourceRole.Arithmetic, is SourceRole.CastCheck, is SourceRole.Termination, is SourceRole.Proof, is SourceRole.ReturnsEffect,
+        is SourceRole.ConditionalEffect, is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck, is SourceRole.StringIndexCheck,
         is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
         is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
         is SourceRole.Condition, SourceRole.ThrowsAssumption, null -> null
@@ -171,6 +172,7 @@ fun VerifierError.reportingPosition(checkedSource: KtSourceElement? = null): Pos
     when (val role = (this as? VerificationError)?.lookupSourceRole()) {
         is SourceRole.OverrideRefinement -> role.position
         is SourceRole.ObserverAccess -> role.position
+        is SourceRole.Termination -> role.site.takeUnless { it == Position.NoPosition } ?: position
         is SourceRole.Proof -> if (role.site.liesWithin(checkedSource)) role.site else {
             val postcondition = (this as VerificationError).result as? viper.silver.verifier.errors.PostconditionViolated
             if (postcondition != null) {

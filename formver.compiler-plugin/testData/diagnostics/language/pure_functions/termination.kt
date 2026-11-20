@@ -114,10 +114,6 @@ fun <!VIPER_TEXT!>lengthClient<!>(n: @Unique Node) {
     refute(false)
 }
 
-fun <!VERIFICATION_SKIPPED!>impureMeasure<!>(x: Int) {
-    preconditions { <!INVALID_TERMINATION_MEASURE!>decreases(x)<!> }
-}
-
 @Pure fun <!VERIFICATION_SKIPPED!>stringMeasure<!>(s: String): Int {
     preconditions { decreases(<!INVALID_TERMINATION_MEASURE!>s<!>) }
     return 0

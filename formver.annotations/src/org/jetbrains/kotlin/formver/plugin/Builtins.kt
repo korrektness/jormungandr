@@ -30,8 +30,9 @@ fun <E> loopInvariants(@Suppress("UNUSED_PARAMETER") body: (IterationSequence<E>
 fun preconditions(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
 /**
- * The termination measure of a recursive `@Pure` function, compared lexicographically; see "Termination" in
- * SPECIFICATIONS.md. Usable only in the function's [preconditions] block.
+ * The termination measure of a function or a loop, compared lexicographically; see "Termination of pure functions" and
+ * "Termination of functions and loops" in SPECIFICATIONS.md. Usable in a function's [preconditions] block and in a
+ * loop's [loopInvariants] block.
  */
 fun decreases(@Suppress("UNUSED_PARAMETER") vararg measures: Any?) = Unit
 

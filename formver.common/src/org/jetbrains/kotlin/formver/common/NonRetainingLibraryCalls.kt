@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.fir.types.isUnitOrNullableUnit
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 
 /** Origins of declarations read from compiled dependencies, as opposed to sources and members generated for them. */
-private val libraryOrigins = setOf(
+val libraryOrigins = setOf(
     FirDeclarationOrigin.Library, FirDeclarationOrigin.Java.Library, FirDeclarationOrigin.BuiltIns,
     FirDeclarationOrigin.BuiltInsFallback, FirDeclarationOrigin.Precompiled, FirDeclarationOrigin.Enhancement,
 )

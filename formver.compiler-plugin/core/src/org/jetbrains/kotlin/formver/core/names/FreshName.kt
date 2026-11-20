@@ -255,6 +255,22 @@ data class ThrowsConditionName(val subject: SymbolicName) : FreshName {
     override val children: List<AnyName> = listOf(nameType, subject)
 }
 
+/** The method whose precondition checks that a call of [callee] from [caller] decreases the caller's termination measure. */
+data class TerminationCheckName(val caller: SymbolicName, val callee: SymbolicName) : FreshName {
+    override val inViper: Boolean = true
+    override val nameType: NameType = NameType.Base.Function
+
+    override val candidates: List<CandidateName> = buildCandidates {
+        candidate {
+            +"decreases"
+            +caller
+            +callee
+        }
+    }
+
+    override val children: List<AnyName> = listOf(nameType, caller, callee)
+}
+
 /** A member's proof-only signature in a runtime class's verification unit. */
 data class InheritedMemberName(val member: SymbolicName, val role: String, val contract: SymbolicName) : FreshName {
     override val inViper: Boolean = true

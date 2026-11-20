@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialMethods
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.LoopVariant
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
@@ -49,6 +50,12 @@ data class Linearizer(
 
     override val jumpInterceptors: MutableList<JumpInterceptor>
         get() = state.jumpInterceptors
+
+    override val loopVariants: MutableMap<SymbolicName, LoopVariant>
+        get() = state.loopVariants
+
+    override val termination: MethodTermination?
+        get() = state.termination
 
     override val returnSites: ReturnSites?
         get() = state.returnSites

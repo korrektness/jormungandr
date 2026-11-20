@@ -155,8 +155,11 @@ data class LinearizationVisitor(
                     ctx.foldState?.normalize(ctx)
                     val bodyBlock = ctx.withFoldStateRestored {
                         asBlock {
+                            e.variant?.save(this)
+                            e.variant?.let { loopVariants?.put(e.continueLabel.name, it) }
                             e.body.linearize().toViperUnusedResult(this)
                             addStatement { e.continueLabel.toLink().toViperGoto(this) }
+                            loopVariants?.remove(e.continueLabel.name)
                         }
                     }
                     Stmt.If(condVar.linearize().toViperBuiltinType(ctx), bodyBlock, els = Stmt.Seqn(), ctx.source.asPosition)
@@ -242,6 +245,7 @@ data class LinearizationVisitor(
                     Stmt.If(choice.linearize().toViperBuiltinType(ctx), thrown, skip, ctx.source.asPosition)
                 }
             }
+            ctx.termination?.check(e.method.symbol, argsViper, ctx.source.asPosition)?.let { check -> ctx.addStatement { check } }
             ctx.addStatement {
                 e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
             }

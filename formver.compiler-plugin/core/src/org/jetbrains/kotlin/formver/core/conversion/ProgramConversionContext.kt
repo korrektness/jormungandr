@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -68,6 +69,14 @@ interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttach
 
     /** The trusted assumptions that the program relies on, beyond the declarations it verifies. */
     val trust: TrustedAssumptionCollector
+
+    /**
+     * Whether the body being converted is that of a termination-checked function, so that its loops need a variant.
+     */
+    val checksTermination: Boolean
+
+    /** Reports [failure], a termination obligation that conversion finds unmet; the declaration is still verified. */
+    fun reportTerminationFailure(failure: Failure)
 
     fun embedType(type: ConeKotlinType): TypeEmbedding
     fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding

@@ -1,0 +1,28 @@
+/initializers.kt: info: Generated Viper text for spinning:
+method spinning(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  label cont
+    invariant isSubtype(typeOf(x), intType())
+  anon := geInts(x, intToRef(0))
+  if (boolFromRef(anon)) {
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/initializers.kt: info: Generated Viper text for checkedHere:
+method checkedHere(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}

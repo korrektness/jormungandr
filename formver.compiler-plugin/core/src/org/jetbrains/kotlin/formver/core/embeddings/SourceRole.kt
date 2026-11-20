@@ -20,6 +20,14 @@ sealed interface SourceRole {
     data class CastCheck(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     data class Arithmetic(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     /**
+     * A check that a call or a loop iteration decreases a termination measure; [condition] says which. A failure is
+     * reported at [site] when it is given.
+     */
+    data class Termination(
+        val condition: org.jetbrains.kotlin.formver.common.KotlinCondition,
+        val site: Position = Position.NoPosition,
+    ) : SourceRole
+    /**
      * The Kotlin clause responsible for an explicit proof obligation. A failure is reported at [site] when it is given,
      * rather than at the position Silicon reports for the failing statement.
      */

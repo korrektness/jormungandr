@@ -1,0 +1,496 @@
+/loops.kt: info: Generated Viper text for countUp:
+method countUp(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_builtin_0: Int
+    var anon_0: Ref
+    anon_builtin_0 := (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i))
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    assert anon_builtin_0 >= 0 &&
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) <
+      anon_builtin_0 ||
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) ==
+      anon_builtin_0 &&
+      false
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0
+  v_ret_0 := i
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/loops.kt: info: Generated Viper text for stalls:
+method stalls(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_builtin_0: Int
+    anon_builtin_0 := (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i))
+    if ((let anon_builtin_neg1 ==
+      (remInts(i, intToRef(2))) in
+      intFromRef(i) -
+      (intFromRef(i) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(i) < 0 ? -intFromRef(i) : intFromRef(i)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(i) < 0 ? -intFromRef(i) : intFromRef(i)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) *
+      intFromRef(intToRef(2))) ==
+    0) {
+      var anon_0: Ref
+      anon_0 := i
+      i := plusInts(anon_0, intToRef(1))
+    }
+    assert anon_builtin_0 >= 0 &&
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) <
+      anon_builtin_0 ||
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) ==
+      anon_builtin_0 &&
+      false
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for skips:
+method skips(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_builtin_0: Int
+    var anon_0: Ref
+    anon_builtin_0 := (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i))
+    if (intFromRef(i) == 3) {
+      assert anon_builtin_0 >= 0 &&
+        (let anon_builtin_neg1 ==
+          (minusInts(n, i)) in
+          intFromRef(n) - intFromRef(i)) <
+        anon_builtin_0 ||
+        (let anon_builtin_neg1 ==
+          (minusInts(n, i)) in
+          intFromRef(n) - intFromRef(i)) ==
+        anon_builtin_0 &&
+        false
+      goto cont
+    }
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    assert anon_builtin_0 >= 0 &&
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) <
+      anon_builtin_0 ||
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) ==
+      anon_builtin_0 &&
+      false
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for nested:
+method nested(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_2: Ref
+  i := intToRef(0)
+  label cont_0
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
+  anon_2 := ltInts(i, n)
+  if (boolFromRef(anon_2)) {
+    var anon_builtin_0: Int
+    var j: Ref
+    var anon_3: Ref
+    var anon_1: Ref
+    anon_builtin_0 := (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i))
+    j := n
+    label cont_1
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(n), intType())
+    anon_3 := boolToRef(true)
+    if (boolFromRef(anon_3)) {
+      var anon_builtin_1: Int
+      var anon_0: Ref
+      anon_builtin_1 := intFromRef(j)
+      if (intFromRef(j) <= intFromRef(i)) {
+        goto break_1
+      }
+      anon_0 := j
+      j := minusInts(anon_0, intToRef(1))
+      assert anon_builtin_1 >= 0 && intFromRef(j) < anon_builtin_1 ||
+        intFromRef(j) == anon_builtin_1 && false
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(n), intType())
+    anon_1 := i
+    i := plusInts(anon_1, intToRef(1))
+    assert anon_builtin_0 >= 0 &&
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) <
+      anon_builtin_0 ||
+      (let anon_builtin_neg1 ==
+        (minusInts(n, i)) in
+        intFromRef(n) - intFromRef(i)) ==
+      anon_builtin_0 &&
+      false
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for twoCounters:
+method twoCounters(m: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  var b: Ref
+  var anon_2: Ref
+  a := m
+  b := n
+  label cont
+    invariant isSubtype(typeOf(a), intType())
+    invariant isSubtype(typeOf(b), intType())
+    invariant isSubtype(typeOf(m), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(b) >= 0
+  anon_2 := gtInts(a, intToRef(0))
+  if (boolFromRef(anon_2)) {
+    var anon_builtin_0: Int
+    var anon_builtin_1: Int
+    anon_builtin_0 := intFromRef(a)
+    anon_builtin_1 := intFromRef(b)
+    if (intFromRef(b) > 0) {
+      var anon_0: Ref
+      anon_0 := b
+      b := minusInts(anon_0, intToRef(1))
+    } else {
+      var anon_1: Ref
+      anon_1 := a
+      a := minusInts(anon_1, intToRef(1))
+      b := n
+    }
+    assert anon_builtin_0 >= 0 && intFromRef(a) < anon_builtin_0 ||
+      intFromRef(a) == anon_builtin_0 &&
+      (anon_builtin_1 >= 0 && intFromRef(b) < anon_builtin_1 ||
+      intFromRef(b) == anon_builtin_1 && false)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(a), intType())
+  assert isSubtype(typeOf(b), intType())
+  assert isSubtype(typeOf(m), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(b) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for missingVariant:
+method missingVariant(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for ranged:
+method ranged(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var last: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  last := intToRef(0)
+  anon_0 := n
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(last), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    last := i
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(last), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(n), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  v_ret_0 := last
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/loops.kt: info: Generated Viper text for booleanVariant:
+method booleanVariant(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), boolType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var go: Ref
+  var anon: Ref
+  go := b
+  label cont
+    invariant isSubtype(typeOf(go), boolType())
+    invariant isSubtype(typeOf(b), boolType())
+  anon := go
+  if (boolFromRef(anon)) {
+    go := boolToRef(false)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(go), boolType())
+  assert isSubtype(typeOf(b), boolType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for uncheckedLoop:
+method uncheckedLoop(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for twoVariants:
+method twoVariants(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for countsDownOnce:
+method countsDownOnce(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := n
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+  anon_1 := boolToRef(true)
+  if (boolFromRef(anon_1)) {
+    var anon_builtin: Int
+    anon_builtin := intFromRef(i)
+    if (intFromRef(i) > 0) {
+      var anon_0: Ref
+      anon_0 := i
+      i := minusInts(anon_0, intToRef(1))
+    }
+    label cont
+    if (intFromRef(i) > 0) {
+    } else {
+      goto break}
+    assert anon_builtin >= 0 && intFromRef(i) < anon_builtin ||
+      intFromRef(i) == anon_builtin && false
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/loops.kt: info: Generated Viper text for repeatsForever:
+method repeatsForever(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := n
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := boolToRef(true)
+  if (boolFromRef(anon_0)) {
+    var anon_builtin: Int
+    anon_builtin := intFromRef(i)
+    label cont
+    if (intFromRef(i) > 0) {
+    } else {
+      goto break}
+    assert anon_builtin >= 0 && intFromRef(i) < anon_builtin ||
+      intFromRef(i) == anon_builtin && false
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

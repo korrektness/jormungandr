@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings
 
+import org.jetbrains.kotlin.formver.core.linearization.check
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -25,6 +26,7 @@ fun LabelEmbedding.toLink() = LabelLink(name)
 fun LabelLink.toViperGoto(ctx: LinearizationContext): Stmt.Goto {
     val interceptor = ctx.jumpInterceptors?.lastOrNull { name !in it.localLabels }
     val destination = interceptor?.redirect?.invoke(this, ctx) ?: this
+    ctx.loopVariants?.get(destination.name)?.let { variant -> ctx.addStatement { variant.check(this) } }
     ctx.foldState?.jumpTo(ctx, destination.name)
     return Label(destination.name, emptyList()).toGoto(pos = ctx.source.asPosition)
 }

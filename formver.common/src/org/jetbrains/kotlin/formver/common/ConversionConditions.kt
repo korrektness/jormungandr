@@ -8,9 +8,24 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 enum class PurityRule { FUNCTION_BODY, LAW_BODY, ASSERT_CONDITION, REFUTE_CONDITION }
 data class PurityCondition(val rule: PurityRule, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
 
-enum class TerminationRule { MISSING_MEASURE, IMPURE_FUNCTION, DUPLICATE, MEASURE_TYPE }
+/**
+ * [MISSING_VARIANT]: a loop of a termination-checked function has no variant. [INT_MEASURE]: a measure of a function
+ * that is not `@Pure`, or of a loop, is not an `Int`. [CALLEE]: a termination-checked function calls a source
+ * function that may not terminate. [UNMEASURED_CYCLE]: it calls a function of its recursion cycle that has no
+ * measure. [CYCLE_IN_LAMBDA]: a lambda in it
+ * calls a function of its recursion cycle. [UNHANDLED]: it contains an element that the termination analysis does not
+ * handle, of the kind [TerminationCondition.cycle] names. [INITIALIZERS]: the initializers that calling it may run
+ * are not known to terminate.
+ */
+enum class TerminationRule {
+    MISSING_MEASURE, DUPLICATE, MEASURE_TYPE, MISSING_VARIANT, INT_MEASURE, CALLEE, UNMEASURED_CYCLE, CYCLE_IN_LAMBDA, UNHANDLED, INITIALIZERS,
+}
 
-/** A termination measure that is absent where recursion needs it, or is ill-formed. [cycle] names the recursion. */
+/**
+ * A termination measure that is absent where recursion or a loop needs it, or is ill-formed, or a call that a
+ * termination-checked function cannot show to terminate. [cycle] names the recursion, the callee, or the kind of an
+ * unhandled element.
+ */
 data class TerminationCondition(val rule: TerminationRule, val cycle: List<String> = emptyList()) : KotlinCondition
 
 /** Kotlin provenance of a converted receiver, without embedding or backend dependencies. */

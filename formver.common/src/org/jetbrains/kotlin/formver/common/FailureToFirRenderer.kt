@@ -212,7 +212,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             }
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
             is TerminationCondition -> terminationMessage(condition)
-            KotlinCondition.Termination -> "Could not establish that this recursive call decreases the termination measure."
+            KotlinCondition.Termination, KotlinCondition.LoopTermination -> decreaseMessage(condition)
             is AttributeCondition -> attributeMessage(failure.kind, condition)
             is KotlinCondition.Returns -> "Could not establish that the function never returns ${article(opposite(condition.effect))}."
             is KotlinCondition.Conditional -> {
@@ -341,12 +341,26 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         return "Verification skipped: function '$name' was not verified because of $reason [${condition.reason.name}]"
     }
 
+    private fun decreaseMessage(condition: KotlinCondition): String =
+        if (condition == KotlinCondition.LoopTermination) "Could not establish that this iteration decreases the loop's termination measure."
+        else "Could not establish that this recursive call decreases the termination measure."
+
     private fun terminationMessage(condition: TerminationCondition): String = when (condition.rule) {
         TerminationRule.MISSING_MEASURE ->
-            "Recursive @Pure function has no termination measure: ${condition.cycle.joinToString(" -> ")}. Add decreases(...) to its preconditions."
-        TerminationRule.IMPURE_FUNCTION -> "A termination measure is allowed only on a @Pure function."
-        TerminationRule.DUPLICATE -> "A function has at most one decreases(...)."
-        TerminationRule.MEASURE_TYPE -> "A termination measure must be an Int or a reference to an object of a class."
+            "Recursive @Pure function has no termination measure: ${condition.cycle.joinToString(" -> ")}."
+        TerminationRule.DUPLICATE -> "This is a second decreases(...) of its function or loop."
+        TerminationRule.MEASURE_TYPE -> "This termination measure is neither an Int nor a reference to an object of a class."
+        TerminationRule.MISSING_VARIANT -> "A loop of a termination-checked function has no termination measure."
+        TerminationRule.INT_MEASURE -> "This termination measure of a loop or of a function that is not @Pure is not an Int."
+        TerminationRule.CALLEE -> "Could not establish that ${condition.cycle.single()} terminates."
+        TerminationRule.UNMEASURED_CYCLE ->
+            "${condition.cycle.single()} is in the recursion cycle of this termination-checked function but has no termination measure."
+        TerminationRule.CYCLE_IN_LAMBDA ->
+            "A lambda in a termination-checked function calls ${condition.cycle.single()}, which is in its recursion cycle."
+        TerminationRule.INITIALIZERS ->
+            "Could not establish that the file or object initializers that calling this function may run terminate."
+        TerminationRule.UNHANDLED ->
+            "The termination analysis does not handle this ${condition.cycle.single()} in a termination-checked function."
     }
 
     private fun conversionOwnershipMessage(condition: ConversionOwnershipCondition): String = when (condition) {

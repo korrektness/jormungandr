@@ -81,6 +81,11 @@ class TrustedAssumptionCollector(
         trusted += TrustedAssumption(TrustedAssumption.Kind.ELEMENT_EQUALITY, symbol.trustName)
     }
 
+    /** Records that the termination-checked function of the program assumes that [symbol], a library callable, terminates. */
+    fun recordAssumedTermination(symbol: FirCallableSymbol<*>) {
+        trusted += TrustedAssumption(TrustedAssumption.Kind.ASSUMED_TERMINATING, symbol.trustName)
+    }
+
     /** Records [symbol], a library callable that the program calls or reads as the opaque library call. */
     fun recordOpaqueLibraryCall(symbol: FirCallableSymbol<*>) {
         trusted += TrustedAssumption(TrustedAssumption.Kind.OPAQUE_LIBRARY_CALL, symbol.trustName)

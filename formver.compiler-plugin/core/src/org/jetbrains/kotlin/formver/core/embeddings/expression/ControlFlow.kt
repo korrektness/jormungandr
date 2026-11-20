@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
@@ -78,6 +79,8 @@ data class While(
     val framedShapes: List<OwnedShape> = emptyList(),
     val exitShapes: List<OwnedShape> = emptyList(),
     val exitGuard: ExpEmbedding? = null,
+    /** The loop's termination measure, which each iteration must decrease; `null` when it has none. */
+    val variant: LoopVariant? = null,
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 
@@ -87,6 +90,12 @@ data class While(
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(condition, body)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitWhile(this)
 }
+
+/**
+ * The [measures] of the variant of the loop at [source], and the builtin `Int` variables that hold them at the start of
+ * an iteration.
+ */
+data class LoopVariant(val measures: List<ExpEmbedding>, val saved: List<VariableEmbedding>, val source: KtSourceElement?)
 
 /**
  * This expression and every expression in it, including the expressions whose invariants are inhaled, which

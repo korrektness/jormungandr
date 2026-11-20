@@ -83,6 +83,8 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
   reference to them (see "Non-retaining library calls" below).
 - `snapshot iterator`: `List.iterator()` bound to the bundled model, whose contract assumes the
   list is not mutated through any reference while the iterator is live (see "Snapshot iterators" below).
+- `assumed terminating`: a library callable, operators included, that a
+  termination-checked function or one of its source callees calls; see [Termination of functions and loops](#termination-of-functions-and-loops).
 
 The report also lists the arithmetic semantic opt-ins described in
 SPECIFICATIONS.md, "Integer arithmetic". Semantic opt-ins are separate from trusted
@@ -145,6 +147,40 @@ every function without one is declared terminating, which holds because a
 recursive `@Pure` function without a measure is rejected.
 
 Test: `verification/pure_functions/termination.kt::growing,loopyFalse`.
+
+### Termination of functions and loops
+
+A function without `decreases` is proved partially correct only: a call that
+never returns satisfies any postcondition. A termination-checked function, and
+any loop with a variant, is proved to terminate, with an abnormal exit counting
+as termination. SPECIFICATIONS.md, "Termination of functions and loops", has
+the rules.
+
+Each program verifies one function, with the others as headers, so Silver's
+termination plugin cannot see a cycle through other functions. SnaKt finds the
+recursion cycle on the Kotlin call graph instead (`conversion/TerminationGraph.kt`).
+At each call of the cycle it calls a body-less method whose precondition states
+that the callee's measure at the arguments is below the caller's measure in the
+pre-state, with an `Int` decreasing and bounded below by 0. A loop saves its
+variant at the start of each iteration and asserts the decrease at each jump
+back to its head. These checks need no domain axioms.
+
+The analysis rejects any construct it does not handle, so an unanticipated
+construct cannot hide a call. The trusted parts are: library and opaque callees
+terminate, each listed in the trust report by the one function that assumes it;
+a `for` over a range terminates, which its bound invariants
+make true; and a final source callee that is not recursive, has no other loop
+and calls only terminating functions terminates. Calls through a function
+object, of open members, of generated members, and of the recursion cycle from
+inside a lambda, whose body may be verified apart, are rejected rather than
+trusted. A library call that receives a value of a type a source class may
+implement is rejected, since the library may call back into it. A measured
+source callee is relied on to be verified: its own program checks its measure,
+and the trust report lists it when it is skipped or `@NeverVerify`.
+
+Test: `language/termination/recursive_functions.kt::stuck,unbounded,pong,ding`,
+`language/termination/loops.kt::stalls,skips,missingVariant`,
+`language/termination/callees.kt::caller,callsOpen,callsFunctionObject`.
 
 ### Pure cast definedness
 

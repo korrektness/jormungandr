@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.expression.LoopVariant
 import org.jetbrains.kotlin.formver.core.asPosition
 
 import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
@@ -69,6 +70,14 @@ interface LinearizationContext {
     fun forSpecification(): LinearizationContext = this
 
     val jumpInterceptors: MutableList<JumpInterceptor>?
+        get() = null
+
+    /** The variants of the enclosing loops that have one, by the name of the loop head, which a jump back to it checks. */
+    val loopVariants: MutableMap<SymbolicName, LoopVariant>?
+        get() = null
+
+    /** The checks of the termination-checked method being linearized; `null` when it is not one. */
+    val termination: MethodTermination?
         get() = null
 
     /** The return sites of the method being linearized, when it checks its postconditions per site. */

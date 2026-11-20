@@ -1,0 +1,510 @@
+/recursive_functions.kt: info: Generated Viper text for countDown:
+method countDown(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_countDown_countDown(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := countDown(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method decreases_countDown_countDown(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+/recursive_functions.kt: info: Generated Viper text for stuck:
+method decreases_stuck_stuck(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method stuck(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_stuck_stuck(n, old(intFromRef(n)))
+    v_ret_0 := stuck(n)
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for unbounded:
+method decreases_unbounded_unbounded(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method unbounded(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) > -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_unbounded_unbounded(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := unbounded(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for lexicographic:
+method decreases_lexicographic_lexicographic(m: Ref, n: Ref, anon_builtin_0: Int,
+  anon_builtin_1: Int)
+  requires anon_builtin_0 >= 0 && intFromRef(m) < anon_builtin_0 ||
+    intFromRef(m) == anon_builtin_0 &&
+    (anon_builtin_1 >= 0 && intFromRef(n) < anon_builtin_1 ||
+    intFromRef(n) == anon_builtin_1 && false)
+
+
+method lexicographic(m: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(m) == 0) {
+    v_ret_0 := intToRef(0)
+  } elseif (intFromRef(n) == 0) {
+    decreases_lexicographic_lexicographic(minusInts(m, intToRef(1)), intToRef(10),
+      old(intFromRef(m)), old(intFromRef(n)))
+    v_ret_0 := lexicographic(minusInts(m, intToRef(1)), intToRef(10))
+  } else {
+    decreases_lexicographic_lexicographic(m, minusInts(n, intToRef(1)), old(intFromRef(m)),
+      old(intFromRef(n)))
+    v_ret_0 := lexicographic(m, minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for isEven:
+method decreases_isEven_isOdd(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method isEven(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := boolToRef(true)
+  } else {
+    decreases_isEven_isOdd(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := isOdd(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method isOdd(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), boolType())
+
+
+/recursive_functions.kt: info: Generated Viper text for isOdd:
+method decreases_isOdd_isEven(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method isEven(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), boolType())
+
+
+method isOdd(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := boolToRef(false)
+  } else {
+    decreases_isOdd_isEven(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := isEven(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for ping:
+method decreases_ping_pong(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method ping(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_ping_pong(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := pong(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method pong(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for pong:
+method decreases_pong_ping(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method ping(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method pong(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  decreases_pong_ping(n, old(intFromRef(n)))
+  v_ret_0 := ping(n)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for ding:
+method ding(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := dong(n)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method dong(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for dong:
+method ding(n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method dong(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) <= 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := ding(minusInts(n, intToRef(1)))}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for recursesInLambda:
+method recursesInLambda(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    var v_ret_3: Ref
+    v_ret_3 := recursesInLambda(minusInts(n, intToRef(1)))
+    goto lbl_ret_3
+    label lbl_ret_3
+    v_ret_0 := v_ret_3
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for left:
+method decreases_left_shared(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method left(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_left_shared(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := shared(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method shared(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for right:
+method decreases_right_shared(n: Ref, anon_builtin_0: Int, anon_builtin_1: Int)
+  requires anon_builtin_0 >= 0 && intFromRef(n) < anon_builtin_0 ||
+    intFromRef(n) == anon_builtin_0 && false
+
+
+method right(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_right_shared(minusInts(n, intToRef(1)), old(intFromRef(n)), old(0))
+    v_ret_0 := shared(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method shared(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for shared:
+method decreases_shared_left(n: Ref, anon_builtin_0: Int)
+  requires anon_builtin_0 >= 0 && intFromRef(n) < anon_builtin_0 ||
+    intFromRef(n) == anon_builtin_0 && false
+
+
+method decreases_shared_right(n: Ref, anon_builtin_1: Int)
+  requires anon_builtin_1 >= 0 && intFromRef(n) < anon_builtin_1 ||
+    intFromRef(n) == anon_builtin_1 && false
+
+
+method left(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method right(n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method shared(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  }
+  decreases_shared_left(minusInts(n, intToRef(1)), old(intFromRef(n)))
+  anon_0 := left(minusInts(n, intToRef(1)))
+  decreases_shared_right(minusInts(n, intToRef(1)), old(intFromRef(n)))
+  v_ret_0 := right(minusInts(n, intToRef(1)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/recursive_functions.kt: info: Generated Viper text for g:
+method decreases_g_viaOverride(n: Ref, b: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method g(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_g_viaOverride(minusInts(n, intToRef(1)), this, old(intFromRef(n)))
+    v_ret_0 := viaOverride(minusInts(n, intToRef(1)), this)
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method viaOverride(n: Ref, b: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(b), Base())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for Derived:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Derived()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/recursive_functions.kt: info: Generated Viper text for g:
+method Base_f_g(this: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method Derived_f_g(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Derived())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := viaOverride(plusInts(n, intToRef(1)), this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_g(this: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  requires isSubtype(typeOf(this), Derived())
+{
+  ret_2 := Derived_f_g(this, n)
+  assert isSubtype(typeOf(ret_2), intType())
+}
+
+method viaOverride(n: Ref, b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(b), Base())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for viaOverride:
+method g(this: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method viaOverride(n: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(b), Base())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := g(b, minusInts(n, intToRef(1)))}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/recursive_functions.kt: info: Generated Viper text for callsInlined:
+method callsInlined(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var v_ret_3: Ref
+  var anon: Ref
+  anon := plusInts(n, intToRef(5))
+  if (intFromRef(anon) == 0) {
+    v_ret_3 := intToRef(0)
+  } else {
+    v_ret_3 := callsInlined(minusInts(anon, intToRef(1)))}
+  goto lbl_ret_3
+  label lbl_ret_3
+  v_ret_0 := v_ret_3
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method inlinedBack(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/recursive_functions.kt: info: Generated Viper text for inlinedBack:
+method callsInlined(n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method decreases_inlinedBack_callsInlined(n: Ref, anon: Int)
+  requires anon >= 0 && intFromRef(n) < anon ||
+    intFromRef(n) == anon && false
+
+
+method inlinedBack(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    decreases_inlinedBack_callsInlined(minusInts(n, intToRef(1)), old(intFromRef(n)))
+    v_ret_0 := callsInlined(minusInts(n, intToRef(1)))
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}

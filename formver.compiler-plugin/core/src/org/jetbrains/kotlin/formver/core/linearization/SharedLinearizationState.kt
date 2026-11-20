@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 import org.jetbrains.kotlin.formver.core.conversion.FreshEntityProducer
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.LoopVariant
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 
@@ -20,7 +21,9 @@ data class JumpInterceptor(
 class SharedLinearizationState(
     private val producer: FreshEntityProducer<AnonymousVariableEmbedding, TypeEmbedding>,
     val returnSites: ReturnSites? = null,
+    val termination: MethodTermination? = null,
 ) {
     val jumpInterceptors = mutableListOf<JumpInterceptor>()
+    val loopVariants = mutableMapOf<SymbolicName, LoopVariant>()
     fun freshAnonVar(type: TypeEmbedding) = producer.getFresh(type)
 }

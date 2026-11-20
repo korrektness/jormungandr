@@ -24,6 +24,11 @@ import org.jetbrains.kotlin.formver.core.linearization.nullBaseCase
 import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import org.jetbrains.kotlin.formver.core.linearization.MethodTermination
+import org.jetbrains.kotlin.formver.core.linearization.TerminationCheckMethod
+import org.jetbrains.kotlin.formver.core.names.TerminationCheckName
 
 /** Validates converted bodies and produces callable definitions, including headers for absent bodies. */
 internal class ProgramBodyProcessor(
@@ -31,11 +36,14 @@ internal class ProgramBodyProcessor(
     private val uniqueness: UniquenessOutcomes,
     private val signatures: Map<SymbolicName, CompleteFunctionSignature>,
     private val refinements: List<Refinement>,
-    private val measures: Map<SymbolicName, TerminationMeasure>,
+    private val terminationMeasures: TerminationMeasures,
     private val onOwnershipError: (FoldStateException, CompleteFunctionSignature) -> Unit,
     /** Called with each recursive function that has no measure, and a call path from it back to itself. */
     private val onMissingMeasure: (CompleteFunctionSignature, List<CompleteFunctionSignature>) -> Unit,
 ) {
+    private val measures: Map<SymbolicName, TerminationMeasure>
+        get() = terminationMeasures.measures
+
     private val operatorFunctions: Set<SymbolicName> by lazy {
         (SpecialFunctions.all + SpecialFunctions.multiset).map { it.name }.toSet()
     }
@@ -87,7 +95,7 @@ internal class ProgramBodyProcessor(
         val tracksOwnership = signature.symbol?.let { uniqueness.cached(it)?.hasErrors } != true
         val body = converted?.let {
             try {
-                converter.linearizeImpureBody(signature.declarationSource, it, tracksOwnership)
+                converter.linearizeImpureBody(signature.declarationSource, it, tracksOwnership, termination(name))
             } catch (e: FoldStateException) {
                 onOwnershipError(e, signature)
                 null
@@ -110,6 +118,23 @@ internal class ProgramBodyProcessor(
         } else {
             converter.linearizedBodyResolver.storeMethod(name, method)
         }
+    }
+
+    private fun termination(name: SymbolicName): MethodTermination? {
+        val measure = measures[name]?.takeIf { signatures[name]?.isPure == false } ?: return null
+        val typeResolver = converter.typeResolver
+        val cycle = terminationMeasures.cycleOf(name)
+        val checks = signatures.values.mapNotNull { callee ->
+            val symbol = callee.symbol?.unwrapFakeOverrides()?.takeIf { it in cycle } ?: return@mapNotNull null
+            val calleeMeasure = measures[callee.name] ?: return@mapNotNull null
+            val bounds = measure.parts.map { converter.anonBuiltinVarProducer.getFresh(buildType { int() }) }
+            val method = TerminationCheckMethod(TerminationCheckName(name, callee.name),
+                callee.formalArgs.map { it.toLocalVarDecl() } + bounds.map { it.toLocalVarDecl() },
+                lexicographicDecrease(calleeMeasure.intValues(typeResolver), bounds.map { it.toLocalVarUse() }))
+            converter.linearizedBodyResolver.storeMethod(method.name, method)
+            symbol to method
+        }.toMap()
+        return MethodTermination(measure.intValues(typeResolver), checks)
     }
 
     fun linearize() {

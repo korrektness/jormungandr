@@ -215,6 +215,11 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
                 link(entity.subject, Relation.IS_PART_OF, entity)
             }
 
+            is TerminationCheckName -> {
+                link(entity.caller, Relation.IS_PART_OF, entity)
+                link(entity.callee, Relation.IS_PART_OF, entity)
+            }
+
             is VacuityProbeName -> {
                 link(entity.subject, Relation.IS_PART_OF, entity)
             }
