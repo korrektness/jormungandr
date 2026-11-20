@@ -5,9 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core.names
 
+import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.conversion.ClassPropertyPair
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.PropertyKotlinName
@@ -22,6 +22,15 @@ import org.jetbrains.kotlin.name.Name
  * Name components should be separated by dollar signs.
  * If there is a risk of collision, add a prefix.
  */
+
+/** The callable id of [this], naming its class also when it is a member of a local class. */
+val FirCallableSymbol<*>.memberCallableId: CallableId
+    get() {
+        val id = callableId!!
+        if (id.classId != null) return id
+        val owner = containingClassLookupTag()?.classId ?: return id
+        return CallableId(owner, id.callableName)
+    }
 
 fun ClassId.embedLocalName(): ClassKotlinName = ClassKotlinName(relativeClassName)
 
@@ -135,7 +144,7 @@ fun FirPropertySymbol.embedGetterName(ctx: ProgramConversionContext): ScopedName
     } else if (callableId!!.classId == null) {
         callableId!!.embedTopLevelAccessorName(::GetterKotlinName)
     } else {
-        callableId!!.embedMemberGetterName(scopePolicy(this, ctx))
+        memberCallableId.embedMemberGetterName(scopePolicy(this, ctx))
     }
 
 fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName =
@@ -148,7 +157,7 @@ fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName
     } else if (callableId!!.classId == null) {
         callableId!!.embedTopLevelAccessorName(::SetterKotlinName)
     } else {
-        callableId!!.embedMemberSetterName(scopePolicy(this, ctx))
+        memberCallableId.embedMemberSetterName(scopePolicy(this, ctx))
     }
 
 /**
@@ -156,8 +165,7 @@ fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName
  * The first element is the name of the class that contains the property, and the second is the name of the property itself.
  */
 fun FirPropertySymbol.embedMemberPropertyName(ctx: ProgramConversionContext): ClassPropertyPair {
-    val callable = callableId
-    if (callable?.isLocal == true) throw UnsupportedFeatureException(source, "property of a local class")
+    val callable = memberCallableId
     val className =
         callable?.classId?.embedName() ?: throw SnaktInternalException(source, "Property is not part of a class")
     val propertyName = callable.embedMemberPropertyName(scopePolicy(this, ctx))
@@ -166,7 +174,7 @@ fun FirPropertySymbol.embedMemberPropertyName(ctx: ProgramConversionContext): Cl
 
 
 fun FirConstructorSymbol.embedName(ctx: ProgramConversionContext): ScopedName = buildName {
-    embedScope(callableId)
+    embedScope(memberCallableId)
     ConstructorKotlinName(ctx.embedFunctionPretype(this@embedName))
 }
 
@@ -176,5 +184,5 @@ fun FirFunctionSymbol<*>.embedName(ctx: ProgramConversionContext): ScopedName = 
     )
 
     is FirConstructorSymbol -> embedName(ctx)
-    else -> callableId.embedFunctionName(ctx.embedFunctionPretype(this))
+    else -> memberCallableId.embedFunctionName(ctx.embedFunctionPretype(this))
 }

@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.formver.core.isPure
 
 import org.jetbrains.kotlin.contracts.description.LogicOperationKind
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isStatic
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.FirElement
@@ -114,6 +116,12 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             ?.let { return data.objectInstance(it) }
         throw UnsupportedFeatureException(resolvedQualifier.source, resolvedQualifier.description)
     }
+
+    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: StmtConversionContext): ExpEmbedding =
+        data.declareLocal(simpleFunction)
+
+    override fun visitRegularClass(regularClass: FirRegularClass, data: StmtConversionContext): ExpEmbedding =
+        data.declareLocal(regularClass)
 
     override fun visitBlock(block: FirBlock, data: StmtConversionContext): ExpEmbedding =
         block.asForRangeLoop()?.let { data.convertForRangeLoop(it) }

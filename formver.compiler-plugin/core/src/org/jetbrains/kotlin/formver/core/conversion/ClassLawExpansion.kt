@@ -73,6 +73,7 @@ class ClassLawExpansion(
 
     @OptIn(SymbolInternals::class)
     fun body(function: FirFunctionSymbol<*>, substitutions: Map<SubstitutedArgument, ExpEmbedding>): Exp {
+        function.fir.rejectCaptureReads(function.source, "a class-law observer")
         val signature = with(program) { function.toFunctionSignature() }
         val resolver = InlineParameterResolver(substitutions, function.name.asString(), signature.returnTarget)
         val context = MethodConverter(

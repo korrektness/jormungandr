@@ -24,8 +24,8 @@ fun <!VIPER_TEXT!>suppressedSibling<!>() {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>1 == 0<!>)
 }
 
-fun <!VERIFICATION_SKIPPED!>localOwner<!>() {
-    <!UNSUPPORTED_FEATURE!>fun <!VIPER_TEXT!>local<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>) }<!>
+fun <!VIPER_TEXT!>localOwner<!>() {
+    fun <!VIPER_TEXT!>local<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>) }
     local()
 }
 

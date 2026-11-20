@@ -17,6 +17,9 @@ import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
@@ -98,17 +101,39 @@ fun constructionBody(
     val owner = constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!
     val type = program.embedType(constructor.resolvedReturnType).pretype as ClassTypeEmbedding
     val receiver = target.variable
-    val actions = mutableListOf<ExpEmbedding>(AllocateObject(receiver, type, constructionFields(owner)))
+    val actions = mutableListOf<ExpEmbedding>()
+    val captured = mutableMapOf<FirBasedSymbol<*>, PropertyAccessEmbedding>()
+    val entered = mutableMapOf<CaptureScope, Map<FirBasedSymbol<*>, PropertyAccessEmbedding>>()
+
+    /**
+     * The captures that code of the class [declaring] reads: none when it is not local, those of the body scope when
+     * that scope contains [declaring], else those of [declaring] itself. A capture that an earlier scope declared
+     * keeps its variable.
+     */
+    fun capturesOf(declaring: FirRegularClassSymbol): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> {
+        if (!declaring.classId.isLocal) return emptyMap()
+        val enclosing = generateSequence(declaring.classId) { it.outerClassId }.toSet()
+        val scope = program.bodyScope?.takeIf { (it.declaration.symbol as? FirClassLikeSymbol<*>)?.classId in enclosing }
+            ?: program.captureScope(declaring.fir)
+        return entered.getOrPut(scope) {
+            actions += scope.entry(program, declared = captured.keys.toSet())
+            scope.accesses(program).mapValues { (symbol, access) -> captured.getOrPut(symbol) { access } }
+        }
+    }
+
+    fun capturesOf(constructor: FirConstructorSymbol) =
+        capturesOf(constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!)
+    capturesOf(owner)
+    actions += AllocateObject(receiver, type, constructionFields(owner))
     fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
         val phases = ConstructionPhases(declaring)
-        val declaringType = program.embedType(symbol.resolvedReturnType).pretype as ClassTypeEmbedding
-        val boundary = EstablishConstruction(receiver, declaringType)
+        val boundary = EstablishConstruction(receiver, program.embedType(symbol.resolvedReturnType).pretype as ClassTypeEmbedding)
         val bodyTarget = if (symbol.isPrimary) target else program.returnTargetProducer.getFresh(buildType { unit() })
         val resolver = InlineParameterResolver(arguments + (SubstitutedArgument.DispatchThis to receiver), null, bodyTarget)
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),
-            OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), constructionReceiver = receiver,
-            constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
+            OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), captures = capturesOf(declaring),
+            constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
         if (delegated) symbol.fir.constructorSpecification()?.spec?.precond?.let { clauses ->
             actions += context.collectInvariants(clauses).withProofClause(
                 org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.PRECONDITION, symbol,
@@ -126,7 +151,8 @@ fun constructionBody(
                 })
             }
             return MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(), frame,
-                constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
+                captures = capturesOf(declaring), constructionReceiver = receiver, constructionPhases = phases,
+                constructionBoundary = boundary).statementCtxt()
         }
         val delegation = symbol.fir.delegatedConstructor
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
@@ -143,7 +169,8 @@ fun constructionBody(
                 if (key in parentArguments) continue
                 val defaultContext = MethodConverter(program, signature,
                     InlineParameterResolver(parentArguments, null, target), program.scopeIndexProducer.getFresh(),
-                    OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()), constructionReceiver = receiver).statementCtxt()
+                    OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()),
+                    captures = capturesOf(parent), constructionReceiver = receiver).statementCtxt()
                 val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
                 val converted = parameter.fir.defaultValue?.let { defaultContext.convert(it) }
                     ?: context.omittedArgument(delegation, parameter, value.type)

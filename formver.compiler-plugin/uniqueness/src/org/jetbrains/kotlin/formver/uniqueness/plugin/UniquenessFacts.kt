@@ -176,10 +176,12 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         }
     }
 
+    @OptIn(SymbolInternals::class)
     private val initializationCache = session.firCachesFactory.createCache { key: Pair<FirDeclaration, FirRegularClassSymbol>, context: CheckerContext ->
         context(context) {
             val (declaration, owner) = key
-            val file = session.firProvider.getFirClassifierContainerFile(owner.classId)
+            val file = (if (owner.classId.isLocal) context.containingFileSymbol?.fir
+                else session.firProvider.getFirClassifierContainerFile(owner.classId))
                 ?: error("No containing file for ${owner.classId}.")
             if (declaration.hasUniquenessDiagnostics(file)) null else {
                 val graph = when (declaration) {

@@ -26,9 +26,12 @@ import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -76,6 +79,7 @@ import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.withoutUncalledFunctions
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 
@@ -109,6 +113,7 @@ class ProgramConverter(
     override val config: PluginConfiguration,
     override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
+    collectsCaptureFacts: Boolean = false,
 ) : ProgramConversionContext, LoopInvariantAttachments by LoopInvariantAttachmentSet(), LambdaValueRegistry by LambdaValueSet() {
 
     /**
@@ -256,17 +261,16 @@ class ProgramConverter(
     override fun liftedLambda(expression: FirExpression): LiftedLambda? = lambdaRegistry[expression]
     override fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature? = fullSignatures[name]
 
+    internal val localCaptures = LocalCaptureScopes(this, collectsCaptureFacts)
+
+    override fun captureScope(declaration: FirDeclaration): CaptureScope = localCaptures.scope(declaration)
+    override val bodyScope: CaptureScope? get() = localCaptures.bodyScope
+
     fun registerLambda(lambda: SpecifiedLambda, lambdas: List<SpecifiedLambda>) {
         registeredSymbol = lambda.function.symbol
         lambdaRegistry.prepare(lambdas)
         // Each lifted body has its own verification unit; lower its creation path in that unit's symbol context.
-        val owner = lambda.owner as? FirSimpleFunction
-        if (owner != null) {
-            val ownerSignature = embedCompleteSignature(owner.symbol)
-            val ownerContext = createBodyConversionContext(owner.symbol, ownerSignature, uniquenessOutcomeOf(owner).analysis)
-            if (ownerSignature.signature.isPure) ownerContext.convertPureBody(owner)
-            else ownerContext.convertImpureBody(owner, ownerSignature.signature, ownerSignature.returnTarget)
-        }
+        (lambda.owner as? FirSimpleFunction)?.let { owner -> localCaptures.convertBody(owner, localCaptures.enclosing(owner)) }
         for (parent in generateSequence(lambda.parent) { it.parent }.toList().asReversed()) {
             val lifted = lambdaRegistry[parent.expression]!!
             val (signature, target) = with(this) { lifted.invokeSignature(embedCompleteSignature(parent.invoke).signature) }
@@ -290,8 +294,8 @@ class ProgramConverter(
     /** Embeds the signature and, unless `@NeverVerify`, the body of [declaration]. */
     fun register(declaration: FirFunction) {
         registeredSymbol = declaration.symbol
-        context(checkerContext) { declaration.rejectLocalCaptures() }
         val signature = embedCompleteSignature(declaration.symbol)
+        localCaptures.prepare(declaration)
         if (!declaration.symbol.neverVerify(session) &&
             (!signature.signature.isPure || convertedBodyResolver.lookupPure(signature.signature.name) == null)) {
             terminationMeasures.checkCalls(signature.signature, declaration.symbol, session, trust, ::reportTerminationFailure)
@@ -317,8 +321,10 @@ class ProgramConverter(
             declaration.source, "a custom accessor that its callers do not call"
         )
         if (declaration.symbol.neverVerify(session)) return
+        localCaptures.prepare(declaration)
         val typed = with(this) { declaration.symbol.toFunctionSignature().toNamedSignature(declaration.symbol).signature }
         val entry = buildList {
+            bodyScope?.let { addAll(it.entry(this@ProgramConverter)) }
             // The header and the body name the receivers alike, so only the parameters need copying.
             listOfNotNull(typed.dispatchReceiver, typed.extensionReceiver).forEach {
                 add(InhaleDirect(it.provenInvariants().toConjunction()))
@@ -331,7 +337,7 @@ class ProgramConverter(
         }
         val context = createBodyConversionContext(
             declaration.symbol, SignatureWithTarget(typed, returnTarget), uniquenessOutcomeOf(declaration).analysis,
-            labelName = property.name.asString(),
+            bodyScope, labelName = property.name.asString(),
         )
         val body = context.convertImpureBody(declaration, header, returnTarget, entry)
         checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
@@ -346,9 +352,10 @@ class ProgramConverter(
     @OptIn(SymbolInternals::class)
     fun registerConstructor(symbol: FirConstructorSymbol) {
         registeredSymbol = symbol
+        val owner = symbol.resolvedReturnType.toRegularClassSymbol(session)!!
         val signature = embedCompleteSignature(symbol)
         val contract = signature.signature as NonInlineFunctionSignature
-        val owner = symbol.resolvedReturnType.toRegularClassSymbol(session)!!
+        localCaptures.prepare(owner.fir)
         lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(owner.fir, owner.classId.embedName()) })
         var hasInitializationErrors = false
         val body = with(this) { constructionBody(symbol, contract, signature.returnTarget) { hasInitializationErrors = true } }
@@ -492,27 +499,17 @@ class ProgramConverter(
         if (analysis != null) check(source)
     }
 
-    private fun createBodyConversionContext(
+    internal fun createBodyConversionContext(
         symbol: FirFunctionSymbol<*>,
         signature: SignatureWithTarget<NamedFunctionSignature>,
         uniquenessAnalysis: FunctionUniquenessAnalysis?,
+        scope: CaptureScope? = null,
         labelName: String? = signature.signature.labelName,
     ): StmtConversionContext {
-        val paramResolver = RootParameterResolver(
-            this@ProgramConverter,
-            signature.signature,
-            signature.signature.parameterVariables(symbol),
-            labelName,
-            signature.returnTarget
-        )
-        val stmtCtx = MethodConverter(
-            this@ProgramConverter,
-            signature.signature,
-            paramResolver,
-            scopeIndexProducer.getFresh(),
-            OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature.signature)),
-        ).statementCtxt()
-        return stmtCtx
+        val paramResolver = RootParameterResolver(this, signature.signature, signature.signature.parameterVariables(symbol), labelName, signature.returnTarget)
+        val frame = OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature.signature))
+        return MethodConverter(this, signature.signature, paramResolver, scopeIndexProducer.getFresh(), frame,
+            captures = scope?.accesses(this).orEmpty()).statementCtxt().withCaptureFacts(scope)
     }
 
     // endregion
@@ -537,14 +534,16 @@ class ProgramConverter(
             lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
         }
 
-        val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
+        if (signature.signature.isPure) declaration.rejectCaptureReads(symbol.source.takeIf { symbol == registeredSymbol }, "a `@Pure` function")
+        val scope = bodyScope.takeIf { symbol == registeredSymbol }
+        val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis, scope)
         if (signature.signature.isPure) {
             val body = context.convertPureBody(declaration)
             checkVarReads(declaration) { body.checkReadOnlyVarReads(it, this) }
             convertedBodyResolver.storePure(signature.signature.name, body)
         } else {
             val body = context.withExceptionEscape(signature.signature.exceptionEscape(symbol)) {
-                convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget)
+                convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget, scope?.entry(this@ProgramConverter).orEmpty())
             }
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
@@ -556,13 +555,14 @@ class ProgramConverter(
     /**
      * Embeds the full function signature (with pre+post conditions).
      */
-    private fun embedCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<CompleteFunctionSignature> {
+    internal fun embedCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<CompleteFunctionSignature> {
         if (symbol.isOpenOrOverride && symbol.isPure(session) &&
             !context(checkerContext) { symbol.isObserverOrOverride() }) {
             // A call to such a function is reported at the call.
             val source = symbol.source.takeIf { symbol == registeredSymbol }
             throw UnsupportedFeatureException(source, "a `@Pure` function that is open or overrides another")
         }
+        symbol.rejectContractCaptureReads(registeredSymbol)
         val callable = with(this) {
             val namedSignature = symbol.toFunctionSignature().toNamedSignature(symbol)
             if (symbol.shouldBeInlined && session.externalSpecifications?.isModel(symbol) != true) {
@@ -576,7 +576,7 @@ class ProgramConverter(
                 }.toCompleteSignature(symbol)
             }
         }
-
+        localCaptures.names.require(symbol, this)
         fullSignatures.putIfAbsent(callable.signature.name, callable.signature)
 
         return callable
@@ -612,6 +612,7 @@ class ProgramConverter(
         // check if it must be handled specially
         embedSpecialFunction(symbol)?.let { return it }
 
+        localCaptures.names.require(symbol, this)
         // check if it already was embedded
         callable[symbol.embedName(this)]?.let { return it.signature }
 
@@ -792,7 +793,7 @@ class ProgramConverter(
         symbol: FirPropertySymbol, classSymbol: FirRegularClassSymbol
     ): FieldEmbedding {
         val embedding = embedClass(classSymbol)
-        val scopedName = symbol.callableId!!.embedMemberBackingFieldName(scopePolicy(symbol, this))
+        val scopedName = symbol.memberCallableId.embedMemberBackingFieldName(scopePolicy(symbol, this))
         val backingField = UserFieldEmbedding(
             scopedName,
             embedType(symbol.resolvedReturnType),
@@ -832,7 +833,7 @@ class ProgramConverter(
         val functionType = buildFunctionPretype {
             withReturnType(embedType(symbol.resolvedReturnType))
         }
-        val name = symbol.callableId.embedMemberGetterName(MemberEmbeddingPolicy.FUNCTION)
+        val name = symbol.memberCallableId.embedMemberGetterName(MemberEmbeddingPolicy.FUNCTION)
         val signature = functionType.toGenericAccessorSignature(isPure = true).toNamedSignature(name)
             .toNonInlineSignature(symbol = null).toCompleteSignature(symbol.source) {
                 postconditions {
@@ -887,6 +888,7 @@ class ProgramConverter(
 
     /** Returns an embedding of the class type, with details set. */
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
+        localCaptures.names.require(symbol.classId.embedName(), symbol, symbol.classId.isLocal, symbol.name)
         session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it).also { trust.recordBinding(symbol) } }
         observerBindingRegistry.registerClass(this, symbol)
         if (symbol.classId == GenericArrayEmbedding.classId) {

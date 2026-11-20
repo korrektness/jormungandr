@@ -21,7 +21,10 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.declarations.InlineStatus
 import org.jetbrains.kotlin.fir.expressions.FirStatement
@@ -39,7 +42,6 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
-import org.jetbrains.kotlin.formver.core.embeddings.expression.Assign
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Declare
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.If
@@ -88,7 +90,7 @@ val FirAnonymousFunction.capturedLocalVars: List<FirPropertySymbol>
     get() = capturedLocals.filterIsInstance<FirPropertySymbol>().filter { it.isVar }
 
 /**
- * Collects the local `var`s captured by lambdas that may escape. A lambda argument of a call that the conversion runs
+ * Collects the local `var`s captured by lambdas that may escape and by local functions and classes. A lambda argument of a call that the conversion runs
  * in place, a specification or an array initializer, does not escape as a lambda value. Nor does a SAM-converted
  * lambda or one [isLifted] finds lifted to a class, which the conversion does not create as a lambda value.
  */
@@ -103,6 +105,8 @@ private class EscapingCaptureCollector(private val isLifted: (FirExpression) -> 
             is FirSamConversionExpression -> markRanInPlace(element.expression)
             is FirAnonymousFunction ->
                 if (element !in ranInPlace && element.mayEscape) captured.addAll(element.capturedLocalVars)
+            is FirSimpleFunction, is FirRegularClass ->
+                captured.addAll((element as FirDeclaration).capturedLocals().filterIsInstance<FirPropertySymbol>().filter { it.isVar })
             else -> {}
         }
         element.acceptChildren(this)
@@ -124,8 +128,11 @@ private val FirFunctionCall.runsLambdaArguments: Boolean
 
 private val formverPluginPackage = FqName("org.jetbrains.kotlin.formver.plugin")
 
-/** The local `var`s declared directly among these statements that a lambda in them that may escape captures. */
-private fun List<FirStatement>.varsCapturedByEscapingLambdas(isLifted: (FirExpression) -> Boolean): List<FirPropertySymbol> {
+/**
+ * The local `var`s declared directly among these statements that a lambda in them that may escape, or a local function
+ * or class in them, captures.
+ */
+private fun List<FirStatement>.varsCapturedByEscapingCode(isLifted: (FirExpression) -> Boolean): List<FirPropertySymbol> {
     val vars = filterIsInstance<FirProperty>().filter { it.isVar }.map { it.symbol }
     if (vars.isEmpty()) return emptyList()
     val collector = EscapingCaptureCollector(isLifted)
@@ -146,14 +153,14 @@ fun StmtConversionContext.convertLambda(function: FirAnonymousFunction): ExpEmbe
 
 /**
  * Converts [statements] with [convertStatement], after declaring, for each local `var` among them that a lambda value
- * may capture, a flag that is false until such a lambda is created. A read of the `var` gives an arbitrary value once
+ * or a local function or class may capture, a flag that is false until such a lambda or declaration is created. A read of the `var` gives an arbitrary value once
  * its flag holds.
  */
 fun StmtConversionContext.convertStatements(
     statements: List<FirStatement>,
     convertStatement: StmtConversionContext.(FirStatement) -> ExpEmbedding = { convertReportingUnsupported(it) },
 ): ExpEmbedding {
-    val flags = statements.varsCapturedByEscapingLambdas { liftedLambda(it) != null }.map { symbol ->
+    val flags = statements.varsCapturedByEscapingCode { liftedLambda(it) != null }.map { symbol ->
         declareAnonVar(buildType { boolean() }, BooleanLit(false)).also { registerSharedLocalFlag(symbol, it.variable) }
     }
     return (flags + statements.map { convertStatement(it) }).toBlock()
@@ -162,16 +169,17 @@ fun StmtConversionContext.convertStatements(
 /** A local `var` that a lambda value may capture: its holder may write it whenever [flag] holds. */
 class SharedLocalAccess(private val variable: VariableEmbedding, private val flag: VariableEmbedding) :
     PropertyAccessEmbedding {
-    override fun getValue(ctx: StmtConversionContext): ExpEmbedding = blockOf(
-        If(flag, Assign(variable, ctx.unconstrainedValue(variable.type)), UnitLit, buildType { unit() }),
-        variable,
-    )
+    override fun getValue(ctx: StmtConversionContext): ExpEmbedding =
+        If(flag, ctx.unconstrainedValue(variable.type), variable, variable.type)
 
     override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding = variable.setValue(value, ctx)
 }
 
-/** A local `var` as the body of a lambda value that captures it sees it: each read is arbitrary, and a write is lost. */
-private class DetachedVarAccess(private val type: TypeEmbedding) : PropertyAccessEmbedding {
+/**
+ * A local `var` as the body of a lambda value or local declaration that captures it sees it: each read is arbitrary,
+ * and a write is lost.
+ */
+class DetachedVarAccess(private val type: TypeEmbedding) : PropertyAccessEmbedding {
     override fun getValue(ctx: StmtConversionContext): ExpEmbedding = ctx.unconstrainedValue(type)
 
     override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding = blockOf(value, UnitLit)

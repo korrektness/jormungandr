@@ -7,12 +7,12 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure @Unique fun invariant(): Boolean = f > 0
 }
 
-fun <!VERIFICATION_SKIPPED!>viaCapture<!>(s: LocalLaw) {
-    <!UNSUPPORTED_FEATURE, UNSUPPORTED_FEATURE!>fun <!VERIFICATION_SKIPPED!>local<!>() { s.f = 0 }<!>
+fun <!VIPER_TEXT!>viaCapture<!>(s: LocalLaw) {
+    fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>local<!>() { <!UNSUPPORTED_OWNERSHIP!>s.f = 0<!> }
     local()
 }
 
-fun <!VERIFICATION_SKIPPED!>viaParameter<!>(s: LocalLaw) {
-    <!UNSUPPORTED_FEATURE!>fun <!VERIFICATION_SKIPPED!>local<!>(t: LocalLaw) { <!UNSUPPORTED_FEATURE!>t.f = 0<!> }<!>
+fun <!VIPER_TEXT!>viaParameter<!>(s: LocalLaw) {
+    fun <!VERIFICATION_SKIPPED!>local<!>(t: LocalLaw) { <!UNSUPPORTED_FEATURE!>t.f = 0<!> }
     local(s)
 }

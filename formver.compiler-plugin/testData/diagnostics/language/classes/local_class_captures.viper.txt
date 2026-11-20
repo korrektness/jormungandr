@@ -1,0 +1,527 @@
+/local_class_captures.kt: info: Generated Viper text for localClassProperty:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), L())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), L())
+  ensures intFromRef(g_x(ret_1)) == intFromRef(par_x)
+  ensures intFromRef(g_x(ret_1)) == intFromRef(par_x)
+
+
+method localClassProperty() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l: Ref
+  l := con(intToRef(1))
+  fold acc(L_unique(l), write)
+  assert intFromRef(g_x(l)) == 1
+  v_ret_0 := g_x(l)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/local_class_captures.kt: info: Generated Viper text for L:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), L())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), L())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == L()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  fold acc(L_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(L_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for sameNameElsewhere:
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), L())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method con(par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_y), boolType())
+  ensures isSubtype(typeOf(ret_1), L())
+  ensures boolFromRef(g_y(ret_1)) == boolFromRef(par_y)
+  ensures boolFromRef(g_y(ret_1)) == boolFromRef(par_y)
+
+
+method sameNameElsewhere() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon: Ref
+  anon := con(boolToRef(true))
+  fold acc(L_unique(anon), write)
+  v_ret_0 := g_y(anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/local_class_captures.kt: info: Generated Viper text for L:
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), L())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method con(par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_y), boolType())
+  ensures isSubtype(typeOf(v_ret_0), L())
+  ensures boolFromRef(g_y(v_ret_0)) == boolFromRef(par_y)
+  ensures boolFromRef(g_y(v_ret_0)) == boolFromRef(par_y)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == L()
+  anon := par_y
+  inhale boolFromRef(g_y(v_ret_0)) == boolFromRef(anon)
+  fold acc(L_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(L_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for capturedInMember:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedInMember(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := con(n)
+  fold acc(Box_unique(anon), write)
+  v_ret_0 := scaled(anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con(par_x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_3), Box())
+  ensures intFromRef(g_x(ret_3)) == intFromRef(par_x)
+  ensures intFromRef(g_x(ret_3)) == intFromRef(par_x)
+
+
+method scaled(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/local_class_captures.kt: info: Generated Viper text for Box:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var captured_n_279: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(captured_n_279), intType())
+  inhale isSubtype(typeOf(captured_n_279), intType()) &&
+    intFromRef(captured_n_279) > 0
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Box()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for scaled:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method scaled(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_n_279: Ref
+  inhale isSubtype(typeOf(captured_n_279), intType())
+  inhale isSubtype(typeOf(captured_n_279), intType()) &&
+    intFromRef(captured_n_279) > 0
+  assert intFromRef(captured_n_279) > 0
+  v_ret_0 := x(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/local_class_captures.kt: info: Generated Viper text for capturedVarInMember:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method add(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Adder())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method capturedVarInMember() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var total: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_0 := boolToRef(false)
+  total := intToRef(0)
+  anon_0 := boolToRef(true)
+  anon_4 := con()
+  fold acc(Adder_unique(anon_4), write)
+  anon_3 := add(anon_4)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    anon_5 := anon_1
+  } else {
+    anon_5 := total}
+  assert intFromRef(anon_5) == 0
+  if (boolFromRef(anon_0)) {
+    var anon_2: Ref
+    inhale isSubtype(typeOf(anon_2), intType())
+    v_ret_0 := anon_2
+  } else {
+    v_ret_0 := total}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Adder())
+
+
+/local_class_captures.kt: info: Generated Viper text for Adder:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Adder())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Adder()
+  fold acc(Adder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Adder_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for add:
+method add(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Adder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/local_class_captures.kt: info: Generated Viper text for capturedInInitializer:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Offset())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedInInitializer(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var o: Ref
+  o := con()
+  fold acc(Offset_unique(o), write)
+  assert intFromRef(g_v(o)) == intFromRef(n)
+  v_ret_0 := g_v(o)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Offset())
+
+
+/local_class_captures.kt: info: Generated Viper text for Offset:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Offset())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Offset())
+{
+  var captured_n_665: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(captured_n_665), intType())
+  inhale isSubtype(typeOf(captured_n_665), intType())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Offset()
+  anon := captured_n_665
+  inhale intFromRef(g_v(v_ret_0)) == intFromRef(anon)
+  fold acc(Offset_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Offset_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for Same:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Same())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), Same())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Same()
+  anon := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon)
+  fold acc(Same_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Same_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for Same:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Same())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), Same())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Same()
+  anon := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon)
+  fold acc(Same_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Same_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for capturedBySuperclass:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedBySuperclass(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var d: Ref
+  d := con()
+  fold acc(Base_unique(d), write)
+  fold acc(Derived_unique(d), write)
+  assert intFromRef(x(d)) == intFromRef(n)
+  v_ret_0 := x(d)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Derived())
+  ensures isSubtype(typeOf(ret_1), Derived()) &&
+    isSubtype(typeOf(ret_1), Base())
+
+
+/local_class_captures.kt: info: Generated Viper text for Base:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var captured_n_1005: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(captured_n_1005), intType())
+  inhale isSubtype(typeOf(captured_n_1005), intType())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  anon := captured_n_1005
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for Derived:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  var captured_n_1005: Ref
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Derived()
+  inhale isSubtype(typeOf(captured_n_1005), intType())
+  anon := captured_n_1005
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for capturedBySuperclassDefault:
+function g_m(this: Ref): Ref
+  requires isSubtype(typeOf(this), Derived())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), Derived())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedBySuperclassDefault(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := con(intToRef(1))
+  fold acc(Base_unique(anon), write)
+  fold acc(Derived_unique(anon), write)
+  v_ret_0 := x(anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con(par_m: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_m), intType())
+  ensures isSubtype(typeOf(ret_1), Derived())
+  ensures isSubtype(typeOf(ret_1), Derived()) &&
+    isSubtype(typeOf(ret_1), Base())
+  ensures intFromRef(g_m(ret_1)) == intFromRef(par_m)
+  ensures intFromRef(g_m(ret_1)) == intFromRef(par_m)
+
+
+/local_class_captures.kt: info: Generated Viper text for Base:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var captured_n_1186: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(captured_n_1186), intType())
+  inhale isSubtype(typeOf(captured_n_1186), intType())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/local_class_captures.kt: info: Generated Viper text for Derived:
+function g_m(this: Ref): Ref
+  requires isSubtype(typeOf(this), Derived())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), Derived())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_m), intType())
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+  ensures intFromRef(g_m(v_ret_0)) == intFromRef(par_m)
+  ensures intFromRef(g_m(v_ret_0)) == intFromRef(par_m)
+{
+  var captured_n_1186: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  inhale isSubtype(typeOf(captured_n_1186), intType())
+  inhale isSubtype(typeOf(captured_n_1186), intType())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Derived()
+  anon_0 := captured_n_1186
+  anon_1 := anon_0
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Base_unique(v_ret_0), write)
+  anon_2 := par_m
+  inhale intFromRef(g_m(v_ret_0)) == intFromRef(anon_2)
+  anon_3 := plusInts(g_m(v_ret_0), timesInts(intToRef(0), captured_n_1186))
+  inhale intFromRef(z(v_ret_0)) == intFromRef(anon_3)
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}

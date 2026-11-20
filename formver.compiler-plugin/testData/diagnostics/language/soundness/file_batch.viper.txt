@@ -60,6 +60,20 @@ method suppressedSibling() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/file_batch.kt: info: Generated Viper text for localOwner:
+method local() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method localOwner() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := local()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /file_batch.kt: info: Generated Viper text for local:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())

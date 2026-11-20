@@ -64,6 +64,11 @@ interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttach
 
     fun liftedLambda(expression: FirExpression): LiftedLambda?
 
+    /** The captures of the local function or class [declaration]. */
+    fun captureScope(declaration: org.jetbrains.kotlin.fir.declarations.FirDeclaration): CaptureScope
+
+    /** The captures that the body of the registered declaration reads, with the facts of their declaration sites. */
+    val bodyScope: CaptureScope?
     fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature?
 
     fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding

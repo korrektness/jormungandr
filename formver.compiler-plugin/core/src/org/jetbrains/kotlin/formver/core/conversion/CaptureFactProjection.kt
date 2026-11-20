@@ -5,7 +5,10 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.linearization.subExps
+import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.AccessPredicate
 import org.jetbrains.kotlin.formver.viper.ast.BinaryExp
@@ -155,4 +158,59 @@ internal fun Exp.hasOwnershipAssertion(): Boolean = when (this) {
     is Exp.PredicateAccess, is Exp.Acc, is AccessPredicate.FieldAccessPredicate, is Exp.PermissionCheck -> true
     is Exp.Unfolding -> body.hasOwnershipAssertion()
     else -> subExps().any { it.hasOwnershipAssertion() }
+}
+
+/**
+ * The creation-path facts at the current point, projected onto capture parameters. Each pair maps a captured immutable
+ * value, as the enclosing code reads it, to the parameter that stands for it. A fact survives when its free variables
+ * are parameters and it reads only stable state. [inherited] supplies further facts that the projection evaluates when
+ * it runs.
+ */
+internal fun StmtConversionContext.creationFactContext(
+    immutable: List<Pair<ExpEmbedding, ExpEmbedding>>,
+    parameters: Set<SymbolicName>,
+    inherited: () -> List<Exp> = { emptyList() },
+): () -> List<Exp> {
+    val replacements = immutable.flatMap { (argument, param) ->
+        listOf(false, true).map { builtin ->
+            argument.pureToViper(toBuiltin = builtin, typeResolver).captureValueKey() to
+                param.pureToViper(toBuiltin = builtin, typeResolver)
+        }
+    }.toMap()
+    val aliases = creationPathAliases.filterValues { it.isPure(admitsInlinedCalls = true) }.map { (name, value) ->
+        listOf(name) to value.pureToViper(toBuiltin = false, typeResolver)
+    }.toMap()
+    val aliasFacts = immutable.groupBy { (argument, _) ->
+        argument.pureToViper(toBuiltin = false, typeResolver).captureValueKey()
+    }.values.flatMap { group ->
+        group.drop(1).map { (_, param) -> Exp.EqCmp(
+            group.first().second.pureToViper(toBuiltin = false, typeResolver),
+            param.pureToViper(toBuiltin = false, typeResolver),
+        ) }
+    }
+    val directFacts = creationPathFacts.filter { it.isPure(admitsInlinedCalls = true) }.flatMap {
+        it.pureToViper(toBuiltin = true, typeResolver).conjuncts()
+    }
+    return {
+        (directFacts + inherited()).filterNot { it.hasOwnershipAssertion() }.map { fact ->
+            var expanded = fact
+            repeat(aliases.size) { expanded = expanded.rewriteCaptureValues(aliases) }
+            expanded.rewriteCaptureValues(replacements)
+        }.filter { fact ->
+            fact.freeVariables().all(parameters::contains) && !(fact is Exp.BoolLit && fact.value) &&
+                fact.isStableCaptureFact(this)
+        }.plus(aliasFacts).distinct()
+    }
+}
+
+/** The facts that hold at one of several creation sites, each site given by its own conjunction of [alternatives]. */
+internal fun combineCreationAlternatives(alternatives: List<List<Exp>>): List<Exp> {
+    val distinct = alternatives.distinctBy { facts -> facts.mapTo(mutableSetOf()) { it.captureValueKey() } }
+    return when (distinct.size) {
+        0 -> emptyList()
+        1 -> distinct.single()
+        else -> listOf(distinct.map { alternative ->
+            alternative.fold<Exp, Exp>(Exp.BoolLit(true)) { acc, fact -> Exp.And(acc, fact) }
+        }.reduce { left, right -> Exp.Or(left, right) })
+    }
 }

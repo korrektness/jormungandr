@@ -42,9 +42,9 @@ three things part of every result:
 - **Skipped declarations.** A declaration that SnaKt does not verify reports
   `VERIFICATION_SKIPPED` with a reason. A body converted without that warning is
   verified, including the body of a local function, which is a declaration of
-  its own (`verification/soundness/local_functions.kt`). A local function that
-  captures a parameter or local of its enclosing function is skipped
-  (`verification/classes/law_bound_local_function.kt`).
+  its own (`language/soundness/local_functions.kt`). It knows the values it
+  captures only through the facts at its declaration
+  (SPECIFICATIONS.md, "Local functions and classes").
 
 ## Non-view owned aliases
 

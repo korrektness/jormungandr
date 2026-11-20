@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.formver.core.kotlinCallableId
 import org.jetbrains.kotlin.formver.core.names.MemberEmbeddingPolicy
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.embedMemberBackingFieldName
+import org.jetbrains.kotlin.formver.core.names.memberCallableId
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 import org.jetbrains.kotlin.name.CallableId
@@ -102,7 +103,7 @@ object CollectionSizeProperty :
         val classSymbol = symbol.dispatchReceiverType?.toClassSymbol(session) as? FirRegularClassSymbol ?: return false
 
         val embedding = typeResolver.lookupClassTypeEmbedding(classSymbol.classId.embedName()) ?: return false
-        val scopedName = symbol.callableId!!.embedMemberBackingFieldName(
+        val scopedName = symbol.memberCallableId.embedMemberBackingFieldName(
             MemberEmbeddingPolicy.BACKING_FIELD
         )
         NameMatcher.Companion.matchClassScope(scopedName) {

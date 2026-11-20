@@ -558,6 +558,53 @@ before emitting the synthetic constructor and predicate. The constructor require
 fields with their permissions; folding at the creation site proves the capture assertions. The lifted body obtains
 them by opening its owned predicate.
 
+### Local functions and classes
+
+A local function, and each member and constructor of a local class, is verified
+as a declaration of its own. A parameter or `val` of an enclosing function that
+it captures is known inside by its type and by the facts that hold where the
+local function or class is declared: the enclosing preconditions and the path
+conditions there whose free variables are captured `val`s or parameters and
+that use only operators, built-in functions and type tests of types that the
+local declaration's own program knows; facts that read fields or call other
+functions are dropped. Every call runs
+after the declaration and a
+`val` does not change, so these facts still hold. When the declaration is
+reached on several paths, the facts of one of them hold. These facts are
+collected only when the declaration is in the body of a named function without
+specified lambdas; elsewhere, such as in a lambda, accessor, constructor or
+`init` block, a captured value is known by its type only.
+
+A captured `var` is treated as for a lambda value ([Lambda values](#lambda-values)):
+in the enclosing function, once the declaration has been reached, every read
+yields an arbitrary value of its type; before that, the `var` keeps its tracked
+value. Inside the local function or class every read yields an arbitrary value
+and writes are not kept.
+
+A receiver of an enclosing declaration that a local function or class reads is
+an arbitrary shared value of its type, the same at each read; no facts about it
+carry over from the declaration.
+
+```kotlin
+fun scale(n: Int): Int {
+    preconditions { n > 0 }
+    var calls = 0
+    fun step(): Int {
+        verify(n > 0)             // verifies: a precondition over a captured parameter
+        calls = 1                 // not kept
+        return n
+    }
+    val r = step()
+    verify(calls == 1)            // fails: calls is arbitrary once step is declared
+    return r
+}
+```
+
+A contract of a local function or member that reads a captured value, a
+`@Pure` local function or member that reads one, and a local function or class
+that shares its name with another declaration in one program are reported as
+`UNSUPPORTED_FEATURE`.
+
 ### Interface laws
 
 Declare a Boolean `@Law @Pure` interface member with a body to state a law. Laws have no value, type, extension,
@@ -1041,9 +1088,7 @@ arbitrary value of the result type.
 The holder of a lambda value may run it later, any number of times. From the
 lambda's creation on, each local `var` it captures is read as an arbitrary value
 of its type, and each object it captures is shared. Before the creation, the
-`var` keeps its tracked value. A read of a local `var` that a lambda value in
-its scope captures is a statement, so a specification such as `verify` reads it
-through a `val`.
+`var` keeps its tracked value.
 
 ```kotlin
 fun counter() {

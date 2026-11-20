@@ -333,58 +333,18 @@ private fun StmtConversionContext.establishCaptureFacts(lambda: LiftedLambda, ar
     val immutable = lambda.captures.entries.zip(arguments).zip(lambda.constructor.params).filter { (capture, _) ->
         val symbol = capture.first.key
         symbol !is FirPropertySymbol || symbol.isVal
-    }
-    val replacements = immutable.flatMap { (capture, param) ->
-        val argument = capture.second
-        listOf(false, true).map { builtin ->
-            argument.pureToViper(toBuiltin = builtin, typeResolver).captureValueKey() to
-                param.pureToViper(toBuiltin = builtin, typeResolver)
-        }
-    }.toMap()
-    val parameters = lambda.constructor.params.mapTo(mutableSetOf()) { it.name }
-    val known = creationPathFacts
+    }.map { (capture, param) -> capture.second to param }
     val receiver = signature.dispatchReceiver?.takeIf { it.isUnique }
     val receiverClass = receiver?.type?.pretype as? ClassTypeEmbedding
     val receiverValue = receiver?.pureToViper(toBuiltin = false, typeResolver)
-    val aliases = creationPathAliases.filterValues { it.isPure(admitsInlinedCalls = true) }.map { (name, value) ->
-        listOf(name) to value.pureToViper(toBuiltin = false, typeResolver)
-    }.toMap()
-    val aliasFacts = immutable.groupBy { (capture, _) ->
-        capture.second.pureToViper(toBuiltin = false, typeResolver).captureValueKey()
-    }.values.flatMap { group ->
-        group.drop(1).map { (_, param) -> Exp.EqCmp(
-            group.first().second.pureToViper(toBuiltin = false, typeResolver),
-            param.pureToViper(toBuiltin = false, typeResolver),
-        ) }
-    }
-    val directFacts = known.filter { it.isPure(admitsInlinedCalls = true) }.flatMap {
-        it.pureToViper(toBuiltin = true, typeResolver).conjuncts()
-    }
-    lambda.creationFactContexts += {
-        val inheritedFacts = if (receiverClass != null && receiverValue != null)
-            typeResolver.captureFacts(receiverClass, receiverValue) else emptyList()
-        (directFacts + inheritedFacts).filterNot { it.hasOwnershipAssertion() }.map { fact ->
-            var expanded = fact
-            repeat(aliases.size) { expanded = expanded.rewriteCaptureValues(aliases) }
-            expanded.rewriteCaptureValues(replacements)
-        }.filter { fact ->
-            fact.freeVariables().all(parameters::contains) && !(fact is Exp.BoolLit && fact.value) &&
-                    fact.isStableCaptureFact(this)
-        }.plus(aliasFacts).distinct()
+    lambda.creationFactContexts += creationFactContext(immutable, lambda.constructor.params.mapTo(mutableSetOf()) { it.name }) {
+        if (receiverClass != null && receiverValue != null) typeResolver.captureFacts(receiverClass, receiverValue) else emptyList()
     }
 }
 
 context(converter: ProgramConversionContext)
 internal fun LiftedLambda.finalizeCreationFacts() {
-    val alternatives = creationFactContexts.map { it() }.distinctBy { facts -> facts.mapTo(mutableSetOf()) { it.captureValueKey() } }
-    // Each site proves its own conjunction, hence the disjunction; the body assumes only that disjunction.
-    val facts = when (alternatives.size) {
-        0 -> emptyList()
-        1 -> alternatives.single()
-        else -> listOf(alternatives.map { alternative ->
-            alternative.fold<Exp, Exp>(Exp.BoolLit(true)) { acc, fact -> Exp.And(acc, fact) }
-        }.reduce { left, right -> Exp.Or(left, right) })
-    }
+    val facts = combineCreationAlternatives(creationFactContexts.map { it() })
     val boolean = buildType { boolean() }
     creationPreconditions.clear()
     creationPreconditions += baseCreationPreconditions

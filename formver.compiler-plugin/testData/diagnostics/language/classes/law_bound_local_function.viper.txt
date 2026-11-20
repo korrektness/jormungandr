@@ -37,3 +37,46 @@ method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
+
+
+/law_bound_local_function.kt: info: Generated Viper text for viaCapture:
+field f: Ref
+
+method local() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method viaCapture(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), LocalLaw())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  anon_1 := local()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_bound_local_function.kt: info: Generated Viper text for local:
+field f: Ref
+
+method local() returns (ret: Ref)
+  ensures isSubtype(typeOf(ret), unitType())
+
+
+/law_bound_local_function.kt: info: Generated Viper text for viaParameter:
+field f: Ref
+
+method local(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), LocalLaw())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method viaParameter(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), LocalLaw())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  anon_1 := local(s)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
