@@ -11,6 +11,6 @@ import org.jetbrains.kotlin.name.FqName
 fun FirFunctionSymbol<*>.wrapsIntArithmetic(session: FirSession): Boolean =
     hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.WrappingIntArithmetic")), session)
 
-/** True for a member `override fun hashCode(): Int`, whose body wraps Int `*` implicitly. */
+/** True for a member `override fun hashCode(): Int`, whose body wraps Int arithmetic as `@WrappingIntArithmetic` does. */
 fun FirFunctionSymbol<*>.overridesHashCode(): Boolean =
     this is FirNamedFunctionSymbol && isOverride && name.asString() == "hashCode" && valueParameterSymbols.isEmpty()

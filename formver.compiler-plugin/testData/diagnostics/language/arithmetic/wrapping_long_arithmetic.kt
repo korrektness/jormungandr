@@ -9,6 +9,7 @@ fun <!VIPER_TEXT!>longBoundaries<!>(max: Long, min: Long) {
     verify(Long.MAX_VALUE + 1L == Long.MIN_VALUE)
     verify(min * -1L == min, max * 2 == -2L, min * 2 == 0L)
     verify(max * max == 1L, min * min == 0L)
+    verify(-min == min, -max == min + 1)
     refute(false)
     var n = max
     n += 1L
@@ -124,7 +125,6 @@ fun <!VIPER_TEXT!>bothWidths<!>(i: Int, l: Long) {
 fun <!VIPER_TEXT!>otherLongOperationsStayChecked<!>(x: Long, choice: Int) {
     preconditions { x == Long.MIN_VALUE }
     when (choice) {
-        0 -> <!INTEGER_OVERFLOW!>-x<!>
         1 -> <!INTEGER_OVERFLOW!>x / -1<!>
         2 -> <!DIVISION_BY_ZERO, DIVISION_BY_ZERO!>x / 0<!>
         3 -> <!DIVISION_BY_ZERO!>x % 0<!>

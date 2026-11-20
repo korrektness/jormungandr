@@ -70,7 +70,7 @@ object OperatorExpEmbeddings {
     val WrappingMulIntInt = buildBinaryOperator {
         setName("wrappingTimesInts")
         setSignature(intIntToIntType)
-        viperImplementation { wrapInt(Exp.Mul(args[0], args[1], pos, info)) }
+        viperImplementation { IntegerOperators.wrapInto(IntegerKind.Int, Exp.Mul(args[0], args[1]), pos, info) }
     }
 
     val WrappingSubIntInt = buildBinaryOperator {

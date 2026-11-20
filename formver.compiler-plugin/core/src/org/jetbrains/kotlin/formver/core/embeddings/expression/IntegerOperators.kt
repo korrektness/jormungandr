@@ -140,7 +140,7 @@ object IntegerOperators {
     }
 
     val wrappingBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
-        it.result == IntegerKind.Int && it.operation in listOf("plus", "minus")
+        it.result == IntegerKind.Int && it.operation in listOf("plus", "minus", "times")
     }.associateWith { op ->
         buildBinaryOperator {
             setName("wrapping${op.operation}${op.receiver.name}${op.argument.name}")
@@ -149,9 +149,28 @@ object IntegerOperators {
                 withParam { existing(op.argument.pretype) }
                 withReturnType { int() }
             }
-            viperImplementation { OperatorExpEmbeddings.wrapInt(binaryValue(op.operation, args[0], args[1])) }
+            viperImplementation {
+                val value = binaryValue(op.operation, args[0], args[1])
+                if (op.operation == "times") wrapInto(IntegerKind.Int, value, pos, info) else OperatorExpEmbeddings.wrapInt(value)
+            }
         }
     }
+
+    /** Unary minus with two's-complement wrapping, keyed like [unary]; an `Int` receiver is keyed too. */
+    val wrappingUnaryMinus: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = IntegerKind.entries.filter { it != IntegerKind.Char }
+        .associate { a ->
+            val result = if (a == IntegerKind.Long) IntegerKind.Long else IntegerKind.Int
+            Unary(a, "unaryMinus", result) to buildUnaryOperator {
+                setName("wrappingUnaryMinus${a.name}")
+                withSignature {
+                    withParam { existing(a.pretype) }; withReturnType { existing(result.pretype) }
+                }
+                viperImplementation {
+                    if (result == IntegerKind.Long) wrapLong(Exp.Minus(args[0]), pos, info)
+                    else wrapInto(result, Exp.Minus(args[0]), pos, info)
+                }
+            }
+        }
 
     fun wrapLong(value: Exp, pos: Position = Position.NoPosition, info: Info = Info.NoInfo): Exp {
         // These are mathematical integers: H and 2*H exceed the host Long range.
@@ -215,7 +234,7 @@ object IntegerOperators {
     }
 
     /** [value] reduced into [target]'s range modulo its width, as a two's-complement truncation. */
-    private fun wrapInto(target: IntegerKind, value: Exp, pos: Position, info: Info): Exp {
+    fun wrapInto(target: IntegerKind, value: Exp, pos: Position, info: Info): Exp {
         // Mathematical integers: Viper division by a positive modulus rounds down.
         val modulus = Exp.IntLit(target.upper - target.lower + 1)
         val lower = Exp.IntLit(target.lower)
@@ -235,6 +254,6 @@ object IntegerOperators {
         }
     }
 
-    val templates get() = binary.values + flooring.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
+    val templates get() = binary.values + flooring.values + wrappingBinary.values + wrappingUnaryMinus.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
         BitwiseOperators.templates
 }

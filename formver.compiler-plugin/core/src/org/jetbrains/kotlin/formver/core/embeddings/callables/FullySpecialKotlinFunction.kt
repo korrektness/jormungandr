@@ -121,7 +121,11 @@ object SpecialKotlinFunctions {
                 withReturnType { existing(op.result.pretype) }
             }
             addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, ctx ->
-                val operation = (if (ctx.wrapsNarrowing) IntegerOperators.wrappingNarrowing[op] else null) ?: template
+                val wrapsNegation = op.result == IntegerKind.Long && ctx.wrapsLongArithmetic ||
+                        op.result == IntegerKind.Int && ctx.wrapsIntArithmetic
+                val operation = (if (ctx.wrapsNarrowing) IntegerOperators.wrappingNarrowing[op] else null)
+                    ?: (if (wrapsNegation) IntegerOperators.wrappingUnaryMinus[op] else null)
+                    ?: template
                 operation(args[0])
             }
         }
@@ -161,7 +165,7 @@ object SpecialKotlinFunctions {
                 operation(args[0], args[1])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "times") { args, ctx ->
-                val operation = if (ctx.wrapsIntMultiplication) OperatorExpEmbeddings.WrappingMulIntInt else MulIntInt
+                val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingMulIntInt else MulIntInt
                 operation(args[0], args[1])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "div") { args, _ ->
@@ -187,8 +191,10 @@ object SpecialKotlinFunctions {
             addFunction(SpecialPackages.kotlin, className = "Int", name = "dec") { args, _ ->
                 SubIntInt(args[0], IntLit(1))
             }
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "unaryMinus") { args, _ ->
-                NegInt(args[0])
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "unaryMinus") { args, ctx ->
+                val unaryMinus = IntegerOperators.Unary(IntegerKind.Int, "unaryMinus", IntegerKind.Int)
+                val operation = if (ctx.wrapsIntArithmetic) IntegerOperators.wrappingUnaryMinus.getValue(unaryMinus) else NegInt
+                operation(args[0])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "unaryPlus") { args, _ ->
                 args[0]

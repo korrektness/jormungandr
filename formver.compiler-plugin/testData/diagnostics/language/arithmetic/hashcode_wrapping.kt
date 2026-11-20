@@ -17,3 +17,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 <!VIPER_TEXT!>class Divides<!>(val a: Int, val d: Int) {
     override fun <!VIPER_TEXT!>hashCode<!>(): Int = <!DIVISION_BY_ZERO, INTEGER_OVERFLOW!>a / d<!>
 }
+
+<!VIPER_TEXT!>class Signed<!>(val a: Int, val b: Byte) {
+    override fun <!VIPER_TEXT!>hashCode<!>(): Int = -a + b * a
+}

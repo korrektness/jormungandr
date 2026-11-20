@@ -2,11 +2,11 @@
 // rangeCheck's postcondition states its throw conditions, and binarySearch's postcondition guards its reads with
 // the facts rangeCheck establishes. The loop invariant orders its clauses so its reads and `high + 1` are guarded,
 // and repeats the sortedness precondition, since a loop keeps only what its invariant states about the unique list
-// it reads. `(low + high).ushr(1)` and `-(low + 1)` rely on wrapping Int `+` (the source comment says "safe from
+// it reads. `(low + high).ushr(1)` and `-(low + 1)` rely on wrapping Int `+` and unary `-` (the source comment says "safe from
 // overflows"), so the function is @WrappingIntArithmetic; the postcondition decodes the insertion point in Long.
 // `verify` calls check mid's range and one sortedness instance, and instantiate sortedness at mid in each branch.
 // Adaptation: receiver List<T?> with T : Comparable<T> becomes a borrowed List<Int> parameter; compareValues(midVal, element) becomes midVal.compareTo(element).
-package stdlibsweep
+package stdlibports
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -63,5 +63,5 @@ fun <!VIPER_TEXT!>binarySearch<!>(list: @Unique @Borrowed List<Int>, element: In
         else
             return mid // key found
     }
-    return <!INTEGER_OVERFLOW!>-(low + 1)<!>  // key not found
+    return -(low + 1)  // key not found
 }

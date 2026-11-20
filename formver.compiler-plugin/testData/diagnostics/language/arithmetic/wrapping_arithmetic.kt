@@ -48,11 +48,21 @@ fun <!VIPER_TEXT!>mixedOperands<!>(x: Int, one: Byte, two: Short) {
 fun <!VIPER_TEXT!>otherOperationsStayChecked<!>(x: Int, choice: Int) {
     preconditions { x == Int.MIN_VALUE }
     when (choice) {
-        0 -> <!INTEGER_OVERFLOW!>x * 2<!>
-        1 -> <!INTEGER_OVERFLOW!>x / -1<!>
-        2 -> <!DIVISION_BY_ZERO!>x % 0<!>
-        else -> <!INTEGER_OVERFLOW!>-x<!>
+        0 -> <!INTEGER_OVERFLOW!>x / -1<!>
+        1 -> <!INTEGER_OVERFLOW!>x.floorDiv(-1)<!>
+        else -> <!DIVISION_BY_ZERO!>x % 0<!>
     }
+}
+
+@WrappingIntArithmetic
+fun <!VIPER_TEXT!>timesAndNegation<!>(x: Int, y: Int, two: Byte) {
+    preconditions { x == Int.MIN_VALUE; y == Int.MAX_VALUE; two == 2.toByte() }
+    verify(x * 2 == 0, y * 2 == -2, y * y == 1, x * -1 == x, y * two == -2, two * y == -2)
+    verify(-x == x, -y == x + 1, -(-y) == y)
+    var n = y
+    n *= 3
+    verify(n == Int.MAX_VALUE - 2)
+    refute(false)
 }
 
 @WrappingIntArithmetic

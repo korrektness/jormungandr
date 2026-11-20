@@ -226,13 +226,83 @@ method otherOperationsStayChecked(x: Ref, choice: Ref)
   var anon: Ref
   anon := choice
   if (intFromRef(anon) == 0) {
-    assert timesInts(x, intToRef(2)) == timesInts(x, intToRef(2))
-  } elseif (intFromRef(anon) == 1) {
     assert divInts(x, intToRef(-1)) == divInts(x, intToRef(-1))
-  } elseif (intFromRef(anon) == 2) {
-    assert remInts(x, intToRef(0)) == remInts(x, intToRef(0))
+  } elseif (intFromRef(anon) == 1) {
+    assert floorDivIntInt(x, intToRef(-1)) ==
+      floorDivIntInt(x, intToRef(-1))
   } else {
-    assert negInt(x) == negInt(x)}
+    assert remInts(x, intToRef(0)) == remInts(x, intToRef(0))}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for timesAndNegation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method timesAndNegation(x: Ref, y: Ref, two: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires isSubtype(typeOf(two), byteType())
+  requires intFromRef(x) == -2147483648
+  requires intFromRef(y) == 2147483647
+  requires byteFromRef(two) ==
+    (let anon ==
+      (convertIntToByte(intToRef(2))) in
+      intFromRef(intToRef(2)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  assert intFromRef(x) * 2 -
+    4294967296 * ((intFromRef(x) * 2 - -2147483648) \ 4294967296) ==
+    0
+  assert intFromRef(y) * 2 -
+    4294967296 * ((intFromRef(y) * 2 - -2147483648) \ 4294967296) ==
+    -2
+  assert intFromRef(y) * intFromRef(y) -
+    4294967296 *
+    ((intFromRef(y) * intFromRef(y) - -2147483648) \ 4294967296) ==
+    1
+  assert intFromRef(x) * -1 -
+    4294967296 * ((intFromRef(x) * -1 - -2147483648) \ 4294967296) ==
+    intFromRef(x)
+  assert intFromRef(y) * byteFromRef(two) -
+    4294967296 *
+    ((intFromRef(y) * byteFromRef(two) - -2147483648) \ 4294967296) ==
+    -2
+  assert byteFromRef(two) * intFromRef(y) -
+    4294967296 *
+    ((byteFromRef(two) * intFromRef(y) - -2147483648) \ 4294967296) ==
+    -2
+  assert -intFromRef(x) -
+    4294967296 * ((-intFromRef(x) - -2147483648) \ 4294967296) ==
+    intFromRef(x)
+  assert -intFromRef(y) -
+    4294967296 * ((-intFromRef(y) - -2147483648) \ 4294967296) ==
+    (intFromRef(x) + 1 > 2147483647 ?
+      intFromRef(x) + 1 - 4294967296 :
+      (intFromRef(x) + 1 < -2147483648 ?
+        intFromRef(x) + 1 + 4294967296 :
+        intFromRef(x) + 1))
+  assert -(-intFromRef(y) -
+    4294967296 * ((-intFromRef(y) - -2147483648) \ 4294967296)) -
+    4294967296 *
+    ((-(-intFromRef(y) -
+    4294967296 * ((-intFromRef(y) - -2147483648) \ 4294967296)) -
+    -2147483648) \
+    4294967296) ==
+    intFromRef(y)
+  n := y
+  n := wrappingTimesInts(n, intToRef(3))
+  assert intFromRef(n) ==
+    (2147483647 - 2 > 2147483647 ?
+      2147483647 - 2 - 4294967296 :
+      (2147483647 - 2 < -2147483648 ?
+        2147483647 - 2 + 4294967296 :
+        2147483647 - 2))
+  refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

@@ -26,9 +26,9 @@ method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(max) + longFromRef(max) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert longFromRef(min) + longFromRef(min) -
     2 * --9223372036854775808 *
     ((longFromRef(min) + longFromRef(min) + --9223372036854775808) \
@@ -38,23 +38,23 @@ method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(max) - longFromRef(min) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1)))
+    -1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert 9223372036854775807 + 1 -
     2 * --9223372036854775808 *
     ((9223372036854775807 + 1 + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
     -9223372036854775808
   assert longFromRef(min) *
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1))) -
+    (-1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))) -
     2 * --9223372036854775808 *
     ((longFromRef(min) *
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1))) +
+    (-1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))) +
     --9223372036854775808) \
     (2 * --9223372036854775808)) ==
     longFromRef(min)
@@ -62,9 +62,9 @@ method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(max) * 2 + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert longFromRef(min) * 2 -
     2 * --9223372036854775808 *
     ((longFromRef(min) * 2 + --9223372036854775808) \
@@ -80,6 +80,19 @@ method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
     ((longFromRef(min) * longFromRef(min) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
     0
+  assert -longFromRef(min) -
+    2 * --9223372036854775808 *
+    ((-longFromRef(min) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(min)
+  assert -longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((-longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(min) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
   refute false
   n := max
   n := wrappingplusLongLong(n, longToRef(1))
@@ -88,9 +101,9 @@ method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
   assert longFromRef(n) == longFromRef(max)
   n := wrappingtimesLongLong(n, longToRef(2))
   assert longFromRef(n) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -136,14 +149,14 @@ method wrongSignedProduct(min: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   assert longFromRef(min) *
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1))) -
+    (-1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))) -
     2 * --9223372036854775808 *
     ((longFromRef(min) *
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1))) +
+    (-1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))) +
     --9223372036854775808) \
     (2 * --9223372036854775808)) ==
     9223372036854775807
@@ -161,9 +174,9 @@ method longExactAndNegative(x: Ref, y: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), longType())
   requires isSubtype(typeOf(y), longType())
   requires longFromRef(x) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(7))) in
-      -longFromRef(longToRef(7)))
+    -7 -
+    2 * --9223372036854775808 *
+    ((-7 + --9223372036854775808) \ (2 * --9223372036854775808))
   requires longFromRef(y) == 3
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -171,29 +184,34 @@ method longExactAndNegative(x: Ref, y: Ref) returns (v_ret_0: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(x) + longFromRef(y) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(4))) in
-      -longFromRef(longToRef(4)))
+    -4 -
+    2 * --9223372036854775808 *
+    ((-4 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert longFromRef(x) - longFromRef(y) -
     2 * --9223372036854775808 *
     ((longFromRef(x) - longFromRef(y) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(10))) in
-      -longFromRef(longToRef(10)))
+    -10 -
+    2 * --9223372036854775808 *
+    ((-10 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert longFromRef(x) * longFromRef(y) -
     2 * --9223372036854775808 *
     ((longFromRef(x) * longFromRef(y) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(21))) in
-      -longFromRef(longToRef(21)))
-  assert longFromRef(x) *
-    (let anon ==
-      (unaryMinusLong(y)) in
-      -longFromRef(y)) -
+    -21 -
     2 * --9223372036854775808 *
-    ((longFromRef(x) * (let anon == (unaryMinusLong(y)) in -longFromRef(y)) +
+    ((-21 + --9223372036854775808) \ (2 * --9223372036854775808))
+  assert longFromRef(x) *
+    (-longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((-longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808))) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) *
+    (-longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((-longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808))) +
     --9223372036854775808) \
     (2 * --9223372036854775808)) ==
     21
@@ -292,16 +310,16 @@ method longMixedOperands(max: Ref, one: Ref, two: Ref, three: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(max) * shortFromRef(two) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert shortFromRef(two) * longFromRef(max) -
     2 * --9223372036854775808 *
     ((shortFromRef(two) * longFromRef(max) + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   assert longFromRef(max) - byteFromRef(one) -
     2 * --9223372036854775808 *
     ((longFromRef(max) - byteFromRef(one) + --9223372036854775808) \
@@ -624,9 +642,9 @@ method bothWidths(i: Ref, l: Ref) returns (v_ret_0: Ref)
     2 * --9223372036854775808 *
     ((longFromRef(l) * 2 + --9223372036854775808) \
     (2 * --9223372036854775808)) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(2))) in
-      -longFromRef(longToRef(2)))
+    -2 -
+    2 * --9223372036854775808 *
+    ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -646,9 +664,7 @@ method otherLongOperationsStayChecked(x: Ref, choice: Ref)
 {
   var anon_0: Ref
   anon_0 := choice
-  if (intFromRef(anon_0) == 0) {
-    assert unaryMinusLong(x) == unaryMinusLong(x)
-  } elseif (intFromRef(anon_0) == 1) {
+  if (intFromRef(anon_0) == 1) {
     assert divLongInt(x, intToRef(-1)) == divLongInt(x, intToRef(-1))
   } elseif (intFromRef(anon_0) == 2) {
     assert divLongInt(x, intToRef(0)) == divLongInt(x, intToRef(0))
@@ -657,17 +673,17 @@ method otherLongOperationsStayChecked(x: Ref, choice: Ref)
   } elseif (intFromRef(anon_0) == 4) {
     assert convertLongToInt(x) == convertLongToInt(x)
   } elseif (intFromRef(anon_0) == 5) {
-    var l7_n: Ref
+    var l6_n: Ref
     var anon_1: Ref
-    l7_n := x
-    anon_1 := l7_n
-    l7_n := decLong(anon_1)
+    l6_n := x
+    anon_1 := l6_n
+    l6_n := decLong(anon_1)
   } elseif (intFromRef(anon_0) == 6) {
-    var l8_n: Ref
+    var l7_n: Ref
     var anon_2: Ref
-    l8_n := longToRef(9223372036854775807)
-    anon_2 := l8_n
-    l8_n := incLong(anon_2)
+    l7_n := longToRef(9223372036854775807)
+    anon_2 := l7_n
+    l7_n := incLong(anon_2)
   } else {
     assert (let anon_builtin ==
         (remLongInt(x, intToRef(-1))) in
@@ -975,9 +991,10 @@ method detectProductOverflow(a: Ref, b: Ref, choice: Ref)
                   --9223372036854775808) \
                   (2 * --9223372036854775808))) :
                   boolToRef(longFromRef(a) ==
-                  (let anon_builtin ==
-                    (unaryMinusLong(longToRef(7))) in
-                    -longFromRef(longToRef(7))))))))))))
+                  -7 -
+                  2 * --9223372036854775808 *
+                  ((-7 + --9223372036854775808) \
+                  (2 * --9223372036854775808)))))))))))
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var total: Ref
@@ -986,9 +1003,9 @@ method detectProductOverflow(a: Ref, b: Ref, choice: Ref)
   anon_0 := choice
   if (intFromRef(anon_0) == 0) {
     assert longFromRef(total) ==
-      (let anon_builtin ==
-        (unaryMinusLong(longToRef(2))) in
-        -longFromRef(longToRef(2)))
+      -2 -
+      2 * --9223372036854775808 *
+      ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
     assert !((let anon_builtin ==
         (divLongLong(total, b)) in
         (longFromRef(total) < 0 != longFromRef(b) < 0 ?
@@ -1102,9 +1119,9 @@ method detectProductOverflow(a: Ref, b: Ref, choice: Ref)
     refute false
   } else {
     assert longFromRef(total) ==
-      (let anon_builtin ==
-        (unaryMinusLong(longToRef(14))) in
-        -longFromRef(longToRef(14)))
+      -14 -
+      2 * --9223372036854775808 *
+      ((-14 + --9223372036854775808) \ (2 * --9223372036854775808))
     assert (let anon_builtin ==
         (divLongLong(total, b)) in
         (longFromRef(total) < 0 != longFromRef(b) < 0 ?
@@ -1134,9 +1151,9 @@ method negativeMultiplierDetection(a: Ref, b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), longType())
   requires longFromRef(a) == -9223372036854775808
   requires longFromRef(b) ==
-    (let anon ==
-      (unaryMinusLong(longToRef(1))) in
-      -longFromRef(longToRef(1)))
+    -1 -
+    2 * --9223372036854775808 *
+    ((-1 + --9223372036854775808) \ (2 * --9223372036854775808))
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var total: Ref

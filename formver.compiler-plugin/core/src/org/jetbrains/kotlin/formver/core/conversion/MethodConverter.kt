@@ -48,9 +48,6 @@ class MethodConverter(
     override val wrapsLongArithmetic: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsLongArithmetic(session) == true
 
-    override val wrapsIntMultiplication: Boolean =
-        (signature as? NamedFunctionSignature)?.symbol?.overridesHashCode() == true
-
     override val wrapsNarrowing: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsNarrowing(session) == true
 

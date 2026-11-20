@@ -29,7 +29,7 @@ annotation class Borrowed
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
-/** Selects wrapping Int addition and subtraction; see "Integer arithmetic" in SPECIFICATIONS.md. */
+/** Selects wrapping Int addition, subtraction, multiplication and negation; see "Integer arithmetic" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
 annotation class WrappingIntArithmetic

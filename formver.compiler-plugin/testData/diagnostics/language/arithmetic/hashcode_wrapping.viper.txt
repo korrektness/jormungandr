@@ -147,3 +147,57 @@ method hashCode(this: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/hashcode_wrapping.kt: info: Generated Viper text for Signed:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Signed())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Signed())
+  ensures isSubtype(typeOf(result), byteType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), byteType())
+  ensures isSubtype(typeOf(v_ret_0), Signed())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures byteFromRef(g_b(v_ret_0)) == byteFromRef(par_b)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures byteFromRef(g_b(v_ret_0)) == byteFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Signed()
+  anon_0 := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_b
+  inhale byteFromRef(g_b(v_ret_0)) == byteFromRef(anon_1)
+  fold acc(Signed_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Signed_unique(v_ret_0), write)
+}
+
+/hashcode_wrapping.kt: info: Generated Viper text for hashCode:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Signed())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Signed())
+  ensures isSubtype(typeOf(result), byteType())
+
+
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Signed())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := wrappingPlusInts(wrappingUnaryMinusInt(a(this)), wrappingtimesByteInt(b(this),
+    a(this)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
