@@ -239,7 +239,9 @@ fun StmtConversionContext.embedPropertyAccess(
                     ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
                 }
 
-                else -> topLevelAccessorAccess(calleeSymbol) ?: embedLocalProperty(calleeSymbol)
+                else -> topLevelAccessorAccess(calleeSymbol) ?: embedLocalProperty(calleeSymbol).let { variable ->
+                    sharedLocalFlag(calleeSymbol)?.let { SharedLocalAccess(variable, it) } ?: variable
+                }
             }
         }
 

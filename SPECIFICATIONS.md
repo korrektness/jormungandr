@@ -1022,6 +1022,64 @@ fun caller(a: @Unique IntArray) {
 }
 ```
 
+### Lambda values
+
+A lambda that is not invoked in place, such as one stored in a local, passed to
+a function that is not inline or returned, evaluates to a fresh non-null value
+of its function type; nothing else is known about it. Calling a function-typed
+value is a call of a function object, which has no contract: its result is an
+arbitrary value of the result type.
+
+The holder of a lambda value may run it later, any number of times. From the
+lambda's creation on, each local `var` it captures is read as an arbitrary value
+of its type, and each object it captures is shared. Before the creation, the
+`var` keeps its tracked value. A read of a local `var` that a lambda value in
+its scope captures is a statement, so a specification such as `verify` reads it
+through a `val`.
+
+```kotlin
+fun counter() {
+    var x = 0
+    x = 1
+    val before = x
+    verify(before == 1)           // verifies
+    later { x = 2 }
+    val after = x
+    verify(after == 1)            // fails: the lambda may have run
+}
+```
+
+The body of a lambda value written in a function body is verified as a function
+of its own, against no contract. One written in a property initializer or an
+`init` block is not verified. Its parameters are arbitrary values of their types. Each `val`,
+parameter or receiver it captures is an arbitrary shared value of its type, the
+same at each read. Each local `var` it captures is an arbitrary value at each
+read, and the body's writes to it are not kept. A verification failure in the
+body is reported in the body; it does not make the function that creates the
+lambda fail.
+
+```kotlin
+fun body() {
+    var x = 0
+    later {
+        x = 1
+        val r = x
+        verify(r == 1)            // fails: another read gives another value
+    }
+}
+```
+
+A lambda value may capture a local the uniqueness checker inferred unique; the
+local is shared from the capture on, so passing it to a `@Unique` parameter
+afterwards is a `UNIQUENESS_MISMATCH`. Capturing a root whose type is annotated
+`@Unique` or `@Borrowed` is rejected (see [Rejected constructs](#rejected-constructs)).
+A lambda that is inlined, has a `callsInPlace` contract, is an argument of a
+specification or of an array constructor, is SAM-converted or is lifted to a
+class does not share the local `var`s it captures. If the conversion has to keep
+such a lambda as a value, such as one passed to a non-inline function with a
+`callsInPlace` contract, it is an `UNSUPPORTED_FEATURE` when it captures a local
+`var`.
+
 ### Collection iteration
 
 `IterationSequence<T>` is an immutable, specification-only sequence. It is
@@ -1568,9 +1626,10 @@ Limits: object measures are available only to `@Pure` functions.
 Each of these is a compile error:
 
 - A downcast move: `val s: @Unique Sub = base as Sub`.
-- A lambda, anonymous object, local class or local function that captures an
-  owned root, unless Kotlin inlines it in place:
-  `val f = { consume(n) }`.
+- A lambda that is not called in place and captures a root annotated
+  `@Unique` or `@Borrowed`: `fun f(n: @Unique Node) { later { consume(n) } }`.
+- An anonymous object, local class or local function that captures an owned
+  root.
 - `@Unique` on a declaration whose type is a type parameter:
   `class Box<T>(var item: @Unique T)`.
 - An override that does not repeat the `@Unique` and `@Borrowed` annotations

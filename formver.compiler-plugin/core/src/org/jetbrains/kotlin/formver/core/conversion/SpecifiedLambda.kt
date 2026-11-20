@@ -325,7 +325,7 @@ fun LiftedLambda.invokeBody(
     }
     val context = MethodConverter(converter, signature, resolver, converter.scopeIndexProducer.getFresh(),
         frame, captures = accesses(dispatch)).statementCtxt()
-    val body = source.function.body!!.statements.filterNot { it.isExposes() }.map { context.convert(it) }.toBlock()
+    val body = context.convertStatements(source.function.body!!.statements.filterNot { it.isExposes() }) { convert(it) }
     return ConvertedMethodBody(FunctionExp(signature, body, target.label!!), target, source.function.body?.source)
 }
 

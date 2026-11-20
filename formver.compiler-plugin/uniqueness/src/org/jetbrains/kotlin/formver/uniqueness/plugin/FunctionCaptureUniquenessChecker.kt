@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.references.symbol
@@ -18,6 +19,8 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNodeWithSubgraphs
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
@@ -38,6 +41,20 @@ internal fun ControlFlowGraph.capturedReceivers(): Set<FirBasedSymbol<*>> {
     return receivers
 }
 
+/**
+ * Whether [this] root's type is written in the source, rather than inferred from an initializer, and declares it owned.
+ */
+context(context: CheckerContext)
+private fun FirBasedSymbol<*>.isAnnotatedOwned(): Boolean {
+    if (this is FirVariableSymbol<*> && resolvedReturnTypeRef.source?.kind is KtFakeSourceElementKind.ImplicitTypeRef) return false
+    return resolveDeclaredUniqueness() <= Uniqueness.Unknown
+}
+
+/**
+ * Rejects a declaration that is not called in place when it captures an owned root. A lambda may capture a root the
+ * analysis only inferred owned; unless it is inlined, the root is shared from the capture on (see
+ * [GraphUniquenessStatesAnalyzer]).
+ */
 object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
@@ -67,6 +84,7 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
                 if (source != null && source.resolveDeclaredUniqueness() != Uniqueness.Unique) continue
                 val root = source?.firstOrNull() ?: symbol
                 if (root !in ownedRoots) continue
+                if (separateGraph.declaration is FirAnonymousFunction && !root.isAnnotatedOwned()) continue
 
                 val boundary = separateGraph.declaration?.source ?: declaration.source
                 reporter.reportFailure(uniqueCaptureFailure(boundary, listOf(root), boundary))

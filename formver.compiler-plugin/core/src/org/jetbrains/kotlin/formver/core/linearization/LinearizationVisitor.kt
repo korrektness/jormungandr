@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.purity.isSharedArrayElement
 
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
@@ -1641,14 +1642,62 @@ data class LinearizationVisitor(
 
     // region Lambda
 
-    // A lambda that is invoked in place is inlined at its invocation and never linearized as a value.
-    override fun visitLambdaExp(e: LambdaExp): Linearizable = object : StoredResultLinearizable(e) {
-        override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            throw UnsupportedFeatureException(e.function.source, "a lambda that is not invoked in place")
+    /**
+     * A lambda that is invoked in place is inlined at its invocation and never linearized as a value. As a value, it is
+     * a fresh object of its function type, and each local `var` and owned object it captures is shared from here on.
+     */
+    override fun visitLambdaExp(e: LambdaExp): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            createAsValue(e, ctx)
+            return ctx.freshAnonVar(e.type).withInvariants(ctx.typeResolver) {
+                proven = true
+                access = true
+            }.linearize().toViper(ctx)
+        }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            toViper(ctx)
         }
     }
 
+    /**
+     * Shares what the lambda value [e] captures. A captured lambda, one an inline call passes for a parameter, is
+     * created as a value too.
+     */
+    private fun createAsValue(e: LambdaExp, ctx: LinearizationContext) {
+        val unflagged = e.sharedLocalFlags.filterValues { it == null }.keys
+        if (unflagged.isNotEmpty()) throw UnsupportedFeatureException(
+            e.function.source,
+            "a lambda value that captures local vars without a shared-local flag: ${unflagged.joinToString { "'${it.name}'" }}"
+        )
+        for (flag in e.sharedLocalFlags.values.filterNotNull()) Assign(flag, BooleanLit(true)).linearize().toViperUnusedResult(ctx)
+        for ((symbol, root) in e.capturedRoots) {
+            val captured = root.ignoringCastsAndMetaNodes() as? LambdaExp
+            if (captured != null) createAsValue(captured, ctx) else ctx.shareCapturedRoot(e, symbol, root)
+        }
+        e.registerAsValue()
+    }
+
     // endregion
+}
+
+/** Gives up the unique predicate of a root of class type a lambda value captures, whatever share of it is held. */
+private fun LinearizationContext.shareCapturedRoot(lambda: LambdaExp, symbol: FirVariableSymbol<*>, root: ExpEmbedding) {
+    val cls = (root.type.pretype as? ClassTypeEmbedding)?.takeUnless { with(typeResolver) { it.isManual } } ?: return
+    val variable = root.ignoringCastsAndMetaNodes() as? VariableEmbedding
+        ?: throw UnsupportedFeatureException(
+            lambda.function.source, "a lambda value that captures '${symbol.name}', which is not bound to a variable"
+        )
+    foldState?.let { state ->
+        OwnedPath(variable).takeIf(state::holds)?.let {
+            state.close(this, it)
+            state.release(this, it)
+        }
+    }
+    val pos = source.asPosition
+    val receiver = listOf(variable.toViperExp(this))
+    val held = PermExp.CurrentPredicatePerm(cls.uniquePredicateName, receiver, pos)
+    addStatement { Stmt.Exhale(Exp.PredicateAccess(cls.uniquePredicateName, receiver, held, pos), pos) }
 }
 
 private fun <R> LinearizationContext.withFoldStateRestored(action: LinearizationContext.() -> R): R {

@@ -66,7 +66,7 @@ fun <!VIPER_TEXT!>allZero<!>(n: Int): Boolean {
     return a.all { it == 0u }
 }
 
-fun <!VERIFICATION_SKIPPED!>initialized<!>(n: Int): UIntArray {
+fun <!VIPER_TEXT!>initialized<!>(n: Int): UIntArray {
     preconditions { n > 0 }
-    return <!OPAQUE_CALL!>UIntArray(n) <!UNSUPPORTED_FEATURE!>{ it.toUInt() }<!><!>
+    return <!OPAQUE_CALL!>UIntArray(n) { <!INTEGER_OVERFLOW!>it.toUInt()<!> }<!>
 }

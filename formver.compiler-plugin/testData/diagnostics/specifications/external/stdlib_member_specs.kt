@@ -98,10 +98,10 @@ fun <!VIPER_TEXT!>parses<!>(s: String): Int {
     return n
 }
 
-fun <!VERIFICATION_SKIPPED!>mappedValues<!>() {
+fun <!VIPER_TEXT!>mappedValues<!>() {
     val map = mutableMapOf<Int, Int>()
     map[1] = 2
-    val doubled = map.mapValues <!UNSUPPORTED_FEATURE!>{ it.value * 2 }<!>
+    val doubled = map.mapValues { <!INTEGER_OVERFLOW!>it.value * 2<!> }
     verify(doubled.size == 1)
 }
 

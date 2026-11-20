@@ -16,7 +16,12 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.core.names.embedName
+import org.jetbrains.kotlin.formver.core.conversion.registerLambdaValueBody
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
@@ -98,16 +103,50 @@ internal class ViperPoweredDeclarationChecker(
             else root.register(declaration)
             convert(declaration, root, 0, dumps)
         }
+        val converters = mutableListOf(root)
         root.specifiedLambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
             val converter = ProgramConverter(session, config, context, reporter)
+            converters += converter
             reportConversionErrors(declaration, converter) {
                 converter.registerLambda(lambda, root.specifiedLambdas)
                 convert(declaration, converter, index + 1, dumps)
             }
         }
+        convertLambdaValues(declaration, converters, root.specifiedLambdas.size + 1, dumps)
         if (dumps.isNotEmpty()) {
             reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.verificationName, dumps.joinToString("\n\n"))
+        }
+    }
+
+    /**
+     * Converts the body of each lambda written in [declaration] that [converters] create as a function value into a
+     * program of its own, numbered from [firstIndex] on; the lambda values written in [declaration] that those programs
+     * create in turn follow.
+     */
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun convertLambdaValues(
+        declaration: FirFunction, converters: List<ProgramConverter>, firstIndex: Int, dumps: MutableList<String>,
+    ) {
+        val written = mutableSetOf<FirAnonymousFunction>()
+        declaration.accept(object : FirVisitorVoid() {
+            override fun visitElement(element: FirElement) {
+                if (element is FirAnonymousFunction) written += element
+                element.acceptChildren(this)
+            }
+        })
+        val pending = ArrayDeque(converters.flatMap { it.lambdaValues })
+        var index = firstIndex
+        while (pending.isNotEmpty()) {
+            val function = pending.removeFirst()
+            if (function !in written || !processedLambdas.add(function.symbol)) continue
+            val converter = ProgramConverter(session, config, context, reporter)
+            val current = index++
+            reportConversionErrors(function, converter) {
+                converter.registerLambdaValueBody(function, declaration.symbol.embedName(converter), current - 1)
+                convert(declaration, converter, current, dumps)
+            }
+            pending += converter.lambdaValues
         }
     }
 

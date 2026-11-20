@@ -8,16 +8,16 @@ import org.jetbrains.kotlin.formver.plugin.*
     fun <!VIPER_TEXT!>all<!>(): List<Int> = values
 }
 
-fun <!VERIFICATION_SKIPPED!>sharedNullableMap<!>(xs: List<Int>?) {
-    val ys = <!UNCHECKED_LIBRARY_CALL!>xs?.map <!UNSUPPORTED_FEATURE!>{ 1 }<!><!>
+fun <!VIPER_TEXT!>sharedNullableMap<!>(xs: List<Int>?) {
+    val ys = <!UNCHECKED_LIBRARY_CALL!>xs?.map { 1 }<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>sharedCallResultFilter<!>(n: Numbers) {
-    val ys = <!UNCHECKED_LIBRARY_CALL!>n.all().filter <!UNSUPPORTED_FEATURE!>{ it > 0 }<!><!>
+fun <!VIPER_TEXT!>sharedCallResultFilter<!>(n: Numbers) {
+    val ys = <!UNCHECKED_LIBRARY_CALL!>n.all().filter { it > 0 }<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>sharedAny<!>(xs: List<Int>) {
-    val found = <!OPAQUE_CALL!>xs.any <!UNSUPPORTED_FEATURE!>{ it > 0 }<!><!>
+fun <!VIPER_TEXT!>sharedAny<!>(xs: List<Int>) {
+    val found = <!OPAQUE_CALL!>xs.any { it > 0 }<!>
 }
 
 fun <!VIPER_TEXT!>uniqueAny<!>(xs: @Unique @Borrowed List<Int>) {

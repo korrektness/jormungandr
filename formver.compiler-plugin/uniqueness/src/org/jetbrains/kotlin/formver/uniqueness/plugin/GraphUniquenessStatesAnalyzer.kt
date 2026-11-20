@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArraySetId
@@ -23,9 +24,11 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.PathAwareControlFlowInfo
 import org.jetbrains.kotlin.fir.analysis.cfa.util.merge
 import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import kotlinx.collections.immutable.mutate
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.InlineStatus
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
@@ -178,7 +181,11 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow,
     ): PathAwareUniquenessStateFlow {
         val lambda = node.fir.anonymousFunction
-        if (lambda !in specifiedLambdas || node.fir in readOnlyContext) return visitNode(node, data)
+        if (node.fir in readOnlyContext) return visitNode(node, data)
+        if (lambda !in specifiedLambdas) {
+            if (lambda.inlineStatus == InlineStatus.Inline) return visitNode(node, data)
+            return shareCaptures(node, lambda, data)
+        }
         val graph = lambda.controlFlowGraphReference?.controlFlowGraph ?: error("Specified lambda has no CFG")
         return context(context) {
             val captures = graph.resolveCapturedSymbols() + graph.capturedReceivers()
@@ -196,6 +203,38 @@ class GraphUniquenessStatesAnalyzer(
             }
         }
     }
+
+    /**
+     * Makes each root that [lambda], when not called in place, captures and the analysis finds owned shared from here
+     * on. [FunctionCaptureUniquenessChecker] rejects capturing a root annotated as owned.
+     */
+    private fun shareCaptures(
+        node: AnonymousFunctionCaptureNode,
+        lambda: FirAnonymousFunction,
+        data: PathAwareUniquenessStateFlow,
+    ): PathAwareUniquenessStateFlow {
+        val graph = lambda.controlFlowGraphReference?.controlFlowGraph
+            ?: throw SnaktInternalException(lambda.source, "Lambda has no control-flow graph")
+        if (graph.extendsLocalFlow) return visitNode(node, data)
+        return context(context) {
+            val captures = graph.resolveCapturedSymbols() + graph.capturedReceivers()
+            data.transformValues { flow ->
+                var state = flow.getOrInitialize()
+                for (symbol in captures) {
+                    val root = state.children[symbol] ?: UniquenessState(symbol.resolveDeclaredUniqueness())
+                    if (root.data <= Uniqueness.Unknown) state = state.putChild(symbol, root.sharedKeepingMoves())
+                }
+                flow.put(Unit, state)
+            }
+        }
+    }
+
+    /** This state with every path that has not moved `Shared`. */
+    private fun UniquenessState.sharedKeepingMoves(): UniquenessState =
+        if (data == Uniqueness.Moved) this
+        else UniquenessState(Uniqueness.Shared, children.mutate { shared ->
+            for ((key, child) in children) shared[key] = child.sharedKeepingMoves()
+        })
 
     override fun visitVariableDeclarationNode(
         node: VariableDeclarationNode,

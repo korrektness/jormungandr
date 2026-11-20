@@ -1,0 +1,2046 @@
+/lambda_escaping.kt: info: Generated Viper text for Box:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_n := par_n
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
+/lambda_escaping.kt: info: Generated Viper text for later:
+method later(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for makeAny:
+method makeAny() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+makeAny.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for lambdaIsNonNull:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lambdaIsNonNull() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  f := anon
+  assert !(f == nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+lambdaIsNonNull.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for lambdasAreUnknown:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lambdasAreUnknown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon_0: Ref
+  var g: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), functionType())
+  f := anon_0
+  inhale isSubtype(typeOf(anon_1), functionType())
+  g := anon_1
+  assert f == g
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+lambdasAreUnknown.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+lambdasAreUnknown.lambda1.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for returnedLambda:
+method returnedLambda() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), functionType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+returnedLambda.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for inPlaceResultKnown:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inPlaceResultKnown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  var v_ret_2: Ref
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon := v_ret_2
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for invokedValueIsOpaque:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invokedValueIsOpaque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon_0: Ref
+  var l0_r: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), functionType())
+  f := anon_0
+  inhale isSubtype(typeOf(anon_1), intType())
+  l0_r := anon_1
+  assert intFromRef(l0_r) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+invokedValueIsOpaque.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for trackedBeforeCreation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method trackedBeforeCreation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var l0_r: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 1
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+trackedBeforeCreation.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for sharedAfterCreation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method sharedAfterCreation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var l0_r: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+sharedAfterCreation.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for writeAfterCreationIsNotKept:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method writeAfterCreationIsNotKept() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var l0_r: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  x := intToRef(1)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+writeAfterCreationIsNotKept.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for readOnlyCaptureIsShared:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method readOnlyCaptureIsShared() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var l0_r: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+readOnlyCaptureIsShared.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), intType())
+  anon_1 := anon_0
+  assert plusInts(anon_1, intToRef(1)) == plusInts(anon_1, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for uncapturedVarStaysTracked:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method uncapturedVarStaysTracked() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var y: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  y := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), functionType())
+  anon_1 := later(anon_2)
+  assert intFromRef(y) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+uncapturedVarStaysTracked.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedValStaysKnown:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedValStaysKnown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  k := intToRef(3)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  assert intFromRef(k) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+capturedValStaysKnown.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  assert plusInts(anon_0, intToRef(1)) == plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedObjectIsShared:
+field bf_n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedObjectIsShared() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var b: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_r: Ref
+  b := con(intToRef(1))
+  fold acc(Box_unique(b), write)
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  l0_r := havoc(intType())
+  assert intFromRef(l0_r) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method later(f: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+capturedObjectIsShared.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for makeBox:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method makeBox() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures acc(Box_unique(v_ret_0), write)
+{
+  v_ret_0 := con(intToRef(1))
+  fold acc(Box_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for inferredUniqueTrackedBeforeCapture:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inferredUniqueTrackedBeforeCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var b: Ref
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  b := makeBox()
+  unfold acc(Box_unique(b), write)
+  b.n := intToRef(2)
+  l0_r := b.n
+  assert intFromRef(l0_r) == 2
+  fold acc(Box_unique(b), write)
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method makeBox() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+
+
+inferredUniqueTrackedBeforeCapture.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for inferredUniqueSharedAfterCapture:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inferredUniqueSharedAfterCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var b: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_r: Ref
+  b := makeBox()
+  unfold acc(Box_unique(b), write)
+  b.n := intToRef(2)
+  fold acc(Box_unique(b), write)
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  l0_r := havoc(intType())
+  assert intFromRef(l0_r) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method makeBox() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+
+
+inferredUniqueSharedAfterCapture.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for consume:
+field n: Ref
+
+method consume(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for inferredUniqueNotConsumableAfterCapture:
+field n: Ref
+
+method consume(par_b: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_b), Box())
+  requires acc(Box_unique(par_b), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method inferredUniqueNotConsumableAfterCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_b: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  l0_b := makeBox()
+  exhale acc(Box_unique(l0_b), perm(Box_unique(l0_b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  anon_2 := consume(l0_b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method makeBox() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+
+
+inferredUniqueNotConsumableAfterCapture.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for inferredUniqueNotConsumableAfterStoredCapture:
+field n: Ref
+
+method consume(par_b: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_b), Box())
+  requires acc(Box_unique(par_b), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method inferredUniqueNotConsumableAfterStoredCapture()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_b: Ref
+  var touch: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_b := makeBox()
+  exhale acc(Box_unique(l0_b), perm(Box_unique(l0_b)))
+  inhale isSubtype(typeOf(anon_0), functionType())
+  touch := anon_0
+  anon_1 := consume(l0_b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method makeBox() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+
+
+inferredUniqueNotConsumableAfterStoredCapture.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedSharedParameter:
+field n: Ref
+
+method capturedSharedParameter(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+capturedSharedParameter.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedUniqueParameter:
+field n: Ref
+
+method capturedUniqueParameter(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+capturedUniqueParameter.lambda0.invoke:
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for callOnce:
+method callOnce(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures true
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for calledInPlaceWithoutCapture:
+method callOnce(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true
+
+
+method calledInPlaceWithoutCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := callOnce(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+calledInPlaceWithoutCapture.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  goto lbl_ret_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for later2:
+method later2(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyVerifies:
+method bodyVerifies() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyVerifies.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 1 == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyFails:
+method bodyFails() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyFails.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 1 == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyUsesParameter:
+method bodyUsesParameter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later2(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later2(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyUsesParameter.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  assert intFromRef(n) == intFromRef(n)
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyParameterUnknown:
+method bodyParameterUnknown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later2(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later2(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyParameterUnknown.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  assert intFromRef(n) == 0
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedValIsUnknown:
+method bodyCapturedValIsUnknown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  k := intToRef(3)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedValIsUnknown.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  assert intFromRef(anon_0) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedValIsStable:
+method bodyCapturedValIsStable(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedValIsStable.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var a: Ref
+  var b: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  a := anon_0
+  b := anon_0
+  assert intFromRef(a) == intFromRef(b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedVarIsUnknown:
+method bodyCapturedVarIsUnknown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), functionType())
+  anon_1 := later(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedVarIsUnknown.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  l0_r := anon
+  assert intFromRef(l0_r) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedVarReadsDiffer:
+method bodyCapturedVarReadsDiffer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), functionType())
+  anon_1 := later(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedVarReadsDiffer.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  var anon_0: Ref
+  var b: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), intType())
+  a := anon_0
+  inhale isSubtype(typeOf(anon_1), intType())
+  b := anon_1
+  assert intFromRef(a) == intFromRef(b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedVarWriteIsLost:
+method bodyCapturedVarWriteIsLost() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), functionType())
+  anon_1 := later(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedVarWriteIsLost.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  l0_r := anon
+  assert intFromRef(l0_r) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyLocalsAreTracked:
+method bodyLocalsAreTracked() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyLocalsAreTracked.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var y: Ref
+  y := intToRef(0)
+  y := intToRef(2)
+  assert intFromRef(y) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyCapturedObjectIsShared:
+field n: Ref
+
+method bodyCapturedObjectIsShared(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  exhale acc(Box_unique(b), perm(Box_unique(b)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyCapturedObjectIsShared.lambda0.invoke:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_r: Ref
+  inhale isSubtype(typeOf(anon_1), Box())
+  anon_0 := anon_1
+  l0_r := havoc(intType())
+  assert intFromRef(l0_r) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyNestedLambdaFails:
+method bodyNestedLambdaFails() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyNestedLambdaFails.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyNestedLambdaFails.lambda1.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 1 == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for deferred:
+method deferred(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+deferred.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_2), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedLambdaTrackedBeforeCreation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedLambdaTrackedBeforeCreation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var l0_r: Ref
+  var v_ret_3: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 1
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  label lbl_ret_3
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method deferred(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method later(f: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+capturedLambdaTrackedBeforeCreation.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedLambdaSharesItsCaptures:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method capturedLambdaSharesItsCaptures() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var v_ret_3: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var l0_r: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  label lbl_ret_3
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method deferred(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method later(f: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+capturedLambdaSharesItsCaptures.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedLambdaBodyFails:
+method capturedLambdaBodyFails() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_3: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_3
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method deferred(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method later(f: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+capturedLambdaBodyFails.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 1 == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyInPlaceLambdaReadsCapturedVal:
+method bodyInPlaceLambdaReadsCapturedVal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  k := intToRef(3)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyInPlaceLambdaReadsCapturedVal.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var v_ret_2: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  v_ret_2 := anon_0
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_2 := v_ret_2
+  assert intFromRef(anon_2) == intFromRef(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyInPlaceLambdaCapturedValIsUnknown:
+method bodyInPlaceLambdaCapturedValIsUnknown() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  k := intToRef(3)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyInPlaceLambdaCapturedValIsUnknown.lambda0.invoke:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var v_ret_2: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  v_ret_2 := anon_0
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_2 := v_ret_2
+  assert intFromRef(anon_2) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyInvokesCapturedVar:
+method bodyInvokesCapturedVar() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var l0_f: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := boolToRef(false)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  l0_f := anon_1
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(par_f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+bodyInvokesCapturedVar.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  goto lbl_ret_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+bodyInvokesCapturedVar.lambda1.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), functionType())
+  inhale isSubtype(typeOf(anon_1), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for bodyNestedLambdaCapturesVar:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bodyNestedLambdaCapturesVar() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var l0_r: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    x := anon_1
+  }
+  l0_r := x
+  assert intFromRef(l0_r) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyNestedLambdaCapturesVar.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+bodyNestedLambdaCapturesVar.lambda1.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for forBodyVarTrackedBeforeCreation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method forBodyVarTrackedBeforeCreation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_2: Ref
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant 0 <= intFromRef(i) &&
+      (1 >
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), intToRef(1))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1))) ||
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(intToRef(1), intToRef(1))) in
+        intFromRef(intToRef(1)) + intFromRef(intToRef(1))) ||
+      intFromRef(i) == 0)
+  anon_2 := leInts(i, intToRef(1))
+  if (boolFromRef(anon_2)) {
+    var anon_0: Ref
+    var x: Ref
+    var l2_r: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    anon_0 := boolToRef(false)
+    x := intToRef(0)
+    x := intToRef(1)
+    if (boolFromRef(anon_0)) {
+      var anon_1: Ref
+      inhale isSubtype(typeOf(anon_1), intType())
+      x := anon_1
+    }
+    l2_r := x
+    assert intFromRef(l2_r) == 1
+    anon_0 := boolToRef(true)
+    inhale isSubtype(typeOf(anon_4), functionType())
+    anon_3 := later(anon_4)
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) <= 1 &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) <= 1 &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (1 >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1))) ||
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(intToRef(1), intToRef(1))) in
+      intFromRef(intToRef(1)) + intFromRef(intToRef(1))) ||
+    intFromRef(i) == 0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+forBodyVarTrackedBeforeCreation.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for forBodyVarSharedAfterCreation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method forBodyVarSharedAfterCreation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_2: Ref
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant 0 <= intFromRef(i) &&
+      (1 >
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), intToRef(1))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1))) ||
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(intToRef(1), intToRef(1))) in
+        intFromRef(intToRef(1)) + intFromRef(intToRef(1))) ||
+      intFromRef(i) == 0)
+  anon_2 := leInts(i, intToRef(1))
+  if (boolFromRef(anon_2)) {
+    var anon_0: Ref
+    var x: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    var l2_r: Ref
+    anon_0 := boolToRef(false)
+    x := intToRef(0)
+    anon_0 := boolToRef(true)
+    inhale isSubtype(typeOf(anon_4), functionType())
+    anon_3 := later(anon_4)
+    if (boolFromRef(anon_0)) {
+      var anon_1: Ref
+      inhale isSubtype(typeOf(anon_1), intType())
+      x := anon_1
+    }
+    l2_r := x
+    assert intFromRef(l2_r) == 0
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) <= 1 &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) <= 1 &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (1 >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1))) ||
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(intToRef(1), intToRef(1))) in
+      intFromRef(intToRef(1)) + intFromRef(intToRef(1))) ||
+    intFromRef(i) == 0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method later(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+forBodyVarSharedAfterCreation.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for Holder:
+field bf_box: Ref
+
+field bf_m: Ref
+
+field n: Ref
+
+method con(par_box: Ref, par_m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_box), Box())
+  requires acc(Box_unique(par_box), write)
+  requires isSubtype(typeOf(par_m), intType())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_box, write) &&
+    isSubtype(typeOf(v_ret_0.bf_box), Box()) &&
+    acc(Box_unique(v_ret_0.bf_box), write) &&
+    acc(v_ret_0.bf_m, write) &&
+    isSubtype(typeOf(v_ret_0.bf_m), intType())
+  ensures v_ret_0.bf_box == par_box
+  ensures intFromRef(v_ret_0.bf_m) == intFromRef(par_m)
+  ensures v_ret_0.bf_box == par_box
+  ensures intFromRef(v_ret_0.bf_m) == intFromRef(par_m)
+{
+  v_ret_0 := new(bf_box, bf_m)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_box := par_box
+  v_ret_0.bf_m := par_m
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
+/lambda_escaping.kt: info: Generated Viper text for makeHolder:
+field bf_box: Ref
+
+field bf_m: Ref
+
+field bf_n: Ref
+
+method con_Box(par_n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_3), Box())
+  ensures isSubtype(typeOf(ret_3), Box()) && acc(ret_3.bf_n, write) &&
+    isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
+
+
+method con_Holder(par_box: Ref, par_m: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_box), Box())
+  requires isSubtype(typeOf(par_m), intType())
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures isSubtype(typeOf(ret_1), Holder()) && acc(ret_1.bf_box, write) &&
+    isSubtype(typeOf(ret_1.bf_box), Box()) &&
+    acc(ret_1.bf_m, write) &&
+    isSubtype(typeOf(ret_1.bf_m), intType())
+  ensures ret_1.bf_box == par_box
+  ensures intFromRef(ret_1.bf_m) == intFromRef(par_m)
+  ensures ret_1.bf_box == par_box
+  ensures intFromRef(ret_1.bf_m) == intFromRef(par_m)
+
+
+method makeHolder() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures acc(Holder_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := con_Box(intToRef(1))
+  fold acc(Box_unique(anon), write)
+  v_ret_0 := con_Holder(anon, intToRef(0))
+  fold acc(Holder_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_escaping.kt: info: Generated Viper text for capturedRootChildNotConsumable:
+field box: Ref
+
+field m: Ref
+
+field n: Ref
+
+method capturedRootChildNotConsumable() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  h := makeHolder()
+  exhale acc(Holder_unique(h), perm(Holder_unique(h)))
+  inhale isSubtype(typeOf(anon_1), functionType())
+  anon_0 := later(anon_1)
+  anon_3 := havoc(Box())
+  anon_2 := consume(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method consume(b: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method later(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method makeHolder() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures acc(Holder_unique(ret_1), write)
+
+
+capturedRootChildNotConsumable.lambda0.invoke:
+field box: Ref
+
+field m: Ref
+
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Holder())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lambda_escaping.kt: info: Generated Viper text for movedChildStaysMovedAfterCapture:
+field box: Ref
+
+field m: Ref
+
+field n: Ref
+
+method consume(b: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method later(f: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method makeHolder() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures acc(Holder_unique(ret_1), write)
+
+
+method movedChildStaysMovedAfterCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  h := makeHolder()
+  anon_1 := havoc(Box())
+  anon_0 := consume(anon_1)
+  exhale acc(Holder_unique(h), perm(Holder_unique(h)))
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_2 := later(anon_3)
+  anon_5 := havoc(Box())
+  anon_4 := consume(anon_5)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+movedChildStaysMovedAfterCapture.lambda0.invoke:
+field box: Ref
+
+field m: Ref
+
+field n: Ref
+
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), Holder())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -67,6 +67,10 @@ interface MethodConversionContext : ProgramConversionContext {
     fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding
     fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath? = null)
     fun registerLocalVariable(symbol: FirVariableSymbol<*>, type: TypeEmbedding)
+
+    /** The flag that holds once a lambda value capturing the local `var` [symbol] exists, if one can capture it. */
+    fun sharedLocalFlag(symbol: FirPropertySymbol): VariableEmbedding?
+    fun registerSharedLocalFlag(symbol: FirPropertySymbol, flag: VariableEmbedding)
     fun resolveDispatchReceiver(): ExpEmbedding?
     fun resolveExtensionReceiver(labelName: String): ExpEmbedding?
 

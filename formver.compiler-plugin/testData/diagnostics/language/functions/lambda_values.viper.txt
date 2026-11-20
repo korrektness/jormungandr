@@ -89,3 +89,72 @@ method runOnInt() returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/lambda_values.kt: info: Generated Viper text for passedToNonInline:
+method passedToNonInline() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  v_ret_0 := takesLambda(anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method takesLambda(f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+passedToNonInline.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_values.kt: info: Generated Viper text for storedInLocal:
+method storedInLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var f: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), functionType())
+  f := anon_0
+  inhale isSubtype(typeOf(anon_1), intType())
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+storedInLocal.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lambda_values.kt: info: Generated Viper text for returned:
+method returned() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), functionType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+returned.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

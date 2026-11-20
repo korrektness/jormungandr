@@ -210,10 +210,11 @@ A function object has no contract. A function-type parameter can only be
 `@Borrowed`, so the call may write to each owned argument but cannot take it:
 the caller keeps each owned argument's predicate and forgets the values under it.
 Its class laws are assumed again, as after any shared borrow. A function object
-cannot capture state the caller owns, because uniqueness checking rejects that
-capture. A function object stored in an object during its construction cannot
-capture that object either: such a construction makes its objects shared
-(SPECIFICATIONS.md, "Annotations").
+cannot capture state the caller owns: uniqueness checking rejects capturing an
+annotated owned root, and a root it inferred owned becomes shared at the
+capture (see "Lambda values"). A function object stored in an object during
+its construction cannot capture that object either: such a construction makes
+its objects shared (SPECIFICATIONS.md, "Annotations").
 
 Tests: `verification/soundness/callbacks.kt`,
 `verification/classes/law_function_property.kt`.
@@ -566,6 +567,35 @@ A lifted lambda keeps the facts about its captures that hold at every creation
 site and cannot change afterwards.
 
 Test: `verification/pure_functions/lifted_lambda_creation_facts.kt`.
+
+### Lambda values
+
+A lambda value is a fresh value of its function type with no other facts, and a
+call of it is a call of a function object (see "Calls of function objects"),
+so no fact about its body reaches the caller. Its holder may run it at any
+later point, so from its creation on each local `var` it captures reads as an
+arbitrary value of its type: the conversion keeps a flag per such `var`, set at
+creation, and a read under the flag havocs the `var` first. A `var` that no
+lambda value captures stays tracked. A captured object is shared: an annotated
+owned root cannot be captured, and a root the uniqueness checker inferred owned
+becomes shared at the capture: the conversion gives up whatever share of its
+unique predicate the function holds there, so its field reads give arbitrary
+values and a later use that needs ownership fails. A
+lambda that Kotlin marks as called in place has no flags; if the conversion
+has to keep one that captures a `var` as a value, it rejects it.
+
+The body of a lambda value written in a function body is a Viper method of its
+own with no contract (`valueMethod` in `conversion/LambdaValues.kt`), verified
+in its own program. A lambda value written in a property initializer or an
+`init` block is not verified, which loses failures in its body but assumes
+nothing. The body assumes nothing about what it captures: each captured `val`,
+parameter or receiver is one unconstrained value of its type, declared on entry;
+each read of a captured `var` is a fresh unconstrained value, and a write to it
+is evaluated and dropped. Captured objects are shared in the body. Annotated
+owned roots are never captured, as the uniqueness checker rejects that.
+
+Tests: `language/functions/lambda_escaping.kt`,
+`ownership/functions/capture_rejected.kt`.
 
 ### Override refinement
 

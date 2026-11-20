@@ -2504,6 +2504,403 @@ method parses(s: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/stdlib_member_specs.kt: info: Generated Viper text for mappedValues:
+function BooleanArray_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_c_MapModel_f_containsKey(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(v_this))| &&
+      equalsRelation(par_key, iterationSequenceGet(MutableMapModel_c_MapModel_f_keysSequence(v_this),
+      intToRef(anon_builtin_0)))))
+  ensures (par_key in
+    iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(v_this))) ==>
+    boolFromRef(result)
+
+
+function MutableMapModel_c_MapModel_f_containsValue(v_this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_3: Int :: anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) &&
+      (anon_builtin_3 >= 0 &&
+      anon_builtin_3 <
+      |iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(v_this))| &&
+      equalsRelation(par_value, MutableMapModel_c_MapModel_f_get(v_this, iterationSequenceGet(MutableMapModel_c_MapModel_f_keysSequence(v_this),
+      intToRef(anon_builtin_3))))))
+
+
+function MutableMapModel_c_MapModel_f_get(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(MutableMapModel_c_MapModel_f_containsKey(v_this, par_key)) ==>
+    result == nullValue()
+
+
+function MutableMapModel_c_MapModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableMapModel_c_MapModel_g_size(v_this)) == 0)
+
+
+function MutableMapModel_c_MapModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function MutableMapModel_c_MapModel_f_keysSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function MutableMapModel_c_MapModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), MutableMapModel())
+  requires acc(MutableMapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_MapModel_f_containsKey(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this))| &&
+      equalsRelation(par_key, iterationSequenceGet(c_MapModel_f_keysSequence(v_this),
+      intToRef(anon_builtin_0)))))
+  ensures (par_key in
+    iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this))) ==>
+    boolFromRef(result)
+
+
+function c_MapModel_f_containsValue(v_this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_3: Int :: anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) &&
+      (anon_builtin_3 >= 0 &&
+      anon_builtin_3 <
+      |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this))| &&
+      equalsRelation(par_value, c_MapModel_f_get(v_this, iterationSequenceGet(c_MapModel_f_keysSequence(v_this),
+      intToRef(anon_builtin_3))))))
+
+
+function c_MapModel_f_get(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(c_MapModel_f_containsKey(v_this, par_key)) ==>
+    result == nullValue()
+
+
+function c_MapModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_MapModel_g_size(v_this)) == 0)
+
+
+function c_MapModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_MapModel_f_keysSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_MapModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_MapModel())
+  requires acc(c_MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_key(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method MutableMapModel_c_MapModel_restore(v_this: Ref)
+  requires acc(c_MapModel_unique(v_this), write)
+  requires isSubtype(typeOf(v_this), MutableMapModel())
+  ensures acc(MutableMapModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_keysSequence(v_this)) ==
+    old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_keysSequence(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_iterationSequence(v_this)) ==
+    old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_iterationSequence(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_g_size(v_this)) ==
+    old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_isEmpty(v_this)))
+  ensures (forall par_key: Ref ::
+      { MutableMapModel_c_MapModel_f_containsKey(v_this, par_key) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_key), nullable(anyType()))) ==>
+      (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_containsKey(v_this, par_key)) ==
+      old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_containsKey(v_this, par_key))))
+  ensures (forall par_value: Ref ::
+      { MutableMapModel_c_MapModel_f_containsValue(v_this, par_value) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_value), nullable(anyType()))) ==>
+      (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_containsValue(v_this, par_value)) ==
+      old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_containsValue(v_this, par_value))))
+  ensures (forall par_key: Ref ::
+      { MutableMapModel_c_MapModel_f_get(v_this, par_key) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_key), nullable(anyType()))) ==>
+      (unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_get(v_this, par_key)) ==
+      old((unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_get(v_this, par_key))))
+
+
+method MutableMapModel_c_MapModel_upcast(v_this: Ref)
+  requires acc(MutableMapModel_unique(v_this), write)
+  ensures acc(c_MapModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_keysSequence(v_this)) ==
+    old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_keysSequence(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_iterationSequence(v_this)) ==
+    old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_iterationSequence(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_g_size(v_this)) ==
+    old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_MapModel())) && true ==>
+    (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+      c_MapModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+      MutableMapModel_c_MapModel_f_isEmpty(v_this)))
+  ensures (forall par_key: Ref ::
+      { c_MapModel_f_containsKey(v_this, par_key) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_key), nullable(anyType()))) ==>
+      (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_containsKey(v_this, par_key)) ==
+      old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_containsKey(v_this, par_key))))
+  ensures (forall par_value: Ref ::
+      { c_MapModel_f_containsValue(v_this, par_value) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_value), nullable(anyType()))) ==>
+      (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_containsValue(v_this, par_value)) ==
+      old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_containsValue(v_this, par_value))))
+  ensures (forall par_key: Ref ::
+      { c_MapModel_f_get(v_this, par_key) }
+      true && old(isSubtype(typeOf(v_this), c_MapModel())) && true &&
+      old(isSubtype(typeOf(par_key), nullable(anyType()))) ==>
+      (unfolding acc(c_MapModel_unique(v_this), wildcard) in
+        c_MapModel_f_get(v_this, par_key)) ==
+      old((unfolding acc(MutableMapModel_unique(v_this), wildcard) in
+        MutableMapModel_c_MapModel_f_get(v_this, par_key))))
+
+
+method emptyMutableMapModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), MutableMapModel())
+  ensures acc(MutableMapModel_unique(ret_1), write)
+  ensures (unfolding acc(MutableMapModel_unique(ret_1), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(ret_1)) == 0)
+
+
+method mapValuesModel(v_this_extension: Ref, transform: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this_extension), c_MapModel())
+  requires acc(c_MapModel_unique(v_this_extension), write)
+  requires isSubtype(typeOf(transform), functionType())
+  ensures acc(c_MapModel_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_4), c_MapModel())
+  ensures acc(c_MapModel_unique(ret_4), write)
+  ensures (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_MapModel_g_size(v_this_extension))) ==
+    old((unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_MapModel_g_size(v_this_extension))))
+  ensures (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this_extension))|) ==
+    old((unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this_extension))|))
+  ensures (forall anon_builtin_1: Int ::
+      { iterationSequenceGet(c_MapModel_f_keysSequence(v_this_extension), intToRef(anon_builtin_1)) }
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
+      anon_builtin_1 >= 0 &&
+      (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        anon_builtin_1 <
+        |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this_extension))|) ==>
+      (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_MapModel_f_keysSequence(v_this_extension), intToRef(anon_builtin_1))) ==
+      old((unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_MapModel_f_keysSequence(v_this_extension), intToRef(anon_builtin_1)))))
+  ensures (unfolding acc(c_MapModel_unique(ret_4), wildcard) in
+      (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        intFromRef(c_MapModel_g_size(ret_4)) ==
+        intFromRef(c_MapModel_g_size(v_this_extension))))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 &&
+      (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        anon_builtin_2 < intFromRef(c_MapModel_g_size(v_this_extension))) &&
+      (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+        anon_builtin_2 <
+        |iterationSequenceFromRef(c_MapModel_f_keysSequence(v_this_extension))|) &&
+      (unfolding acc(c_MapModel_unique(ret_4), wildcard) in
+        anon_builtin_2 <
+        |iterationSequenceFromRef(c_MapModel_f_keysSequence(ret_4))|) ==>
+      (unfolding acc(c_MapModel_unique(ret_4), wildcard) in
+        (unfolding acc(c_MapModel_unique(v_this_extension), wildcard) in
+          iterationSequenceGet(c_MapModel_f_keysSequence(ret_4), intToRef(anon_builtin_2)) ==
+          iterationSequenceGet(c_MapModel_f_keysSequence(v_this_extension),
+          intToRef(anon_builtin_2)))))
+
+
+method mappedValues() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var map: Ref
+  var anon_12: Ref
+  var doubled: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  map := emptyMutableMapModel()
+  anon_12 := setModel(map, intToRef(1), intToRef(2))
+  inhale isSubtype(typeOf(anon_13), functionType())
+  MutableMapModel_c_MapModel_upcast(map)
+  doubled := mapValuesModel(map, anon_13)
+  MutableMapModel_c_MapModel_restore(map)
+  anon_14 := (unfolding acc(c_MapModel_unique(doubled), wildcard) in
+      c_MapModel_g_size(doubled))
+  assert intFromRef(anon_14) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method setModel(v_this_extension: Ref, par_key: Ref, par_value: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), MutableMapModel())
+  requires acc(MutableMapModel_unique(v_this_extension), write)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  requires (unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(v_this_extension)) <
+      2147483647)
+  ensures acc(MutableMapModel_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(v_this_extension,
+      par_key)))
+  ensures (unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+      MutableMapModel_c_MapModel_f_get(v_this_extension, par_key) ==
+      par_value)
+  ensures (unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(v_this_extension))) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+        MutableMapModel_c_MapModel_g_size(v_this_extension))), (old((unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(v_this_extension,
+        par_key)))) ?
+        intToRef(0) :
+        intToRef(1)))) in
+      intFromRef(old((unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+        MutableMapModel_c_MapModel_g_size(v_this_extension)))) +
+      intFromRef((old((unfolding acc(MutableMapModel_unique(v_this_extension), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(v_this_extension,
+        par_key)))) ?
+        intToRef(0) :
+        intToRef(1))))
+
+
+mappedValues.lambda0.invoke:
+function key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), EntryModel())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := value(it)
+  inhale isSubtype(typeOf(anon), intType())
+  v_ret_0 := timesInts(anon, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /stdlib_member_specs.kt: info: Generated Viper text for sliced:
 function BooleanArray_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())

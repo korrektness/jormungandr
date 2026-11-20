@@ -107,6 +107,15 @@ class MethodConverter(
         propertyResolver.registerLocalVariable(symbol, type)
     }
 
+    private val sharedLocalFlags = mutableMapOf<FirPropertySymbol, VariableEmbedding>()
+
+    override fun sharedLocalFlag(symbol: FirPropertySymbol): VariableEmbedding? =
+        sharedLocalFlags[symbol] ?: parent?.sharedLocalFlag(symbol)
+
+    override fun registerSharedLocalFlag(symbol: FirPropertySymbol, flag: VariableEmbedding) {
+        sharedLocalFlags[symbol] = flag
+    }
+
     override fun capturedAccess(symbol: FirBasedSymbol<*>): PropertyAccessEmbedding? =
         captures[symbol] ?: parent?.capturedAccess(symbol)
 

@@ -117,7 +117,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitBlock(block: FirBlock, data: StmtConversionContext): ExpEmbedding =
         block.asForRangeLoop()?.let { data.convertForRangeLoop(it) }
-            ?: block.statements.map { data.convertReportingUnsupported(it) }.toBlock()
+            ?: data.convertStatements(block.statements)
 
     override fun visitLiteralExpression(
         literalExpression: FirLiteralExpression,
@@ -418,7 +418,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
         val args = implicitInvokeCall.contextAndExplicitArguments.withVarargsHandled(data, implicitInvokeCall, function = null)
         val isMember = receiverSymbol is FirPropertySymbol && !receiverSymbol.isLocal
-        return when (val exp = if (isMember) null else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
+        return when (val exp = if (isMember || data.capturedAccess(receiverSymbol) != null) null
+            else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
             is LambdaExp -> {
                 // The lambda is already the receiver, so we do not need to convert it.
                 // TODO: do this more uniformly: convert the receiver, see it is a lambda, use insertCall on it.
@@ -679,11 +680,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitAnonymousFunctionExpression(
         anonymousFunctionExpression: FirAnonymousFunctionExpression,
         data: StmtConversionContext,
-    ): ExpEmbedding {
-        val function = anonymousFunctionExpression.anonymousFunction
-        val (signature, _) = with(data) { function.symbol.toFunctionSignature() }
-        return LambdaExp(signature, function, data, function.symbol.label?.name)
-    }
+    ): ExpEmbedding = data.convertLambda(anonymousFunctionExpression.anonymousFunction)
 
 
     override fun visitThrowExpression(throwExpression: FirThrowExpression, data: StmtConversionContext): ExpEmbedding =

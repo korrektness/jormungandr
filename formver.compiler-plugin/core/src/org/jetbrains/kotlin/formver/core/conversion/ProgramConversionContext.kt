@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.viper.NameResolver
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
-interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttachments {
+interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttachments, LambdaValueRegistry {
 
     val config: PluginConfiguration
 
@@ -63,6 +63,7 @@ interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttach
     val linearizedBodyResolver: LinearizedBodyResolver
 
     fun liftedLambda(expression: FirExpression): LiftedLambda?
+
     fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature?
 
     fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding

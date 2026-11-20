@@ -45,3 +45,22 @@ fun `separate lambda inside in place lambda captures unique parameter`(node: @Un
 fun @Unique Node.`lambda captures unique receiver`() {
     later <!INVALID_UNIQUENESS_CAPTURE!>{ borrow(this) }<!>
 }
+
+fun makeNode(): @Unique Node = Node()
+
+fun `lambda captures plain parameter`(n: Int) {
+    later { n + 1 }
+}
+
+fun `lambda captures inferred unique local`() {
+    val node = makeNode()
+    later { node.value = 1 }
+    node.value = 2
+}
+
+fun `anonymous object captures inferred unique local`() {
+    val node = makeNode()
+    val obj = <!INVALID_UNIQUENESS_CAPTURE!>object<!> {
+        fun touch() { node.value = 1 }
+    }
+}

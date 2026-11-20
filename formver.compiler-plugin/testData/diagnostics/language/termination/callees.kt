@@ -188,10 +188,10 @@ fun <!VIPER_TEXT!>nullableToString<!>(b: Box?): String {
     return <!OPAQUE_CALL, TERMINATION_NOT_ESTABLISHED!>b.toString()<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>loopInLambda<!>(xs: List<Int>): Int {
+fun <!VIPER_TEXT!>loopInLambda<!>(xs: List<Int>): Int {
     preconditions { decreases() }
-    return <!OPAQUE_CALL, TERMINATION_NOT_ESTABLISHED!>xs.count <!UNSUPPORTED_FEATURE!>{ <!TERMINATION_NOT_ESTABLISHED!>while (true) {
-    }<!>; true }<!><!>
+    return <!OPAQUE_CALL, TERMINATION_NOT_ESTABLISHED!>xs.count { <!TERMINATION_NOT_ESTABLISHED!>while (true) {
+    }<!>; true }<!>
 }
 
 <!INVALID_EXTERNAL_SPEC!><!VIPER_TEXT!>class MyList<!>(c: Collection<Int>) : ArrayList<Int>(c)<!>

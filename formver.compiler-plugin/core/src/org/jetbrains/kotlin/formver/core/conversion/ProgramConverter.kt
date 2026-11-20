@@ -79,6 +79,25 @@ import org.jetbrains.kotlin.formver.viper.ast.withoutUncalledFunctions
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 
+private data class RegisteredFunction(
+    val declaration: FirFunction,
+    val signature: CompleteFunctionSignature,
+    val returnTarget: ReturnTarget,
+    val hasUniquenessErrors: Boolean,
+)
+
+private fun ProgramConverter.uses(array: PrimitiveArrayEmbedding): Boolean =
+    typeResolver.lookupClassTypeEmbedding(array.classType.name) != null
+
+private val ProgramConverter.usesPrimitiveArray: Boolean
+    get() = PrimitiveArrayEmbedding.all.any { uses(it) }
+
+private val ProgramConverter.usesGenericArray: Boolean
+    get() = typeResolver.lookupClassTypeEmbedding(GenericArrayEmbedding.classType.name) != null
+
+private val ProgramConverter.usesStringBuilder: Boolean
+    get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
+
 /**
  * Tracks the top-level information about the program.
  * Conversions for global entities like types should generally be
@@ -90,7 +109,7 @@ class ProgramConverter(
     override val config: PluginConfiguration,
     override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
-) : ProgramConversionContext, LoopInvariantAttachments by LoopInvariantAttachmentSet() {
+) : ProgramConversionContext, LoopInvariantAttachments by LoopInvariantAttachmentSet(), LambdaValueRegistry by LambdaValueSet() {
 
     /**
      * Whether any primary diagnostic has been reported during conversion.
@@ -135,13 +154,6 @@ class ProgramConverter(
     private val fullSignatures: MutableMap<SymbolicName, CompleteFunctionSignature> = mutableMapOf()
 
     private val callable: MutableMap<SymbolicName, SignatureWithTarget<NamedCallableEmbedding>> = mutableMapOf()
-
-    private data class RegisteredFunction(
-        val declaration: FirFunction,
-        val signature: CompleteFunctionSignature,
-        val returnTarget: ReturnTarget,
-        val hasUniquenessErrors: Boolean,
-    )
 
     private val registered: MutableList<RegisteredFunction> = mutableListOf()
 
@@ -197,18 +209,6 @@ class ProgramConverter(
     override val convertedBodyResolver = ConvertedBodyResolver()
     override val linearizedBodyResolver = LinearizedBodyResolver()
 
-
-    private fun uses(array: PrimitiveArrayEmbedding): Boolean =
-        typeResolver.lookupClassTypeEmbedding(array.classType.name) != null
-
-    private val usesPrimitiveArray: Boolean
-        get() = PrimitiveArrayEmbedding.all.any { uses(it) }
-
-    private val usesGenericArray: Boolean
-        get() = typeResolver.lookupClassTypeEmbedding(GenericArrayEmbedding.classType.name) != null
-
-    private val usesStringBuilder: Boolean
-        get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
 
     /** The Viper program; its runtime type domain declares the unsigned types only when the rest of the program uses one. */
     fun buildProgram(): Program {
@@ -277,6 +277,14 @@ class ProgramConverter(
             lambda.expression.resolvedType.toRegularClassSymbol(session)!!, lambda.function.source)
         registered += RegisteredFunction(lambda.function, result.signature, result.target, uniquenessOutcomeOf(lambda.function).hasErrors)
         result.refinement?.let { refinements += it }
+    }
+
+    /** Registers the method [convert] embeds as the verified program of [function], whose uniqueness check [hasErrors] or not. */
+    internal fun registerMethod(function: FirFunction, hasErrors: Boolean, convert: () -> LambdaValueMethod) {
+        registeredSymbol = function.symbol
+        val method = convert()
+        fullSignatures[method.signature.name] = method.signature
+        registered += RegisteredFunction(function, method.signature, method.target, hasErrors)
     }
 
     /** Embeds the signature and, unless `@NeverVerify`, the body of [declaration]. */

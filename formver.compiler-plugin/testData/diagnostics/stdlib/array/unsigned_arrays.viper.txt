@@ -546,3 +546,47 @@ method con(size: Ref) returns (ret_2: Ref)
       (forall j: Int ::
         { ret_2.contents[j] }
         j >= 0 && j < arraySize(ret_2) ==> ret_2.contents[j] == 0))
+
+
+/unsigned_arrays.kt: info: Generated Viper text for initialized:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method f_UIntArray(size: Ref, init: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(size), intType())
+  requires isSubtype(typeOf(init), functionType())
+  ensures isSubtype(typeOf(ret_2), UIntArray())
+
+
+method initialized(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) > 0
+  ensures isSubtype(typeOf(v_ret_0), UIntArray())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), functionType())
+  v_ret_0 := f_UIntArray(n, anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+initialized.lambda0.invoke:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), intType())
+  ensures isSubtype(typeOf(v_ret_0), uintType())
+{
+  v_ret_0 := convertIntToUInt(it)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

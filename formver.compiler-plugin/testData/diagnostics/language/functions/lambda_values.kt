@@ -22,13 +22,13 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>alsoOnUnique<!>() {
 
 fun <!VIPER_TEXT!>runOnInt<!>(): Int = 1.run { this + 1 }
 
-fun <!VERIFICATION_SKIPPED!>passedToNonInline<!>(): Int = takesLambda <!UNSUPPORTED_FEATURE!>{ 1 }<!>
+fun <!VIPER_TEXT!>passedToNonInline<!>(): Int = takesLambda { 1 }
 
-fun <!VERIFICATION_SKIPPED!>storedInLocal<!>(): Int {
-    val f = <!UNSUPPORTED_FEATURE!>{ 1 }<!>
+fun <!VIPER_TEXT!>storedInLocal<!>(): Int {
+    val f = { 1 }
     return f()
 }
 
-fun <!VERIFICATION_SKIPPED!>returned<!>(): () -> Int = <!UNSUPPORTED_FEATURE!>{ 1 }<!>
+fun <!VIPER_TEXT!>returned<!>(): () -> Int = { 1 }
 
 fun <!VERIFICATION_SKIPPED!>invokedDirectly<!>(): Int = <!UNSUPPORTED_FEATURE!>{ 1 }()<!>

@@ -38,6 +38,8 @@ class OwnershipFrame private constructor(
     private val receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>,
     private val storage: VariableEmbedding? = null,
     private val storageShape: ((FunctionUniquenessAnalysis, UniquenessState) -> OwnedShape)? = null,
+    /** Roots of the body that hold no ownership whatever [analysis] finds: the captures of a lambda value's body. */
+    private val sharedRoots: Set<FirBasedSymbol<*>> = emptySet(),
 ) {
     /**
      * A frame for a body inlined at [callSite], which runs while the call holds its arguments. [outerScope] are the
@@ -62,14 +64,14 @@ class OwnershipFrame private constructor(
         (ownScope + outerScope + receivers.map { it.first } + listOfNotNull(storage)).distinctBy { it.name }
 
     /** The path [expression] denotes. */
-    fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)
+    fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)?.takeUnless { it.firstOrNull() in sharedRoots }
 
     /** Whether [path] is `Unique` on entry to [element]. */
-    fun ownsBefore(element: FirElement, path: Path): Boolean =
+    fun ownsBefore(element: FirElement, path: Path): Boolean = path.firstOrNull() !in sharedRoots &&
         analysis?.let { it.owns(it.stateBefore(element), path, ownedView(path)) } ?: false
 
     /** Whether [path] is `Unique` on exit from [element]. */
-    fun ownsAfter(element: FirElement, path: Path): Boolean =
+    fun ownsAfter(element: FirElement, path: Path): Boolean = path.firstOrNull() !in sharedRoots &&
         analysis?.let { it.owns(it.stateAfter(element), path, ownedView(path)) } ?: false
 
     /** The bindings of this frame and of the frames that run it: those of the inlined calls in progress. */
@@ -130,6 +132,11 @@ class OwnershipFrame private constructor(
         /** The frame of a function's own body, whose [receivers] are paired with the symbols they are rooted at. */
         fun root(analysis: FunctionUniquenessAnalysis?, receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>) =
             OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(), receivers)
+
+        /** The frame of a lambda value's own body, where the [captured] roots are shared. */
+        fun lambdaValue(analysis: FunctionUniquenessAnalysis?, captured: Set<FirBasedSymbol<*>>) =
+            OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(),
+                emptyList(), sharedRoots = captured)
 
         fun withStorage(
             analysis: FunctionUniquenessAnalysis?,

@@ -862,7 +862,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         private fun currentPermissionCheck(): viper.silver.ast.Exp {
             val current = viper.silver.ast.CurrentPerm(access.toSilver().loc(), pos.toSilver(), info.toSilver(), silverNoTrafos)
             return when (access.perm) {
-                is PermExp.FullPerm -> viper.silver.ast.PermGeCmp(
+                is PermExp.FullPerm, is PermExp.CurrentPredicatePerm -> viper.silver.ast.PermGeCmp(
                     current, access.perm.toSilver(), pos.toSilver(), info.toSilver(), silverNoTrafos
                 )
                 is PermExp.WildcardPerm -> viper.silver.ast.PermGtCmp(

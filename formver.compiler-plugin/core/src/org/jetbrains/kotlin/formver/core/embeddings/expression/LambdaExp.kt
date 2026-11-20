@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.formver.core.conversion.MethodConversionContext
@@ -24,6 +26,10 @@ class LambdaExp(
     val function: FirAnonymousFunction,
     private val parentCtx: MethodConversionContext,
     override val labelName: String?,
+    /** Each local `var` the lambda captures, with the flag that creating it as a value sets, or null if none is declared. */
+    val sharedLocalFlags: Map<FirPropertySymbol, VariableEmbedding?>,
+    /** The locals and parameters the lambda captures, which are shared once it exists as a value. */
+    val capturedRoots: Map<FirVariableSymbol<*>, ExpEmbedding>,
 ) : CallableEmbedding,
     ExpEmbedding,
     FunctionSignature by signature {
@@ -59,6 +65,9 @@ class LambdaExp(
             parentCtx,
         )
     }
+
+    /** Records that the conversion creates this lambda as a value. */
+    fun registerAsValue() = parentCtx.registerLambdaValue(function)
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitLambdaExp(this)
 }
