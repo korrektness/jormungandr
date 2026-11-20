@@ -11,11 +11,18 @@ package org.jetbrains.kotlin.formver.type.contract.plugin
  * @param TypeFact the type of the function [ParameterTypeFact]s.
  * @param parameterTypeFacts the list of function [ParameterTypeFact]s referring to the input parameters.
  * @param resultFunctionTypeFact the function type-fact of the return value (if present).
+ * @param holdsNoFunction whether the value never holds a function, as `null` or an expression of type `Nothing`: such a
+ *  fact satisfies every requirement and is the identity of joins. Its parameter and result facts are empty.
  */
 data class FunctionTypeFact<TypeFact>(
     val parameterTypeFacts: List<ParameterTypeFact<TypeFact>>,
     val resultFunctionTypeFact: FunctionTypeFact<TypeFact>?,
+    val holdsNoFunction: Boolean = false,
 ) {
+    companion object {
+        fun <TypeFact> noFunction(): FunctionTypeFact<TypeFact> = FunctionTypeFact(emptyList(), null, holdsNoFunction = true)
+    }
+
     data class ParameterTypeFact<TypeFact>(
         val typeFact: TypeFact,
         val functionTypeFact: FunctionTypeFact<TypeFact>?

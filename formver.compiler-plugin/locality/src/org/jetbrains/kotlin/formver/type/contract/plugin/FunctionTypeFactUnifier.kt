@@ -16,7 +16,8 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
  * @param typeUnifier joins parameter facts when intersecting nested input contracts.
  *
  * Joining contracts intersects their parameter facts and nested parameter contracts, and joins result contracts.
- * Intersecting contracts reverses these operations recursively. A null contract carries no function structure.
+ * Intersecting contracts reverses these operations recursively. A null contract carries no function structure, and
+ * one that [FunctionTypeFact.holdsNoFunction] is the identity.
  * Mismatched arities produce an empty parameter list and combine only the result contracts.
  */
 class FunctionTypeFactUnifier<TypeFact>(
@@ -34,8 +35,8 @@ class FunctionTypeFactUnifier<TypeFact>(
         intersect: Boolean,
     ): FunctionTypeFact<TypeFact>? =
         when {
-            left == null -> right
-            right == null -> left
+            left == null || left.holdsNoFunction -> right
+            right == null || right.holdsNoFunction -> left
             else -> FunctionTypeFact(
                 if (left.parameterTypeFacts.size != right.parameterTypeFacts.size) {
                     emptyList()

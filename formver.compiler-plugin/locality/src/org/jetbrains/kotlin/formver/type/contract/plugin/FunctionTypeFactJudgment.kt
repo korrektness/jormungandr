@@ -12,7 +12,8 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactJudgment
  *
  * A required function type-fact is satisfied by an actual one when:
  *
- * If the required contract is `null` (meaning no requirement at this position) this judgment returns true.
+ * If the required contract is `null` (meaning no requirement at this position) this judgment returns true. An actual
+ * contract that [FunctionTypeFact.holdsNoFunction] satisfies every requirement.
  *
  * If the required and actual contracts are non-null, and have the same arity, we pairwise check the type-facts of the
  * parameters:
@@ -45,6 +46,7 @@ class FunctionTypeFactJudgment<TypeFact>(
         when {
             requiredTypeFact == null -> true
             actualTypeFact == null -> false
+            actualTypeFact.holdsNoFunction -> true
             requiredTypeFact.parameterTypeFacts.size != actualTypeFact.parameterTypeFacts.size -> false
             else -> requiredTypeFact.parameterTypeFacts
                 .zip(actualTypeFact.parameterTypeFacts)

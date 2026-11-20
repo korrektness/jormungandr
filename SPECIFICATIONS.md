@@ -756,6 +756,12 @@ uses `this` only to read or write fields.
 `@Unique` on a value type (`Int`, `Boolean`, `Char`, `String`, `Unit`, or their
 nullable forms) is rejected, since such values own nothing.
 
+`@Borrowed` on a parameter of a function type, as in
+`var onClose: ((@Borrowed Event) -> Unit)?`, admits only functions that do not
+store, return or capture that argument. `null`, and any expression of type
+`Nothing` such as a `throw`, holds no function and is accepted wherever a
+function type is expected, whatever its annotations.
+
 ### Unique and shared paths
 
 A unique path starts at a local, a parameter or an owned receiver. Outside

@@ -381,6 +381,25 @@ library call, which assumes no contract.
 Tests: `ownership/inference/shared_inferred_locals.kt::facts after sharing are lost,shared on one branch,assigned a shared value,facts are lost after storing in a shared property,facts are lost after storing in a shared local,facts are lost after copying into an inferred local,facts are lost after assigning to an inferred local,modelled member on a shared collection`,
 `ownership/inference/shared_inferred_locals_rejected.kt`.
 
+### Values that hold no function
+
+A value of type `Nothing` or `Nothing?`, such as `null` or a `throw`,
+satisfies every locality contract on a function type (SPECIFICATIONS.md,
+"Annotations"). Such a value is never invoked: `null` must be checked before a
+call, and a `throw` produces no value. A join of it with a function value
+takes that function's contract, so `if (b) null else f` is checked against
+`f`. The flag is `FunctionTypeFact.holdsNoFunction`, set by
+`FunctionTypeFact.noFunction`. It is applied in
+`type/contract/plugin/FunctionTypeFactJudgment.kt` (satisfaction) and
+`type/contract/plugin/FunctionTypeFactUnifier.kt` (join identity), and
+`TerminalLocalityContractResolver`
+(`locality/contract/plugin/ExpressionLocalityContractResolver.kt` under
+`formver.compiler-plugin/locality/src/org/jetbrains/kotlin/formver/`) produces it.
+The `type/` paths are under the same base.
+
+Tests: `formver.compiler-plugin/locality/testData/diagnostics/contract/null_value.kt`,
+`formver.compiler-plugin/locality/testData/diagnostics/contract/null_value_rejected.kt`.
+
 ### Unique borrows
 
 After a call that borrows an owned value, the callee's verified postcondition

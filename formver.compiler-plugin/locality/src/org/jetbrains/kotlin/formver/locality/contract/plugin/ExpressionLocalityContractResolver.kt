@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.types.isNothingOrNullableNothing
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.locality
@@ -38,6 +39,13 @@ import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolv
 private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<LocalityContract?> {
     context(context: CheckerContext)
     override fun resolveTypeFactOf(expression: FirExpression): LocalityContract? =
+        when {
+            expression.resolvedType.isNothingOrNullableNothing -> FunctionTypeFact.noFunction()
+            else -> resolveValueTypeFactOf(expression)
+        }
+
+    context(context: CheckerContext)
+    private fun resolveValueTypeFactOf(expression: FirExpression): LocalityContract? =
         when (expression) {
             is FirCheckedSafeCallSubject -> expression.originalReceiverRef.value.resolveLocalityContract()
             is FirSafeCallExpression -> (expression.selector as? FirExpression)?.resolveLocalityContract()
