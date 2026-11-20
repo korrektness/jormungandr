@@ -19,8 +19,8 @@ import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 
 /**
- * The `throwsOnlyIf` condition of [symbol] over the parameters of [signature], or `null` when it has none. Its reads
- * are checked when [reported] is set, which also reports an unsupported block.
+ * The `throwsOnlyIf` condition of [symbol] over the parameters of [signature], or `null` when it has none. An
+ * unsupported block is reported at the block when [reported] is set, and at the call otherwise.
  */
 internal fun ProgramConverter.throwsConditionOf(
     symbol: FirFunctionSymbol<*>,
@@ -42,8 +42,8 @@ internal fun CompleteFunctionSignature.exceptionEscape(symbol: FirFunctionSymbol
 
 /**
  * The conditions of the `throwsOnlyIf` block of [specification] over the parameters of [signature], read in the entry
- * state, or `null` when it has none. The block is an unsupported construct on a pure function; it is reported at the
- * block when [reported] is set.
+ * state, or `null` when it has none. The block is an unsupported construct on a pure function; its source is given
+ * when [reported] is set.
  */
 private fun ProgramConversionContext.convertThrowsCondition(
     specification: UserSpecification,

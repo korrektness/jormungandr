@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.formver.core.conversion.functionsDeclaredBeside
+import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.core.conversion.leadingSpecificationBlocks
 import org.jetbrains.kotlin.formver.core.conversion.ownSpecification
 import org.jetbrains.kotlin.formver.core.conversion.postconditionsResultType
@@ -90,8 +91,10 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
 
     private fun bodyViolation(declaration: FirSimpleFunction, target: FirCallableSymbol<*>): KotlinCondition.SpecOf? {
         val statements = declaration.body?.statements.orEmpty()
-        if (statements.size != leadingSpecificationBlocks(statements).count) {
-            return KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)
+        val blocks = leadingSpecificationBlocks(statements)
+        if (statements.size != blocks.count) return KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)
+        if (blocks.throwsOnlyIf != null && (target is FirPropertySymbol || target.isPure(session))) {
+            return KotlinCondition.SpecOf(SpecOfRule.THROWS_ONLY_IF_TARGET)
         }
         val resultType = declaration.body?.postconditionsResultType() ?: return null
         if (!declaration.symbol.specificationResultMatches(resultType, target, session)) {

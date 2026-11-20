@@ -1,0 +1,969 @@
+/throws_only_if_varint.kt: info: Generated Viper text for terminates:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function terminates(bytes: Ref, pos: Ref): Ref
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let anon_0_0 ==
+    (((let anon_builtin ==
+      (minusInts(intToRef(arraySize(bytes)), pos)) in
+      intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+    0 ?
+      (unfolding acc(ByteArray_unique(bytes), write) in
+        byteToRef(bytes.contents[intFromRef(pos)])) :
+      null)) in
+    (let anon_1_0 ==
+      ((!((let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      0 &&
+      (byteFromRef(anon_0_0) < 0 ?
+        -1 :
+        (byteFromRef(anon_0_0) > 0 ? 1 : 0)) >=
+      0) &&
+      (let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      1 ?
+        (unfolding acc(ByteArray_unique(bytes), write) in
+          byteToRef(bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(1))) in
+            intFromRef(pos) + intFromRef(intToRef(1)))])) :
+        null)) in
+      (let anon_2_0 ==
+        ((!((let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        0 &&
+        (byteFromRef(anon_0_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_0_0) > 0 ? 1 : 0)) >=
+        0 ||
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        1 &&
+        (byteFromRef(anon_1_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+        0) &&
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        2 ?
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            byteToRef(bytes.contents[(let anon_builtin ==
+              (plusInts(pos, intToRef(2))) in
+              intFromRef(pos) + intFromRef(intToRef(2)))])) :
+          null)) in
+        (let anon_3_0 ==
+          ((!((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_0_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_0_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0) &&
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 ?
+            (unfolding acc(ByteArray_unique(bytes), write) in
+              byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(3))) in
+                intFromRef(pos) + intFromRef(intToRef(3)))])) :
+            null)) in
+          boolToRef((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_0_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_0_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 &&
+          (byteFromRef(anon_3_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_3_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          4 &&
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            (let anon_4_0 ==
+              (byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(4))) in
+                intFromRef(pos) + intFromRef(intToRef(4)))])) in
+              (byteFromRef(anon_4_0) < 0 ?
+                -1 :
+                (byteFromRef(anon_4_0) > 0 ? 1 : 0)) >=
+              0)))))))
+}
+
+/throws_only_if_varint.kt: info: Generated Viper text for readVarint:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function terminates(bytes: Ref, pos: Ref): Ref
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let anon_1_0 ==
+    (((let anon_builtin ==
+      (minusInts(intToRef(arraySize(bytes)), pos)) in
+      intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+    0 ?
+      (unfolding acc(ByteArray_unique(bytes), write) in
+        byteToRef(bytes.contents[intFromRef(pos)])) :
+      null)) in
+    (let anon_2_0 ==
+      ((!((let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      0 &&
+      (byteFromRef(anon_1_0) < 0 ?
+        -1 :
+        (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+      0) &&
+      (let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      1 ?
+        (unfolding acc(ByteArray_unique(bytes), write) in
+          byteToRef(bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(1))) in
+            intFromRef(pos) + intFromRef(intToRef(1)))])) :
+        null)) in
+      (let anon_3_0 ==
+        ((!((let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        0 &&
+        (byteFromRef(anon_1_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+        0 ||
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        1 &&
+        (byteFromRef(anon_2_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+        0) &&
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        2 ?
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            byteToRef(bytes.contents[(let anon_builtin ==
+              (plusInts(pos, intToRef(2))) in
+              intFromRef(pos) + intFromRef(intToRef(2)))])) :
+          null)) in
+        (let anon_4_0 ==
+          ((!((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_3_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_3_0) > 0 ? 1 : 0)) >=
+          0) &&
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 ?
+            (unfolding acc(ByteArray_unique(bytes), write) in
+              byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(3))) in
+                intFromRef(pos) + intFromRef(intToRef(3)))])) :
+            null)) in
+          boolToRef((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_3_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_3_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 &&
+          (byteFromRef(anon_4_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_4_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          4 &&
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            (let anon_5_0 ==
+              (byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(4))) in
+                intFromRef(pos) + intFromRef(intToRef(4)))])) in
+              (byteFromRef(anon_5_0) < 0 ?
+                -1 :
+                (byteFromRef(anon_5_0) > 0 ? 1 : 0)) >=
+              0)))))))
+}
+
+function throws_readVarint(bytes: Ref, pos: Ref): Bool
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+{
+  !boolFromRef(terminates(bytes, pos))
+}
+
+method cause(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+
+
+method con(p0: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_8), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_8), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_8), RuntimeException()) &&
+    (isSubtype(typeOf(ret_8), Exception()) &&
+    isSubtype(typeOf(ret_8), Throwable())))
+
+
+method message(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method readVarint(bytes: Ref, pos: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+  ensures acc(ByteArray_unique(bytes), write)
+  ensures isSubtype(typeOf(v_ret_0), longType())
+  ensures boolFromRef(terminates(bytes, pos))
+{
+  var l1_result: Ref
+  var scale: Ref
+  var i: Ref
+  var anon_6: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  refute false
+  l1_result := longToRef(0)
+  scale := longToRef(1)
+  i := intToRef(0)
+  label cont
+    invariant acc(ByteArray_unique(bytes), write)
+    invariant isSubtype(typeOf(l1_result), longType())
+    invariant isSubtype(typeOf(scale), longType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(bytes), ByteArray())
+    invariant isSubtype(typeOf(pos), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= 5 &&
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos))
+    invariant (0 < longFromRef(l1_result) ?
+        -1 :
+        (0 > longFromRef(l1_result) ? 1 : 0)) <=
+      0 &&
+      (longFromRef(l1_result) < longFromRef(scale) ?
+        -1 :
+        (longFromRef(l1_result) > longFromRef(scale) ? 1 : 0)) <
+      0
+    invariant boolFromRef(terminates(bytes, pos)) ==
+      old(boolFromRef(terminates(bytes, pos)))
+    invariant intFromRef(i) == 0 ==> longFromRef(scale) == 1
+    invariant intFromRef(i) == 1 ==> longFromRef(scale) == 128
+    invariant intFromRef(i) == 2 ==> longFromRef(scale) == 16384
+    invariant intFromRef(i) == 3 ==> longFromRef(scale) == 2097152
+    invariant intFromRef(i) == 4 ==> longFromRef(scale) == 268435456
+    invariant intFromRef(i) == 5 ==> longFromRef(scale) == 34359738368
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 0 ==>
+        (bytes.contents[intFromRef(pos)] < 0 ?
+          -1 :
+          (bytes.contents[intFromRef(pos)] > 0 ? 1 : 0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 1 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(1))) in
+          intFromRef(pos) + intFromRef(intToRef(1)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(1))) in
+            intFromRef(pos) + intFromRef(intToRef(1)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 2 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(2))) in
+          intFromRef(pos) + intFromRef(intToRef(2)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(2))) in
+            intFromRef(pos) + intFromRef(intToRef(2)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 3 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(3))) in
+          intFromRef(pos) + intFromRef(intToRef(3)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(3))) in
+            intFromRef(pos) + intFromRef(intToRef(3)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 4 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(4))) in
+          intFromRef(pos) + intFromRef(intToRef(4)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(4))) in
+            intFromRef(pos) + intFromRef(intToRef(4)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+  if (intFromRef(i) < 5) {
+    anon_6 := gtInts(minusInts(intToRef(arraySize(bytes)), pos), i)
+  } else {
+    anon_6 := boolToRef(false)}
+  if (boolFromRef(anon_6)) {
+    var b: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_0: Ref
+    assert (let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i)) >=
+      0
+    assert (let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i)) <
+      arraySize(bytes)
+    unfold acc(ByteArray_unique(bytes), write)
+    anon_7 := byteToRef(bytes.contents[(let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i))])
+    b := anon_7
+    fold acc(ByteArray_unique(bytes), write)
+    if ((byteFromRef(b) < 0 ? -1 : (byteFromRef(b) > 0 ? 1 : 0)) < 0) {
+      anon_8 := plusByteInt(b, intToRef(128))
+    } else {
+      anon_8 := convertByteToInt(b)}
+    l1_result := plusLongLong(l1_result, timesIntLong(anon_8, scale))
+    scale := timesLongInt(scale, intToRef(128))
+    if ((byteFromRef(b) < 0 ? -1 : (byteFromRef(b) > 0 ? 1 : 0)) >= 0) {
+      v_ret_0 := l1_result
+      goto lbl_ret_0
+    }
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    refute false
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(l1_result), longType())
+  assert isSubtype(typeOf(scale), longType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(bytes), ByteArray())
+  assert isSubtype(typeOf(pos), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= 5 &&
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(arraySize(bytes)), pos)) in
+      intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos))
+  assert (0 < longFromRef(l1_result) ?
+      -1 :
+      (0 > longFromRef(l1_result) ? 1 : 0)) <=
+    0 &&
+    (longFromRef(l1_result) < longFromRef(scale) ?
+      -1 :
+      (longFromRef(l1_result) > longFromRef(scale) ? 1 : 0)) <
+    0
+  assert boolFromRef(terminates(bytes, pos)) ==
+    old(boolFromRef(terminates(bytes, pos)))
+  assert intFromRef(i) == 0 ==> longFromRef(scale) == 1
+  assert intFromRef(i) == 1 ==> longFromRef(scale) == 128
+  assert intFromRef(i) == 2 ==> longFromRef(scale) == 16384
+  assert intFromRef(i) == 3 ==> longFromRef(scale) == 2097152
+  assert intFromRef(i) == 4 ==> longFromRef(scale) == 268435456
+  assert intFromRef(i) == 5 ==> longFromRef(scale) == 34359738368
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 0 ==>
+      (bytes.contents[intFromRef(pos)] < 0 ?
+        -1 :
+        (bytes.contents[intFromRef(pos)] > 0 ? 1 : 0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 1 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(1))) in
+        intFromRef(pos) + intFromRef(intToRef(1)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(1))) in
+          intFromRef(pos) + intFromRef(intToRef(1)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 2 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(2))) in
+        intFromRef(pos) + intFromRef(intToRef(2)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(2))) in
+          intFromRef(pos) + intFromRef(intToRef(2)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 3 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(3))) in
+        intFromRef(pos) + intFromRef(intToRef(3)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(3))) in
+          intFromRef(pos) + intFromRef(intToRef(3)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 4 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(4))) in
+        intFromRef(pos) + intFromRef(intToRef(4)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(4))) in
+          intFromRef(pos) + intFromRef(intToRef(4)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  refute false
+  if (boolFromRef(anon_10)) {
+    var anon_11: Ref
+    assert old(throws_readVarint(bytes, pos))
+    inhale false
+  }
+  anon_9 := con(stringLit())
+  fold acc(Throwable_unique(anon_9), write)
+  fold acc(Exception_unique(anon_9), write)
+  fold acc(RuntimeException_unique(anon_9), write)
+  fold acc(IllegalArgumentException_unique(anon_9), write)
+  assert old(throws_readVarint(bytes, pos))
+  inhale false
+  label lbl_ret_0
+}
+
+/throws_only_if_varint.kt: info: Generated Viper text for readVarintTooEager:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function terminates(bytes: Ref, pos: Ref): Ref
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let anon_1_0 ==
+    (((let anon_builtin ==
+      (minusInts(intToRef(arraySize(bytes)), pos)) in
+      intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+    0 ?
+      (unfolding acc(ByteArray_unique(bytes), write) in
+        byteToRef(bytes.contents[intFromRef(pos)])) :
+      null)) in
+    (let anon_2_0 ==
+      ((!((let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      0 &&
+      (byteFromRef(anon_1_0) < 0 ?
+        -1 :
+        (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+      0) &&
+      (let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+      1 ?
+        (unfolding acc(ByteArray_unique(bytes), write) in
+          byteToRef(bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(1))) in
+            intFromRef(pos) + intFromRef(intToRef(1)))])) :
+        null)) in
+      (let anon_3_0 ==
+        ((!((let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        0 &&
+        (byteFromRef(anon_1_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+        0 ||
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        1 &&
+        (byteFromRef(anon_2_0) < 0 ?
+          -1 :
+          (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+        0) &&
+        (let anon_builtin ==
+          (minusInts(intToRef(arraySize(bytes)), pos)) in
+          intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+        2 ?
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            byteToRef(bytes.contents[(let anon_builtin ==
+              (plusInts(pos, intToRef(2))) in
+              intFromRef(pos) + intFromRef(intToRef(2)))])) :
+          null)) in
+        (let anon_4_0 ==
+          ((!((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_3_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_3_0) > 0 ? 1 : 0)) >=
+          0) &&
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 ?
+            (unfolding acc(ByteArray_unique(bytes), write) in
+              byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(3))) in
+                intFromRef(pos) + intFromRef(intToRef(3)))])) :
+            null)) in
+          boolToRef((let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          0 &&
+          (byteFromRef(anon_1_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_1_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          1 &&
+          (byteFromRef(anon_2_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_2_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          2 &&
+          (byteFromRef(anon_3_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_3_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          3 &&
+          (byteFromRef(anon_4_0) < 0 ?
+            -1 :
+            (byteFromRef(anon_4_0) > 0 ? 1 : 0)) >=
+          0 ||
+          (let anon_builtin ==
+            (minusInts(intToRef(arraySize(bytes)), pos)) in
+            intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos)) >
+          4 &&
+          (unfolding acc(ByteArray_unique(bytes), write) in
+            (let anon_5_0 ==
+              (byteToRef(bytes.contents[(let anon_builtin ==
+                (plusInts(pos, intToRef(4))) in
+                intFromRef(pos) + intFromRef(intToRef(4)))])) in
+              (byteFromRef(anon_5_0) < 0 ?
+                -1 :
+                (byteFromRef(anon_5_0) > 0 ? 1 : 0)) >=
+              0)))))))
+}
+
+function throws_readVarintTooEager(bytes: Ref, pos: Ref): Bool
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+{
+  !boolFromRef(terminates(bytes, pos))
+}
+
+method cause(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+
+
+method con(p0: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_7), RuntimeException()) &&
+    (isSubtype(typeOf(ret_7), Exception()) &&
+    isSubtype(typeOf(ret_7), Throwable())))
+
+
+method message(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method readVarintTooEager(bytes: Ref, pos: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(bytes), ByteArray())
+  requires acc(ByteArray_unique(bytes), write)
+  requires isSubtype(typeOf(pos), intType())
+  requires 0 <= intFromRef(pos) && intFromRef(pos) <= arraySize(bytes)
+  ensures acc(ByteArray_unique(bytes), write)
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  var l1_result: Ref
+  var scale: Ref
+  var i: Ref
+  var anon_6: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  l1_result := longToRef(0)
+  scale := longToRef(1)
+  i := intToRef(0)
+  label cont
+    invariant acc(ByteArray_unique(bytes), write)
+    invariant isSubtype(typeOf(l1_result), longType())
+    invariant isSubtype(typeOf(scale), longType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(bytes), ByteArray())
+    invariant isSubtype(typeOf(pos), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= 4 &&
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(arraySize(bytes)), pos)) in
+        intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos))
+    invariant (0 < longFromRef(l1_result) ?
+        -1 :
+        (0 > longFromRef(l1_result) ? 1 : 0)) <=
+      0 &&
+      (longFromRef(l1_result) < longFromRef(scale) ?
+        -1 :
+        (longFromRef(l1_result) > longFromRef(scale) ? 1 : 0)) <
+      0
+    invariant boolFromRef(terminates(bytes, pos)) ==
+      old(boolFromRef(terminates(bytes, pos)))
+    invariant intFromRef(i) == 0 ==> longFromRef(scale) == 1
+    invariant intFromRef(i) == 1 ==> longFromRef(scale) == 128
+    invariant intFromRef(i) == 2 ==> longFromRef(scale) == 16384
+    invariant intFromRef(i) == 3 ==> longFromRef(scale) == 2097152
+    invariant intFromRef(i) == 4 ==> longFromRef(scale) == 268435456
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 0 ==>
+        (bytes.contents[intFromRef(pos)] < 0 ?
+          -1 :
+          (bytes.contents[intFromRef(pos)] > 0 ? 1 : 0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 1 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(1))) in
+          intFromRef(pos) + intFromRef(intToRef(1)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(1))) in
+            intFromRef(pos) + intFromRef(intToRef(1)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 2 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(2))) in
+          intFromRef(pos) + intFromRef(intToRef(2)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(2))) in
+            intFromRef(pos) + intFromRef(intToRef(2)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+    invariant (unfolding acc(ByteArray_unique(bytes), write) in
+        intFromRef(i) > 3 ==>
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(3))) in
+          intFromRef(pos) + intFromRef(intToRef(3)))] <
+        0 ?
+          -1 :
+          (bytes.contents[(let anon_builtin ==
+            (plusInts(pos, intToRef(3))) in
+            intFromRef(pos) + intFromRef(intToRef(3)))] >
+          0 ?
+            1 :
+            0)) <
+        0)
+  if (intFromRef(i) < 4) {
+    anon_6 := gtInts(minusInts(intToRef(arraySize(bytes)), pos), i)
+  } else {
+    anon_6 := boolToRef(false)}
+  if (boolFromRef(anon_6)) {
+    var b: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_0: Ref
+    assert (let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i)) >=
+      0
+    assert (let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i)) <
+      arraySize(bytes)
+    unfold acc(ByteArray_unique(bytes), write)
+    anon_7 := byteToRef(bytes.contents[(let anon_builtin ==
+        (plusInts(pos, i)) in
+        intFromRef(pos) + intFromRef(i))])
+    b := anon_7
+    fold acc(ByteArray_unique(bytes), write)
+    if ((byteFromRef(b) < 0 ? -1 : (byteFromRef(b) > 0 ? 1 : 0)) < 0) {
+      anon_8 := plusByteInt(b, intToRef(128))
+    } else {
+      anon_8 := convertByteToInt(b)}
+    l1_result := plusLongLong(l1_result, timesIntLong(anon_8, scale))
+    scale := timesLongInt(scale, intToRef(128))
+    if ((byteFromRef(b) < 0 ? -1 : (byteFromRef(b) > 0 ? 1 : 0)) >= 0) {
+      v_ret_0 := l1_result
+      goto lbl_ret_0
+    }
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(l1_result), longType())
+  assert isSubtype(typeOf(scale), longType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(bytes), ByteArray())
+  assert isSubtype(typeOf(pos), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= 4 &&
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(arraySize(bytes)), pos)) in
+      intFromRef(intToRef(arraySize(bytes))) - intFromRef(pos))
+  assert (0 < longFromRef(l1_result) ?
+      -1 :
+      (0 > longFromRef(l1_result) ? 1 : 0)) <=
+    0 &&
+    (longFromRef(l1_result) < longFromRef(scale) ?
+      -1 :
+      (longFromRef(l1_result) > longFromRef(scale) ? 1 : 0)) <
+    0
+  assert boolFromRef(terminates(bytes, pos)) ==
+    old(boolFromRef(terminates(bytes, pos)))
+  assert intFromRef(i) == 0 ==> longFromRef(scale) == 1
+  assert intFromRef(i) == 1 ==> longFromRef(scale) == 128
+  assert intFromRef(i) == 2 ==> longFromRef(scale) == 16384
+  assert intFromRef(i) == 3 ==> longFromRef(scale) == 2097152
+  assert intFromRef(i) == 4 ==> longFromRef(scale) == 268435456
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 0 ==>
+      (bytes.contents[intFromRef(pos)] < 0 ?
+        -1 :
+        (bytes.contents[intFromRef(pos)] > 0 ? 1 : 0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 1 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(1))) in
+        intFromRef(pos) + intFromRef(intToRef(1)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(1))) in
+          intFromRef(pos) + intFromRef(intToRef(1)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 2 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(2))) in
+        intFromRef(pos) + intFromRef(intToRef(2)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(2))) in
+          intFromRef(pos) + intFromRef(intToRef(2)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  assert (unfolding acc(ByteArray_unique(bytes), write) in
+      intFromRef(i) > 3 ==>
+      (bytes.contents[(let anon_builtin ==
+        (plusInts(pos, intToRef(3))) in
+        intFromRef(pos) + intFromRef(intToRef(3)))] <
+      0 ?
+        -1 :
+        (bytes.contents[(let anon_builtin ==
+          (plusInts(pos, intToRef(3))) in
+          intFromRef(pos) + intFromRef(intToRef(3)))] >
+        0 ?
+          1 :
+          0)) <
+      0)
+  if (boolFromRef(anon_10)) {
+    var anon_11: Ref
+    assert old(throws_readVarintTooEager(bytes, pos))
+    inhale false
+  }
+  anon_9 := con(stringLit())
+  fold acc(Throwable_unique(anon_9), write)
+  fold acc(Exception_unique(anon_9), write)
+  fold acc(RuntimeException_unique(anon_9), write)
+  fold acc(IllegalArgumentException_unique(anon_9), write)
+  assert old(throws_readVarintTooEager(bytes, pos))
+  inhale false
+  label lbl_ret_0
+}

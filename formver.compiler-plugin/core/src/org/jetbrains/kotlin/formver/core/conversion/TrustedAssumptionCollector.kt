@@ -15,12 +15,15 @@ import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.common.SemanticOptIn
 import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.formver.common.trustName
+import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
 import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.formver.common.isNonRetainingStdlibMember
 import org.jetbrains.kotlin.formver.core.verificationSkipped
@@ -101,6 +104,18 @@ class TrustedAssumptionCollector(
         val bundled = assumption.kind == TrustedAssumption.Kind.BUNDLED_SPEC
         if (bundled && target is FirCallableSymbol<*> && target.unwrapFakeOverrides().callableId == LIST_ITERATOR) {
             trusted += TrustedAssumption(TrustedAssumption.Kind.SNAPSHOT_ITERATOR, assumption.name)
+        }
+    }
+
+    /**
+     * Records the external binding of the function [target], and the `throwsOnlyIf` condition of [model], the callable
+     * its binding gives it, under the bound declaration's name when [model] has one.
+     */
+    fun recordFunctionBinding(target: FirFunctionSymbol<*>, model: CallableEmbedding) {
+        val binding = session.externalSpecifications!!.bindingAssumption(target)
+        trusted += binding
+        if ((model as? NonInlineCallable)?.throwsCondition != null) {
+            trusted += TrustedAssumption(TrustedAssumption.Kind.THROWS_CONDITION, binding.name)
         }
     }
 

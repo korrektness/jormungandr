@@ -17,6 +17,12 @@ fun create(initial: Int): Counter = Counter(initial)
 fun twice(x: Int): Int = x * 2
 fun Counter.shift(amount: Int): Int = advance(amount)
 fun <T> identity(x: T): T = x
+val digitBase: Int get() = 10
+fun checkedDigit(d: Int): Int {
+    require(d in 0..9)
+    return d
+}
+fun uncheckedDigit(d: Int): Int = d
 
 class Cell<T>(private var item: T) {
     fun get(): T = item

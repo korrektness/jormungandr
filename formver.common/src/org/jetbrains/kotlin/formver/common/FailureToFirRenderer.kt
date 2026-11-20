@@ -100,6 +100,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 SpecOfRule.BODY_SHAPE -> "body shape."
                 SpecOfRule.POSTCONDITIONS_TYPE -> "postconditions type."
                 SpecOfRule.CALL -> "call."
+                SpecOfRule.THROWS_ONLY_IF_TARGET -> "'throwsOnlyIf' for a property or a @Pure function."
             }
 
     private fun lawMessage(condition: KotlinCondition.Law): String = when (condition.rule) {

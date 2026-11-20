@@ -24,6 +24,7 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
         NON_RETAINING_LIBRARY_CALL("non-retaining library call"),
         SNAPSHOT_ITERATOR("snapshot iterator"),
         ASSUMED_TERMINATING("assumed terminating"),
+        THROWS_CONDITION("throwsOnlyIf"),
     }
 
     override fun compareTo(other: TrustedAssumption): Int = compareValuesBy(this, other, { it.kind }, { it.name })

@@ -571,9 +571,14 @@ class ProgramConverter(
                 }
             } else {
                 trust.recordLibraryContract(symbol, namedSignature.signature)
-                namedSignature.toNonInlineSignature(symbol).also {
-                    callable.putIfAbsent(it.signature.name, it)
-                }.toCompleteSignature(symbol)
+                val pending = namedSignature.toNonInlineSignature(symbol)
+                callable.putIfAbsent(pending.signature.name, pending)
+                try {
+                    pending.toCompleteSignature(symbol)
+                } catch (e: Throwable) {
+                    callable.remove(pending.signature.name, pending)
+                    throw e
+                }
             }
         }
         localCaptures.names.require(symbol, this)
@@ -604,7 +609,7 @@ class ProgramConverter(
      */
     override fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding {
         val model = symbol.externalSpecificationSymbol(session)
-        if (model != symbol) return embedAnyFunction(model).also { trust.recordBinding(symbol) }
+        if (model != symbol) return embedAnyFunction(model).also { trust.recordFunctionBinding(symbol, it) }
         context(checkerContext) { symbol.observerDeclaration() }?.let { return embedAnyFunction(it) }
         trust.recordOptOut(symbol)
         // NOTE: The order of the embedSpecialFunction and the callable lookup does matter.
@@ -614,7 +619,7 @@ class ProgramConverter(
 
         localCaptures.names.require(symbol, this)
         // check if it already was embedded
-        callable[symbol.embedName(this)]?.let { return it.signature }
+        callable[symbol.embedName(this)]?.let { return fullSignatures[it.signature.name] ?: it.signature }
 
         // first embed the complete signature
         val signature = embedCompleteSignature(symbol)

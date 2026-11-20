@@ -73,6 +73,9 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
 - `skipped`: a callee or custom accessor of the module that SnaKt skipped with
   `VERIFICATION_SKIPPED`. The program uses its contract, which nothing proves.
 - `@TrustedElementEquality`: a function's [executed element equality](#executed-element-equality) assumption.
+- `throwsOnlyIf`: the `throwsOnlyIf` condition that an external binding gives a
+  library function the program calls. A call may be assumed to throw only
+  where it holds (SPECIFICATIONS.md, "Conditions for throwing").
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
 - `opaque library call`: a library callable without a model that the program
@@ -269,8 +272,12 @@ The assertion uses entry state, while the condition's precondition is the
 method's; `old(...)` evaluates both in the entry heap, where the precondition
 held. JVM failures such as `StackOverflowError` can leave any method and are
 outside the claim, as SPECIFICATIONS.md, "Conditions for throwing", states.
+An external model's condition is trusted like the rest of its contract; the
+contradiction check of external specifications does not cover it.
 
-Tests: `specifications/throws_only_if.kt::throwTooOften,requireTooStrict,callerTooStrict,callerBreaksPrecondition,callerOfUnspecifiedForbidden,currentStateIsNotEntryState,caughtStillChecked,Loose,Unclaused`.
+Tests: `specifications/throws_only_if.kt::throwTooOften,requireTooStrict,callerTooStrict,callerBreaksPrecondition,callerOfUnspecifiedForbidden,currentStateIsNotEntryState,caughtStillChecked,Loose,Unclaused`,
+`specifications/external/throws_only_if_external.kt::digitTooStrict,unclausedLibraryCall`,
+`specifications/throws_only_if_varint.kt::readVarintTooEager`.
 
 ### Arrays
 
@@ -663,9 +670,9 @@ check the source side; no test in one compilation can swap a library version.
 
 ### External specifications
 
-An external specification gives a library declaration a contract, purity,
-ownership, observers and laws that SnaKt does not prove against the library's
-code. SPECIFICATIONS.md, "External specifications", has the binding rules and
+An external specification gives a library declaration a contract, a
+`throwsOnlyIf` condition, purity, ownership, observers and laws that SnaKt does
+not prove against the library's code. SPECIFICATIONS.md, "External specifications", has the binding rules and
 the contradiction check.
 
 A class with a modelled supertype that is not itself bound, in source or in a

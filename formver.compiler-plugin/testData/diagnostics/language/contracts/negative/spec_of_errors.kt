@@ -65,6 +65,14 @@ abstract class Errors : Base() {
 
     abstract fun Int.extension()
 
+    <!INVALID_SPEC_OF!>@SpecOf("pureTarget")
+    fun pureTargetSpec(x: Int) {
+        throwsOnlyIf { x < 0 }
+    }<!>
+
+    @Pure
+    abstract fun pureTarget(x: Int): Int
+
     fun callsSpec() {
         <!INVALID_SPEC_OF!>missingSpec(1)<!>
     }

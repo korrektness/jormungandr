@@ -51,3 +51,11 @@ val missingProperty: Int get() = 0
 interface PropertyHolder {
     @ExternalProperty("external.library.missingProperty") val nested: Int
 }
+
+@ExternalProperty("external.library.digitBase")
+val digitBaseModel: Int get() = 0
+
+@SpecOf("digitBaseModel")
+fun digitBaseSpec() {
+    throwsOnlyIf { true }
+}

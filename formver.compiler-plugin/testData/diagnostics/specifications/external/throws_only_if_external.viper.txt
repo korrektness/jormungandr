@@ -1,0 +1,142 @@
+/throws_only_if_external.kt: info: Generated Viper text for digitOrThrow:
+function throws_checkedDigitModel(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0 || intFromRef(d) > 9
+}
+
+function throws_digitOrThrow(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0 || intFromRef(d) > 9
+}
+
+method checkedDigitModel(d: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) == intFromRef(d)
+
+
+method digitOrThrow(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(d)
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_checkedDigitModel(d)
+    assert old(throws_digitOrThrow(d))
+    inhale false
+  }
+  v_ret_0 := checkedDigitModel(d)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throws_only_if_external.kt: info: Generated Viper text for digitTwice:
+function throws_checkedDigitModel(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0 || intFromRef(d) > 9
+}
+
+function throws_digitTwice(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0 || intFromRef(d) > 9
+}
+
+method checkedDigitModel(d: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(d)
+
+
+method digitTwice(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  if (boolFromRef(anon_1)) {
+    inhale throws_checkedDigitModel(d)
+    assert old(throws_digitTwice(d))
+    inhale false
+  }
+  anon_0 := checkedDigitModel(d)
+  if (boolFromRef(anon_2)) {
+    inhale throws_checkedDigitModel(d)
+    assert old(throws_digitTwice(d))
+    inhale false
+  }
+  v_ret_0 := checkedDigitModel(d)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throws_only_if_external.kt: info: Generated Viper text for digitTooStrict:
+function throws_checkedDigitModel(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0 || intFromRef(d) > 9
+}
+
+function throws_digitTooStrict(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0
+}
+
+method checkedDigitModel(d: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(d)
+
+
+method digitTooStrict(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_checkedDigitModel(d)
+    assert old(throws_digitTooStrict(d))
+    inhale false
+  }
+  v_ret_0 := checkedDigitModel(d)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throws_only_if_external.kt: info: Generated Viper text for unclausedLibraryCall:
+function throws_unclausedLibraryCall(d: Ref): Bool
+  requires isSubtype(typeOf(d), intType())
+{
+  intFromRef(d) < 0
+}
+
+method uncheckedDigitModel(d: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(d)
+
+
+method unclausedLibraryCall(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  if (intFromRef(d) < 0) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  }
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    assert old(throws_unclausedLibraryCall(d))
+    inhale false
+  }
+  v_ret_0 := uncheckedDigitModel(d)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

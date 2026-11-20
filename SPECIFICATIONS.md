@@ -337,7 +337,8 @@ top-level `@ExternalFunction` or `@ExternalProperty` model. Its value parameter 
 type parameters match the target; this picks the overload it specifies. For a property model it specifies the getter
 and has no value parameters. It returns `Unit`. An extension receiver
 is allowed for an external function or property model and matches the target's receiver type. Its body holds only a
-`preconditions` block followed by a `postconditions` block, whose type is the target's return type. Its parameters stand for the member's parameters
+`preconditions` block, a `postconditions` block, whose type is the target's return type, and a `throwsOnlyIf` block,
+in this order; a property or `@Pure` target takes no `throwsOnlyIf` block. Its parameters stand for the member's parameters
 by position. It is never converted, verified or called. A member has at most one `@SpecOf` function, none if its
 body has a specification. Each violation, and a call to a `@SpecOf` function, is
 reported as `INVALID_SPEC_OF`.
@@ -408,7 +409,7 @@ converted with their own contracts. Its overrides must repeat the model's owners
 receiver and result, but not of the dispatch receiver. An override or inherited implementation of a model observer
 need not be `@Pure`, and the class may implement a model observer by delegation.
 
-External contracts, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
+External contracts, `throwsOnlyIf` conditions, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
 callers against them without proving the dependency's implementation. Audit each model against the exact
 library version in the compilation classpath; a matching signature alone establishes no behavioral compatibility.
 A binding to a declaration that SnaKt verified in another module is reported as the warning
@@ -420,7 +421,7 @@ specifications it loads from `externalSpec` files for contradictions: the precon
 specification, its postcondition given the precondition, and the laws each model interface declares together with
 those it inherits. Each contradiction is the error `EXTERNAL_SPEC_VACUOUS` on its model. docs/soundness.md, "External
 specifications", says which contradictions the check misses. The check goes through the verification cache. The bundled specifications are checked by the repository's tests instead of in each compilation.
-The trust report lists the bindings each verified declaration relies on (docs/soundness.md, "The trust report"). The bundled assumptions are the
+The trust report lists the bindings and `throwsOnlyIf` conditions each verified declaration relies on (docs/soundness.md, "The trust report"). The bundled assumptions are the
 sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
 They compile as part of the user's module, so they declare nothing public and raise no warnings: they compile under
 explicit API mode and warnings as errors.
@@ -1255,7 +1256,9 @@ assumption that its condition held for the call's arguments when the call starte
 object, and an opaque library call give no assumption. Catch selection keeps its over-approximation: an exception
 thrown inside a `try` may escape the function even when a `catch` would receive it, so the condition must hold at
 that point too. A call resolves to the condition of the declaration it names. A declaration in a dependency carries
-none, so calls into it give no assumption.
+none, so calls into it give no assumption, unless an external specification binds it: a function model's
+`throwsOnlyIf` block, in its own body or in its `@SpecOf` holder, is the library function's condition. That condition
+is a trusted assumption, and the trust report lists it.
 
 An override without a specification of its own inherits the overridden declaration's, including its condition. An
 override with a specification throws only where the overridden condition permits: its own condition must imply the
