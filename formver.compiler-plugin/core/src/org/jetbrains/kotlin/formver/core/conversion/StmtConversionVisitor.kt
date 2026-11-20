@@ -394,6 +394,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (functionCall.isPrimitiveArrayInit()) return data.convertPrimitiveArrayInit(functionCall)
         return functionCall.genericArrayBulk()?.let { data.convertGenericArrayBulk(functionCall, it) }
             ?: data.convertStdlibHof(functionCall)
+            ?: data.convertRangeMembership(functionCall)
+            ?: data.convertCoercion(functionCall)
             ?: data.convertMultisetIntrinsic(functionCall)
             ?: data.convertIterationSequenceIntrinsic(functionCall)
             ?: functionCall.stringBuilderIntrinsic(data.session)?.let { data.convertStringBuilderIntrinsic(functionCall, it) }

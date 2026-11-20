@@ -1,7 +1,7 @@
 // Source: kotlin v2.3.0 libraries/stdlib/src/kotlin/text/StringNumberConversions.kt, String.toIntOrNull(radix)
 // JVM digitOf is Character.digit(char.code, radix), stated here by its Javadoc range; checkRadix's
 // Character.MIN_RADIX..Character.MAX_RADIX is written as 2..36.
-package stdlibsweep
+package stdlibports
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -13,8 +13,8 @@ private fun <!VIPER_TEXT!>digitOf<!>(char: Char, radix: Int): Int {
 }
 
 private fun <!VIPER_TEXT!>checkRadix<!>(radix: Int): Int {
-    postconditions<Int> { result -> 2 <= radix && radix <= 36 && result == radix }
-    if (radix < 2 || radix > 36) {
+    postconditions<Int> { result -> radix in 2..36 && result == radix }
+    if (radix !in 2..36) {
         throw IllegalArgumentException("radix $radix was not in valid range")
     }
     return radix

@@ -44,7 +44,6 @@ The port trust report is
 `testData/programs/ports/arraydeque/ArrayDeque.trust.txt`. Its distinct
 registered dependencies are:
 
-- Bundled spec: `kotlin.ranges.coerceAtLeast(this: Int, Int): Int`.
 - `@TrustedElementEquality`: `ArrayDeque.indexOf(E): Int` and
   `ArrayDeque.lastIndexOf(E): Int`, plus their `Int` instantiations for `searchAndClear`.
 - Wrapping-arithmetic functions: `ArrayDeque.registerModification(): Unit` and

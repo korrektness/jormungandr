@@ -1,0 +1,451 @@
+/ranges.kt: info: Generated Viper text for inclusive:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inclusive(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (2 <= intFromRef(x) && intFromRef(x) <= 36) {
+    var anon_0: Ref
+    if (2 <= intFromRef(x)) {
+      anon_0 := leInts(x, intToRef(36))
+    } else {
+      anon_0 := boolToRef(false)}
+    assert boolFromRef(anon_0)
+  } else {
+    var anon_1: Ref
+    if (intFromRef(x) < 2) {
+      anon_1 := boolToRef(true)
+    } else {
+      anon_1 := gtInts(x, intToRef(36))}
+    assert boolFromRef(anon_1)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for exclusive:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method exclusive(x: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (0 <= intFromRef(x) && intFromRef(x) < intFromRef(n)) {
+    var anon_0: Ref
+    if (0 <= intFromRef(x)) {
+      anon_0 := ltInts(x, n)
+    } else {
+      anon_0 := boolToRef(false)}
+    assert boolFromRef(anon_0)
+  } else {
+    var anon_1: Ref
+    if (intFromRef(x) < 0) {
+      anon_1 := boolToRef(true)
+    } else {
+      anon_1 := geInts(x, n)}
+    assert boolFromRef(anon_1)
+  }
+  if (0 <= intFromRef(x) && intFromRef(x) < intFromRef(n)) {
+    assert intFromRef(x) < intFromRef(n)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for inclusiveReachesBound:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inclusiveReachesBound(x: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (0 <= intFromRef(x) && intFromRef(x) <= intFromRef(n)) {
+    assert intFromRef(x) < intFromRef(n)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for notIn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method notIn(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (!(0 <= intFromRef(x) && intFromRef(x) <= 9)) {
+    var anon_0: Ref
+    if (intFromRef(x) < 0) {
+      anon_0 := boolToRef(true)
+    } else {
+      anon_0 := gtInts(x, intToRef(9))}
+    assert boolFromRef(anon_0)
+  } else {
+    var anon_1: Ref
+    if (0 <= intFromRef(x)) {
+      anon_1 := leInts(x, intToRef(9))
+    } else {
+      anon_1 := boolToRef(false)}
+    assert boolFromRef(anon_1)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for longInIntRange:
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method longInIntRange(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), longType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (!((0 < longFromRef(par_v) ? -1 : (0 > longFromRef(par_v) ? 1 : 0)) <=
+  0 &&
+  (longFromRef(par_v) < 2147483647 ?
+    -1 :
+    (longFromRef(par_v) > 2147483647 ? 1 : 0)) <=
+  0)) {
+    var anon: Ref
+    anon := con()
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
+    inhale false
+  }
+  v_ret_0 := convertLongToInt(par_v)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/ranges.kt: info: Generated Viper text for intInLongRange:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method intInLongRange(x: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(limit), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if ((0 < intFromRef(x) ? -1 : (0 > intFromRef(x) ? 1 : 0)) <= 0 &&
+  (intFromRef(x) < longFromRef(limit) ?
+    -1 :
+    (intFromRef(x) > longFromRef(limit) ? 1 : 0)) <=
+  0) {
+    assert (intFromRef(x) < longFromRef(limit) ?
+        -1 :
+        (intFromRef(x) > longFromRef(limit) ? 1 : 0)) <=
+      0
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for whenSubject:
+method whenSubject(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= 2
+{
+  var anon: Ref
+  anon := x
+  if (-2147483648 <= intFromRef(anon) && intFromRef(anon) <= -1) {
+    v_ret_0 := intToRef(0)
+  } elseif (0 <= intFromRef(anon) && intFromRef(anon) < 10) {
+    v_ret_0 := intToRef(1)
+  } else {
+    v_ret_0 := intToRef(2)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ranges.kt: info: Generated Viper text for boundsBeforeElement:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method boundsBeforeElement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var log: Ref
+  var inside: Ref
+  var anon_0: Ref
+  var v_ret_2: Ref
+  var anon_1: Ref
+  var v_ret_4: Ref
+  var anon_2: Ref
+  var v_ret_6: Ref
+  log := intToRef(0)
+  log := plusInts(timesInts(log, intToRef(10)), intToRef(1))
+  v_ret_2 := intToRef(0)
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_0 := v_ret_2
+  log := plusInts(timesInts(log, intToRef(10)), intToRef(2))
+  v_ret_4 := intToRef(9)
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_1 := v_ret_4
+  log := plusInts(timesInts(log, intToRef(10)), intToRef(3))
+  v_ret_6 := intToRef(5)
+  goto lbl_ret_6
+  label lbl_ret_6
+  anon_2 := v_ret_6
+  inside := andBools(leInts(anon_0, anon_2), leInts(anon_2, anon_1))
+  assert boolFromRef(inside)
+  assert intFromRef(log) == 123
+  v_ret_0 := log
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ranges.kt: info: Generated Viper text for atLeast:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method atLeast(requested: Ref, minimum: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(requested), intType())
+  requires isSubtype(typeOf(minimum), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var capacity: Ref
+  var anon: Ref
+  if (intFromRef(requested) < intFromRef(minimum)) {
+    capacity := minimum
+  } else {
+    capacity := requested}
+  assert intFromRef(capacity) >= intFromRef(requested)
+  assert intFromRef(capacity) >= intFromRef(minimum)
+  if (intFromRef(requested) < intFromRef(minimum)) {
+    anon := minimum
+  } else {
+    anon := requested}
+  assert intFromRef(capacity) == intFromRef(anon)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for atLeastIsNotStrict:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method atLeastIsNotStrict(requested: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(requested), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var capacity: Ref
+  if (intFromRef(requested) < 10) {
+    capacity := intToRef(10)
+  } else {
+    capacity := requested}
+  assert intFromRef(capacity) > intFromRef(requested)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for atMost:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method atMost(par_v: Ref, max: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), longType())
+  requires isSubtype(typeOf(max), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var anon: Ref
+  if ((longFromRef(max) < longFromRef(par_v) ?
+    -1 :
+    (longFromRef(max) > longFromRef(par_v) ? 1 : 0)) <
+  0) {
+    c := max
+  } else {
+    c := par_v}
+  assert (longFromRef(c) < longFromRef(max) ?
+      -1 :
+      (longFromRef(c) > longFromRef(max) ? 1 : 0)) <=
+    0
+  if (longFromRef(c) == longFromRef(par_v)) {
+    anon := boolToRef(true)
+  } else {
+    anon := boolToRef(longFromRef(c) == longFromRef(max))}
+  assert boolFromRef(anon)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ranges.kt: info: Generated Viper text for inLiteralBounds:
+method inLiteralBounds(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+  ensures ((let anon_builtin ==
+      (unaryMinusLong(longToRef(5))) in
+      -longFromRef(longToRef(5))) <
+    longFromRef(v_ret_0) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(5))) in
+        -longFromRef(longToRef(5))) >
+      longFromRef(v_ret_0) ?
+        1 :
+        0)) <=
+    0 &&
+    (longFromRef(v_ret_0) < 5 ? -1 : (longFromRef(v_ret_0) > 5 ? 1 : 0)) <=
+    0 &&
+    (((let anon_builtin ==
+      (unaryMinusLong(longToRef(5))) in
+      -longFromRef(longToRef(5))) <
+    longFromRef(par_v) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(5))) in
+        -longFromRef(longToRef(5))) >
+      longFromRef(par_v) ?
+        1 :
+        0)) <=
+    0 &&
+    (longFromRef(par_v) < 5 ? -1 : (longFromRef(par_v) > 5 ? 1 : 0)) <= 0 ==>
+    longFromRef(v_ret_0) == longFromRef(par_v))
+{
+  var anon_0: Ref
+  if ((5 <
+  (let anon_builtin ==
+    (unaryMinusLong(longToRef(5))) in
+    -longFromRef(longToRef(5))) ?
+    -1 :
+    (5 >
+    (let anon_builtin ==
+      (unaryMinusLong(longToRef(5))) in
+      -longFromRef(longToRef(5))) ?
+      1 :
+      0)) <
+  0) {
+    inhale false
+  }
+  if ((longFromRef(par_v) <
+  (let anon_builtin ==
+    (unaryMinusLong(longToRef(5))) in
+    -longFromRef(longToRef(5))) ?
+    -1 :
+    (longFromRef(par_v) >
+    (let anon_builtin ==
+      (unaryMinusLong(longToRef(5))) in
+      -longFromRef(longToRef(5))) ?
+      1 :
+      0)) <
+  0) {
+    anon_0 := unaryMinusLong(longToRef(5))
+  } else {
+    anon_0 := par_v}
+  if ((5 < longFromRef(anon_0) ? -1 : (5 > longFromRef(anon_0) ? 1 : 0)) <
+  0) {
+    v_ret_0 := longToRef(5)
+  } elseif ((longFromRef(par_v) <
+  (let anon_builtin ==
+    (unaryMinusLong(longToRef(5))) in
+    -longFromRef(longToRef(5))) ?
+    -1 :
+    (longFromRef(par_v) >
+    (let anon_builtin ==
+      (unaryMinusLong(longToRef(5))) in
+      -longFromRef(longToRef(5))) ?
+      1 :
+      0)) <
+  0) {
+    v_ret_0 := unaryMinusLong(longToRef(5))
+  } else {
+    v_ret_0 := par_v}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ranges.kt: info: Generated Viper text for inBoundsThrowsWhenEmpty:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inBoundsThrowsWhenEmpty(par_v: Ref, min: Ref, max: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  requires isSubtype(typeOf(min), intType())
+  requires isSubtype(typeOf(max), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var c: Ref
+  var anon: Ref
+  if (intFromRef(max) < intFromRef(min)) {
+    inhale false
+  }
+  if (intFromRef(par_v) < intFromRef(min)) {
+    anon := min
+  } else {
+    anon := par_v}
+  if (intFromRef(max) < intFromRef(anon)) {
+    c := max
+  } elseif (intFromRef(par_v) < intFromRef(min)) {
+    c := min
+  } else {
+    c := par_v}
+  assert intFromRef(min) <= intFromRef(max)
+  assert intFromRef(min) <= intFromRef(c) &&
+    intFromRef(c) <= intFromRef(max)
+  v_ret_0 := c
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ranges.kt: info: Generated Viper text for coercionInSpec:
+method coercionInSpec(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef((intFromRef(x) < 0 ? intToRef(0) : x))
+{
+  if (intFromRef(x) < 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := x}
+  goto lbl_ret_0
+  label lbl_ret_0
+}

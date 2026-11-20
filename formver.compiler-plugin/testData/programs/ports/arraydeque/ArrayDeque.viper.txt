@@ -874,53 +874,53 @@ field modCount: Ref
 
 field referenceContents: Seq[Ref]
 
-function ArrayDeque_f_elementAt(v_this: Ref, par_index: Ref): Ref
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+function ArrayDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   requires isSubtype(typeOf(par_index), intType())
   requires 0 <= intFromRef(par_index) &&
-    intFromRef(par_index) < intFromRef(ArrayDeque_g_size(v_this))
+    intFromRef(par_index) < intFromRef(ArrayDeque_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 {
   (let anon_14_0 ==
-    ((unfolding acc(ArrayDeque_unique(v_this), write) in v_this.head)) in
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
+    ((unfolding acc(ArrayDeque_unique(this), write) in this.head)) in
+    (unfolding acc(ArrayDeque_unique(this), write) in
       (let physical_0 ==
-        (positiveMod(v_this, plusInts(anon_14_0, par_index))) in
-        (unfolding acc(ArrayDeque_unique(v_this), write) in
+        (positiveMod(this, plusInts(anon_14_0, par_index))) in
+        (unfolding acc(ArrayDeque_unique(this), write) in
           (let anon_15_0 ==
-            (v_this.elementData) in
+            (this.elementData) in
             (unfolding acc(Array_unique(anon_15_0), write) in
               (let anon_16_0 ==
                 (anon_15_0.referenceContents[intFromRef(physical_0)]) in
                 checkedType(anon_16_0, nullable(anyType())))))))))
 }
 
-function ArrayDeque_g_size(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+function ArrayDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(ArrayDeque_unique(v_this), write) in v_this.count)
+  (unfolding acc(ArrayDeque_unique(this), write) in this.count)
 }
 
-function BooleanArray_g_size(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), BooleanArray())
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
 
 
-function DequeSpec_f_elementAt(v_this: Ref, par_index: Ref): Ref
-  requires isSubtype(typeOf(v_this), DequeSpec())
-  requires acc(DequeSpec_footprint(v_this), wildcard)
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(DequeSpec_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
   requires 0 <= intFromRef(par_index) &&
-    intFromRef(par_index) < intFromRef(DequeSpec_g_size(v_this))
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
-function DequeSpec_g_size(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), DequeSpec())
-  requires acc(DequeSpec_footprint(v_this), wildcard)
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(DequeSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -931,67 +931,57 @@ function checkedType(castValue: Ref, castTarget: rt): Ref
   castValue
 }
 
-function coerceAtLeastModel(v_this_extension: Ref, minimumValue: Ref): Ref
-  requires isSubtype(typeOf(v_this_extension), intType())
-  requires isSubtype(typeOf(minimumValue), intType())
-  ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) ==
-    intFromRef((intFromRef(v_this_extension) < intFromRef(minimumValue) ?
-      minimumValue :
-      v_this_extension))
-
-
-function lastIndex(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+function lastIndex(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(ArrayDeque_unique(v_this), write) in
+  (unfolding acc(ArrayDeque_unique(this), write) in
     (let anon_13_0 ==
-      (v_this.count) in
+      (this.count) in
       minusInts(anon_13_0, intToRef(1))))
 }
 
-function positiveMod(v_this: Ref, par_index: Ref): Ref
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   requires isSubtype(typeOf(par_index), intType())
   requires 0 <= intFromRef(par_index) &&
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
-      boolFromRef((referenceArraySize(v_this.elementData) == 0 ?
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
         boolToRef(intFromRef(par_index) == 0) :
-        ltInts(minusInts(par_index, intToRef(referenceArraySize(v_this.elementData))),
-        intToRef(referenceArraySize(v_this.elementData))))))
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
   ensures isSubtype(typeOf(result), intType())
   ensures 0 <= intFromRef(result) &&
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
-      boolFromRef((referenceArraySize(v_this.elementData) == 0 ?
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
         boolToRef(intFromRef(result) == 0) :
-        ltInts(result, intToRef(referenceArraySize(v_this.elementData))))))
-  ensures (unfolding acc(ArrayDeque_unique(v_this), write) in
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
       intFromRef(result) ==
       intFromRef((intFromRef(par_index) >=
-      referenceArraySize(v_this.elementData) ?
-        minusInts(par_index, intToRef(referenceArraySize(v_this.elementData))) :
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
         par_index)))
 {
-  (unfolding acc(ArrayDeque_unique(v_this), write) in
+  (unfolding acc(ArrayDeque_unique(this), write) in
     (let anon_18_0 ==
-      (v_this.elementData) in
+      (this.elementData) in
       (intFromRef(par_index) >= referenceArraySize(anon_18_0) ?
         (let anon_20_0 ==
-          (v_this.elementData) in
+          (this.elementData) in
           minusInts(par_index, intToRef(referenceArraySize(anon_20_0)))) :
         par_index)))
 }
 
-function referenceArraySize(v_this: Ref): Int
+function referenceArraySize(this: Ref): Int
   ensures result >= 0
   ensures result <= 2147483647
 
 
-method cause(v_this: Ref) returns (ret_6: Ref)
-  requires isSubtype(typeOf(v_this), anyType())
+method cause(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
@@ -1004,51 +994,51 @@ method con(p0: Ref) returns (ret_7: Ref)
     isSubtype(typeOf(ret_7), Throwable())))
 
 
-method copyElements(v_this: Ref, par_newCapacity: Ref) returns (ret_9: Ref)
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+method copyElements(this: Ref, par_newCapacity: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   requires isSubtype(typeOf(par_newCapacity), intType())
-  requires (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) < intFromRef(par_newCapacity)) &&
+  requires (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) < intFromRef(par_newCapacity)) &&
     intFromRef(par_newCapacity) <= 1073741824
-  ensures acc(ArrayDeque_unique(v_this), write)
+  ensures acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(ret_9), unitType())
-  ensures intFromRef(ArrayDeque_g_size(v_this)) ==
-    old(intFromRef(ArrayDeque_g_size(v_this)))
-  ensures (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) == intFromRef(par_newCapacity))
-  ensures (unfolding acc(ArrayDeque_unique(v_this), write) in
-      intFromRef(v_this.head) == 0)
+  ensures intFromRef(ArrayDeque_g_size(this)) ==
+    old(intFromRef(ArrayDeque_g_size(this)))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) == intFromRef(par_newCapacity))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      intFromRef(this.head) == 0)
   ensures (forall anon_builtin_1: Int ::
-      { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1)) }
-      { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1))) }
+      { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
+      { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
       -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
-      anon_builtin_1 < intFromRef(ArrayDeque_g_size(v_this)) ==>
-      ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1)) ==
-      old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1))))
+      anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
+      ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
+      old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))))
 
 
-method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(v_this), ArrayDeque())
-  requires acc(ArrayDeque_unique(v_this), write)
+method ensureCapacity(this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
   requires isSubtype(typeOf(minCapacity), intType())
   requires 0 <= intFromRef(minCapacity) &&
     intFromRef(minCapacity) <= 715827882
-  ensures acc(ArrayDeque_unique(v_this), write)
+  ensures acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(ArrayDeque_g_size(v_this)) ==
-    old(intFromRef(ArrayDeque_g_size(v_this)))
-  ensures (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) >= intFromRef(minCapacity))
+  ensures intFromRef(ArrayDeque_g_size(this)) ==
+    old(intFromRef(ArrayDeque_g_size(this)))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) >= intFromRef(minCapacity))
   ensures (forall anon_builtin_0: Int ::
-      { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
-      { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
+      { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
+      { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
       -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
-      ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
-      old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))))
+      anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
+      ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
+      old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))))
 {
   var anon_builtin_2: Int
   var anon_23: Ref
@@ -1065,40 +1055,40 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
     fold acc(IllegalStateException_unique(anon_22), write)
     inhale false
   }
-  unfold acc(ArrayDeque_unique(v_this), write)
-  anon_23 := v_this.elementData
-  assert (let v_this ==
-      (v_this) in
+  unfold acc(ArrayDeque_unique(this), write)
+  anon_23 := this.elementData
+  assert (let this ==
+      (this) in
       boolFromRef((let anon_2_0 ==
-        (v_this.count) in
+        (this.count) in
         (let anon_3_0 ==
-          ((0 <= intFromRef(anon_2_0) ? v_this.count : null)) in
+          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
           (let anon_4_0 ==
-            ((0 <= intFromRef(anon_2_0) ? v_this.elementData : null)) in
+            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
             (let anon_5_0 ==
               ((0 <= intFromRef(anon_2_0) &&
               intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
-                v_this.elementData :
+                this.elementData :
                 null)) in
               (let anon_6_0 ==
                 ((0 <= intFromRef(anon_2_0) &&
                 intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                 !(referenceArraySize(anon_5_0) == 0) ?
-                  v_this.head :
+                  this.head :
                   null)) in
                 (let anon_7_0 ==
                   ((0 <= intFromRef(anon_2_0) &&
                   intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                   !(referenceArraySize(anon_5_0) == 0) &&
                   0 <= intFromRef(anon_6_0) ?
-                    v_this.head :
+                    this.head :
                     null)) in
                   (let anon_8_0 ==
                     ((0 <= intFromRef(anon_2_0) &&
                     intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                     !(referenceArraySize(anon_5_0) == 0) &&
                     0 <= intFromRef(anon_6_0) ?
-                      v_this.elementData :
+                      this.elementData :
                       null)) in
                     (let anon_9_0 ==
                       ((0 <= intFromRef(anon_2_0) &&
@@ -1106,7 +1096,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                       (referenceArraySize(anon_5_0) == 0 ||
                       0 <= intFromRef(anon_6_0) &&
                       intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
-                        v_this.elementData :
+                        this.elementData :
                         null)) in
                       (let anon_10_0 ==
                         ((0 <= intFromRef(anon_2_0) &&
@@ -1116,7 +1106,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         0 <= intFromRef(anon_6_0) &&
                         intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
                         !!(referenceArraySize(anon_9_0) == 0) ?
-                          v_this.head :
+                          this.head :
                           null)) in
                         boolToRef(0 <= intFromRef(anon_2_0) &&
                         intFromRef(anon_3_0) <=
@@ -1127,47 +1117,47 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         (!(referenceArraySize(anon_9_0) == 0) ||
                         intFromRef(anon_10_0) == 0) &&
                         (let anon_11_0 ==
-                          (v_this.elementData) in
+                          (this.elementData) in
                           referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
-  fold acc(ArrayDeque_unique(v_this), write)
+  fold acc(ArrayDeque_unique(this), write)
   if (intFromRef(minCapacity) <= referenceArraySize(anon_23)) {
     anon_builtin_2 := 0
     goto lbl_ret_0
   }
-  unfold acc(ArrayDeque_unique(v_this), write)
-  anon_24 := v_this.elementData
-  assert (let v_this ==
-      (v_this) in
+  unfold acc(ArrayDeque_unique(this), write)
+  anon_24 := this.elementData
+  assert (let this ==
+      (this) in
       boolFromRef((let anon_2_0 ==
-        (v_this.count) in
+        (this.count) in
         (let anon_3_0 ==
-          ((0 <= intFromRef(anon_2_0) ? v_this.count : null)) in
+          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
           (let anon_4_0 ==
-            ((0 <= intFromRef(anon_2_0) ? v_this.elementData : null)) in
+            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
             (let anon_5_0 ==
               ((0 <= intFromRef(anon_2_0) &&
               intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
-                v_this.elementData :
+                this.elementData :
                 null)) in
               (let anon_6_0 ==
                 ((0 <= intFromRef(anon_2_0) &&
                 intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                 !(referenceArraySize(anon_5_0) == 0) ?
-                  v_this.head :
+                  this.head :
                   null)) in
                 (let anon_7_0 ==
                   ((0 <= intFromRef(anon_2_0) &&
                   intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                   !(referenceArraySize(anon_5_0) == 0) &&
                   0 <= intFromRef(anon_6_0) ?
-                    v_this.head :
+                    this.head :
                     null)) in
                   (let anon_8_0 ==
                     ((0 <= intFromRef(anon_2_0) &&
                     intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                     !(referenceArraySize(anon_5_0) == 0) &&
                     0 <= intFromRef(anon_6_0) ?
-                      v_this.elementData :
+                      this.elementData :
                       null)) in
                     (let anon_9_0 ==
                       ((0 <= intFromRef(anon_2_0) &&
@@ -1175,7 +1165,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                       (referenceArraySize(anon_5_0) == 0 ||
                       0 <= intFromRef(anon_6_0) &&
                       intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
-                        v_this.elementData :
+                        this.elementData :
                         null)) in
                       (let anon_10_0 ==
                         ((0 <= intFromRef(anon_2_0) &&
@@ -1185,7 +1175,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         0 <= intFromRef(anon_6_0) &&
                         intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
                         !!(referenceArraySize(anon_9_0) == 0) ?
-                          v_this.head :
+                          this.head :
                           null)) in
                         boolToRef(0 <= intFromRef(anon_2_0) &&
                         intFromRef(anon_3_0) <=
@@ -1196,15 +1186,18 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         (!(referenceArraySize(anon_9_0) == 0) ||
                         intFromRef(anon_10_0) == 0) &&
                         (let anon_11_0 ==
-                          (v_this.elementData) in
+                          (this.elementData) in
                           referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
-  fold acc(ArrayDeque_unique(v_this), write)
+  fold acc(ArrayDeque_unique(this), write)
   if (referenceArraySize(anon_24) == 0) {
     var anon_25: Ref
     var anon_0: Ref
     var anon_1: Ref
     var anon_26: Ref
-    anon_0 := coerceAtLeastModel(minCapacity, intToRef(10))
+    if (intFromRef(minCapacity) < 10) {
+      anon_0 := intToRef(10)
+    } else {
+      anon_0 := minCapacity}
     assert intFromRef(anon_0) >= 0
     anon_1 := new()
     inhale acc(Array_unique(anon_1), write)
@@ -1215,43 +1208,43 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
           j >= 0 && j < referenceArraySize(anon_1) ==>
           anon_1.referenceContents[j] == nullValue()))
     anon_25 := anon_1
-    unfold acc(ArrayDeque_unique(v_this), write)
-    v_this.elementData := anon_25
-    anon_26 := v_this.elementData
+    unfold acc(ArrayDeque_unique(this), write)
+    this.elementData := anon_25
+    anon_26 := this.elementData
     assert referenceArraySize(anon_26) > 0
     anon_builtin_2 := 1
-    assert (let v_this ==
-        (v_this) in
+    assert (let this ==
+        (this) in
         boolFromRef((let anon_2_0 ==
-          (v_this.count) in
+          (this.count) in
           (let anon_3_0 ==
-            ((0 <= intFromRef(anon_2_0) ? v_this.count : null)) in
+            ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
             (let anon_4_0 ==
-              ((0 <= intFromRef(anon_2_0) ? v_this.elementData : null)) in
+              ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
               (let anon_5_0 ==
                 ((0 <= intFromRef(anon_2_0) &&
                 intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
-                  v_this.elementData :
+                  this.elementData :
                   null)) in
                 (let anon_6_0 ==
                   ((0 <= intFromRef(anon_2_0) &&
                   intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                   !(referenceArraySize(anon_5_0) == 0) ?
-                    v_this.head :
+                    this.head :
                     null)) in
                   (let anon_7_0 ==
                     ((0 <= intFromRef(anon_2_0) &&
                     intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                     !(referenceArraySize(anon_5_0) == 0) &&
                     0 <= intFromRef(anon_6_0) ?
-                      v_this.head :
+                      this.head :
                       null)) in
                     (let anon_8_0 ==
                       ((0 <= intFromRef(anon_2_0) &&
                       intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                       !(referenceArraySize(anon_5_0) == 0) &&
                       0 <= intFromRef(anon_6_0) ?
-                        v_this.elementData :
+                        this.elementData :
                         null)) in
                       (let anon_9_0 ==
                         ((0 <= intFromRef(anon_2_0) &&
@@ -1260,7 +1253,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         (referenceArraySize(anon_5_0) == 0 ||
                         0 <= intFromRef(anon_6_0) &&
                         intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
-                          v_this.elementData :
+                          this.elementData :
                           null)) in
                         (let anon_10_0 ==
                           ((0 <= intFromRef(anon_2_0) &&
@@ -1271,7 +1264,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                           intFromRef(anon_7_0) <
                           referenceArraySize(anon_8_0)) &&
                           !!(referenceArraySize(anon_9_0) == 0) ?
-                            v_this.head :
+                            this.head :
                             null)) in
                           boolToRef(0 <= intFromRef(anon_2_0) &&
                           intFromRef(anon_3_0) <=
@@ -1283,46 +1276,46 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                           (!(referenceArraySize(anon_9_0) == 0) ||
                           intFromRef(anon_10_0) == 0) &&
                           (let anon_11_0 ==
-                            (v_this.elementData) in
+                            (this.elementData) in
                             referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
-    fold acc(ArrayDeque_unique(v_this), write)
+    fold acc(ArrayDeque_unique(this), write)
     goto lbl_ret_0
   }
-  unfold acc(ArrayDeque_unique(v_this), write)
-  anon_27 := v_this.elementData
+  unfold acc(ArrayDeque_unique(this), write)
+  anon_27 := this.elementData
   l16_newCapacity := f_newCapacity(intToRef(referenceArraySize(anon_27)), minCapacity)
-  assert (let v_this ==
-      (v_this) in
+  assert (let this ==
+      (this) in
       boolFromRef((let anon_2_0 ==
-        (v_this.count) in
+        (this.count) in
         (let anon_3_0 ==
-          ((0 <= intFromRef(anon_2_0) ? v_this.count : null)) in
+          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
           (let anon_4_0 ==
-            ((0 <= intFromRef(anon_2_0) ? v_this.elementData : null)) in
+            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
             (let anon_5_0 ==
               ((0 <= intFromRef(anon_2_0) &&
               intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
-                v_this.elementData :
+                this.elementData :
                 null)) in
               (let anon_6_0 ==
                 ((0 <= intFromRef(anon_2_0) &&
                 intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                 !(referenceArraySize(anon_5_0) == 0) ?
-                  v_this.head :
+                  this.head :
                   null)) in
                 (let anon_7_0 ==
                   ((0 <= intFromRef(anon_2_0) &&
                   intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                   !(referenceArraySize(anon_5_0) == 0) &&
                   0 <= intFromRef(anon_6_0) ?
-                    v_this.head :
+                    this.head :
                     null)) in
                   (let anon_8_0 ==
                     ((0 <= intFromRef(anon_2_0) &&
                     intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
                     !(referenceArraySize(anon_5_0) == 0) &&
                     0 <= intFromRef(anon_6_0) ?
-                      v_this.elementData :
+                      this.elementData :
                       null)) in
                     (let anon_9_0 ==
                       ((0 <= intFromRef(anon_2_0) &&
@@ -1330,7 +1323,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                       (referenceArraySize(anon_5_0) == 0 ||
                       0 <= intFromRef(anon_6_0) &&
                       intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
-                        v_this.elementData :
+                        this.elementData :
                         null)) in
                       (let anon_10_0 ==
                         ((0 <= intFromRef(anon_2_0) &&
@@ -1340,7 +1333,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         0 <= intFromRef(anon_6_0) &&
                         intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
                         !!(referenceArraySize(anon_9_0) == 0) ?
-                          v_this.head :
+                          this.head :
                           null)) in
                         boolToRef(0 <= intFromRef(anon_2_0) &&
                         intFromRef(anon_3_0) <=
@@ -1351,58 +1344,58 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
                         (!(referenceArraySize(anon_9_0) == 0) ||
                         intFromRef(anon_10_0) == 0) &&
                         (let anon_11_0 ==
-                          (v_this.elementData) in
+                          (this.elementData) in
                           referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
-  fold acc(ArrayDeque_unique(v_this), write)
-  anon_28 := copyElements(v_this, l16_newCapacity)
+  fold acc(ArrayDeque_unique(this), write)
+  anon_28 := copyElements(this, l16_newCapacity)
   anon_builtin_2 := 2
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
   assert anon_builtin_2 == 0 ==>
-    intFromRef(ArrayDeque_g_size(v_this)) ==
-    old(intFromRef(ArrayDeque_g_size(v_this)))
+    intFromRef(ArrayDeque_g_size(this)) ==
+    old(intFromRef(ArrayDeque_g_size(this)))
   assert anon_builtin_2 == 1 ==>
-    intFromRef(ArrayDeque_g_size(v_this)) ==
-    old(intFromRef(ArrayDeque_g_size(v_this)))
+    intFromRef(ArrayDeque_g_size(this)) ==
+    old(intFromRef(ArrayDeque_g_size(this)))
   assert anon_builtin_2 == 2 ==>
-    intFromRef(ArrayDeque_g_size(v_this)) ==
-    old(intFromRef(ArrayDeque_g_size(v_this)))
+    intFromRef(ArrayDeque_g_size(this)) ==
+    old(intFromRef(ArrayDeque_g_size(this)))
   assert anon_builtin_2 == 0 ==>
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) >= intFromRef(minCapacity))
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) >= intFromRef(minCapacity))
   assert anon_builtin_2 == 1 ==>
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) >= intFromRef(minCapacity))
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) >= intFromRef(minCapacity))
   assert anon_builtin_2 == 2 ==>
-    (unfolding acc(ArrayDeque_unique(v_this), write) in
-      referenceArraySize(v_this.elementData) >= intFromRef(minCapacity))
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      referenceArraySize(this.elementData) >= intFromRef(minCapacity))
   assert anon_builtin_2 == 0 ==>
     (forall anon_builtin_0: Int ::
-      { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
-      { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
+      { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
+      { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
       -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
-      ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
-      old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))))
+      anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
+      ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
+      old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))))
   assert anon_builtin_2 == 1 ==>
     (forall anon_builtin_0: Int ::
-      { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
-      { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
+      { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
+      { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
       -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
-      ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
-      old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))))
+      anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
+      ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
+      old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))))
   assert anon_builtin_2 == 2 ==>
     (forall anon_builtin_0: Int ::
-      { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
-      { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
+      { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
+      { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
       -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
-      ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
-      old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))))
+      anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
+      ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
+      old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))))
 }
 
 method f_newCapacity(oldCapacity: Ref, minCapacity: Ref)
@@ -1420,8 +1413,8 @@ method f_newCapacity(oldCapacity: Ref, minCapacity: Ref)
     intFromRef(ret_8) > intFromRef(oldCapacity)
 
 
-method message(v_this: Ref) returns (ret_5: Ref)
-  requires isSubtype(typeOf(v_this), anyType())
+method message(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 

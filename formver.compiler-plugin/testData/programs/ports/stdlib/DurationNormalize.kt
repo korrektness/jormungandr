@@ -1,11 +1,10 @@
 // Source: kotlin v2.3.0 libraries/stdlib/src/kotlin/time/Duration.kt, addValuesMixedRanges, durationOfMillisNormalized,
 // durationOfNanos, durationOfMillis. Adaptation: functions return the raw Long instead of wrapping it in Duration;
-// one-line private helpers are inline, ranges are written as comparisons, and coerceIn is written out with its
-// KDoc contract. addMillisWithoutOverflow has the millis-range precondition and its KDoc postcondition, plus the
-// clause that a finite [other] never yields INVALID_RAW_VALUE, which the source comment in addValuesMixedRanges
-// relies on. millisToNanos has the range its callers pass as its precondition.
-// The postcondition is the representation check Duration.fromRawValue asserts.
-package stdlibsweep
+// one-line private helpers, isInfiniteMillis and sameSign are inline. addMillisWithoutOverflow has the millis-range
+// precondition and its KDoc postcondition, plus the clause that a finite [other] never yields INVALID_RAW_VALUE,
+// which the source comment in addValuesMixedRanges relies on. millisToNanos has the range its callers pass as its
+// precondition. The postcondition is the representation check Duration.fromRawValue asserts.
+package stdlibports
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -31,45 +30,37 @@ private <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>durationOfMillis<!>(nor
 
 private fun <!VIPER_TEXT!>durationOfMillisNormalized<!>(millis: Long): Long {
     postconditions<Long> { result -> validRaw(result) }
-    return if (-MAX_NANOS_IN_MILLIS_N <= millis && millis <= MAX_NANOS_IN_MILLIS_N) {
+    return if (millis in -MAX_NANOS_IN_MILLIS_N..MAX_NANOS_IN_MILLIS_N) {
         durationOfNanos(millisToNanos(millis))
     } else {
-        durationOfMillis(millis.coerceInN(-MAX_MILLIS_N, MAX_MILLIS_N))
+        durationOfMillis(millis.coerceIn(-MAX_MILLIS_N, MAX_MILLIS_N))
     }
 }
 
-private fun Long.<!VIPER_TEXT!>coerceInN<!>(minimumValue: Long, maximumValue: Long): Long {
-    preconditions { minimumValue <= maximumValue }
-    postconditions<Long> { result -> minimumValue <= result && result <= maximumValue && (result == this || result == minimumValue || result == maximumValue) && ((minimumValue <= this && this <= maximumValue) implies (result == this)) }
-    if (this < minimumValue) return minimumValue
-    if (this > maximumValue) return maximumValue
-    return this
-}
-
 private fun <!VIPER_TEXT!>addMillisWithoutOverflowN<!>(a: Long, other: Long): Long {
-    preconditions { -MAX_MILLIS_N <= a && a <= MAX_MILLIS_N; -MAX_MILLIS_N <= other && other <= MAX_MILLIS_N }
+    preconditions { a in -MAX_MILLIS_N..MAX_MILLIS_N; other in -MAX_MILLIS_N..MAX_MILLIS_N }
     postconditions<Long> { result ->
-        (result == 0x7FFFFFFFFFFFC0DE || (-MAX_MILLIS_N <= result && result <= MAX_MILLIS_N)) &&
-            ((-MAX_MILLIS_N < other && other < MAX_MILLIS_N) implies (result != 0x7FFFFFFFFFFFC0DE))
+        (result == 0x7FFFFFFFFFFFC0DE || result in -MAX_MILLIS_N..MAX_MILLIS_N) &&
+            ((other > -MAX_MILLIS_N && other < MAX_MILLIS_N) implies (result != 0x7FFFFFFFFFFFC0DE))
     }
     return when {
     a == MAX_MILLIS_N || a == -MAX_MILLIS_N ->
         if ((-MAX_MILLIS_N < other && other < MAX_MILLIS_N) || a xor other >= 0L) a else 0x7FFFFFFFFFFFC0DE
     other == MAX_MILLIS_N || other == -MAX_MILLIS_N -> other
-    else -> (a + other).coerceInN(-MAX_MILLIS_N, MAX_MILLIS_N)
+    else -> (a + other).coerceIn(-MAX_MILLIS_N, MAX_MILLIS_N)
     }
 }
 
 /** thisMillis is a millisecond-unit Duration value; otherNanos a nanosecond-unit one. */
 private fun <!VIPER_TEXT!>addValuesMixedRanges<!>(thisMillis: Long, otherNanos: Long): Long {
     preconditions {
-        -MAX_MILLIS_N <= thisMillis && thisMillis <= MAX_MILLIS_N
-        -MAX_NANOS_N <= otherNanos && otherNanos <= MAX_NANOS_N
+        thisMillis in -MAX_MILLIS_N..MAX_MILLIS_N
+        otherNanos in -MAX_NANOS_N..MAX_NANOS_N
     }
     postconditions<Long> { result -> validRaw(result) }
     val otherMillis = nanosToMillis(otherNanos)
     val resultMillis = addMillisWithoutOverflowN(thisMillis, otherMillis)
-    return if (-MAX_NANOS_IN_MILLIS_N <= resultMillis && resultMillis <= MAX_NANOS_IN_MILLIS_N) {
+    return if (resultMillis in -MAX_NANOS_IN_MILLIS_N..MAX_NANOS_IN_MILLIS_N) {
         val otherNanoRemainder = otherNanos - millisToNanos(otherMillis)
         durationOfNanos(millisToNanos(resultMillis) + otherNanoRemainder)
     } else {

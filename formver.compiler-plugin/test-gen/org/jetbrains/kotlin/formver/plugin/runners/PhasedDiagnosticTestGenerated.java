@@ -66,6 +66,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("ranges.kt")
+        public void testRanges() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/ranges.kt");
+        }
+
+        @Test
         @TestMetadata("shifts.kt")
         public void testShifts() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/shifts.kt");
@@ -2258,12 +2264,6 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
-        @TestMetadata("int_coerce_at_least.kt")
-        public void testInt_coerce_at_least() {
-          runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/int_coerce_at_least.kt");
-        }
-
-        @Test
         @TestMetadata("list_extensions.kt")
         public void testList_extensions() {
           runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/list_extensions.kt");
@@ -2807,6 +2807,40 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         @TestMetadata("partitionMidpointOverflow.kt")
         public void testPartitionMidpointOverflow() {
           runTest("formver.compiler-plugin/testData/programs/ports/quicksort/partitionMidpointOverflow.kt");
+        }
+      }
+
+      @Nested
+      @TestMetadata("formver.compiler-plugin/testData/programs/ports/stdlib")
+      @TestDataPath("$PROJECT_ROOT")
+      public class Stdlib {
+        @Test
+        @TestMetadata("AddMillisWithoutOverflow.kt")
+        public void testAddMillisWithoutOverflow() {
+          runTest("formver.compiler-plugin/testData/programs/ports/stdlib/AddMillisWithoutOverflow.kt");
+        }
+
+        @Test
+        public void testAllFilesPresentInStdlib() {
+          KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/ports/stdlib"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        }
+
+        @Test
+        @TestMetadata("CheckFormatLength.kt")
+        public void testCheckFormatLength() {
+          runTest("formver.compiler-plugin/testData/programs/ports/stdlib/CheckFormatLength.kt");
+        }
+
+        @Test
+        @TestMetadata("DurationNormalize.kt")
+        public void testDurationNormalize() {
+          runTest("formver.compiler-plugin/testData/programs/ports/stdlib/DurationNormalize.kt");
+        }
+
+        @Test
+        @TestMetadata("ToIntOrNull.kt")
+        public void testToIntOrNull() {
+          runTest("formver.compiler-plugin/testData/programs/ports/stdlib/ToIntOrNull.kt");
         }
       }
     }

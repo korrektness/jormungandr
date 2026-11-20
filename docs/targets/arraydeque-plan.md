@@ -212,7 +212,7 @@ A spike of a reduced port (P1 law, wrap-around helpers, `get`, `addLast`, `remov
 time including Gradle start-up, and no declaration came near the 300 s per-declaration timeout. The one exception
 was a law using `%`, which timed out in its helper; the port states offsets with conditional subtraction, never `%`.
 The landed foundations verify in 10–12 s wall per file (`generic_array_elements`, `generic_array_bulk`,
-`wrapping_arithmetic`, `shifts`, `int_coerce_at_least`). The quantifier-cost risk of the note is therefore
+`wrapping_arithmetic`, `shifts`). The quantifier-cost risk of the note is therefore
 not the constraint. The constraints are these gaps:
 
 - G1: `===` is rejected when both operands may hold a boxed value, and a source class's specification has no
@@ -268,7 +268,7 @@ the diff including tests.
 |---|---|---|---|
 | S1 | V1: `Array<T>` reads, writes, `size`, `lastIndex`, `arrayOfNulls`, `emptyArray` | `stdlib/array/generic_array_elements.kt`: `swap`, `fillNulls`, `newArrayIsNull` verify; `writeShared`, `readPastEnd`, `newArrayNonNull` fail; the `UNSOUND` cast case verifies | 500–700 |
 | S2 | V2a: disjoint `copyInto`, `fill` | `copyGrow` (the `copyElements` shape) verifies; `copyPastEnd` fails; `selfCopy` reports `UNSUPPORTED_FEATURE` | 400–600 |
-| S3 | V3 constant `shr`, D3 annotation, `coerceAtLeast` model | the D3 tests; `(-3) shr 1 == -2` verifies, `== -1` fails | 400–600 |
+| S3 | V3 constant `shr`, D3 annotation | the D3 tests; `(-3) shr 1 == -2` verifies, `== -1` fails | 400–600 |
 | S4 | D4 annotation and register entry | the D4 tests | 300–500 |
 | S5 | Vendored upstream, provenance, deviation checker with fixtures | checker fixtures pass and fail as stated in D2 | 300–500 plus the vendored file |
 | S5a | G1: `===` in specification blocks | in a source class with `Array<Any?>` storage, `get(i) === elementAt(i)` verifies; executed `===` on `Any?` operands and `===` in a `@Pure` body stay `UNSUPPORTED_FEATURE`; a false `===` claim on two different stored references fails | 200–400 |

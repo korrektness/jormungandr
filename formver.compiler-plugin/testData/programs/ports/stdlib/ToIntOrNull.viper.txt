@@ -1,0 +1,304 @@
+/ToIntOrNull.kt: info: Generated Viper text for digitOf:
+method digitOf(char: Ref, radix: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(radix), intType())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == -1 ||
+    0 <= intFromRef(ret) && intFromRef(ret) < intFromRef(radix)
+
+
+/ToIntOrNull.kt: info: Generated Viper text for checkRadix:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method checkRadix(radix: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(radix), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 2 <= intFromRef(radix) && intFromRef(radix) <= 36 &&
+    intFromRef(v_ret_0) == intFromRef(radix)
+{
+  if (!(2 <= intFromRef(radix) && intFromRef(radix) <= 36)) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_1 := plus(stringLit_0(), radix)
+    if (!(|stringFromRef(anon_1)| + |stringFromRef(stringLit_1())| <=
+    2147483647)) {
+      inhale false
+    }
+    anon_0 := con(addStrings(anon_1, stringLit_1()))
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    inhale false
+  }
+  v_ret_0 := radix
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con(p0: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method plus(this: Ref, other: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), stringType())
+
+
+/ToIntOrNull.kt: info: Generated Viper text for toIntOrNull:
+method checkRadix(radix: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(radix), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures 2 <= intFromRef(radix) && intFromRef(radix) <= 36 &&
+    intFromRef(ret_1) == intFromRef(radix)
+
+
+method digitOf(char: Ref, radix: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(radix), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) == -1 ||
+    0 <= intFromRef(ret_3) && intFromRef(ret_3) < intFromRef(radix)
+
+
+method toIntOrNull(this: Ref, radix: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(radix), intType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(intType()))
+{
+  var anon_2: Ref
+  var length: Ref
+  var start: Ref
+  var isNegative: Ref
+  var limit: Ref
+  var firstChar: Ref
+  var limitForMaxRadix: Ref
+  var limitBeforeMul: Ref
+  var l0_result: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var i: Ref
+  var anon_3: Ref
+  anon_2 := checkRadix(radix)
+  length := stringLength(this)
+  if (intFromRef(length) == 0) {
+    v_ret_0 := nullValue()
+    goto lbl_ret_0
+  }
+  firstChar := stringGet(this, intToRef(0))
+  if (charFromRef(firstChar) < 48) {
+    if (intFromRef(length) == 1) {
+      v_ret_0 := nullValue()
+      goto lbl_ret_0
+    }
+    start := intToRef(1)
+    if (charFromRef(firstChar) == 45) {
+      isNegative := boolToRef(true)
+      limit := intToRef(-2147483648)
+    } elseif (charFromRef(firstChar) == 43) {
+      isNegative := boolToRef(false)
+      limit := negInt(intToRef(2147483647))
+    } else {
+      v_ret_0 := nullValue()
+      goto lbl_ret_0
+    }
+  } else {
+    start := intToRef(0)
+    isNegative := boolToRef(false)
+    limit := negInt(intToRef(2147483647))
+  }
+  limitForMaxRadix := divInts(negInt(intToRef(2147483647)), intToRef(36))
+  limitBeforeMul := limitForMaxRadix
+  l0_result := intToRef(0)
+  anon_0 := start
+  anon_1 := length
+  i := anon_0
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(length), intType())
+    invariant isSubtype(typeOf(start), intType())
+    invariant isSubtype(typeOf(isNegative), boolType())
+    invariant isSubtype(typeOf(limit), intType())
+    invariant isSubtype(typeOf(firstChar), charType())
+    invariant isSubtype(typeOf(limitForMaxRadix), intType())
+    invariant isSubtype(typeOf(limitBeforeMul), intType())
+    invariant isSubtype(typeOf(l0_result), intType())
+    invariant isSubtype(typeOf(radix), intType())
+    invariant isSubtype(typeOf(this), stringType())
+    invariant intFromRef(anon_0) <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_1) ||
+      intFromRef(i) == intFromRef(anon_0))
+    invariant intFromRef(limit) <= intFromRef(l0_result) &&
+      intFromRef(l0_result) <= 0
+    invariant intFromRef(limitBeforeMul) == intFromRef(limitForMaxRadix) ||
+      intFromRef(limitBeforeMul) ==
+      (let anon_builtin ==
+        (divInts(limit, radix)) in
+        (intFromRef(limit) < 0 != intFromRef(radix) < 0 ?
+          -((intFromRef(limit) < 0 ?
+            -intFromRef(limit) :
+            intFromRef(limit)) \
+          (intFromRef(radix) < 0 ? -intFromRef(radix) : intFromRef(radix))) :
+          (intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+          (intFromRef(radix) < 0 ? -intFromRef(radix) : intFromRef(radix))))
+  anon_3 := ltInts(i, anon_1)
+  if (boolFromRef(anon_3)) {
+    var digit: Ref
+    digit := digitOf(stringGet(this, i), radix)
+    if (intFromRef(digit) < 0) {
+      v_ret_0 := nullValue()
+      goto lbl_ret_0
+    }
+    if (intFromRef(l0_result) < intFromRef(limitBeforeMul)) {
+      if (intFromRef(limitBeforeMul) == intFromRef(limitForMaxRadix)) {
+        limitBeforeMul := divInts(limit, radix)
+        if (intFromRef(l0_result) < intFromRef(limitBeforeMul)) {
+          v_ret_0 := nullValue()
+          goto lbl_ret_0
+        }
+      } else {
+        v_ret_0 := nullValue()
+        goto lbl_ret_0
+      }
+    }
+    l0_result := timesInts(l0_result, radix)
+    if (intFromRef(l0_result) <
+    (let anon_builtin ==
+      (plusInts(limit, digit)) in
+      intFromRef(limit) + intFromRef(digit))) {
+      v_ret_0 := nullValue()
+      goto lbl_ret_0
+    }
+    l0_result := minusInts(l0_result, digit)
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(length), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(start), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(isNegative), boolType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(limit), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(firstChar), charType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(limitForMaxRadix), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(limitBeforeMul), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(l0_result), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(radix), intType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(this), stringType())
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(anon_0) <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_1) ||
+    intFromRef(i) == intFromRef(anon_0))
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(limit) <= intFromRef(l0_result) &&
+    intFromRef(l0_result) <= 0
+  assert !(intFromRef(i) < intFromRef(anon_1) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(limitBeforeMul) == intFromRef(limitForMaxRadix) ||
+    intFromRef(limitBeforeMul) ==
+    (let anon_builtin ==
+      (divInts(limit, radix)) in
+      (intFromRef(limit) < 0 != intFromRef(radix) < 0 ?
+        -((intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+        (intFromRef(radix) < 0 ? -intFromRef(radix) : intFromRef(radix))) :
+        (intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+        (intFromRef(radix) < 0 ? -intFromRef(radix) : intFromRef(radix))))
+  if (boolFromRef(isNegative)) {
+    var anon_4: Ref
+    anon_4 := l0_result
+    v_ret_0 := anon_4
+  } else {
+    var anon_5: Ref
+    anon_5 := negInt(l0_result)
+    v_ret_0 := anon_5
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}

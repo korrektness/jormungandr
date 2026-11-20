@@ -141,6 +141,17 @@ The encoding stays in integer arithmetic, and its cost depends on the operands:
 - A variable shift distance multiplies or divides by a table of powers of two; a proof splits on the distance.
 - Other combinations of two non-literal operands are summed bit by bit. Such proofs, and failing proofs about them, can reach the verification timeout. So can chains of literal `xor`s other than 0 and -1.
 
+### Ranges and coercion
+
+`x in a..b`, `x in a..<b` and `x in a until b`, and their `!in` forms, are comparisons with the ends when the
+range is written at the membership test with `Int` or `Long` ends and the element is an `Int` or `Long`, in any
+mix, as in `formatLength !in 0..Int.MAX_VALUE` for a `Long` `formatLength`. This includes `in` branches of `when`.
+The ends are evaluated before the element, as Kotlin does. Membership in a range held in a variable or built
+another way is a library call.
+
+`coerceAtLeast`, `coerceAtMost` and the two-bound `coerceIn` on `Int` and `Long` have their stdlib definitions.
+`coerceIn` throws when its minimum exceeds its maximum.
+
 ## Equality
 
 Kotlin `a == b` is `a.equals(b)`, or `b === null` when `a` is null; `a != b` is its negation, and a `when` branch
