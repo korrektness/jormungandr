@@ -102,6 +102,13 @@ and relevant environment. `cache/` holds the existing raw verification cache rep
 test harness; consumer compilation does not emit them. Up-to-date tasks produce
 no verification attempts. Gradle command records carry cache sampling and daemon flags.
 
+## Shared Gradle daemons
+
+All sessions of a bot user share one Gradle daemon registry and cache in `~/.gradle`.
+Sharing is fine, but `./gradlew --stop` stops every session's daemons, including
+single-use `--no-daemon` builds. For throwaway measurements, use `--no-daemon` or your
+own `GRADLE_USER_HOME`; never run `--stop`.
+
 ## Exit codes
 
 `check-all.sh` reports each of its four checks as passed, failed or skipped.
