@@ -158,6 +158,14 @@ tasks.register<Test>("untilConversion") {
     systemProperty("formver.testMode", "CHECK_CONVERSION")
 }
 
+val integrationPluginJar by tasks.registering(ShadowJar::class) {
+    archiveBaseName.set("${project.name}-integration")
+    archiveClassifier.set("")
+    destinationDirectory.set(layout.buildDirectory.dir("integration-plugin"))
+    from(sourceSets.main.map { it.output })
+    configurations.add(project.configurations.runtimeClasspath)
+}
+
 val handwrittenTests = handwrittenTiers.map { (tier, sources) ->
     val solver = tier == "integration"
     val test = tasks.register<Test>("${tier}Test") {
@@ -169,6 +177,8 @@ val handwrittenTests = handwrittenTiers.map { (tier, sources) ->
         if (solver) {
             provideZ3()
             limitSiliconParallelism()
+            dependsOn(integrationPluginJar)
+            systemProperty("formver.pluginJar", integrationPluginJar.get().archiveFile.get().asFile.path)
         }
     }
     registerTestRunnerSpec(

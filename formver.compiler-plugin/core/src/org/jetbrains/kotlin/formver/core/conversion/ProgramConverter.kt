@@ -117,14 +117,16 @@ class ProgramConverter(
      * Excludes the derived [ConversionErrors.VERIFICATION_SKIPPED] summary, which is itself fired
      * in reaction to primary diagnostics.
      */
-    var hadConversionError: Boolean = false
+    val hadConversionError: Boolean get() = firstConversionError != null
+
+    var firstConversionError: Failure? = null
         private set
 
     override var provenConstruction: FirRegularClassSymbol? = null
 
     private fun emit(failure: Failure) {
         context(checkerContext) { reporter.reportFailure(failure) }
-        hadConversionError = true
+        if (firstConversionError == null) firstConversionError = failure
     }
 
     override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition) =
@@ -177,10 +179,8 @@ class ProgramConverter(
         private set
 
     /** Whether a registered function is recursive without a termination measure. It is not verified. */
-    private var hadMissingMeasure: Boolean = false
-
-    val skipsVerification: Boolean
-        get() = hadUniquenessError || hadOwnershipError || hadMissingMeasure
+    var hadMissingMeasure: Boolean = false
+        private set
 
     override val typeResolver: TypeResolver = TypeResolver()
 

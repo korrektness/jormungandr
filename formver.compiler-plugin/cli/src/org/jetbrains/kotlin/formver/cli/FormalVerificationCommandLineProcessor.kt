@@ -40,6 +40,7 @@ object FormalVerificationConfigurationKeys {
     val EXTERNAL_SPEC_FILES: CompilerConfigurationKey<List<File>> =
         CompilerConfigurationKey.create("external specification sources")
     val TRUST_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("trust report")
+    val DECLARATION_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("declaration report")
 }
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -104,6 +105,13 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
+        val DECLARATION_REPORT_OPTION = CliOption(
+            FormalVerificationPluginNames.DECLARATION_REPORT_OPTION_NAME,
+            "<path>",
+            "Tab-separated file with the conversion and verification outcome of each function",
+            required = false,
+            allowMultipleOccurrences = false
+        )
     }
 
     override val pluginId: String = FormalVerificationPluginNames.PLUGIN_ID
@@ -119,6 +127,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         DUMP_UNIQUENESS_CFG_OPTION,
         EXTERNAL_SPEC_OPTION,
         TRUST_REPORT_OPTION,
+        DECLARATION_REPORT_OPTION,
     )
 
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) =
@@ -167,6 +176,11 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                 TRUST_REPORT_OPTION -> {
                     require(value.isNotBlank())
                     configuration.put(FormalVerificationConfigurationKeys.TRUST_REPORT, File(value))
+                }
+
+                DECLARATION_REPORT_OPTION -> {
+                    require(value.isNotBlank())
+                    configuration.put(FormalVerificationConfigurationKeys.DECLARATION_REPORT, File(value))
                 }
 
                 else -> throw CliOptionProcessingException("Unknown option: ${option.optionName}")

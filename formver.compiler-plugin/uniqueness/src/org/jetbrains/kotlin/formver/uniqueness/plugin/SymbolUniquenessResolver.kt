@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.arguments
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.expressions.unwrapArgument
-import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
@@ -53,6 +52,7 @@ import org.jetbrains.kotlin.formver.readonly.plugin.postconditionsId
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.collectTails
 import org.jetbrains.kotlin.formver.type.plugin.removeCast
+import org.jetbrains.kotlin.formver.type.plugin.unwrapResolvedExpression
 
 fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
     resolvedType.scopeUniqueness
@@ -135,7 +135,7 @@ private fun FirExpression.resolveInitializerUniqueness(): Uniqueness {
 }
 
 private fun FirExpression.collectCallTails(): Sequence<FirFunctionCall> {
-    val expression = unwrapExpression().removeCast()
+    val expression = unwrapResolvedExpression().removeCast()
     val tails = expression.collectTails()
     if (tails.any()) return tails.flatMap { it.collectCallTails() }
     val call = expression as? FirFunctionCall ?: return emptySequence()

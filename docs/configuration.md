@@ -22,6 +22,7 @@ Put Gradle settings in `formver { ... }`. With `kotlinc`, pass each setting as
 | `dumpUniquenessCFG(true)` | `dump_uniqueness_cfg` | `true`, `false`; dumps the uniqueness control-flow graph with flow information. |
 | `externalSpec("specs/Library.kt")` | `external_spec` | Existing `.kt` source file; see [External specification inputs](#external-specification-inputs). |
 | Managed by the Gradle plugin | `trust_report` | Nonblank output file path; see [Trust reports](#trust-reports). |
+| Not exposed | `declaration_report` | Nonblank output file path; see [Declaration reports](#declaration-reports). |
 
 The option registry and parsers are
 [`FormalVerificationCommandLineProcessor`](../formver.compiler-plugin/cli/src/org/jetbrains/kotlin/formver/cli/FormalVerificationCommandLineProcessor.kt).
@@ -139,3 +140,27 @@ compiler reports the summary at INFO. A compilation replaces entries for the fil
 it compiles and retains other entries for incremental compilation. The report's
 contents and interpretation are defined in
 [The trust report](soundness.md#the-trust-report).
+
+## Declaration reports
+
+`declaration_report` makes a direct compiler invocation write a tab-separated
+file with one row per program that SnaKt converts or excludes: the body of each
+source function or property accessor that has one, and each lambda converted
+as a program of its own.
+A compilation replaces the file. The first line names the columns:
+
+| Column | Value |
+|:--|:--|
+| `file`, `line` | Source path and 1-based line where the declaration starts. |
+| `declaration` | Fully qualified name, as in verification progress messages. |
+| `program` | `body`, or `lambdaN` for the declaration's N-th lambda program, numbered as in verification progress messages. |
+| `conversion` | `converted`; `stopped` when conversion reported an error; `excluded` when the function is not converted by design: marked `@NeverConvert`, a specification, a law, or not selected. |
+| `conversion_kind` | For `stopped`, the [`FailureKind`](../formver.common/src/org/jetbrains/kotlin/formver/common/Failure.kt) of the first conversion error. |
+| `conversion_reason` | For `stopped`, that error's reason code, the name of the rule or reason its condition carries, or else the condition's type name; for `excluded`, `NEVER_CONVERT`, `SPEC_OF`, `LAW` or `NOT_SELECTED`. |
+| `conversion_detail` | For `stopped`, that error's message. |
+| `verification` | For a converted program: `verified`, `failed`, `timeout`, `error`, `skipped` when conversion found errors that prevent verification, or `not_selected`. |
+| `verification_detail` | For `failed`, the `FailureKind` of each verification error, sorted and comma-separated; for `skipped`, the skip reason; for `error`, the reason and message. |
+| `seconds` | Verification time of the program. |
+
+Compilations run by the test facade write no rows for converted programs,
+because the facade verifies them itself.

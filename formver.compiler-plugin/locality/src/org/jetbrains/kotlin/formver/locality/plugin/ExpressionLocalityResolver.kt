@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.formver.type.plugin.QualifiedAccessArgumentTypeFactM
 import org.jetbrains.kotlin.formver.type.plugin.ReturnResultTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.ThrowExceptionTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolver
+import org.jetbrains.kotlin.formver.type.plugin.checkedReceiver
 
 private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
     context(context: CheckerContext)
@@ -51,7 +52,7 @@ private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
                 else graph.resolveScopeLocality()
             }
 
-            is FirCheckedSafeCallSubject -> expression.originalReceiverRef.value.resolveLocality()
+            is FirCheckedSafeCallSubject -> expression.checkedReceiver?.resolveLocality() ?: Locality.Global
 
             is FirSafeCallExpression -> (expression.selector as? FirExpression)?.resolveLocality() ?: Locality.Global
 

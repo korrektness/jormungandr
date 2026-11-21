@@ -1,0 +1,13 @@
+/star_projections.kt: info: Generated Viper text for starValue:
+method starValue(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  v_ret_0 := value(b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method value(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))

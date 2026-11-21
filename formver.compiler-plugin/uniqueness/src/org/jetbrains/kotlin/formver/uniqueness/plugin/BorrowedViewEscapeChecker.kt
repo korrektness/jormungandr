@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.readonly.plugin.*
+import org.jetbrains.kotlin.formver.type.plugin.checkedReceiver
 
 /** Classifies each owned-view use in its lexical read-only region; inline formals are an explicit boundary. */
 object BorrowedViewEscapeChecker : FirFunctionChecker(MppCheckerKind.Common) {
@@ -36,7 +37,7 @@ private class BorrowedViewUses(
 ) {
     private fun bearing(e: FirExpression): Boolean = when (e) {
         is FirSmartCastExpression -> bearing(e.originalExpression)
-        is FirCheckedSafeCallSubject -> bearing(e.originalReceiverRef.value)
+        is FirCheckedSafeCallSubject -> e.checkedReceiver?.let(::bearing) == true
         is FirCheckNotNullCall -> true
         is FirTypeOperatorCall -> e.operation in setOf(FirOperation.AS, FirOperation.SAFE_AS)
         is FirSafeCallExpression -> bearing(e.receiver)

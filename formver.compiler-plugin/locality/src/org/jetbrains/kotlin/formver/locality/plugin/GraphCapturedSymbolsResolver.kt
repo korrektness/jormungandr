@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
-import org.jetbrains.kotlin.fir.expressions.unwrapExpression
+import org.jetbrains.kotlin.formver.type.plugin.unwrapResolvedExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CallableReferenceNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
@@ -77,7 +77,7 @@ class GraphCapturedSymbolsResolver(session: FirSession) : FirExtensionSessionCom
     private fun FirQualifiedAccessExpression.collectReceiverSymbolsTo(symbols: MutableSet<FirBasedSymbol<*>>) {
         // Implicit `this` receivers need not have their own access node in the control-flow graph.
         for (receiver in listOfNotNull(dispatchReceiver, extensionReceiver)) {
-            val thisReceiver = receiver.unwrapExpression() as? FirThisReceiverExpression ?: continue
+            val thisReceiver = receiver.unwrapResolvedExpression() as? FirThisReceiverExpression ?: continue
             symbols.addIfNotNull(thisReceiver.calleeReference.symbol)
         }
     }

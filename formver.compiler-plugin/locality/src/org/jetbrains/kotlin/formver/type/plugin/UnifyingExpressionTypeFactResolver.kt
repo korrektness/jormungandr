@@ -9,28 +9,48 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.FirCachesFactory
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirCatch
+import org.jetbrains.kotlin.fir.expressions.FirCheckNotNullCall
+import org.jetbrains.kotlin.fir.expressions.FirCheckedSafeCallSubject
+import org.jetbrains.kotlin.fir.expressions.FirDesugaredAssignmentValueReferenceExpression
 import org.jetbrains.kotlin.fir.expressions.FirElvisExpression
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirOperation
+import org.jetbrains.kotlin.fir.expressions.FirSmartCastExpression
 import org.jetbrains.kotlin.fir.expressions.FirTryExpression
 import org.jetbrains.kotlin.fir.expressions.FirTypeOperatorCall
 import org.jetbrains.kotlin.fir.expressions.FirWhenBranch
 import org.jetbrains.kotlin.fir.expressions.FirWhenExpression
 import org.jetbrains.kotlin.fir.expressions.argument
-import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.lastExpression
+import org.jetbrains.kotlin.fir.types.isResolved
 import org.jetbrains.kotlin.utils.yieldIfNotNull
+
+val FirCheckedSafeCallSubject.checkedReceiver: FirExpression?
+    get() = originalReceiverRef.value.takeIf { it.isResolved }
+
+/**
+ * Strips smart casts, safe-call subjects, `!!` and desugared assignment references, like Kotlin's `unwrapExpression`,
+ * but stops at a safe-call subject whose [checkedReceiver] is unknown.
+ */
+fun FirExpression.unwrapResolvedExpression(): FirExpression =
+    when (this) {
+        is FirSmartCastExpression -> originalExpression.unwrapResolvedExpression()
+        is FirCheckedSafeCallSubject -> checkedReceiver?.unwrapResolvedExpression() ?: this
+        is FirCheckNotNullCall -> argumentList.arguments.first().unwrapResolvedExpression()
+        is FirDesugaredAssignmentValueReferenceExpression -> expressionRef.value.unwrapResolvedExpression()
+        else -> this
+    }
 
 /**
  * Strips [FirExpression] from cast operations.
  */
 fun FirExpression.removeCast(): FirExpression =
     when (this) {
-        is org.jetbrains.kotlin.fir.expressions.FirCheckNotNullCall ->
-            argumentList.arguments.single().unwrapExpression().removeCast()
+        is FirCheckNotNullCall ->
+            argumentList.arguments.single().unwrapResolvedExpression().removeCast()
         is FirTypeOperatorCall -> when (operation) {
             FirOperation.AS, FirOperation.SAFE_AS ->
-                argument.unwrapExpression().removeCast()
+                argument.unwrapResolvedExpression().removeCast()
             else -> this
         }
         else -> this
@@ -45,7 +65,7 @@ fun FirExpression.removeCast(): FirExpression =
  *  in for our uniqueness and locality analyses.
  */
 fun FirExpression.collectTails(): Sequence<FirExpression> =
-    when (val expression = unwrapExpression()) {
+    when (val expression = unwrapResolvedExpression()) {
         is FirWhenExpression ->
             sequence {
                 yieldAll(expression.branches.map(FirWhenBranch::result))
@@ -94,7 +114,7 @@ class UnifyingExpressionTypeFactResolver<TypeFact>(
 
     context(context: CheckerContext)
     private fun extractTypeFactOf(expression: FirExpression): TypeFact {
-        val expression = expression.unwrapExpression().removeCast()
+        val expression = expression.unwrapResolvedExpression().removeCast()
         val tails = expression.collectTails()
 
         if (!tails.any()) {

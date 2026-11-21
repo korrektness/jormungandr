@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
+import org.jetbrains.kotlin.formver.type.plugin.checkedReceiver
 import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
 /** Stable source paths for locals in lexical read-only regions. Values are still evaluated at their declarations. */
@@ -56,7 +57,7 @@ class BorrowedViews(file: FirFile, context: CheckerContext) {
 
     fun source(expression: FirExpression): Path? = when (expression) {
         is FirSmartCastExpression -> source(expression.originalExpression)
-        is FirCheckedSafeCallSubject -> source(expression.originalReceiverRef.value)
+        is FirCheckedSafeCallSubject -> expression.checkedReceiver?.let(::source)
         is FirCheckNotNullCall -> source(expression.argumentList.arguments.single())
         is FirTypeOperatorCall -> if (expression.operation in setOf(FirOperation.AS, FirOperation.SAFE_AS))
             source(expression.argument) else null

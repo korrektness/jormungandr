@@ -18,4 +18,5 @@ object FormalVerificationPluginNames {
     const val DUMP_UNIQUENESS_CFG_OPTION_NAME = "dump_uniqueness_cfg"
     const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"
     const val TRUST_REPORT_OPTION_NAME = "trust_report"
+    const val DECLARATION_REPORT_OPTION_NAME = "declaration_report"
 }

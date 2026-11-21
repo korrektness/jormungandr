@@ -153,7 +153,7 @@ fun FirPropertyAccessExpression.isOwnedConstructionField(): Boolean {
 
 @OptIn(SymbolInternals::class)
 private fun FirPropertySymbol.isConstructionField(cls: FirRegularClassSymbol, session: FirSession): Boolean {
-    val member = cls.effectiveConstructionMember(this, session) as FirPropertySymbol
+    val member = cls.effectiveConstructionMember(this, session) as? FirPropertySymbol ?: return false
     return !member.isAbstract && cls.isFixedConstructionDispatch(member, session) &&
         member.getterSymbol?.fir.let { it == null || it is FirDefaultPropertyGetter } &&
         member.setterSymbol?.fir.let { it == null || it is FirDefaultPropertySetter }

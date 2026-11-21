@@ -1,0 +1,113 @@
+/suspend.kt: info: Generated Viper text for Counter:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_n := par_n
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/suspend.kt: info: Generated Viper text for pause:
+method pause() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/suspend.kt: info: Generated Viper text for localAcrossSuspension:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method localAcrossSuspension(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var anon: Ref
+  k := x
+  anon := pause()
+  assert intFromRef(k) == intFromRef(x)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method pause() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/suspend.kt: info: Generated Viper text for ownedAcrossSuspension:
+field bf_n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method ownedAcrossSuspension() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  c := con(intToRef(1))
+  fold acc(Counter_unique(c), write)
+  anon_0 := pause()
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.bf_n
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method pause() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/suspend.kt: info: Generated Viper text for sharedAcrossSuspension:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pause() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method sharedAcrossSuspension(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon: Ref
+  var after: Ref
+  before := havoc(intType())
+  anon := pause()
+  after := havoc(intType())
+  assert intFromRef(after) == intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

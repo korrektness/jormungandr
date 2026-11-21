@@ -58,6 +58,7 @@ import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.type.plugin.checkedReceiver
 import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import org.jetbrains.kotlin.utils.filterIsInstanceAnd
@@ -283,7 +284,7 @@ fun StmtConversionContext.establishBeforeExposure(value: ExpEmbedding): ExpEmbed
  * no receiver the function owns holds, so it is not owned.
  */
 fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
-    val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
+    val denoted = (expression as? FirCheckedSafeCallSubject)?.checkedReceiver ?: expression
     if (constructionReceiver != null) {
         val constructedPath = convert(denoted).ownedPath()
         if (constructedPath?.root == constructionReceiver) {
@@ -303,7 +304,7 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
  * or, when it denotes no path, declares it `Unique`.
  */
 fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirExpression): Boolean {
-    val denoted = (receiver as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: receiver
+    val denoted = (receiver as? FirCheckedSafeCallSubject)?.checkedReceiver ?: receiver
     if (ownershipFrame.pathOf(denoted) != null) return ownsBefore(element, receiver)
     return context(checkerContext) { denoted.resolveUniqueness() } == Uniqueness.Unique
 }
@@ -368,7 +369,7 @@ private fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpr
 
 private fun FirExpression.withoutCasts(): FirExpression = when (this) {
     is FirSmartCastExpression -> originalExpression.withoutCasts()
-    is FirCheckedSafeCallSubject -> originalReceiverRef.value.withoutCasts()
+    is FirCheckedSafeCallSubject -> checkedReceiver?.withoutCasts() ?: this
     is FirTypeOperatorCall -> when (operation) {
         FirOperation.AS, FirOperation.SAFE_AS -> argument.withoutCasts()
         else -> this

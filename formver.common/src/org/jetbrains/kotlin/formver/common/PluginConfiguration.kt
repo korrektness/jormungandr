@@ -26,6 +26,7 @@ data class PluginConfiguration(
     val verifiedDeclarations: VerifiedDeclarations? = null,
     /** File-batch worker selection; see docs/configuration.md. */
     val verificationWorkers: Int = 0,
+    val declarationReport: DeclarationReport? = null,
 ) {
     companion object {
         const val DEFAULT_VERIFICATION_TIMEOUT_SECONDS = 300

@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
-import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
@@ -27,6 +26,7 @@ import org.jetbrains.kotlin.formver.type.plugin.ThrowTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactMismatchExplainer
 import org.jetbrains.kotlin.formver.type.plugin.ValueParameterTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.removeCast
+import org.jetbrains.kotlin.formver.type.plugin.unwrapResolvedExpression
 
 /**
  * The uniqueness an assignment or initializer requires of the value written to a variable. An inferred local accepts
@@ -122,7 +122,7 @@ object SharedConstructionExplainer : TypeFactMismatchExplainer<Uniqueness> {
         actualTypeFact: Uniqueness,
     ): Boolean {
         if (requiredTypeFact != Uniqueness.Unique) return false
-        val call = expression.unwrapExpression().removeCast() as? FirFunctionCall ?: return false
+        val call = expression.unwrapResolvedExpression().removeCast() as? FirFunctionCall ?: return false
         val constructor = call.calleeReference.symbol as? FirConstructorSymbol ?: return false
         val escape = constructor.resolveConstructionEscape(context.session) ?: return false
         reporter.reportFailure(constructionFailure(source, position, escape))

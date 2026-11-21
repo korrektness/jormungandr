@@ -101,7 +101,9 @@ private class ConstructionDiscipline(private val owner: FirRegularClassSymbol, p
                 else {
                     thisReceiver(element.dispatchReceiver)?.let(fixedReceivers::add)
                     if (callee is FirNamedFunctionSymbol || callee is FirPropertySymbol) {
-                        inspectMember(owner.effectiveConstructionMember(callee, session))
+                        inspectMember(checkNotNull(owner.effectiveConstructionMember(callee, session)) {
+                            "${owner.classId} has no single member implementing ${callee.callableId} although its dispatch is fixed."
+                        })
                     }
                 }
             }

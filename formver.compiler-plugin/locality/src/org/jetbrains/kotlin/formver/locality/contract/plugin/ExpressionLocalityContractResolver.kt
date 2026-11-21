@@ -35,6 +35,7 @@ import org.jetbrains.kotlin.formver.type.plugin.InvokeParameterTypeFactsResolver
 import org.jetbrains.kotlin.formver.type.plugin.QualifiedAccessArgumentTypeFactMapper
 import org.jetbrains.kotlin.formver.type.plugin.ReturnResultTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolver
+import org.jetbrains.kotlin.formver.type.plugin.checkedReceiver
 
 private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<LocalityContract?> {
     context(context: CheckerContext)
@@ -47,7 +48,10 @@ private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<Loc
     context(context: CheckerContext)
     private fun resolveValueTypeFactOf(expression: FirExpression): LocalityContract? =
         when (expression) {
-            is FirCheckedSafeCallSubject -> expression.originalReceiverRef.value.resolveLocalityContract()
+            is FirCheckedSafeCallSubject -> when (val receiver = expression.checkedReceiver) {
+                null -> expression.resolvedType.resolveLocalityContract(context.session)
+                else -> receiver.resolveLocalityContract()
+            }
             is FirSafeCallExpression -> (expression.selector as? FirExpression)?.resolveLocalityContract()
             is FirCallableReferenceAccess ->
                 when (val symbol = expression.calleeReference.symbol) {

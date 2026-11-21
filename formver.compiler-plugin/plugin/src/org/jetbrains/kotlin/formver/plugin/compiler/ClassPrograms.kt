@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationOblig
 import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
+import org.jetbrains.kotlin.formver.core.conversion.skipsVerification
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend

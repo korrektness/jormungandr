@@ -18,22 +18,32 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 
-/** The real declaration that implements [callee] in the constructed class's member scope. */
-fun FirRegularClassSymbol.effectiveConstructionMember(callee: FirCallableSymbol<*>, session: FirSession): FirCallableSymbol<*> {
+/**
+ * The real declaration that implements [callee] in the constructed class's member scope, or null when no member, or
+ * more than one, overrides it, as for fields and for Java getters accessed as synthetic properties.
+ */
+fun FirRegularClassSymbol.effectiveConstructionMember(callee: FirCallableSymbol<*>, session: FirSession): FirCallableSymbol<*>? {
     val scope = unsubstitutedScope(session, ScopeSession(), false, FirResolvePhase.BODY_RESOLVE)
     val candidates = mutableListOf<FirCallableSymbol<*>>()
     when (callee) {
         is FirNamedFunctionSymbol -> scope.processFunctionsByName(callee.name) { candidates += it }
         is FirPropertySymbol -> scope.processPropertiesByName(callee.name) { candidates += it }
-        else -> error("Construction dispatch requires a function or property member.")
+        else -> return null
     }
     val target = callee.unwrapFakeOverrides()
-    return candidates.single { overridesConstructionMember(it, scope, target, mutableSetOf()) }.unwrapFakeOverrides()
+    return candidates.singleOrNull { overridesConstructionMember(it, scope, target, mutableSetOf()) }?.unwrapFakeOverrides()
 }
 
-/** Whether the constructed class fixes the implementation of [callee]. */
-fun FirRegularClassSymbol.isFixedConstructionDispatch(callee: FirCallableSymbol<*>, session: FirSession): Boolean =
-    isFinal || effectiveConstructionMember(callee, session).isFinal
+/**
+ * Whether the constructed class fixes the implementation of [callee]. Fields never dispatch. A function or property is
+ * fixed when the member scope resolves it to exactly one [effectiveConstructionMember] and that member or the class is
+ * final.
+ */
+fun FirRegularClassSymbol.isFixedConstructionDispatch(callee: FirCallableSymbol<*>, session: FirSession): Boolean {
+    if (callee !is FirNamedFunctionSymbol && callee !is FirPropertySymbol) return true
+    val member = effectiveConstructionMember(callee, session) ?: return false
+    return isFinal || member.isFinal
+}
 
 private fun overridesConstructionMember(
     member: FirCallableSymbol<*>,
@@ -51,7 +61,7 @@ private fun overridesConstructionMember(
     when (member) {
         is FirNamedFunctionSymbol -> scope.processDirectOverriddenFunctionsWithBaseScope(member, ::inspect)
         is FirPropertySymbol -> scope.processDirectOverriddenPropertiesWithBaseScope(member, ::inspect)
-        else -> error("Construction dispatch requires a function or property member.")
+        else -> return false
     }
     return matches
 }

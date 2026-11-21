@@ -54,10 +54,7 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
         withReturnType { embedTypeWithBuilder(type.returnType(converter.session)) }
     }
 
-    type.canBeNull(converter.session) -> {
-        isNullable = true
-        embedTypeWithBuilder(type.withNullability(false, converter.session.typeContext))
-    }
+    type.canBeNull(converter.session) -> embedNullable(type)
 
     type.isAny -> any()
     type is ConeClassLikeType && type.lookupTag.classId.asSingleFqName().asString() ==
@@ -97,6 +94,14 @@ internal fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirF
     }
     withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
     returnsUnique = context(converter.checkerContext) { symbol.returnsUnique() }
+}
+
+context(converter: ProgramConverter)
+private fun TypeBuilder.embedNullable(type: ConeKotlinType): PretypeBuilder {
+    isNullable = true
+    val nonNullable = type.withNullability(false, converter.session.typeContext)
+    if (nonNullable == type) unimplementedTypeEmbedding(type)
+    return embedTypeWithBuilder(nonNullable)
 }
 
 context(converter: ProgramConverter)
