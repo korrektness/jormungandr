@@ -82,7 +82,7 @@ grep -h -E 'error: \[(INTEGER_OVERFLOW|POSSIBLE_INDEX_OUT_OF_BOUND|DIVISION_BY_Z
   parameter as intended can make it fail.
   - **D1** is plain API use.
   - **D2** is TLS code or code that handles network input. D2 rows are classified
-    by reading only. Each states the unmet obligation and nothing more.
+    by reading only. This document gives their counts and leaves the rows out.
 
 ## Counts
 
@@ -333,33 +333,6 @@ class RateLimitInfiniteRefillTest {
 }
 ```
 
-## D2: candidates by reading; to be reported privately to the maintainers before any publication
-
-| Location | Unmet obligation |
-|:--|:--|
-| ktor-http-cio `HttpParser.kt` `parseStatusCode` (2) | `status * 10 + digit` is computed for every digit before the separator, and the digit count is not checked to keep it within `Int`. |
-| ktor-http-cio `internals/AsciiCharTree.kt` `AsciiCharTree.search` | The table has 256 entries and the index, a UTF-16 code unit, is not checked to be below 256. |
-| ktor-http-cio `internals/CharArrayBuilder.kt` `CharArrayBuilder.append`, `CharArrayBuilder.copy` | `length` counts all characters of the header block, and the number of header lines is not checked to keep it within `Int`. |
-| ktor-network-tls `cipher/CBCCipher.kt` `CBCCipher.validatePadding` | `paddingStart` is not checked to be non-negative before it indexes `content`. |
-| ktor-network-tls `Render.kt` `ByteWriteChannel.writeRecord` | The record length is not checked to be at most 65535 before `toShort()`. |
-| ktor-resources `serialization/Decoders.kt` `ParametersDecoder.decodeChar`, `ListLikeDecoder.decodeChar` | `decodeChar` takes the first character of the request parameter value without checking that the value is non-empty. |
-| ktor-utils `date/GMTDateParser.kt` `GMTDateParser.parse` | `chunkEnd` is not checked to be at most `dateString.length` before `substring` (string bound); the `substring` is inside `catch (_: Throwable)`, which rethrows `InvalidDateStringException`. |
-| ktor-server-sessions `serialization/ListLikeDecoder.kt` `ListLikeDecoder.decodeChar`, `serialization/SessionsBackwardCompatibleDecoder.kt` `SessionsBackwardCompatibleDecoder.decodeChar` | `decodeChar` reads index 3 of the session value without checking that it has at least four characters (string bound); `SessionTrackerByValue.load` catches `Throwable` from deserialization and returns `null`. |
-| ktor-websockets `DefaultWebSocketSession.kt` `DefaultWebSocketSessionImpl.checkMaxFrameSize` | `frame.data.size + packet.size` is computed in `Int`, and the accumulated fragment size is not checked to keep the sum within `Int`. |
-| ktor-websockets `RawWebSocketCommon.kt` `ByteReadChannel.readFrame`, `jvm/.../WebSocketReader.kt` `WebSocketReader.parseLoop` | The 64-bit payload length is not checked to be non-negative before `toInt()`. |
-| ktor-server-test-base (test support) `HighLoadHttpGenerator.kt` `HighLoadHttpGenerator.ClientState.send` | `remaining` grows by one per parsed status line and is not checked to stay within `Int`. |
-| ktor-server-test-base (test support) `HighLoadHttpGenerator.kt` `HighLoadHttpGenerator.ClientState.findHttpSlow` | The running token size is not checked to be below `HTTP11.size` before it indexes the table. |
-| ktor-server-test-suites (test support) `Utils.kt` `BufferedReader.skipHttpResponseContent` | `current` is bounded only by the response's `Content-Length`, which is not bounded to keep `current + 4` within `Int`. |
-
-Network and TLS code with the same kind of unmet condition, which SnaKt does not report as an obligation:
-
-| Location | Unmet condition |
-|:--|:--|
-| ktor-http-cio `HttpHeadersMap.kt` `HttpHeadersMap.get`, `HttpHeadersMap.getAll`, `HttpHeadersMap.put` | The slot comes from `absoluteValue` of the name hash, which is negative for `Int.MIN_VALUE`, and is not checked to be non-negative. |
-| ktor-network-tls `cipher/CBCCipher.kt` `CBCCipher.decrypt` | `content` is not checked to be non-empty before `content[content.size - 1]`. |
-| ktor-http `auth/HttpAuthHeader.kt` `matchParameter` | `index` is not checked to be below `headerValue.length` after `=` and the following spaces. |
-| ktor-network-tls `Render.kt` `Sink.writeTLSClientHello` | The extension length is not checked to be at most 65535 before `toShort()`. |
-
 ## Undocumented preconditions (C)
 
 | Precondition | Rows |
@@ -562,10 +535,7 @@ Paths under `ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/`.
 | `HttpHeadersMap.kt` | `HttpHeadersMap.valueAtOffset` | `+` | C | As the `+` row of this declaration (`headerOffset > Int.MAX_VALUE - 4`). |
 | `HttpParser.kt` | `parseHeaders` | `-` | B (unstated) | `0 <= range.start <= range.end == builder.length`. |
 | `HttpParser.kt` | `parseUri` | `-` | B (unstated) | `findSpaceOrEnd` returns an index at or after `range.start`. |
-| `HttpParser.kt` | `parseStatusCode` | `*` | D2 | `status * 10 + digit` is computed for every digit before the separator, and the digit count is not checked to keep it within `Int`. |
-| `HttpParser.kt` | `parseStatusCode` | `+` | D2 | As above. |
 | `HttpParser.kt` | `parseHeaderValue` | `+` | B (unstated) | `valueLastIndex < end <= builder.length`. |
-| `internals/AsciiCharTree.kt` | `AsciiCharTree.search` | `index` | D2 | The table has 256 entries and the index, a UTF-16 code unit, is not checked to be below 256. |
 | `internals/AsciiCharTree.kt` | `AsciiCharTree.search` | `index` | B (unstated) | Reached only after the `index` row of this declaration indexed with a code below 256, and lowercasing a Latin-1 character stays below 256. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.getImpl` | `index < size` | B (unstated) | Callers pass `0 <= index < length`, and every buffer has the pool's array length. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.getImpl` | `index >= 0` | B (unstated) | Callers pass `0 <= index < length`. |
@@ -574,7 +544,6 @@ Paths under `ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/`.
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `index >= 0` | B (unstated) | After `nonFullBuffer()`, `0 < remaining <= current.size`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | `0 < remaining <= current.size`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | `remaining >= 1` after `nonFullBuffer()`. |
-| `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `++` | D2 | `length` counts all characters of the header block, and the number of header lines is not checked to keep it within `Int`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | `0 <= remaining <= buffer.size`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | The only caller (ktor-io line reading) passes `0 <= startIndex <= endIndex <= value.length`, and `current < endIndex` in the loop. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `index < size` | B (unstated) | `offset + i < offset + remaining == buffer.size`. |
@@ -583,13 +552,11 @@ Paths under `ktor-http/ktor-http-cio/common/src/io/ktor/http/cio/`.
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `+` | B (unstated) | `current + i < endIndex`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `+` | B (unstated) | `current + bytesToCopy <= endIndex`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | `bytesToCopy <= remaining`. |
-| `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `+` | D2 | As the `++` row of this declaration (`length += endIndex - startIndex`). |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.append` | `-` | B (unstated) | `startIndex <= endIndex` from the only caller. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.copy` | `-` | B (unstated) | `copy` is called with `startIndex <= endIndex`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.copy` | `-` | B (unstated) | `base <= startIndex`, both non-negative. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.copy` | `-` | B (unstated) | `base < endIndex`, both non-negative. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.copy` | `index` | B (unstated) | `innerIndex < min(endIndex - base, CHAR_BUFFER_ARRAY_LENGTH) <= buffer.size`. |
-| `internals/CharArrayBuilder.kt` | `CharArrayBuilder.copy` | `+` | D2 | `base + CHAR_BUFFER_ARRAY_LENGTH` is within `Int` only while `length` stays below `Int.MAX_VALUE - CHAR_BUFFER_ARRAY_LENGTH`, which `CharArrayBuilder.append` does not ensure. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.SubSequenceImpl.length` | `-` | B (unstated) | `SubSequenceImpl` is built with `start <= end`. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.bufferForIndex` | `/` | B (unstated) | `current` is non-null and non-empty whenever `buffers` is non-null. |
 | `internals/CharArrayBuilder.kt` | `CharArrayBuilder.rangeEqualsImpl` | `+` (2) | B (unstated) | Callers pass ranges inside both sequences. |
@@ -703,7 +670,6 @@ Paths under `ktor-network/ktor-network-tls/jvm/src/io/ktor/network/tls/`.
 
 | File | Declaration | Check | Class | Reason |
 |:--|:--|:--|:-:|:--|
-| `cipher/CBCCipher.kt` | `CBCCipher.validatePadding` | `index >= 0` | D2 | `paddingStart = content.size - padding - 1` is not checked to be non-negative before it indexes `content`. |
 | `cipher/CBCCipher.kt` | `CBCCipher.validateMac` | `toShort` | B (unstated) | `readTLSRecord` rejects records over `MAX_TLS_FRAME_SIZE` (0x4800), so `macOffset` fits a Short. |
 | `cipher/CBCCipher.kt` | `CBCCipher.validateMac` | `++ (Long)` | B (unstated) | Per-record sequence counter from 0; one increment per received record. |
 | `cipher/CBCCipher.kt` | `CBCCipher.validateMac` | `+` | B (unstated) | `macOffset + 20 <= content.size - 1`; the MAC length comes from a built-in suite. |
@@ -740,7 +706,6 @@ Paths under `ktor-network/ktor-network-tls/jvm/src/io/ktor/network/tls/`.
 | `Render.kt` | `ByteWriteChannel.writeRecord` | `toByte` | A | Low byte of the 16-bit version code. |
 | `Render.kt` | `Sink.writeTripleByteLength` | `toByte` | A | Byte packing of a 24-bit length. |
 | `Render.kt` | `Sink.writeTripleByteLength` | `toShort` | A | Unsigned 16-bit packing. |
-| `Render.kt` | `ByteWriteChannel.writeRecord` | `toShort` | D2 | The record length `packet.remaining` is not checked to be at most 65535 before `toShort()`. |
 | `TLSAlert.kt` | `TLSAlertLevel.byCode` | `index < size` | B (range) | `in 0..255` guard on a 256-entry array; the census plugin build ignores `in`-range guards. |
 | `TLSAlert.kt` | `TLSAlertLevel.byCode` | `index >= 0` | B (range) | As above. |
 | `TLSAlert.kt` | `TLSAlertType.byCode` | `index < size` | B (range) | As above. |
@@ -936,11 +901,9 @@ Paths under `ktor-server/ktor-server-test-base/jvm/src/io/ktor/server/test/base/
 
 | File | Declaration | Check | Class | Reason |
 |:--|:--|:--|:-:|:--|
-| `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.send` | `+` | D2 | `remaining` grows by one for every status line parsed from the server response, and it is not checked to stay within `Int`. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.doWrite` | `--` | B (unstated) | `remaining` starts at 0 and only grows by a positive `qty` or is reset to 0, and this declaration returns when it is 0. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttp` | `-` | B (unstated) | A `ByteBuffer` keeps `0 <= position <= limit`, so `limit - position` fits. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttpSlow` | `-` | B (unstated) | `tokenSize` is at most 10 and `position` is a non-negative `ByteBuffer` position. |
-| `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttpSlow` | `index < size` | D2 | `idx + offset` equals the running `tokenSize`, which is not checked to be below `HTTP11.size` (8) before it indexes `http`. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttpSlow` | `index >= 0` | B (unstated) | `idx + offset` equals the running `tokenSize`, which is never negative. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttpSlow` | `+` | B (unstated) | `idx + offset` equals the running `tokenSize`, which stays at most 10. |
 | `HighLoadHttpGenerator.kt` | `HighLoadHttpGenerator.ClientState.findHttpSlow` | `++` | B (unstated) | `tokenSize` never exceeds 10: every increment that passes 8, 10 or 3 returns, and each new token resets it. |
@@ -961,9 +924,6 @@ Paths under `ktor-server/ktor-server-test-suites/jvm/src/io/ktor/server/testing/
 |:--|:--|:--|:-:|:--|
 | `Utils.kt` | `crcWithSize` | `+ (Long)` | B (unstated) | `count` grows by at most 65,536 per read of a test response, far below `Long.MAX_VALUE`. |
 | `Utils.kt` | `BufferedReader.skipHttpResponseContent` | `toChar` | B (unstated) | `read()` returns -1 or a UTF-16 code unit, and `assertNotEquals(-1, ch)` throws on -1. |
-| `Utils.kt` | `BufferedReader.skipHttpResponseContent` | `+` | D2 | `current` is checked only to be below the `Content-Length` value read from the response, which is not bounded to keep `current + 2` within `Int`. |
-| `Utils.kt` | `BufferedReader.skipHttpResponseContent` | `+` | D2 | `current` is checked only to be below the `Content-Length` value read from the response, which is not bounded to keep `current + 3` within `Int`. |
-| `Utils.kt` | `BufferedReader.skipHttpResponseContent` | `+` | D2 | `current` is checked only to be below the `Content-Length` value read from the response, which is not bounded to keep `current + 4` within `Int`. |
 
 ### ktor-utils
 
@@ -1050,15 +1010,12 @@ Paths under `ktor-shared/ktor-websockets/common/src/io/ktor/websocket/` (`jvm/..
 | `ControlFrames.kt` | `String.utf8Size` | `+` | B (unstated) | `index` is below `length`, and it advances by 2 only when `index + 1 < length`. |
 | `ControlFrames.kt` | `String.utf8Truncate` | `+` | B (unstated) | `size` stays at most `maxSize` (123 from both callers) and `bytes` is at most 4. |
 | `ControlFrames.kt` | `String.utf8Truncate` | `+` | B (unstated) | As `String.utf8Size`; `index` advances by 2 only when `index + 1 < length`. |
-| `DefaultWebSocketSession.kt` | `DefaultWebSocketSessionImpl.checkMaxFrameSize` | `+` | D2 | `frame.data.size + packet.size` is computed in `Int`, and the accumulated fragment size is not checked to keep the sum within `Int` before it is compared with `maxFrameSize`. |
 | `FrameType.kt` | `FrameType.get` | `index < size` | B (range) | The guard `opcode in 0..maxOpcode` keeps the index inside `byOpcodeArray`, whose size is `maxOpcode + 1`. |
 | `FrameType.kt` | `FrameType.get` | `index >= 0` | B (range) | The guard `opcode in 0..maxOpcode` keeps the index non-negative. |
-| `RawWebSocketCommon.kt` | `ByteReadChannel.readFrame` | `toInt` | D2 | The 64-bit payload length is not checked to be non-negative before `toInt()`; only `length > Int.MAX_VALUE` is rejected. |
 | `jvm/.../internals/BytePacketUtils.kt` | `Source.endsWith` | `- (Long)` | B (unstated) | `remaining` and `data.size` are both non-negative, so the difference fits in `Long`. |
 | `jvm/.../internals/DeflaterUtils.kt` | `Sink.deflateTo` | `+` | B (unstated) | `buffer.clear()` sets the position to 0, and `deflate` returns at most `buffer.limit()`. |
 | `jvm/.../Serializer.kt` | `Serializer.estimateFrameHeaderSize` | `+` | B (unstated) | The header size is 2, 4 or 10 and `maskSize` is 0 or 4. |
 | `jvm/.../SimpleFrameCollector.kt` | `SimpleFrameCollector.handle` | `-` | B (unstated) | `moveTo` returns `min(remaining, …)`, so subtracting it keeps `remaining` between 0 and its old value. |
-| `jvm/.../WebSocketReader.kt` | `WebSocketReader.parseLoop` | `toInt` | D2 | `FrameParser` reads the 64-bit payload length without checking that it is non-negative, and only `length > Int.MAX_VALUE` is rejected before `toInt()`. |
 
 ## String bounds
 
@@ -1073,8 +1030,8 @@ grep -h 'VIPER_VERIFICATION_ERROR' LOG_DIR/*.log \
     | grep -E 'stringGet|substringModel' | grep -v isSubtype | sort -u
 ```
 
-The classes are those above. The C, D1 and D2 rows also appear in the C, D1
-and D2 tables.
+The classes are those above. The C and D1 rows also appear in the C and D1
+tables. The D2 rows are counted and not listed.
 
 | Module | A | B | C | D1 | D2 | Total |
 |:--|--:|--:|--:|--:|--:|--:|
@@ -1170,10 +1127,7 @@ Paths under `ktor-io/common/src/io/ktor/utils/io/` (`jvm/.../` is ktor-io/jvm/sr
 
 Paths under `ktor-shared/ktor-resources/common/src/io/ktor/resources/`.
 
-| File | Declaration | Check | Class | Reason |
-|:--|:--|:--|:-:|:--|
-| `serialization/Decoders.kt` | `ListLikeDecoder.decodeChar` | `stringGet i < len` | D2 | `ListLikeDecoder.decodeChar` takes the first character of the request parameter value without checking that the value is non-empty. |
-| `serialization/Decoders.kt` | `ParametersDecoder.decodeChar` | `stringGet i < len` | D2 | `ParametersDecoder.decodeChar` takes the first character of the request parameter value without checking that the value is non-empty. |
+The rows of this module are class D2.
 
 #### ktor-server-core
 
@@ -1215,10 +1169,7 @@ Paths under `ktor-server/ktor-server-plugins/ktor-server-di/common/src/io/ktor/s
 
 Paths under `ktor-server/ktor-server-plugins/ktor-server-sessions/common/src/io/ktor/server/sessions/` (`jvm/.../` is ktor-server/ktor-server-plugins/ktor-server-sessions/jvm/src/io/ktor/server/sessions/).
 
-| File | Declaration | Check | Class | Reason |
-|:--|:--|:--|:-:|:--|
-| `serialization/ListLikeDecoder.kt` | `ListLikeDecoder.decodeChar` | `stringGet i < len` | D2 | `decodeChar` reads index 3 of the session cookie item without checking that the item has at least four characters; `SessionTrackerByValue.load` catches `Throwable` from deserialization and returns `null`. |
-| `serialization/SessionsBackwardCompatibleDecoder.kt` | `SessionsBackwardCompatibleDecoder.decodeChar` | `stringGet i < len` | D2 | `decodeChar` reads index 3 of the session parameter value without checking that the value has at least four characters; `SessionTrackerByValue.load` catches `Throwable` from deserialization and returns `null`. |
+The rows of this module are class D2.
 
 #### ktor-utils
 
@@ -1228,7 +1179,6 @@ Paths under `ktor-utils/common/src/io/ktor/util/` (`jvm/.../` is ktor-utils/jvm/
 |:--|:--|:--|:-:|:--|
 | `date/GMTDateParser.kt` | `GMTDateParser.parse` | `stringGet i < len` | B (unstated) | The constructor checks `pattern.isNotEmpty()`, so index 0 is in range; the class does not state the invariant. |
 | `date/GMTDateParser.kt` | `GMTDateParser.parse` | `stringGet i >= 0` | B (unstated) | `index` starts at 1 and is only incremented. |
-| `date/GMTDateParser.kt` | `GMTDateParser.parse` | `substringModel end <= len` | D2 | `chunkEnd` is not checked to be at most `dateString.length` before `substring`; the `substring` is inside `catch (_: Throwable)`, which rethrows `InvalidDateStringException`. |
 | `date/GMTDateParser.kt` | `GMTDateParser.parse` | `substringModel start >= 0` | B (unstated) | `chunkStart` starts at 0 and only takes earlier `chunkEnd` values, which are non-negative. |
 | `date/GMTDateParser.kt` | `GMTDateParser.parse` | `substringModel start <= end` | B (unstated) | `chunkEnd` is `chunkStart + index - start` with `index > start`. |
 | `Text.kt` | `String.chomp` | `substringModel end <= len` | B (unstated) | `idx` is an `indexOf` result other than -1, so it is below `length`. |
