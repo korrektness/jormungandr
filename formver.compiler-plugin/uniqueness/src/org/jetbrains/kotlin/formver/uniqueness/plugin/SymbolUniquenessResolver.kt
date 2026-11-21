@@ -118,6 +118,7 @@ context(context: CheckerContext)
 private fun FirPropertySymbol.isGloballyReachable(): Boolean {
     if (isLocal) return false
     val owner = callableId?.classId ?: return true
+    if (owner.isLocal) return false
     return (context.session.symbolProvider.getClassLikeSymbolByClassId(owner) as? FirRegularClassSymbol)?.classKind == ClassKind.OBJECT
 }
 

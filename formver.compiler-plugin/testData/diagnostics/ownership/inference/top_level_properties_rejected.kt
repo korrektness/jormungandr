@@ -34,3 +34,10 @@ object Paths {
 fun `inferred object property passed to an owning parameter`() {
     consume(<!UNIQUENESS_MISMATCH!>Paths.root<!>)
 }
+
+fun `inferred property of an anonymous object passed to an owning parameter`() {
+    val holder = object {
+        val item = make()
+    }
+    consume(<!UNIQUENESS_MISMATCH!>holder.item<!>)
+}
