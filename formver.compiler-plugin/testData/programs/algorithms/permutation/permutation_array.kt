@@ -52,9 +52,7 @@ fun <!VIPER_TEXT!>selectionSort<!>(arr: @Unique @Borrowed IntArray) {
             }
             k++
         }
-        val t = arr[i]
-        arr[i] = arr[m]
-        arr[m] = t
+        swap(arr, i, m)
         i++
     }
 }
@@ -65,6 +63,10 @@ fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
         0 <= j && j < arr.size
     }
     postconditions<Unit> {
+        arr[i] == old(arr[j]) && arr[j] == old(arr[i])
+        forAll<Int> { k ->
+            (0 <= k && k < arr.size && k != i && k != j) implies (arr[k] == old(arr[k]))
+        }
         contents(arr) == old(contents(arr))
     }
     val t = arr[i]

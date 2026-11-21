@@ -33,6 +33,8 @@ fun <!VIPER_TEXT!>mergeStrings<!>(a: String, b: String): String {
         a.length <= 2147483647 - b.length
         forAll<Int> {
             (1 <= it && it < a.length) implies (a[it - 1] <= a[it])
+        }
+        forAll<Int> {
             (1 <= it && it < b.length) implies (b[it - 1] <= b[it])
         }
     }

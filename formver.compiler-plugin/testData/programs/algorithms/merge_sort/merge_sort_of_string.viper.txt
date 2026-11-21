@@ -105,38 +105,40 @@ method mergeStrings(a: Ref, b: Ref) returns (v_ret_0: Ref)
       intFromRef(intToRef(2147483647)) - intFromRef(stringLength(b)))
   requires (forall anon_builtin_0: Int ::
       { stringFromRef(a)[anon_builtin_0] }
-      { stringFromRef(b)[anon_builtin_0] }
       -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
-      (1 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(a)| ==>
+      1 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(a)| ==>
       (let anon_builtin_neg1 ==
         (stringGet(a, minusInts(intToRef(anon_builtin_0), intToRef(1)))) in
         stringFromRef(a)[intFromRef(minusInts(intToRef(anon_builtin_0), intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
         (stringGet(a, intToRef(anon_builtin_0))) in
-        stringFromRef(a)[anon_builtin_0])) &&
-      (1 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(b)| ==>
+        stringFromRef(a)[anon_builtin_0]))
+  requires (forall anon_builtin_1: Int ::
+      { stringFromRef(b)[anon_builtin_1] }
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
+      1 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(b)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(b, minusInts(intToRef(anon_builtin_0), intToRef(1)))) in
-        stringFromRef(b)[intFromRef(minusInts(intToRef(anon_builtin_0), intToRef(1)))]) <=
+        (stringGet(b, minusInts(intToRef(anon_builtin_1), intToRef(1)))) in
+        stringFromRef(b)[intFromRef(minusInts(intToRef(anon_builtin_1), intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
-        (stringGet(b, intToRef(anon_builtin_0))) in
-        stringFromRef(b)[anon_builtin_0])))
+        (stringGet(b, intToRef(anon_builtin_1))) in
+        stringFromRef(b)[anon_builtin_1]))
   ensures isSubtype(typeOf(v_ret_0), stringType())
   ensures |stringFromRef(v_ret_0)| ==
     (let anon_builtin_neg1 ==
       (plusInts(stringLength(a), stringLength(b))) in
       intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
-  ensures (forall anon_builtin_1: Int ::
-      { stringFromRef(v_ret_0)[anon_builtin_1] }
-      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
-      1 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(v_ret_0)| ==>
+  ensures (forall anon_builtin_2: Int ::
+      { stringFromRef(v_ret_0)[anon_builtin_2] }
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
+      1 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(v_ret_0)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(v_ret_0, minusInts(intToRef(anon_builtin_1), intToRef(1)))) in
-        stringFromRef(v_ret_0)[intFromRef(minusInts(intToRef(anon_builtin_1),
+        (stringGet(v_ret_0, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
+        stringFromRef(v_ret_0)[intFromRef(minusInts(intToRef(anon_builtin_2),
         intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
-        (stringGet(v_ret_0, intToRef(anon_builtin_1))) in
-        stringFromRef(v_ret_0)[anon_builtin_1]))
+        (stringGet(v_ret_0, intToRef(anon_builtin_2))) in
+        stringFromRef(v_ret_0)[anon_builtin_2]))
 {
   var pa: Ref
   var pb: Ref
@@ -160,17 +162,17 @@ method mergeStrings(a: Ref, b: Ref) returns (v_ret_0: Ref)
       (let anon_builtin_neg1 ==
         (plusInts(pa, pb)) in
         intFromRef(pa) + intFromRef(pb))
-    invariant (forall anon_builtin_2: Int ::
-        { stringFromRef(res)[anon_builtin_2] }
-        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
-        1 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(res)| ==>
+    invariant (forall anon_builtin_3: Int ::
+        { stringFromRef(res)[anon_builtin_3] }
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
+        1 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(res)| ==>
         (let anon_builtin_neg1 ==
-          (stringGet(res, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
-          stringFromRef(res)[intFromRef(minusInts(intToRef(anon_builtin_2),
+          (stringGet(res, minusInts(intToRef(anon_builtin_3), intToRef(1)))) in
+          stringFromRef(res)[intFromRef(minusInts(intToRef(anon_builtin_3),
           intToRef(1)))]) <=
         (let anon_builtin_neg1 ==
-          (stringGet(res, intToRef(anon_builtin_2))) in
-          stringFromRef(res)[anon_builtin_2]))
+          (stringGet(res, intToRef(anon_builtin_3))) in
+          stringFromRef(res)[anon_builtin_3]))
     invariant |stringFromRef(res)| == 0 ||
       intFromRef(pa) == |stringFromRef(a)| ||
       (let anon_builtin_neg1 ==
@@ -243,16 +245,16 @@ method mergeStrings(a: Ref, b: Ref) returns (v_ret_0: Ref)
     (let anon_builtin_neg1 ==
       (plusInts(pa, pb)) in
       intFromRef(pa) + intFromRef(pb))
-  assert (forall anon_builtin_2: Int ::
-      { stringFromRef(res)[anon_builtin_2] }
-      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
-      1 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(res)| ==>
+  assert (forall anon_builtin_3: Int ::
+      { stringFromRef(res)[anon_builtin_3] }
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
+      1 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(res)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(res, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
-        stringFromRef(res)[intFromRef(minusInts(intToRef(anon_builtin_2), intToRef(1)))]) <=
+        (stringGet(res, minusInts(intToRef(anon_builtin_3), intToRef(1)))) in
+        stringFromRef(res)[intFromRef(minusInts(intToRef(anon_builtin_3), intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
-        (stringGet(res, intToRef(anon_builtin_2))) in
-        stringFromRef(res)[anon_builtin_2]))
+        (stringGet(res, intToRef(anon_builtin_3))) in
+        stringFromRef(res)[anon_builtin_3]))
   assert |stringFromRef(res)| == 0 || intFromRef(pa) == |stringFromRef(a)| ||
     (let anon_builtin_neg1 ==
       (stringGet(res, minusInts(stringLength(res), intToRef(1)))) in
@@ -272,10 +274,10 @@ method mergeStrings(a: Ref, b: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method plus(this: Ref, other: Ref) returns (ret_7: Ref)
+method plus(this: Ref, other: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(this), stringType())
   requires isSubtype(typeOf(other), nullable(anyType()))
-  ensures isSubtype(typeOf(ret_7), stringType())
+  ensures isSubtype(typeOf(ret_8), stringType())
 
 
 /merge_sort_of_string.kt: info: Generated Viper text for mergeSorted:
@@ -323,59 +325,61 @@ method mergeStrings(a: Ref, b: Ref) returns (ret_3: Ref)
       intFromRef(intToRef(2147483647)) - intFromRef(stringLength(b)))
   requires (forall anon_builtin_1: Int ::
       { stringFromRef(a)[anon_builtin_1] }
-      { stringFromRef(b)[anon_builtin_1] }
       -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
-      (1 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(a)| ==>
+      1 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(a)| ==>
       (let anon_builtin_neg1 ==
         (stringGet(a, minusInts(intToRef(anon_builtin_1), intToRef(1)))) in
         stringFromRef(a)[intFromRef(minusInts(intToRef(anon_builtin_1), intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
         (stringGet(a, intToRef(anon_builtin_1))) in
-        stringFromRef(a)[anon_builtin_1])) &&
-      (1 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(b)| ==>
+        stringFromRef(a)[anon_builtin_1]))
+  requires (forall anon_builtin_2: Int ::
+      { stringFromRef(b)[anon_builtin_2] }
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
+      1 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(b)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(b, minusInts(intToRef(anon_builtin_1), intToRef(1)))) in
-        stringFromRef(b)[intFromRef(minusInts(intToRef(anon_builtin_1), intToRef(1)))]) <=
+        (stringGet(b, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
+        stringFromRef(b)[intFromRef(minusInts(intToRef(anon_builtin_2), intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
-        (stringGet(b, intToRef(anon_builtin_1))) in
-        stringFromRef(b)[anon_builtin_1])))
+        (stringGet(b, intToRef(anon_builtin_2))) in
+        stringFromRef(b)[anon_builtin_2]))
   ensures isSubtype(typeOf(ret_3), stringType())
   ensures |stringFromRef(ret_3)| ==
     (let anon_builtin_neg1 ==
       (plusInts(stringLength(a), stringLength(b))) in
       intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
-  ensures (forall anon_builtin_2: Int ::
-      { stringFromRef(ret_3)[anon_builtin_2] }
-      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
-      1 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(ret_3)| ==>
+  ensures (forall anon_builtin_3: Int ::
+      { stringFromRef(ret_3)[anon_builtin_3] }
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
+      1 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(ret_3)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(ret_3, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
-        stringFromRef(ret_3)[intFromRef(minusInts(intToRef(anon_builtin_2),
+        (stringGet(ret_3, minusInts(intToRef(anon_builtin_3), intToRef(1)))) in
+        stringFromRef(ret_3)[intFromRef(minusInts(intToRef(anon_builtin_3),
         intToRef(1)))]) <=
       (let anon_builtin_neg1 ==
-        (stringGet(ret_3, intToRef(anon_builtin_2))) in
-        stringFromRef(ret_3)[anon_builtin_2]))
+        (stringGet(ret_3, intToRef(anon_builtin_3))) in
+        stringFromRef(ret_3)[anon_builtin_3]))
 
 
-method subs(v_this_extension: Ref, lo: Ref, hi: Ref) returns (ret_6: Ref)
+method subs(v_this_extension: Ref, lo: Ref, hi: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(v_this_extension), stringType())
   requires isSubtype(typeOf(lo), intType())
   requires isSubtype(typeOf(hi), intType())
   requires 0 <= intFromRef(lo) && intFromRef(lo) <= intFromRef(hi) &&
     intFromRef(hi) <= |stringFromRef(v_this_extension)|
-  ensures isSubtype(typeOf(ret_6), stringType())
-  ensures |stringFromRef(ret_6)| ==
+  ensures isSubtype(typeOf(ret_7), stringType())
+  ensures |stringFromRef(ret_7)| ==
     (let anon_builtin_neg1 ==
       (minusInts(hi, lo)) in
       intFromRef(hi) - intFromRef(lo))
-  ensures (forall anon_builtin_3: Int ::
-      { stringFromRef(ret_6)[anon_builtin_3] }
-      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
-      0 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(ret_6)| ==>
+  ensures (forall anon_builtin_4: Int ::
+      { stringFromRef(ret_7)[anon_builtin_4] }
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
+      0 <= anon_builtin_4 && anon_builtin_4 < |stringFromRef(ret_7)| ==>
       (let anon_builtin_neg1 ==
-        (stringGet(ret_6, intToRef(anon_builtin_3))) in
-        stringFromRef(ret_6)[anon_builtin_3]) ==
+        (stringGet(ret_7, intToRef(anon_builtin_4))) in
+        stringFromRef(ret_7)[anon_builtin_4]) ==
       (let anon_builtin_neg1 ==
-        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_3), lo))) in
-        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_3),
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_4), lo))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_4),
         lo))]))
