@@ -37,10 +37,10 @@ only fixture specs in every mode.
 
 Verification modes in `test.sh` use the shared success cache. Conversion-only
 runs do not use it. See the outcome cache note for
-[store selection](targets/viper-outcome-cache.md#store),
-[cold-run controls](targets/viper-outcome-cache.md#forcing-a-cold-run),
-[reporting](targets/viper-outcome-cache.md#reporting) and
-[key inputs](targets/viper-outcome-cache.md#key). Goldens are checked on hits too.
+[store selection](viper-outcome-cache.md#store),
+[cold-run controls](viper-outcome-cache.md#forcing-a-cold-run),
+[reporting](viper-outcome-cache.md#reporting) and
+[key inputs](viper-outcome-cache.md#key). Goldens are checked on hits too.
 
 ## Declaration timings
 
@@ -80,7 +80,7 @@ boundary and name the command and result in the commit message. Use
 Root `./gradlew check` runs detekt, `apiCheck` and module checks. Compiler `check`
 aggregates handwritten tiers, full fixture verification and conversion.
 `check-all.sh` adds the published-plugin consumers, pre-commit and
-structural checks. Auxiliary program checks, the consumer check and verification
+structural checks. The consumer check and verification
 of everything else run nightly: the host's nightly-tests runner runs the root
 `test.sh`, which is `check-all.sh --rerun` without the outcome cache, and pages the
 operator when it fails. Keep published-plugin and other end-to-end checks in

@@ -24,14 +24,12 @@ fixtures and complete programs support conversion and verification.
 | Unit: in-process logic with controlled dependencies | Compiler, core and uniqueness `test/unit` | `:formver.compiler-plugin:unitTest`, `:formver.compiler-plugin:core:unitTest`, `:formver.compiler-plugin:uniqueness:unitTest` |
 | Integration: compiler/PSI services, Silicon protocol, runner processes | Compiler and runner `test/integration` | `:formver.compiler-plugin:integrationTest`, `:formver.test-runner:integrationTest` |
 | Feature fixtures: one language, ownership, specification or library feature | Compiler `testData/diagnostics/` | `agent-scripts/test.sh <pattern>` |
-| Programs: complete algorithms, ports and auxiliary correspondence/arithmetic checks | Compiler `testData/programs/` and `test/programs` | `agent-scripts/test.sh <pattern>` for fixtures; `:formver.compiler-plugin:programTest` for auxiliary checks |
+| Programs: complete algorithms | Compiler `testData/programs/` | `agent-scripts/test.sh <pattern>` |
 | Published-plugin consumers: packaging and application in independent Gradle builds | Gradle plugin `testData/consumer/` | `agent-scripts/check-gradle-consumer.sh` |
 
 Prefix task paths with `./gradlew`. Handwritten tasks accept
 `--tests '<class or method pattern>'`, `--test-dry-run` for discovery and
-`--rerun`. Integration provisions Z3 for Silicon checks. Auxiliary program tasks
-include integration output for the PSI correspondence checker; discovery uses
-only their own output. Core, uniqueness and runner `:test` tasks execute their
+`--rerun`. Integration provisions Z3 for Silicon checks. Core, uniqueness and runner `:test` tasks execute their
 module's complete handwritten tier.
 
 Use the smallest relevant local entry point. For fixture changes, start with
@@ -88,11 +86,12 @@ Under `formver.compiler-plugin/testData/`:
 | `diagnostics/specifications/<feature>/` | Specification examples, including `external/` bindings and loading |
 | `diagnostics/stdlib/<API>/` | Small standard-library API examples |
 | `programs/algorithms/<algorithm>/` | Complete algorithms and their negative variants |
-| `programs/ports/<library>/` | Ported implementations and correspondence artifacts |
 | `support/libraries/` | Helper library inputs, including correspondence-check inputs |
 | `support/specifications/` | Helper external specification inputs |
-| `upstream/` | Vendored reference sources |
-| `experiments/` | Exploratory sources |
+
+Fixtures are written for this repository. Sources copied or ported from another
+project, and notes and results about verifying a specific project, belong in that
+project's `verified-<project>` repository, not here.
 
 `GenerateTests.kt` discovers only `diagnostics/` and `programs/`, recursively.
 Keep each runnable source and its goldens together. Keep existing subject groups

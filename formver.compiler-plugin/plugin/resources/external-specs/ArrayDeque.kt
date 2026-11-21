@@ -2,7 +2,6 @@ package org.jetbrains.kotlin.formver.external.arraydeque
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// Contract correspondence: ArrayDequeSpecEqualityTest; proof scope: docs/targets/arraydeque-plan.md.
 @ExternalSpec("kotlin.collections.ArrayDeque")
 internal interface ArrayDequeModel<E> {
     @Pure @get:Unique val size: Int

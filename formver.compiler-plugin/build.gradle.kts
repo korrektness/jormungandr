@@ -24,7 +24,7 @@ sourceSets {
 }
 
 // Handwritten tiers share the fixture libraries, but discovery is rooted in each tier's own output.
-val handwrittenTiers = listOf("unit", "integration", "programs").associateWith { tier ->
+val handwrittenTiers = listOf("unit", "integration").associateWith { tier ->
     sourceSets.create(tier) {
         java.setSrcDirs(listOf("test/$tier"))
         resources.setSrcDirs(listOf("test-resources"))
@@ -36,12 +36,6 @@ val handwrittenTiers = listOf("unit", "integration", "programs").associateWith {
         dependencies.add(sources.implementationConfigurationName, dependencies.testFixtures(project(":formver.compiler-plugin")))
     }
 }
-// The program correspondence checks use the PSI checker compiled in integration.
-handwrittenTiers.getValue("programs").apply {
-    compileClasspath += handwrittenTiers.getValue("integration").output
-    runtimeClasspath += handwrittenTiers.getValue("integration").output
-}
-
 idea {
     module.generatedSourceDirs.add(projectDir.resolve("build/generated/test-gen"))
 }
@@ -165,9 +159,8 @@ tasks.register<Test>("untilConversion") {
 }
 
 val handwrittenTests = handwrittenTiers.map { (tier, sources) ->
-    val taskName = if (tier == "programs") "programTest" else "${tier}Test"
     val solver = tier == "integration"
-    val test = tasks.register<Test>(taskName) {
+    val test = tasks.register<Test>("${tier}Test") {
         description = "Runs the $tier handwritten tests"
         group = "verification"
         testClassesDirs = sources.output.classesDirs

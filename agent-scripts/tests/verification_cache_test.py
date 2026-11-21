@@ -104,7 +104,7 @@ touch -d @2 "$results/TEST-Fixture.xml"
                          ':formver.compiler-plugin:uniqueness:unitTest',
                          ':formver.test-runner:integrationTest'):
                 self.assertIn(task, unchanged)
-            for task in (':formver.compiler-plugin:test', ':formver.compiler-plugin:programTest',
+            for task in (':formver.compiler-plugin:test',
                          'check', 'check-all', 'check-gradle-consumer'):
                 self.assertNotIn(task, unchanged)
             self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in unchanged))

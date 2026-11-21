@@ -110,7 +110,7 @@ invocations resolve relative paths from their working directory.
 
 Treat the directory as trusted build state. Custom Silicon plugins and obligation
 filters require bypassing the cache. Cache keys, hit checks and damaged-entry
-handling are described in the [cache design](targets/viper-outcome-cache.md).
+handling are described in the [cache design](viper-outcome-cache.md).
 The repository test driver's cache is configured separately; see
 [test cache controls](agents-dev.md#verification-cache).
 

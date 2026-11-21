@@ -344,7 +344,7 @@ are sums of literals (`IntegerBounds.literal`). The runtime types and injections
 in programs that use one.
 
 Tests: `language/arithmetic/unsigned_arithmetic.kt`, `stdlib/array/unsigned_arrays.kt`,
-`programs/ports/uarray_sorting/UArraySorting.kt`, `verification/checked_integer.kt::addOverflow,constantOverflow`,
+`verification/checked_integer.kt::addOverflow,constantOverflow`,
 `verification/wrapping_arithmetic.kt`, `verification/wrapping_long_arithmetic.kt`
 (endpoint products, signed negative products, checked isolation and branch-local
 nonvacuity probes), `verification/string_domain.kt::overlongPureResult`.

@@ -18,7 +18,7 @@ hypotheses that an implementation stage has to confirm.
   with an explicit result type whenever it has type arguments, and prints `@` annotations. Positions and other
   `Info` nodes are not printed; they do not change whether a program verifies. **[E]**
   (`silver/.../ast/pretty/PrettyPrinter.scala`, `showAnnotation` and the `DomainFuncApp` case.)
-- Users enable it with the [verification cache option](../configuration.md#verification-cache). The test fixtures enable it
+- Users enable it with the [verification cache option](configuration.md#verification-cache). The test fixtures enable it
   with `-Pformver.verificationCacheDirectory=<dir>`. `test.sh` passes that property in verification modes.
   `land-gate.yaml` uses `agent-scripts/gate-test.sh` with the [cold sample](#the-land-gate). **[E]**
 - `test.sh --verify-changed` runs the `update` task: it verifies a test file only when its conversion output
@@ -128,7 +128,7 @@ with no cache prints `Verification: cache off`.
 ### The land gate
 
 The gate verifies only the tests whose testData the candidate changes
-([Landing and nightly](../agents-dev.md#landing-and-nightly)). For those it passes
+([Landing and nightly](agents-dev.md#landing-and-nightly)). For those it passes
 `-Pformver.verificationCacheDirectory=<store>` and `-Pformver.verificationColdSample=<commit sha>`. With a cold
 sample set, every hit whose key, hashed with the sample value, falls into the first 1/20 of the hash range is
 verified anyway and compared with the stored outcome. A disagreement fails the gate run with the program and both
