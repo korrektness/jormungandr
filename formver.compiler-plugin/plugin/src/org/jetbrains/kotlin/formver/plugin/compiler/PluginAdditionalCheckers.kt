@@ -50,7 +50,6 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
             ObserverImplementationChecker,
-            ExternalSpecificationImplementationChecker,
             LawImplementationChecker,
         ) + if (config.verificationWorkers > 0) emptySet() else setOf(
             ViperPoweredClassChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),

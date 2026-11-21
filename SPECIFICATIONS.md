@@ -399,8 +399,14 @@ varargs, property mutability and suspend status. A `val` model may also bind a `
 its getter is bound. Model-interface types stand for their bound dependency types.
 A model interface declares only functions and properties, and `@ExternalMember` appears only inside one.
 Unresolved, incompatible, ambiguous and duplicate bindings are errors, each reported as `INVALID_EXTERNAL_SPEC` on
-the model declaration; a module with any of them is not verified. Bundled and user specifications share this check. Source subtypes of externally modeled dependency types are rejected because this boundary has no
-source-implementation conformance proof.
+the model declaration; a module with any of them is not verified. Bundled and user specifications share this check.
+
+A class declared in source with a modelled supertype, such as a class implementing `MutableMap`, is not modelled.
+Its constructors give shared objects, as for a library class without a binding, so no `@Unique` local, parameter,
+property or result can hold one, and calls of modelled members on one are unchecked library calls. Its own members are
+converted with their own contracts. Its overrides must repeat the model's ownership of value parameters, extension
+receiver and result, but not of the dispatch receiver. An override or inherited implementation of a model observer
+need not be `@Pure`, and the class may implement a model observer by delegation.
 
 External contracts, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
 callers against them without proving the dependency's implementation. Audit each model against the exact

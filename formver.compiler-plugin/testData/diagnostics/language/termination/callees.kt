@@ -194,7 +194,7 @@ fun <!VIPER_TEXT!>loopInLambda<!>(xs: List<Int>): Int {
     }<!>; true }<!>
 }
 
-<!INVALID_EXTERNAL_SPEC!><!VIPER_TEXT!>class MyList<!>(c: Collection<Int>) : ArrayList<Int>(c)<!>
+<!VIPER_TEXT!>class MyList<!>(c: Collection<Int>) : ArrayList<Int>(c)
 
 // The delegation to the library constructor passes a value that a source class may implement.
 fun <!VIPER_TEXT!>delegatesWithOpenValue<!>(c: Collection<Int>): Int {

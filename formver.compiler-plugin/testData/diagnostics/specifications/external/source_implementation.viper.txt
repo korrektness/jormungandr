@@ -1,0 +1,990 @@
+/source_implementation.kt: info: Generated Viper text for Header:
+function EntryModel_g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function EntryModel_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function Header_g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), Header())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function Header_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Header())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method con(par_key: Ref, par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_key), stringType())
+  requires isSubtype(typeOf(par_value), stringType())
+  ensures isSubtype(typeOf(v_ret_0), Header())
+  ensures stringFromRef(Header_g_key(v_ret_0)) == stringFromRef(par_key)
+  ensures stringFromRef(Header_g_value(v_ret_0)) ==
+    stringFromRef(par_value)
+  ensures stringFromRef(Header_g_key(v_ret_0)) == stringFromRef(par_key)
+  ensures stringFromRef(Header_g_value(v_ret_0)) ==
+    stringFromRef(par_value)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Header()
+  anon_0 := par_key
+  inhale stringFromRef(Header_g_key(v_ret_0)) == stringFromRef(anon_0)
+  anon_1 := par_value
+  inhale stringFromRef(Header_g_value(v_ret_0)) == stringFromRef(anon_1)
+  fold acc(Header_unique(v_ret_0), write)
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for Names:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function g_first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures boolFromRef(ret_2)
+
+
+method con(par_first: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_first), stringType())
+  ensures isSubtype(typeOf(v_ret_0), Names())
+  ensures stringFromRef(g_first(v_ret_0)) == stringFromRef(par_first)
+  ensures stringFromRef(g_first(v_ret_0)) == stringFromRef(par_first)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Names()
+  anon := par_first
+  inhale stringFromRef(g_first(v_ret_0)) == stringFromRef(anon)
+  fold acc(Names_unique(v_ret_0), write)
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for size:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret), boolType())
+  ensures boolFromRef(ret)
+
+
+/source_implementation.kt: info: Generated Viper text for isEmpty:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0)
+{
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for contains:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1)
+
+
+method contains(this: Ref, element: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Names())
+  requires isSubtype(typeOf(element), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(stringFromRef(element) == stringFromRef(first(this)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for containsAll:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1)
+
+
+method containsAll(this: Ref, elements: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Names())
+  requires isSubtype(typeOf(elements), CollectionModel())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(false)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for iterator:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function hasNext(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(IteratorModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(this))| > 0
+
+
+function remaining(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(IteratorModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_4), boolType())
+  ensures boolFromRef(ret_4)
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), NoSuchElementException())
+  ensures isSubtype(typeOf(ret_3), NoSuchElementException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method iterator(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(v_ret_0), IteratorModel())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := con()
+  fold acc(Throwable_unique(anon_1), write)
+  fold acc(Exception_unique(anon_1), write)
+  fold acc(RuntimeException_unique(anon_1), write)
+  fold acc(NoSuchElementException_unique(anon_1), write)
+  inhale false
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/source_implementation.kt: info: Generated Viper text for own override is called with its own contract:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function g_first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures boolFromRef(ret_3)
+
+
+method _own@20@override@20@is@20@called@20@with@20@its@20@own@20@contract()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var names: Ref
+  var empty: Ref
+  names := con(stringLit())
+  empty := Names_f_isEmpty(names)
+  assert boolFromRef(empty)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_first: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_first), stringType())
+  ensures isSubtype(typeOf(ret_1), Names())
+  ensures stringFromRef(g_first(ret_1)) == stringFromRef(par_first)
+  ensures stringFromRef(g_first(ret_1)) == stringFromRef(par_first)
+
+
+/source_implementation.kt: info: Generated Viper text for model member on the object is the unchecked library call:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Names_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function g_first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method Names_f_isEmpty(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Names())
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures boolFromRef(ret_3)
+
+
+method _model@20@member@20@on@20@the@20@object@20@is@20@the@20@unchecked@20@library@20@call()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var names: Ref
+  var anon_2: Ref
+  var empty: Ref
+  var anon_0: Ref
+  var l0_size: Ref
+  var anon_1: Ref
+  anon_2 := con(stringLit())
+  names := anon_2
+  inhale isSubtype(typeOf(anon_0), boolType())
+  empty := anon_0
+  inhale isSubtype(typeOf(anon_1), intType())
+  l0_size := anon_1
+  assert boolFromRef(empty) == (intFromRef(l0_size) == 0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_first: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_first), stringType())
+  ensures isSubtype(typeOf(ret_1), Names())
+  ensures stringFromRef(g_first(ret_1)) == stringFromRef(par_first)
+  ensures stringFromRef(g_first(ret_1)) == stringFromRef(par_first)
+
+
+/source_implementation.kt: info: Generated Viper text for entry implementation is read as fixed:
+function EntryModel_g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function EntryModel_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function Header_g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), Header())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function Header_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Header())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method _entry@20@implementation@20@is@20@read@20@as@20@fixed()
+  returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var entry: Ref
+  var anon: Ref
+  var first: Ref
+  var second: Ref
+  anon := con(stringLit_0(), stringLit_1())
+  entry := anon
+  first := EntryModel_g_key(entry)
+  inhale isSubtype(typeOf(first), stringType())
+  second := EntryModel_g_key(entry)
+  inhale isSubtype(typeOf(second), stringType())
+  assert stringFromRef(first) == stringFromRef(second)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_key: Ref, par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_key), stringType())
+  requires isSubtype(typeOf(par_value), stringType())
+  ensures isSubtype(typeOf(ret_1), Header())
+  ensures stringFromRef(Header_g_key(ret_1)) == stringFromRef(par_key)
+  ensures stringFromRef(Header_g_value(ret_1)) == stringFromRef(par_value)
+  ensures stringFromRef(Header_g_key(ret_1)) == stringFromRef(par_key)
+  ensures stringFromRef(Header_g_value(ret_1)) == stringFromRef(par_value)
+
+
+/source_implementation.kt: info: Generated Viper text for Forever:
+function IteratorModel_f_hasNext(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(this))| > 0
+
+
+function remaining(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Forever_f_hasNext(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Forever())
+  ensures isSubtype(typeOf(ret_2), boolType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Forever())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Forever()
+  fold acc(Forever_unique(v_ret_0), write)
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for hasNext:
+function IteratorModel_f_hasNext(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(this))| > 0
+
+
+function remaining(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Forever_f_hasNext(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Forever())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for next:
+function IteratorModel_f_hasNext(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(this))| > 0
+
+
+function remaining(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Forever_f_hasNext(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Forever())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method next(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Forever())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for Bag:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Bag())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bag()
+  fold acc(Bag_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bag_unique(v_ret_0), write)
+}
+
+/source_implementation.kt: info: Generated Viper text for iterator:
+function IteratorModel_f_hasNext(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(this))| > 0
+
+
+function remaining(this: Ref): Ref
+  requires isSubtype(typeOf(this), IteratorModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Forever_f_hasNext(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Forever())
+  ensures isSubtype(typeOf(ret_3), boolType())
+
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Forever())
+
+
+method iterator(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Bag())
+  ensures isSubtype(typeOf(v_ret_0), IteratorModel())
+{
+  var anon: Ref
+  anon := con()
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for Headers:
+function Headers_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MapModel_f_containsKey(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |iterationSequenceFromRef(keysSequence(this))| &&
+      equalsRelation(par_key, iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_0)))))
+  ensures (par_key in iterationSequenceFromRef(keysSequence(this))) ==>
+    boolFromRef(result)
+
+
+function MapModel_f_containsValue(this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < |iterationSequenceFromRef(keysSequence(this))| &&
+      equalsRelation(par_value, MapModel_f_get(this, iterationSequenceGet(keysSequence(this),
+      intToRef(anon_builtin_1))))))
+
+
+function MapModel_f_get(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(MapModel_f_containsKey(this, par_key)) ==>
+    result == nullValue()
+
+
+function MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(MapModel_g_size(this)) == 0)
+
+
+function MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(result), MapModel())
+
+
+function g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function keysSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Headers_f_containsKey(this: Ref, par_key: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_key), stringType())
+  ensures isSubtype(typeOf(ret_3), boolType())
+
+
+method Headers_f_containsValue(this: Ref, par_value: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_value), stringType())
+  ensures isSubtype(typeOf(ret_5), boolType())
+
+
+method Headers_f_get(this: Ref, par_key: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_key), stringType())
+  ensures isSubtype(typeOf(ret_7), nullable(stringType()))
+
+
+method Headers_f_isEmpty(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(ret_2), boolType())
+
+
+method con(par_inner: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), MapModel())
+  ensures isSubtype(typeOf(v_ret_0), Headers())
+  ensures g_inner(v_ret_0) == par_inner
+  ensures g_inner(v_ret_0) == par_inner
+{
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Headers()
+  anon_0 := par_inner
+  inhale g_inner(v_ret_0) == anon_0
+  fold acc(Headers_unique(v_ret_0), write)
+  label lbl_ret_0
+}
+
+/source_implementation.kt: info: Generated Viper text for delegated implementation constructs a shared object:
+function Headers_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MapModel_f_containsKey(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |iterationSequenceFromRef(keysSequence(this))| &&
+      equalsRelation(par_key, iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_0)))))
+  ensures (par_key in iterationSequenceFromRef(keysSequence(this))) ==>
+    boolFromRef(result)
+
+
+function MapModel_f_containsValue(this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < |iterationSequenceFromRef(keysSequence(this))| &&
+      equalsRelation(par_value, MapModel_f_get(this, iterationSequenceGet(keysSequence(this),
+      intToRef(anon_builtin_1))))))
+
+
+function MapModel_f_get(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(MapModel_f_containsKey(this, par_key)) ==>
+    result == nullValue()
+
+
+function MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(MapModel_g_size(this)) == 0)
+
+
+function MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(result), MapModel())
+
+
+function g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function keysSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+method Headers_f_containsKey(this: Ref, par_key: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_key), stringType())
+  ensures isSubtype(typeOf(ret_6), boolType())
+
+
+method Headers_f_containsValue(this: Ref, par_value: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_value), stringType())
+  ensures isSubtype(typeOf(ret_7), boolType())
+
+
+method Headers_f_get(this: Ref, par_key: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  requires isSubtype(typeOf(par_key), stringType())
+  ensures isSubtype(typeOf(ret_8), nullable(stringType()))
+
+
+method Headers_f_isEmpty(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Headers())
+  ensures isSubtype(typeOf(ret_5), boolType())
+
+
+method _delegated@20@implementation@20@constructs@20@a@20@shared@20@object(par_inner: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), MapModel())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var headers: Ref
+  var anon_10: Ref
+  var l0_size: Ref
+  var anon_0: Ref
+  anon_10 := con(par_inner)
+  headers := anon_10
+  inhale isSubtype(typeOf(anon_0), intType())
+  l0_size := anon_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_inner: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_inner), MapModel())
+  ensures isSubtype(typeOf(ret_1), Headers())
+  ensures g_inner(ret_1) == par_inner
+  ensures g_inner(ret_1) == par_inner

@@ -40,7 +40,6 @@ method con() returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == SourceGauge()
   fold acc(SourceGauge_unique(v_ret_0), write)
   label lbl_ret_0
-  unfold acc(SourceGauge_unique(v_ret_0), write)
 }
 
 /external_spec_ownership.kt: info: Generated Viper text for read:
@@ -68,14 +67,10 @@ function read(this: Ref): Ref
 
 method con() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), IndirectGauge())
-  ensures isSubtype(typeOf(v_ret_0), IndirectGauge()) &&
-    isSubtype(typeOf(v_ret_0), DefaultGauge())
 {
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == IndirectGauge()
   fold acc(DefaultGauge_unique(v_ret_0), write)
   fold acc(IndirectGauge_unique(v_ret_0), write)
   label lbl_ret_0
-  unfold acc(IndirectGauge_unique(v_ret_0), write)
-  unfold acc(DefaultGauge_unique(v_ret_0), write)
 }

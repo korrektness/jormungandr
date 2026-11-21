@@ -665,8 +665,24 @@ check the source side; no test in one compilation can swap a library version.
 
 An external specification gives a library declaration a contract, purity,
 ownership, observers and laws that SnaKt does not prove against the library's
-code. A source subtype of a modelled class is rejected. SPECIFICATIONS.md,
-"External specifications", has the binding rules and the contradiction check.
+code. SPECIFICATIONS.md, "External specifications", has the binding rules and
+the contradiction check.
+
+A class with a modelled supertype that is not itself bound, in source or in a
+library, constructs shared objects, so a call that owns its receiver through
+the model is the opaque library call on it. Two parts of a model still apply to
+an object that is not owned: the `key` and `value` of `Map.Entry`, read as
+values fixed for the object, and the iteration sequence a `for` loop or a
+collection template reads from an `Iterable`. A source implementation whose
+`key` or iteration changes between reads breaks those assumptions, as a
+library implementation does. The constructor rule is in
+`resolveConstructorResultUniqueness`
+(`uniqueness/plugin/SymbolUniquenessResolver.kt` under
+`formver.compiler-plugin/uniqueness/src/org/jetbrains/kotlin/formver/`).
+
+Tests: `specifications/external/source_implementation.kt::model member on the object is the unchecked library call,entry implementation is read as fixed`,
+`specifications/external/source_implementation_rejected.kt`. No test runs a
+loop over a source implementation.
 
 The contradiction check assumes the precondition for arbitrary arguments and
 refutes `false`, so it finds only a specification that contradicts itself for

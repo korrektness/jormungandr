@@ -185,7 +185,6 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             ExternalSpecRule.UNSUPPORTED_MEMBER -> "Unsupported external member kind."
             ExternalSpecRule.NO_COMPATIBLE_TARGET -> "External binding requires one compatible target: $target"
             ExternalSpecRule.DUPLICATE_MEMBER -> "Duplicate external member binding: $target"
-            ExternalSpecRule.SOURCE_SUBTYPE -> "Source subtype of externally modeled class: $target"
             ExternalSpecRule.VERIFIED_TARGET ->
                 "SnaKt verified $target, and this specification replaces its verified contract with a trusted one."
             ExternalSpecRule.VACUOUS_PRECONDITION ->

@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isPure
+import org.jetbrains.kotlin.formver.core.isDeclaredObserverOrOverride
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 
 private val FirCallableSymbol<*>.isInInterface: Boolean
@@ -65,7 +66,7 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
     private fun violation(declaration: FirCallableDeclaration, overridden: List<FirCallableSymbol<*>>): KotlinCondition.Observer? {
         val symbol = declaration.symbol
         val isPure = symbol.isPure(context.session)
-        val overridesObserver = overridden.any { it.isObserverOrOverride() }
+        val overridesObserver = overridden.any { it.isDeclaredObserverOrOverride() }
         if (declaration is FirProperty && declaration.isVar && isPure) return KotlinCondition.Observer(ObserverRule.MUTABLE_PURE_PROPERTY)
         if (overridesObserver && !isPure) return KotlinCondition.Observer(ObserverRule.IMPURE_OVERRIDE)
         if (isPure) {
@@ -126,7 +127,7 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         overridden: List<FirCallableSymbol<*>>,
     ): KotlinCondition.Observer? {
         if (!member.isCreatedIn(declaration)) return null
-        if (overridden.none { it.isObserverOrOverride() }) return null
+        if (overridden.none { it.isDeclaredObserverOrOverride() }) return null
         if (member.origin == FirDeclarationOrigin.Delegated) {
             return KotlinCondition.Observer(ObserverRule.DELEGATED_IMPLEMENTATION, member)
         }

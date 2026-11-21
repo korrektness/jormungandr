@@ -1246,10 +1246,6 @@ method AbstractCollection_f_isEmpty(this: Ref) returns (ret_3: Ref)
 method con(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), c_CollectionModel())
   ensures isSubtype(typeOf(v_ret_0), MyList())
-  ensures isSubtype(typeOf(v_ret_0), MyList()) &&
-    (isSubtype(typeOf(v_ret_0), ArrayList()) &&
-    (isSubtype(typeOf(v_ret_0), AbstractList()) &&
-    isSubtype(typeOf(v_ret_0), AbstractCollection())))
 {
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == MyList()
@@ -1258,10 +1254,6 @@ method con(c: Ref) returns (v_ret_0: Ref)
   fold acc(ArrayList_unique(v_ret_0), write)
   fold acc(MyList_unique(v_ret_0), write)
   label lbl_ret_0
-  unfold acc(MyList_unique(v_ret_0), write)
-  unfold acc(ArrayList_unique(v_ret_0), write)
-  unfold acc(AbstractList_unique(v_ret_0), write)
-  unfold acc(AbstractCollection_unique(v_ret_0), write)
 }
 
 method public_g_size(this: Ref) returns (ret_2: Ref)
@@ -1478,10 +1470,6 @@ method AbstractCollection_f_isEmpty(this: Ref) returns (ret_5: Ref)
 method con(c: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(c), c_CollectionModel())
   ensures isSubtype(typeOf(ret_2), MyList())
-  ensures isSubtype(typeOf(ret_2), MyList()) &&
-    (isSubtype(typeOf(ret_2), ArrayList()) &&
-    (isSubtype(typeOf(ret_2), AbstractList()) &&
-    isSubtype(typeOf(ret_2), AbstractCollection())))
 
 
 method delegatesWithOpenValue(c: Ref) returns (v_ret_0: Ref)
@@ -1490,10 +1478,6 @@ method delegatesWithOpenValue(c: Ref) returns (v_ret_0: Ref)
 {
   var anon_9: Ref
   anon_9 := con(c)
-  fold acc(AbstractCollection_unique(anon_9), write)
-  fold acc(AbstractList_unique(anon_9), write)
-  fold acc(ArrayList_unique(anon_9), write)
-  fold acc(MyList_unique(anon_9), write)
   v_ret_0 := intToRef(0)
   goto lbl_ret_0
   label lbl_ret_0

@@ -52,6 +52,16 @@ fun FirCallableSymbol<*>.isObserverOrOverride(): Boolean =
     if (this is FirPropertyAccessorSymbol) propertySymbol.isObserverOrOverride() else
     isObserver() || directOverriddenSymbolsSafe().any { it.isObserverOrOverride() }
 
+/**
+ * Whether this member is an observer by its own declaration or overrides one, directly or through other overrides. An
+ * observer that only an external specification declares does not count.
+ */
+context(context: CheckerContext)
+fun FirCallableSymbol<*>.isDeclaredObserverOrOverride(): Boolean =
+    if (this is FirPropertyAccessorSymbol) propertySymbol.isDeclaredObserverOrOverride() else
+    isObserver() && unwrapFakeOverrides().let { it.externalSpecificationSymbol(context.session) == it } ||
+            directOverriddenSymbolsSafe().any { it.isDeclaredObserverOrOverride() }
+
 /** Observer snapshots refer to declarations independently of call-site type arguments. */
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.observerDeclaration(): FirFunctionSymbol<*>? {

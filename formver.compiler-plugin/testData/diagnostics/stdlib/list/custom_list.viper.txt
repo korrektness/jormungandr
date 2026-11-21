@@ -118,9 +118,6 @@ method con(par_size: Ref, par_value: Ref) returns (v_ret_2: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(v_ret_2), CustomList())
-  ensures isSubtype(typeOf(v_ret_2), CustomList()) &&
-    (isSubtype(typeOf(v_ret_2), AbstractList()) &&
-    isSubtype(typeOf(v_ret_2), AbstractCollection()))
   ensures intFromRef(CustomList_g_size(v_ret_2)) == intFromRef(par_size)
   ensures intFromRef(g_value(v_ret_2)) == intFromRef(par_value)
   ensures intFromRef(CustomList_g_size(v_ret_2)) == intFromRef(par_size)
@@ -137,9 +134,6 @@ method con(par_size: Ref, par_value: Ref) returns (v_ret_2: Ref)
   fold acc(AbstractList_unique(v_ret_2), write)
   fold acc(CustomList_unique(v_ret_2), write)
   label lbl_ret_2
-  unfold acc(CustomList_unique(v_ret_2), write)
-  unfold acc(AbstractList_unique(v_ret_2), write)
-  unfold acc(AbstractCollection_unique(v_ret_2), write)
 }
 
 method public_g_size(this: Ref) returns (ret_0: Ref)
@@ -404,9 +398,6 @@ method con(par_size: Ref, par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_3), CustomList())
-  ensures isSubtype(typeOf(ret_3), CustomList()) &&
-    (isSubtype(typeOf(ret_3), AbstractList()) &&
-    isSubtype(typeOf(ret_3), AbstractCollection()))
   ensures intFromRef(CustomList_g_size(ret_3)) == intFromRef(par_size)
   ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
   ensures intFromRef(CustomList_g_size(ret_3)) == intFromRef(par_size)
@@ -424,9 +415,6 @@ method test(n: Ref) returns (v_ret_0: Ref)
   var customList: Ref
   var anon_9: Ref
   customList := con(n, intToRef(0))
-  fold acc(AbstractCollection_unique(customList), write)
-  fold acc(AbstractList_unique(customList), write)
-  fold acc(CustomList_unique(customList), write)
   anon_9 := AbstractCollection_f_isEmpty(customList)
   if (!boolFromRef(anon_9)) {
     var anon_10: Ref

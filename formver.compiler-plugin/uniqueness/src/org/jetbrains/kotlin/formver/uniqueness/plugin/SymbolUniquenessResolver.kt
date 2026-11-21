@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
-import org.jetbrains.kotlin.formver.common.isLibraryDeclaration
 import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.FirElement
@@ -60,8 +59,8 @@ fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
 
 /**
  * Resolves the uniqueness of the result of [this] function as its declaration states it. A constructor's result is
- * a fresh object, unique unless the construction lets it escape or the constructor is a library constructor that no
- * model binds of a class that has a model.
+ * a fresh object, unique unless the construction lets it escape or the constructor is one that no model binds of a
+ * class that has a model.
  */
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
@@ -71,15 +70,14 @@ fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
 
 /**
  * Resolves the uniqueness of [this] constructor's result: as its `@ExternalConstructor` model declares it; `Shared`
- * for another constructor of a class without source that is externally modelled or has such a supertype, since nothing
- * establishes that model's laws and observers for the new object, unless the class is a primitive array, which the
- * converter models itself; otherwise unique unless the construction lets the object escape.
+ * for another constructor of a class that is externally modelled or has such a supertype, unless the class is a
+ * primitive array; otherwise unique unless the construction lets the object escape.
  */
 context(context: CheckerContext)
 fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
     val model = externalSpecificationSymbol(context.session)
     return if (model != this) model.resolvedReturnType.scopeUniqueness
-    else if (isLibraryDeclaration() && constructsModelledType(context.session)) Uniqueness.Shared
+    else if (constructsModelledType(context.session)) Uniqueness.Shared
     else if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
 }
 

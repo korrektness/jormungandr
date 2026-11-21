@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.*
@@ -31,13 +33,18 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.OVERRIDE_
 
 /**
  * Checks that an override repeats the `@Unique` and `@Borrowed` annotations of every declaration it directly overrides,
- * on its value parameters, extension receiver and result, and on the function itself for its dispatch receiver.
+ * on its value parameters, extension receiver and result, and on the function itself for its dispatch receiver. The
+ * dispatch receiver is not compared with a declaration bound by an external specification.
  */
 object OverrideUniquenessChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirCallableDeclaration) {
         if (!declaration.isOverride) return
-        checkMatchingOwnership(declaration, declaration.symbol.directOverriddenSymbolsSafe(), OVERRIDE_UNIQUENESS_MISMATCH)
+        val overridden = declaration.symbol.directOverriddenSymbolsSafe()
+        val declared = overridden.filter {
+            it.unwrapFakeOverrides().let { symbol -> symbol.externalSpecificationSymbol(context.session) == symbol }
+        }
+        checkMatchingOwnership(declaration, overridden, OVERRIDE_UNIQUENESS_MISMATCH, receiverCounterparts = declared)
     }
 }
 
@@ -63,6 +70,7 @@ private fun checkMatchingOwnership(
     declaration: FirCallableDeclaration,
     counterparts: List<FirCallableSymbol<*>>,
     factory: FailureKind,
+    receiverCounterparts: List<FirCallableSymbol<*>> = counterparts,
 ) {
     val mismatchingTypeRefs = mutableSetOf<FirTypeRef>()
     for (counterpart in counterparts) {
@@ -87,7 +95,7 @@ private fun checkMatchingOwnership(
         Pair(symbol.ownsDispatchReceiver(session), symbol.borrowsDispatchReceiver(session))
     }
     if (declaration.dispatchReceiverType != null &&
-        counterparts.any { dispatchReceiverOwnership(it) != dispatchReceiverOwnership(declaration.symbol) }
+        receiverCounterparts.any { dispatchReceiverOwnership(it) != dispatchReceiverOwnership(declaration.symbol) }
     ) {
         reporter.reportFailure(Failure(factory, declaration.source, AttributeCondition.Rule(factory),
             related = counterparts.mapNotNull { it.source?.let { source -> RelatedLocation("counterpart declaration", source) } }))
