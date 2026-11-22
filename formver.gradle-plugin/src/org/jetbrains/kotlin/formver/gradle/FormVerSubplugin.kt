@@ -80,6 +80,10 @@ class FormVerGradleSubplugin
                 options += SubpluginOption(FormalVerificationPluginNames.COUNTEREXAMPLES_OPTION_NAME, it.toString())
             }
 
+            formVerExtension.myExceptionFreeByDefault?.let {
+                options += SubpluginOption(FormalVerificationPluginNames.EXCEPTION_FREE_BY_DEFAULT_OPTION_NAME, it.toString())
+            }
+
             formVerExtension.myVerificationCacheDirectory?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, project.file(it).absolutePath)
             }

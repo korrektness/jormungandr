@@ -5,11 +5,16 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
+import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
@@ -37,8 +42,28 @@ internal fun ProgramConverter.throwsConditionOf(
 }
 
 /** The check that an exception may leave [symbol], whose signature this is; `null` when nothing is checked. */
-internal fun CompleteFunctionSignature.exceptionEscape(symbol: FirFunctionSymbol<*>): ExpEmbedding? =
-    (this as? NonInlineFunctionSignature)?.throwsCondition?.let { ThrowsConditionCheck(it, formalArgs, symbol) }
+internal fun CompleteFunctionSignature.exceptionEscape(symbol: FirFunctionSymbol<*>): ThrowsConditionCheck? =
+    (this as? NonInlineFunctionSignature)?.let { signature ->
+        signature.throwsCondition?.let { ThrowsConditionCheck(it, formalArgs, symbol, exceptionFree = signature.exceptionFree) }
+    }
+
+/**
+ * Whether [symbol], which has no `throwsOnlyIf` condition, is exception-free by default: the option is set and it is
+ * an impure function or constructor of the compiled sources, not an external specification model. A constructor is
+ * exception-free only when its class's construction is verified.
+ */
+internal fun ProgramConversionContext.exceptionFreeByDefault(symbol: FirFunctionSymbol<*>, pure: Boolean): Boolean {
+    if (!config.exceptionFreeByDefault || pure) return false
+    if (symbol.origin != FirDeclarationOrigin.Source || session.externalSpecifications?.isModel(symbol) == true) return false
+    if (symbol !is FirConstructorSymbol) return true
+    val owner = symbol.resolvedReturnType.toRegularClassSymbol(session) ?: return false
+    return constructorFactsJustified(owner)
+}
+
+/** Whether [override] has a `throwsOnlyIf` condition of its own and [overridden] is exception-free by default. */
+internal fun ProgramConversionContext.weakensExceptionFreedom(override: CompleteFunctionSignature, overridden: FirFunctionSymbol<*>): Boolean =
+    (override as? NonInlineFunctionSignature)?.let { it.throwsOnlyIf != null && !it.exceptionFree } == true &&
+        exceptionFreeByDefault(overridden, overridden.isPure(session))
 
 /**
  * The conditions of the `throwsOnlyIf` block of [specification] over the parameters of [signature], read in the entry

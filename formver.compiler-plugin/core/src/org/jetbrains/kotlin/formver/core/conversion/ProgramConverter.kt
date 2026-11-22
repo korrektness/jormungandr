@@ -367,12 +367,13 @@ class ProgramConverter(
 
     /**
      * Records a refinement check of [declaration] against each declaration it directly overrides that has a
-     * specification, its own or inherited.
+     * specification, its own or inherited, or that is exception-free by default while [declaration] has a `throwsOnlyIf`
+     * condition of its own.
      */
     private fun registerRefinements(declaration: FirSimpleFunction, signature: CompleteFunctionSignature) {
         val overriddenWithSpec = context(checkerContext) { declaration.symbol.directOverriddenSymbolsSafe() }
             .filterIsInstance<FirNamedFunctionSymbol>()
-            .filter { context(checkerContext) { it.specificationOwner() } != null }
+            .filter { context(checkerContext) { it.specificationOwner() } != null || weakensExceptionFreedom(signature, it) }
         if (overriddenWithSpec.isEmpty()) return
         val override = signature as? NonInlineFunctionSignature ?: throw UnsupportedFeatureException(
             declaration.source, "an inline override of a function with a specification"

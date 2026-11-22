@@ -48,6 +48,11 @@ enum class FailureKind(
     VIPER_VERIFICATION_ERROR,
     VERIFICATION_CONDITION_NOT_ESTABLISHED,
     THROWS_CONDITION_NOT_ESTABLISHED,
+    EXCEPTION_FROM_THROW,
+    EXCEPTION_FROM_UNSPECIFIED_CALL,
+    EXCEPTION_FROM_THROWING_CALL,
+    EXCEPTION_FROM_FUNCTION_OBJECT,
+    EXCEPTION_IN_TRY,
     POSSIBLE_INDEX_OUT_OF_BOUND,
     INTEGER_OVERFLOW,
     DIVISION_BY_ZERO,
@@ -125,6 +130,20 @@ sealed interface KotlinCondition {
         val clauseSource: KtSourceElement? = null,
         val loopPhase: LoopPhase? = null,
     ) : KotlinCondition
+    /** Where an exception may leave a function that is exception-free by default, what raises it. */
+    enum class ExceptionSource {
+        /** A `throw` or another operation that throws when its condition fails, including the thrown value's construction. */
+        THROW,
+        /** A call whose callee has no `throwsOnlyIf` condition, or an operation that calls such code. */
+        UNSPECIFIED_CALL,
+        /** A call whose callee's `throwsOnlyIf` condition may hold. */
+        THROWING_CALL,
+        /** An invocation of a function object. */
+        FUNCTION_OBJECT,
+        /** Any exit inside a `try` with a `catch`, which may receive the exception. */
+        TRY,
+    }
+    data class ExceptionEscape(val source: ExceptionSource, val declaration: FirBasedSymbol<*>?) : KotlinCondition
     data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
     data class DivisionByZero(val operation: String) : KotlinCondition
     data class CastFailure(val target: String) : KotlinCondition

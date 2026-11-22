@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirCall
 import org.jetbrains.kotlin.fir.expressions.FirContextArgumentListOwner
@@ -53,7 +54,7 @@ private fun StmtConversionContext.imperativeCheckedCast(argument: ExpEmbedding, 
         proven = true
         access = true
     }
-    return blockOf(saved, If(Is(saved.variable, targetType), cast, exceptionalExit(), targetType))
+    return blockOf(saved, If(Is(saved.variable, targetType), cast, exceptionalExit(KotlinCondition.ExceptionSource.THROW), targetType))
 }
 
 internal fun StmtConversionContext.componentSensitiveCast(from: ConeKotlinType, target: ConeKotlinType): Boolean {
@@ -170,5 +171,5 @@ fun StmtConversionContext.lateinitReadMayThrow(access: FirPropertyAccessExpressi
     // value of the property's type.
     val value = declareAnonVar(read.type, read)
     val typed = value.variable.withInvariants(typeResolver) { proven = true }
-    return blockOf(value, NonDeterministically(exceptionalExit()), typed)
+    return blockOf(value, NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.THROW)), typed)
 }

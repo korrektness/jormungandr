@@ -27,6 +27,8 @@ data class PluginConfiguration(
     /** File-batch worker selection; see docs/configuration.md. */
     val verificationWorkers: Int = 0,
     val declarationReport: DeclarationReport? = null,
+    /** Gives every source function without a `throwsOnlyIf` block the condition `false`; see SPECIFICATIONS.md, "Exception freedom". */
+    val exceptionFreeByDefault: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_VERIFICATION_TIMEOUT_SECONDS = 300

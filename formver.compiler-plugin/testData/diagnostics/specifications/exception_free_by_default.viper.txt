@@ -1,0 +1,1155 @@
+/exception_free_by_default.kt: info: Generated Viper text for plain:
+function throws_plain(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method plain(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for callsExceptionFree:
+function throws_callsExceptionFree(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+function throws_plain(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method callsExceptionFree(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_plain(x)
+    assert old(throws_callsExceptionFree(x))
+    inhale false
+  }
+  v_ret_0 := plain(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method plain(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for throws:
+function throws_throws(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throws(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      assert old(throws_throws(x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    assert old(throws_throws(x))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for requires:
+function throws_f_requires(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method f_requires(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) >= 0) {
+  } else {
+    assert old(throws_f_requires(x))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for asserts:
+function throws_asserts(x: Ref): Bool
+  requires isSubtype(typeOf(x), nullable(intType()))
+{
+  false
+}
+
+method asserts(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := x
+  if (isSubtype(typeOf(anon), intType())) {
+    inhale isSubtype(typeOf(anon), intType())
+    v_ret_0 := anon
+  } else {
+    assert old(throws_asserts(x))
+    inhale false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for throwing:
+function throws_throwing(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method throwing(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      assert old(throws_throwing(x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    assert old(throws_throwing(x))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for callsThrowingSafely:
+function throws_callsThrowingSafely(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+function throws_throwing(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method callsThrowingSafely(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (intFromRef(x) < 0) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  }
+  if (boolFromRef(anon)) {
+    inhale throws_throwing(x)
+    assert old(throws_callsThrowingSafely(x))
+    inhale false
+  }
+  v_ret_0 := throwing(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method throwing(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for callsThrowing:
+function throws_callsThrowing(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+function throws_throwing(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method callsThrowing(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_throwing(x)
+    assert old(throws_callsThrowing(x))
+    inhale false
+  }
+  v_ret_0 := throwing(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method throwing(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for ownConditionKept:
+function throws_ownConditionKept(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) == 0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method ownConditionKept(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      assert old(throws_ownConditionKept(x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    assert old(throws_ownConditionKept(x))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for invokes:
+function throws_invokes(f: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(f), functionType())
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method invokes(f: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), functionType())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    assert old(throws_invokes(f, x))
+    inhale false
+  }
+  inhale isSubtype(typeOf(anon_0), intType())
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for caught:
+function throws_caught(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method caught(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var e: Ref
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    var anon_4: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      var anon_3: Ref
+      if (boolFromRef(anon_3)) {
+        goto catch
+      }
+      assert old(throws_caught(x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    if (boolFromRef(anon_4)) {
+      goto catch
+    }
+    assert old(throws_caught(x))
+    inhale false
+  }
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), IllegalArgumentException())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_free_by_default.kt: info: Generated Viper text for finallyOnce:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_finallyOnce(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method finallyOnce(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  if (intFromRef(x) < 0) {
+    var anon_1: Ref
+    var anon_2: Ref
+    var anon_5: Ref
+    if (boolFromRef(anon_2)) {
+      var anon_3: Ref
+      var anon_4: Ref
+      if (boolFromRef(anon_4)) {
+        goto tryExit_0
+      }
+      assert old(throws_finallyOnce(x))
+      inhale false
+    }
+    anon_1 := con()
+    fold acc(Throwable_unique(anon_1), write)
+    fold acc(Exception_unique(anon_1), write)
+    fold acc(RuntimeException_unique(anon_1), write)
+    fold acc(IllegalArgumentException_unique(anon_1), write)
+    if (boolFromRef(anon_5)) {
+      goto tryExit_0
+    }
+    assert old(throws_finallyOnce(x))
+    inhale false
+  }
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert true
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_free_by_default.kt: info: Generated Viper text for pureIdentity:
+function pureIdentity(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  x
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for callsPure:
+function pureIdentity(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  x
+}
+
+function throws_callsPure(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method callsPure(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := pureIdentity(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Point:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_con(par_x: Ref, par_y: Ref): Bool
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+{
+  false
+}
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Point()
+  anon_0 := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_y
+  inhale intFromRef(g_y(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Point_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Point_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for constructs:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_con(par_x: Ref, par_y: Ref): Bool
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+{
+  false
+}
+
+function throws_constructs(par_x: Ref): Bool
+  requires isSubtype(typeOf(par_x), intType())
+{
+  false
+}
+
+method con(par_x: Ref, par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_1), Point())
+  ensures intFromRef(g_x(ret_1)) == intFromRef(par_x)
+  ensures intFromRef(g_y(ret_1)) == intFromRef(par_y)
+  ensures intFromRef(g_x(ret_1)) == intFromRef(par_x)
+  ensures intFromRef(g_y(ret_1)) == intFromRef(par_y)
+
+
+method constructs(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_con(par_x, par_x)
+    assert old(throws_constructs(par_x))
+    inhale false
+  }
+  v_ret_0 := con(par_x, par_x)
+  fold acc(Point_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Positive:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_con(par_value: Ref): Bool
+  requires isSubtype(typeOf(par_value), intType())
+{
+  false
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Positive())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Positive()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  if (intFromRef(g_value(v_ret_0)) > 0) {
+  } else {
+    assert old(throws_con(par_value))
+    inhale false
+  }
+  fold acc(Positive_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Positive_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for constructsChecked:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Positive())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_con(par_value: Ref): Bool
+  requires isSubtype(typeOf(par_value), intType())
+{
+  false
+}
+
+function throws_constructsChecked(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), Positive())
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+
+
+method constructsChecked(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Positive())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_con(x)
+    assert old(throws_constructsChecked(x))
+    inhale false
+  }
+  v_ret_0 := con(x)
+  fold acc(Positive_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Named:
+function g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Named())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function throws_con(par_name: Ref): Bool
+  requires isSubtype(typeOf(par_name), stringType())
+{
+  false
+}
+
+method con(par_name: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_name), stringType())
+  ensures isSubtype(typeOf(v_ret_0), Named())
+  ensures stringFromRef(g_name(v_ret_0)) == stringFromRef(par_name)
+  ensures stringFromRef(g_name(v_ret_0)) == stringFromRef(par_name)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Named()
+  anon := par_name
+  inhale stringFromRef(g_name(v_ret_0)) == stringFromRef(anon)
+  fold acc(Named_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Named_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for toString:
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Named())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function throws_toString(this: Ref): Bool
+  requires isSubtype(typeOf(this), Named())
+{
+  false
+}
+
+method toString(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Named())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := name(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Broken:
+function throws_con(): Bool
+{
+  false
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Broken())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Broken()
+  fold acc(Broken_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Broken_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for toString:
+function throws_toString(this: Ref): Bool
+  requires isSubtype(typeOf(this), Broken())
+{
+  false
+}
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), UnsupportedOperationException())
+  ensures isSubtype(typeOf(ret_3), UnsupportedOperationException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method toString(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Broken())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  if (boolFromRef(anon_2)) {
+    var anon_3: Ref
+    assert old(throws_toString(this))
+    inhale false
+  }
+  anon_1 := con()
+  fold acc(Throwable_unique(anon_1), write)
+  fold acc(Exception_unique(anon_1), write)
+  fold acc(RuntimeException_unique(anon_1), write)
+  fold acc(UnsupportedOperationException_unique(anon_1), write)
+  assert old(throws_toString(this))
+  inhale false
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for showsNamed:
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Named())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function throws_showsNamed(n: Ref): Bool
+  requires isSubtype(typeOf(n), Named())
+{
+  false
+}
+
+function throws_toString(this: Ref): Bool
+  requires isSubtype(typeOf(this), Named())
+{
+  false
+}
+
+method showsNamed(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Named())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_toString(n)
+    assert old(throws_showsNamed(n))
+    inhale false
+  }
+  v_ret_0 := toString(n)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method toString(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Named())
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for showsAny:
+function throws_showsAny(a: Ref): Bool
+  requires isSubtype(typeOf(a), anyType())
+{
+  false
+}
+
+method showsAny(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), anyType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var anon_0: Ref
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    assert old(throws_showsAny(a))
+    inhale false
+  }
+  v_ret_0 := toString(a)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method toString(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for Base:
+function throws_con(): Bool
+{
+  false
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for get:
+function throws_get(this: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method get(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Refined:
+function throws_con(): Bool
+{
+  false
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Refined())
+  ensures isSubtype(typeOf(v_ret_0), Refined()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Refined()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Refined_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Refined_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for get:
+function throws_Base_f_get(this: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+function throws_Refined_f_get(this: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(this), Refined())
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method Base_f_get(this: Ref, x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_5), intType())
+
+
+method Refined_f_get(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Refined())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      assert old(throws_Refined_f_get(this, x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    assert old(throws_Refined_f_get(this, x))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method refines_Base_f_get(this: Ref, x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Refined())
+{
+  label call
+  ret_5 := Refined_f_get(this, x)
+  assert old[call](throws_Refined_f_get(this, x)) ==>
+    old(throws_Base_f_get(this, x))
+  assert isSubtype(typeOf(ret_5), intType())
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for callsThroughBase:
+function throws_callsThroughBase(b: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(b), Base())
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+function throws_get(this: Ref, x: Ref): Bool
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method callsThroughBase(b: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_get(b, x)
+    assert old(throws_callsThroughBase(b, x))
+    inhale false
+  }
+  v_ret_0 := get(b, x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method get(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/exception_free_by_default.kt: info: Generated Viper text for checkedInline:
+method checkedInline(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := require(geInts(x, intToRef(0)))
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method require(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/exception_free_by_default.kt: info: Generated Viper text for inlinesChecked:
+function throws_inlinesChecked(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method checkedInline(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method inlinesChecked(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var v_ret_2: Ref
+  if (intFromRef(x) >= 0) {
+  } else {
+    assert old(throws_inlinesChecked(x))
+    inhale false
+  }
+  v_ret_2 := x
+  goto lbl_ret_2
+  label lbl_ret_2
+  v_ret_0 := v_ret_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for Gauge:
+function g_raw(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_con(par_raw: Ref): Bool
+  requires isSubtype(typeOf(par_raw), intType())
+{
+  false
+}
+
+method con(par_raw: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(v_ret_1), Gauge())
+  ensures intFromRef(g_raw(v_ret_1)) == intFromRef(par_raw)
+  ensures intFromRef(g_raw(v_ret_1)) == intFromRef(par_raw)
+{
+  var anon: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == Gauge()
+  anon := par_raw
+  inhale intFromRef(g_raw(v_ret_1)) == intFromRef(anon)
+  fold acc(Gauge_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(Gauge_unique(v_ret_1), write)
+}
+
+method level(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/exception_free_by_default.kt: info: Generated Viper text for level:
+function raw(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method level(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), Gauge())
+  v_ret_0 := raw(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_free_by_default.kt: info: Generated Viper text for readsAccessor:
+function raw(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function throws_readsAccessor(g: Ref): Bool
+  requires isSubtype(typeOf(g), Gauge())
+{
+  false
+}
+
+method level(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method readsAccessor(g: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), Gauge())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    assert old(throws_readsAccessor(g))
+    inhale false
+  }
+  anon_0 := level(g)
+  v_ret_0 := anon_0
+  inhale isSubtype(typeOf(v_ret_0), intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}

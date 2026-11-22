@@ -69,6 +69,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             trustLedger = TrustLedger(),
             verifiedDeclarations = VerifiedDeclarations(),
             declarationReport = configuration.get(FormalVerificationConfigurationKeys.DECLARATION_REPORT)?.let(::DeclarationReport),
+            exceptionFreeByDefault = configuration.get(FormalVerificationConfigurationKeys.EXCEPTION_FREE_BY_DEFAULT, false),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         IrGenerationExtension.registerExtension(

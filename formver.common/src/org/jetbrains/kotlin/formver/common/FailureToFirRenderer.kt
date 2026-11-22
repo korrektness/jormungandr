@@ -207,6 +207,18 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         }
     }
 
+    private fun exceptionEscapeMessage(condition: KotlinCondition.ExceptionEscape): String {
+        val raised = when (condition.source) {
+            KotlinCondition.ExceptionSource.THROW -> "this operation may throw"
+            KotlinCondition.ExceptionSource.UNSPECIFIED_CALL -> "the callee has no 'throwsOnlyIf' condition"
+            KotlinCondition.ExceptionSource.THROWING_CALL -> "the callee's 'throwsOnlyIf' condition may hold"
+            KotlinCondition.ExceptionSource.FUNCTION_OBJECT -> "a function object may throw"
+            KotlinCondition.ExceptionSource.TRY -> "a 'catch' may receive the exception, but it may also escape"
+        }
+        val declaration = condition.declaration?.let { " '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }.orEmpty()
+        return "Could not establish that no exception leaves$declaration here: $raised."
+    }
+
     private fun obligationMessage(failure: Failure): String = when (val condition = failure.condition) {
             is KotlinCondition.IntegerOverflow ->
                 "Could not establish that ${operator(condition.operation)} stays within the ${condition.resultType} range [${condition.lower}, ${condition.upper}]."
@@ -214,6 +226,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.CastFailure -> "Could not establish that the cast operand has runtime type ${condition.target}."
             KotlinCondition.NullAssertion -> "Could not establish that the operand of !! is non-null."
             is KotlinCondition.Proof -> proofMessage(condition)
+            is KotlinCondition.ExceptionEscape -> exceptionEscapeMessage(condition)
             is PurityCondition -> purityMessage(condition)
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
             is TerminationCondition -> terminationMessage(condition)

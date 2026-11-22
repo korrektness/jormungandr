@@ -16,6 +16,13 @@ open class FormVerExtension {
         myCounterexamples = enabled
     }
 
+    internal var myExceptionFreeByDefault: Boolean? = null
+
+    /** Checks that every source function without a `throwsOnlyIf` block throws no exception; see docs/configuration.md. */
+    open fun exceptionFreeByDefault(enabled: Boolean) {
+        myExceptionFreeByDefault = enabled
+    }
+
     internal var myVerificationCacheDirectory: String? = null
 
     open fun verificationCacheDirectory(directory: String) {

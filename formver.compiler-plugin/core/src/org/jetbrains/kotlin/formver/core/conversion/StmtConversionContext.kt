@@ -86,11 +86,11 @@ interface StmtConversionContext : MethodConversionContext {
      * The check that an exception leaving the function is permitted, for a function with a `throwsOnlyIf`
      * condition; `null` when exceptions leaving the function are unchecked.
      */
-    val exceptionEscape: ExpEmbedding?
+    val exceptionEscape: ThrowsConditionCheck?
 
     /** Whether `old` reads the state it is evaluated in: in a `throwsOnlyIf` condition, that is the entry state. */
     val readsEntryState: Boolean
-    fun <R> withExceptionEscape(escape: ExpEmbedding?, action: StmtConversionContext.() -> R): R
+    fun <R> withExceptionEscape(escape: ThrowsConditionCheck?, action: StmtConversionContext.() -> R): R
     fun <R> withEntryStateReads(action: StmtConversionContext.() -> R): R
 
     /** The call being inserted, once its arguments are converted. Bodies inlined at it are bound there. */
@@ -349,7 +349,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
     return Block {
         addAll(evaluated.declarations)
         addAll(evaluated.values)
-        if (mayThrow()) add(NonDeterministically(exceptionalExit()))
+        if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL)))
         add(unconstrainedValue(embedType(access.resolvedType)))
     }
 }
@@ -718,11 +718,21 @@ fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEm
 
 /**
  * Leaves by an exception, which may be caught by any enclosing catch of this function, whatever its declared type,
- * or leave the function, in which case the postcondition does not apply.
+ * or leave the function, in which case the postcondition does not apply. [source] is what raises the exception.
  */
-fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
+fun StmtConversionContext.exceptionalExit(source: KotlinCondition.ExceptionSource): ExpEmbedding = Block {
     activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
-    exceptionEscape?.let(::add)
+    exceptionEscape?.let { add(it.at(source)) }
+    add(Unreachable)
+}
+
+/**
+ * Rethrows, after a `finally` block, an exception raised in its `try`. An exception-free function checks no escape
+ * here: its condition is the constant `false`, so the exit that raised the exception already failed its check.
+ */
+fun StmtConversionContext.finallyRethrow(): ExpEmbedding = Block {
+    activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
+    exceptionEscape?.takeUnless { it.exceptionFree }?.let { add(it.at(KotlinCondition.ExceptionSource.THROW)) }
     add(Unreachable)
 }
 

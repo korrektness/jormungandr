@@ -109,7 +109,9 @@ Select compilation checks and external specification inputs through the
 
 A verification error means SnaKt could not establish a Kotlin obligation; it does not by itself establish a
 counterexample. `VERIFICATION_CONDITION_NOT_ESTABLISHED` identifies explicit Kotlin proof clauses, and
-`THROWS_CONDITION_NOT_ESTABLISHED` a `throwsOnlyIf` condition (see [Exceptions](#exceptions)). Backend obligations without a Kotlin classification use `VIPER_VERIFICATION_ERROR` and
+`THROWS_CONDITION_NOT_ESTABLISHED` a `throwsOnlyIf` condition (see [Exceptions](#exceptions)). The `EXCEPTION_FROM_*`
+and `EXCEPTION_IN_TRY` errors mark an exception that may leave a function checked under
+[Exception freedom](#exception-freedom). Backend obligations without a Kotlin classification use `VIPER_VERIFICATION_ERROR` and
 include backend error and reason codes. The `errorStyle` option selects Kotlin wording, backend evidence, or both
 for the same diagnostic.
 
@@ -1282,9 +1284,51 @@ override with a specification throws only where the overridden condition permits
 overridden one, and an override with a specification but no condition must establish the overridden condition
 wherever it may throw. A failure is reported as `OVERRIDE_NOT_REFINING`.
 
-A function without `throwsOnlyIf` is unchanged: nothing is checked where an exception leaves it. `throwsOnlyIf` is an
+A function without `throwsOnlyIf` is unchanged: nothing is checked where an exception leaves it, unless
+[Exception freedom](#exception-freedom) is selected. `throwsOnlyIf` is an
 unsupported construct on a `@Pure` function and on a constructor. JVM resource, linkage and asynchronous failures,
 such as `StackOverflowError` and `OutOfMemoryError`, may leave any function whatever its condition.
+
+#### Exception freedom
+
+The `exception_free_by_default` option ([configuration](docs/configuration.md#exception-freedom)) treats every
+function of the compiled sources that has no `throwsOnlyIf` condition, its own or inherited, as if it had
+`throwsOnlyIf { false }`: no exception may leave it, and its callers assume that none does. The rules of
+[Conditions for throwing](#conditions-for-throwing) apply unchanged, except where this section says otherwise. A
+function with its own condition keeps it and reports `THROWS_CONDITION_NOT_ESTABLISHED`.
+
+Where an exception may leave an exception-free function, the error names what raises it:
+
+| Error | Raised by |
+|:--|:--|
+| `EXCEPTION_FROM_THROW` | `throw`, including the construction of the thrown value, and the other abnormal exits listed under [Exceptions](#exceptions), such as failed `require`, `!!` and casts. |
+| `EXCEPTION_FROM_UNSPECIFIED_CALL` | A call whose callee has no `throwsOnlyIf` condition: an opaque library call, a declaration of a dependency, a custom property accessor, or a library operation such as an unmodelled `equals` or `toString`. |
+| `EXCEPTION_FROM_THROWING_CALL` | A call whose callee's `throwsOnlyIf` condition may hold for its arguments. |
+| `EXCEPTION_FROM_FUNCTION_OBJECT` | An invocation of a function object. |
+| `EXCEPTION_IN_TRY` | Any of the above inside a `try` with a `catch`. A `catch` may receive the exception, but catch selection is over-approximated, so the exception may also escape. |
+
+The exit after a `finally` block that rethrows the exception of its `try` is not reported again: the exit that
+raised the exception reports it.
+
+The option covers declarations as follows:
+- A `@Pure` function is unaffected: calls of pure functions have no exceptional exit, and its body proves its
+  operations do not fail.
+- A constructor is exception-free when its class's construction is verified (see [Verification Control](#verification-control)): its
+  construction, including property initializers, `init` blocks and delegation to source constructors, is checked,
+  and its callers assume that the constructor does not throw. Any other constructor gives no assumption.
+- An override of a library declaration is exception-free and is checked like any other function. A call that
+  resolves to the library declaration gives no assumption, so it reports `EXCEPTION_FROM_UNSPECIFIED_CALL`.
+- An override with its own condition of an exception-free source function must refine it, so
+  `OVERRIDE_NOT_REFINING` is reported unless the override's condition is unsatisfiable.
+- An external specification model keeps its own condition, if any; the library function it binds is not compiled
+  source. A `@Pure` model gives its calls no exceptional exit.
+- An `inline` function is verified where it is inlined (see [Inline functions](#inline-functions-and-default-arguments)),
+  against the condition of the function it is inlined into.
+- A custom property accessor and a lambda converted as a program of its own are not checked, and a call of a custom
+  accessor gives no assumption.
+
+A function whose verification is skipped keeps its condition, so its callers still assume it throws nothing, as they
+assume its other contract clauses.
 
 ### Folding
 

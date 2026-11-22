@@ -86,6 +86,7 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
             messageCollector = PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true),
             externalSpecs = externalSpecs(module),
             verificationWorkers = if (FormVerDirectives.FULL_FILE_VERIFICATION in module.directives) 1 else 0,
+            exceptionFreeByDefault = FormVerDirectives.EXCEPTION_FREE_BY_DEFAULT in module.directives,
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         if (!config.externalSpecs.isEmpty()) {
@@ -130,6 +131,10 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 object FormVerDirectives : SimpleDirectivesContainer() {
     val FULL_FILE_VERIFICATION by directive(
         description = "Run verification producers through the full-file visitor."
+    )
+
+    val EXCEPTION_FREE_BY_DEFAULT by directive(
+        description = "Check every source function without a throwsOnlyIf block as exception-free"
     )
 
     val COUNTEREXAMPLES by directive(

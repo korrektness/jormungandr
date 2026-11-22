@@ -389,7 +389,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                     val condition = data.convertArgumentOf(functionCall, conditionArg)
                     val failure = Block {
                         if (message is LambdaExp) add(data.withCallSite(functionCall) { message.insertCall(emptyList(), this) })
-                        add(data.exceptionalExit())
+                        add(data.exceptionalExit(KotlinCondition.ExceptionSource.THROW))
                     }
                     return If(condition, UnitLit, failure, buildType { unit() })
                 }
@@ -397,7 +397,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             if (id.callableName.asString() == "error") {
                 return Block {
                     functionCall.arguments.forEach { add(data.convertArgumentOf(functionCall, it)) }
-                    add(data.exceptionalExit())
+                    add(data.exceptionalExit(KotlinCondition.ExceptionSource.THROW))
                 }
             }
         }
@@ -446,7 +446,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             else -> {
                 val operands = listOf(data.operandOf(implicitInvokeCall, receiver)) + arguments
                 data.evaluateOperands(operands).around { values ->
-                    InvokeFunctionObject(values.first(), values.drop(1), returnType, data.exceptionalExit().takeIf { data.mayThrow() })
+                    InvokeFunctionObject(values.first(), values.drop(1), returnType, data.exceptionalExit(KotlinCondition.ExceptionSource.FUNCTION_OBJECT).takeIf { data.mayThrow() })
                 }
             }
         }
@@ -721,8 +721,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitThrowExpression(throwExpression: FirThrowExpression, data: StmtConversionContext): ExpEmbedding =
         Block {
-            add(data.convert(throwExpression.exception))
-            add(data.exceptionalExit())
+            add(data.withExceptionEscape(data.exceptionEscape?.forcing(KotlinCondition.ExceptionSource.THROW)) { convert(throwExpression.exception) })
+            add(data.exceptionalExit(KotlinCondition.ExceptionSource.THROW))
         }
 
     override fun visitTryExpression(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
@@ -734,7 +734,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val finalEntry = LabelEmbedding(data.tryExitLabelNameProducer.getFresh())
         val body = data.withActiveCatchLabels(listOf(exceptionEntry)) { convertTryCatch(tryExpression, this) }
         val finalizer = data.withNewScope { convert(finallyBlock) }
-        return TryFinally(body, finalizer, data.exceptionalExit(), exceptionEntry, finalEntry)
+        return TryFinally(body, finalizer, data.finallyRethrow(), exceptionEntry, finalEntry)
     }
 
     private fun convertTryCatch(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
@@ -742,9 +742,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val result = if (resultType.pretype == UnitTypeEmbedding) null else data.freshAnonVar(resultType)
         fun capture(value: ExpEmbedding): ExpEmbedding = result?.let { Assign(it, value) } ?: value
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
-            withNewScope {
+            val escape = exceptionEscape?.let { if (tryExpression.catches.isEmpty()) it else it.forcing(KotlinCondition.ExceptionSource.TRY) }
+            withExceptionEscape(escape) { withNewScope {
                 GotoChainNode(null, capture(convert(tryExpression.tryBlock)), catchData.exitLabel.toLink())
-            }
+            } }
         }
         val catches = catchData.blocks.map { catchBlock ->
             data.withNewScope {

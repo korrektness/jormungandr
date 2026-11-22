@@ -19,4 +19,5 @@ object FormalVerificationPluginNames {
     const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"
     const val TRUST_REPORT_OPTION_NAME = "trust_report"
     const val DECLARATION_REPORT_OPTION_NAME = "declaration_report"
+    const val EXCEPTION_FREE_BY_DEFAULT_OPTION_NAME = "exception_free_by_default"
 }

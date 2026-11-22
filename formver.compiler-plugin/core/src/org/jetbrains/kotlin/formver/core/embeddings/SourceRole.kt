@@ -17,6 +17,12 @@ sealed interface SourceRole {
      */
     data object ThrowsAssumption : SourceRole
 
+    /** An exceptional exit of [declaration], which is exception-free by default; [source] says what raises it. */
+    data class ExceptionEscape(
+        val source: org.jetbrains.kotlin.formver.common.KotlinCondition.ExceptionSource,
+        val declaration: FirBasedSymbol<*>?,
+    ) : SourceRole
+
     data class CastCheck(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     data class Arithmetic(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     /**

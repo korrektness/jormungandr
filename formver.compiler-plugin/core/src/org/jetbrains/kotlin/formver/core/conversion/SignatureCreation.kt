@@ -291,8 +291,10 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             }
         }
 
+        val exceptionFree = converter.exceptionFreeByDefault(symbol, current.signature.isPure)
         // The open predicate bodies restate the result's type.
-        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions.distinct(), symbol.source)
+        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions.distinct(), symbol.source,
+            throwsOnlyIf = BooleanLit(false).takeIf { exceptionFree }, exceptionFree = exceptionFree)
     }
 
 /**
@@ -323,8 +325,9 @@ fun SignatureWithTarget<NonInlineCallable>.toNormalSignature(symbol: FirFunction
             addPostconditions(postconditions)
         }
         val throwsOnlyIf = converter.embedThrowsCondition(symbol, current.signature, returnTarget)
+        val exceptionFree = throwsOnlyIf == null && converter.exceptionFreeByDefault(symbol, current.signature.isPure)
         NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source,
-            throwsOnlyIf = throwsOnlyIf)
+            throwsOnlyIf = throwsOnlyIf ?: BooleanLit(false).takeIf { exceptionFree }, exceptionFree = exceptionFree)
     }
 
 @OptIn(SymbolInternals::class)

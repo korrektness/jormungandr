@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
@@ -127,7 +128,7 @@ fun StmtConversionContext.convertCoercion(call: FirFunctionCall): ExpEmbedding? 
             val clamped = atMost(atLeast(value, min), max)
             if (bounds.literalValues()?.let { (min, max) -> min <= max } == true) clamped
             else Block {
-                add(If(less(max, min), exceptionalExit(), UnitLit, buildType { unit() }))
+                add(If(less(max, min), exceptionalExit(KotlinCondition.ExceptionSource.THROW), UnitLit, buildType { unit() }))
                 add(clamped)
             }
         }

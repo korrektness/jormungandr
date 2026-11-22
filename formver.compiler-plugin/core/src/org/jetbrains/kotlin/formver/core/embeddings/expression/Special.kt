@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.PurityCondition
 import org.jetbrains.kotlin.formver.common.PurityRule
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
@@ -109,13 +110,24 @@ data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
 
 /**
  * Asserts, where an exception may leave the function [declaration], the `throwsOnlyIf` condition [function] of its
- * parameters [args] in the function's entry state.
+ * parameters [args] in the function's entry state. [exceptionFree] is set when the condition is the default `false`
+ * of an exception-free function; a failure then names [source], what raises the exception. [forcedSource], when set,
+ * replaces the source of every exit the check is placed at.
  */
 data class ThrowsConditionCheck(
     val function: SymbolicName,
     val args: List<VariableEmbedding>,
     val declaration: FirBasedSymbol<*>?,
+    val exceptionFree: Boolean = false,
+    val source: KotlinCondition.ExceptionSource = KotlinCondition.ExceptionSource.THROW,
+    val forcedSource: KotlinCondition.ExceptionSource? = null,
 ) : ExpEmbedding {
+    /** This check placed at an exit that [source] raises. */
+    fun at(source: KotlinCondition.ExceptionSource): ThrowsConditionCheck = copy(source = forcedSource ?: source)
+
+    /** This check with every exit it is placed at attributed to [source], unless an enclosing attribution holds. */
+    fun forcing(source: KotlinCondition.ExceptionSource): ThrowsConditionCheck = copy(forcedSource = forcedSource ?: source)
+
     override val type: TypeEmbedding = buildType { unit() }
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitThrowsConditionCheck(this)
 }

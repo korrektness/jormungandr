@@ -21,6 +21,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         is SourceRole.Arithmetic -> role.condition
         is SourceRole.CastCheck -> role.condition
         is SourceRole.Termination -> role.condition
+        is SourceRole.ExceptionEscape -> KotlinCondition.ExceptionEscape(role.source, role.declaration)
         is SourceRole.Proof -> KotlinCondition.Proof(
             role.clause, role.declaration, role.subject,
             position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source },
@@ -85,6 +86,13 @@ private fun VerificationError.loopPhase(): KotlinCondition.LoopPhase? = when (re
 private fun KotlinCondition.failureKind(): FailureKind = when (this) {
     is KotlinCondition.Proof -> if (clause == KotlinCondition.ProofClause.THROWS_ONLY_IF) FailureKind.THROWS_CONDITION_NOT_ESTABLISHED
         else FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
+    is KotlinCondition.ExceptionEscape -> when (source) {
+        KotlinCondition.ExceptionSource.THROW -> FailureKind.EXCEPTION_FROM_THROW
+        KotlinCondition.ExceptionSource.UNSPECIFIED_CALL -> FailureKind.EXCEPTION_FROM_UNSPECIFIED_CALL
+        KotlinCondition.ExceptionSource.THROWING_CALL -> FailureKind.EXCEPTION_FROM_THROWING_CALL
+        KotlinCondition.ExceptionSource.FUNCTION_OBJECT -> FailureKind.EXCEPTION_FROM_FUNCTION_OBJECT
+        KotlinCondition.ExceptionSource.TRY -> FailureKind.EXCEPTION_IN_TRY
+    }
     is KotlinCondition.Returns -> FailureKind.UNEXPECTED_RETURNED_VALUE
     is KotlinCondition.Conditional -> FailureKind.CONDITIONAL_EFFECT_ERROR
     is KotlinCondition.IntegerOverflow -> FailureKind.INTEGER_OVERFLOW
@@ -154,7 +162,7 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
     fun applicable(role: SourceRole?): SourceRole? = when (role) {
         is SourceRole.Arithmetic, is SourceRole.CastCheck, is SourceRole.Termination, is SourceRole.Proof, is SourceRole.ReturnsEffect,
         is SourceRole.ConditionalEffect, is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck, is SourceRole.StringIndexCheck,
-        is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
+        is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement, is SourceRole.ExceptionEscape -> role
         is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
         is SourceRole.Condition, SourceRole.ThrowsAssumption, null -> null
     }

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
@@ -263,7 +264,7 @@ private class EqualityLowering(val ctx: StmtConversionContext, val call: FirEqua
     }
 
     private fun dynamic(left: ExpEmbedding, right: ExpEmbedding, trusted: Boolean): ExpEmbedding = Block {
-        if (ctx.mayThrow()) add(NonDeterministically(ctx.exceptionalExit()))
+        if (ctx.mayThrow()) add(NonDeterministically(ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL)))
         add(if (trusted) EqualsRelation(left, right) else ctx.unconstrainedValue(buildType { boolean() }))
     }
 

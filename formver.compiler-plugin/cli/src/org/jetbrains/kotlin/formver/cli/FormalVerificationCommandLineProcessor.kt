@@ -41,6 +41,7 @@ object FormalVerificationConfigurationKeys {
         CompilerConfigurationKey.create("external specification sources")
     val TRUST_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("trust report")
     val DECLARATION_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("declaration report")
+    val EXCEPTION_FREE_BY_DEFAULT: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("exception free by default")
 }
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -112,6 +113,13 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
+        val EXCEPTION_FREE_BY_DEFAULT_OPTION = CliOption(
+            FormalVerificationPluginNames.EXCEPTION_FREE_BY_DEFAULT_OPTION_NAME,
+            "<true|false>",
+            "Check that every source function without a throwsOnlyIf block throws no exception",
+            required = false,
+            allowMultipleOccurrences = false
+        )
     }
 
     override val pluginId: String = FormalVerificationPluginNames.PLUGIN_ID
@@ -128,6 +136,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         EXTERNAL_SPEC_OPTION,
         TRUST_REPORT_OPTION,
         DECLARATION_REPORT_OPTION,
+        EXCEPTION_FREE_BY_DEFAULT_OPTION,
     )
 
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) =
@@ -182,6 +191,9 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                     require(value.isNotBlank())
                     configuration.put(FormalVerificationConfigurationKeys.DECLARATION_REPORT, File(value))
                 }
+
+                EXCEPTION_FREE_BY_DEFAULT_OPTION ->
+                    configuration.put(FormalVerificationConfigurationKeys.EXCEPTION_FREE_BY_DEFAULT, value.toBooleanStrict())
 
                 else -> throw CliOptionProcessingException("Unknown option: ${option.optionName}")
             }

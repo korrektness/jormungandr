@@ -166,6 +166,7 @@ fun constructionBody(
     fun capturesOf(constructor: FirConstructorSymbol) =
         capturesOf(constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!)
     capturesOf(owner)
+    val escape = signature.exceptionEscape(constructor)
     actions += AllocateObject(receiver, type, constructionFields(owner))
     fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
@@ -175,7 +176,7 @@ fun constructionBody(
         val resolver = InlineParameterResolver(arguments + (SubstitutedArgument.DispatchThis to receiver), null, bodyTarget)
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),
             OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), captures = capturesOf(declaring),
-            constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
+            constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt(escape)
         if (delegated) symbol.fir.constructorSpecification()?.spec?.precond?.let { clauses ->
             actions += context.collectInvariants(clauses).withProofClause(
                 org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.PRECONDITION, symbol,
@@ -194,7 +195,7 @@ fun constructionBody(
             }
             return MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(), frame,
                 captures = capturesOf(declaring), constructionReceiver = receiver, constructionPhases = phases,
-                constructionBoundary = boundary).statementCtxt()
+                constructionBoundary = boundary).statementCtxt(escape)
         }
         val delegation = symbol.fir.delegatedConstructor
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()

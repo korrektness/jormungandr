@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -33,7 +34,7 @@ fun StmtConversionContext.convertStringBuilderIntrinsic(
         StringBuilderIntrinsic.TO_STRING -> StringBuilderToString(builder, owned)
         StringBuilderIntrinsic.APPEND_CHAR, StringBuilderIntrinsic.APPEND_STRING -> {
             val value = (access as FirFunctionCall).arguments.single()
-            StringBuilderAppend(builder, convert(value), owned, exceptionalExit())
+            StringBuilderAppend(builder, convert(value), owned, exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
         }
         StringBuilderIntrinsic.CLEAR -> StringBuilderClear(builder, owned)
     }

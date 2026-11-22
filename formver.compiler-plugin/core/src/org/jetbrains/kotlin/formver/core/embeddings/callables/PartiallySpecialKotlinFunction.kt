@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.exceptionalExit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
@@ -38,8 +39,8 @@ class StringPlusAnyFunction : AbstractPartiallySpecialKotlinFunction("kotlin", c
     override fun tryInsertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding? {
         val argType = args[1].type
         return when {
-            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.exceptionalExit())
-            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.exceptionalExit())
+            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
+            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
             else -> null
         }
     }

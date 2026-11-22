@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirExpression
@@ -165,7 +166,7 @@ fun StmtConversionContext.convertForRangeLoop(forLoop: ForRangeLoop): ExpEmbeddi
     // `step` throws on a step that is not positive.
     val positiveLiteralStep = ((progression.step as? FirLiteralExpression)?.value as? Long)?.let { it > 0 } == true
     if (step != null && !positiveLiteralStep) {
-        prelude.add(If(Not(GtIntInt(step, IntLit(0))), exceptionalExit(), UnitLit, buildType { unit() }))
+        prelude.add(If(Not(GtIntInt(step, IntLit(0))), exceptionalExit(KotlinCondition.ExceptionSource.THROW), UnitLit, buildType { unit() }))
     }
     val declaration = declareLocalProperty(forLoop.variable.symbol, first)
     val variable = declaration.variable

@@ -20,6 +20,7 @@ Put Gradle settings in `formver { ... }`. With `kotlinc`, pass each setting as
 | `verificationWorkers(2)` | `verification_workers` | Nonnegative integer worker count; see [File-batch verification](#file-batch-verification). |
 | `verificationCacheDirectory("build/verification-cache")` | `verification_cache_directory` | Nonblank directory path; see [Verification cache](#verification-cache). |
 | `dumpUniquenessCFG(true)` | `dump_uniqueness_cfg` | `true`, `false`; dumps the uniqueness control-flow graph with flow information. |
+| `exceptionFreeByDefault(true)` | `exception_free_by_default` | `true`, `false`; see [Exception freedom](#exception-freedom). |
 | `externalSpec("specs/Library.kt")` | `external_spec` | Existing `.kt` source file; see [External specification inputs](#external-specification-inputs). |
 | Managed by the Gradle plugin | `trust_report` | Nonblank output file path; see [Trust reports](#trust-reports). |
 | Not exposed | `declaration_report` | Nonblank output file path; see [Declaration reports](#declaration-reports). |
@@ -114,6 +115,15 @@ filters require bypassing the cache. Cache keys, hit checks and damaged-entry
 handling are described in the [cache design](viper-outcome-cache.md).
 The repository test driver's cache is configured separately; see
 [test cache controls](agents-dev.md#verification-cache).
+
+## Exception freedom
+
+`exception_free_by_default` defaults to `false`. When set, every source function without a `throwsOnlyIf` condition
+must throw no exception, and its callers assume it throws none. The covered declarations and the errors, which name
+what raises each escaping exception, are defined in
+[Exception freedom](../SPECIFICATIONS.md#exception-freedom). In a [declaration report](#declaration-reports), the
+`verification_detail` of a failed program lists these error kinds, so a declaration that verifies apart from
+exception freedom is one whose failures are all `EXCEPTION_FROM_*` or `EXCEPTION_IN_TRY`.
 
 ## External specification inputs
 

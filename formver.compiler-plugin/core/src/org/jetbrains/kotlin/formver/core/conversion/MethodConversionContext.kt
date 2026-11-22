@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.ThrowsConditionCheck
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.FunctionResultVariableName
@@ -97,4 +98,6 @@ fun MethodConversionContext.embedLocalSymbol(symbol: FirBasedSymbol<*>): ExpEmbe
     else -> throw IllegalArgumentException("Symbol $symbol cannot be embedded as a local symbol.")
 }
 
-fun MethodConversionContext.statementCtxt(): StmtConversionContext = StmtConverter(this)
+/** A statement context of this method; [exceptionEscape] checks the exceptions that leave it. */
+fun MethodConversionContext.statementCtxt(exceptionEscape: ThrowsConditionCheck? = null): StmtConversionContext =
+    StmtConverter(this, exceptionEscape = exceptionEscape)

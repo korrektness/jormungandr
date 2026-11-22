@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.KtSourceElement
@@ -111,7 +112,9 @@ interface NonInlineCallable : NamedCallableEmbedding {
 
     override fun insertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding =
         if (isPure || !ctx.mayThrow()) insertCall(args)
-        else MethodCall(this, args, ctx.exceptionalExit())
+        else MethodCall(this, args, ctx.exceptionalExit(
+            if (throwsCondition == null) KotlinCondition.ExceptionSource.UNSPECIFIED_CALL else KotlinCondition.ExceptionSource.THROWING_CALL
+        ))
 
     // When the function does not need to be inlined, we do not need a context to call it. This is helpful, because
     // in some situations, we do not want to pass around the context (or we don't have access to it)
@@ -142,7 +145,10 @@ fun NonInlineCallable.toFuncApp(
 ) = Exp.FuncApp(name, parameters, Type.Ref, pos, info)
 
 
-/** [throwsOnlyIf] is the `throwsOnlyIf` condition over the formal arguments, read in the entry state. */
+/**
+ * [throwsOnlyIf] is the `throwsOnlyIf` condition over the formal arguments, read in the entry state. [exceptionFree] is
+ * set when that condition is the default `false` of a function without a `throwsOnlyIf` block.
+ */
 data class NonInlineFunctionSignature(
     val signature: NamedFunctionSignature,
     override val preconditions: List<ExpEmbedding>,
@@ -150,6 +156,7 @@ data class NonInlineFunctionSignature(
     override val declarationSource: KtSourceElement?,
     val openConstructedClass: ClassTypeEmbedding? = null,
     val throwsOnlyIf: ExpEmbedding? = null,
+    val exceptionFree: Boolean = false,
 ) : CompleteFunctionSignature, NonInlineCallable, NamedFunctionSignature by signature {
     override val throwsCondition: SymbolicName? get() = throwsOnlyIf?.let { ThrowsConditionName(name) }
 }
