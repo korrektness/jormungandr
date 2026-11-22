@@ -53,6 +53,7 @@ import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.asInternalErrorAt
 import org.jetbrains.kotlin.formver.common.TargetsSelection
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
+import org.jetbrains.kotlin.formver.core.conversion.record
 import org.jetbrains.kotlin.formver.core.conversion.specOfId
 import org.jetbrains.kotlin.formver.core.conversion.skipsVerification
 import org.jetbrains.kotlin.formver.core.conversion.verificationSkipReason
@@ -286,9 +287,7 @@ internal class ViperPoweredDeclarationChecker(
                 val failed = failedKinds.isNotEmpty()
                 if (timeout != null) reporter.reportFailure(timeout)
                 else if (!failed) {
-                    config.trustLedger?.record(context.containingFilePath!!, name, { programConversionContext.trust.semanticOptIns }) {
-                        programConversionContext.trust.assumptions
-                    }
+                    config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust)
                     if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
                 }
                 recordOutcome(declaration, index) {

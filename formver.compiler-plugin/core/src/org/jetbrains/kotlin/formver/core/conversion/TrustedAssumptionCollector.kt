@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.common.SemanticOptIn
+import org.jetbrains.kotlin.formver.common.TrustLedger
 import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.formver.common.trustName
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
@@ -54,9 +55,13 @@ class TrustedAssumptionCollector(
      * set is complete only after every checker has run.
      */
     val assumptions: Set<TrustedAssumption>
-        @OptIn(SymbolInternals::class)
-        get() = trusted + nonRetainingCallees() + sourceCallees.filter { (callee, _) -> callee.fir.verificationSkipped == true }
-            .map { (_, name) -> TrustedAssumption(TrustedAssumption.Kind.SKIPPED, name.trustName) }
+        get() = detach().assumptions()
+
+    /**
+     * The trust recorded so far, holding neither this collector nor its program, so that keeping it until every checker
+     * has run does not keep the program alive.
+     */
+    fun detach(): RecordedTrust = RecordedTrust(trusted + nonRetainingCallees(), sourceCallees.toList(), semanticOptIns.toSet())
 
     @OptIn(SymbolInternals::class)
     private fun nonRetainingCallees(): List<TrustedAssumption> {
@@ -153,6 +158,24 @@ class TrustedAssumptionCollector(
             signature.stdLibPostconditions(signature.returns, typeResolver).isEmpty()) return
         trusted += TrustedAssumption(TrustedAssumption.Kind.LIBRARY_CONTRACT, symbol.trustName)
     }
+}
+
+/** The trust of one program, as [TrustedAssumptionCollector.detach] records it. */
+class RecordedTrust internal constructor(
+    private val known: Set<TrustedAssumption>,
+    private val sourceCallees: List<Pair<FirCallableSymbol<*>, FirCallableSymbol<*>>>,
+    val semanticOptIns: Set<SemanticOptIn>,
+) {
+    /** As [TrustedAssumptionCollector.assumptions]: the skipped source callees are decided at each call. */
+    @OptIn(SymbolInternals::class)
+    fun assumptions(): Set<TrustedAssumption> = known + sourceCallees.filter { (callee, _) -> callee.fir.verificationSkipped == true }
+            .map { (_, name) -> TrustedAssumption(TrustedAssumption.Kind.SKIPPED, name.trustName) }
+}
+
+/** Records the trust of the verified program [label] in [file], keeping only what [TrustedAssumptionCollector.detach] returns. */
+fun TrustLedger.record(file: String, label: String, trust: TrustedAssumptionCollector) {
+    val recorded = trust.detach()
+    record(file, label, { recorded.semanticOptIns }) { recorded.assumptions() }
 }
 
 private val LIST_ITERATOR = CallableId(StandardClassIds.List, Name.identifier("iterator"))

@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChe
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.constructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.record
 import org.jetbrains.kotlin.formver.core.conversion.constructionVerdicts
 import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
@@ -121,9 +122,7 @@ internal class ViperPoweredClassChecker(
                 }
                 if (timeout != null) reporter.reportFailure(timeout)
                 else if (!failed) {
-                    config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, { program.trust.semanticOptIns }) {
-                        program.trust.assumptions
-                    }
+                    config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trust)
                     config.verifiedDeclarations?.record(declaration.symbol)
                 }
             } catch (error: UnsupportedFeatureException) {

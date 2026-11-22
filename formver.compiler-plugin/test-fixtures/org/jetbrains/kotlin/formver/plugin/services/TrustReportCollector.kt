@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.formver.common.TrustReport
 import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.formver.common.services.updatingTestData
 import org.jetbrains.kotlin.formver.core.conversion.TrustedAssumptionCollector
+import org.jetbrains.kotlin.formver.core.conversion.record
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.trust
@@ -44,7 +45,7 @@ class TrustReportCollector(private val testServices: TestServices) : TestService
     fun record(file: String, decl: FirDeclaration) {
         if (!enabled) return
         for ((label, trust) in programTrust(decl)) {
-            ledger.record(file, label, { trust.semanticOptIns }) { trust.assumptions }
+            ledger.record(file, label, trust)
         }
     }
 
