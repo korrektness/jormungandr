@@ -41,7 +41,8 @@ class AfterConversionHandler(testServices: TestServices) : FirAnalysisHandler(te
                 testServices,
                 { testServices.conversionDiagnosticsCollector.assertEquality() },
                 { testServices.viperTextCollector.assertEquality() },
-                { testServices.conversionTagCollector.assertEqual() })
+                { testServices.conversionTagCollector.assertEqual() },
+                { testServices.trustReportCollector.assertConversionEquality(info) })
 
         }
     }

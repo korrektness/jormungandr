@@ -64,7 +64,10 @@ conversion-only and skipped declarations produce none. The environment variable
 ## Landing and nightly
 
 `gate-test.sh` runs `check-testdata.sh`, detekt, `apiCheck`, handwritten unit and small
-integration tiers, compiler `untilConversion` and locality fixture tests. It verifies a
+integration tiers, compiler `untilConversion` and locality fixture tests. Conversion
+mode checks the per-declaration assumptions of each `.trust.txt`; its summary line
+and which declarations it lists depend on verification outcomes and are checked
+only when verifying. `gate-test.sh` verifies a
 compiler fixture only when a file under `testData/diagnostics` or
 `testData/programs` with that test's stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
 change whose goldens do not move gets no additional fixture verification.

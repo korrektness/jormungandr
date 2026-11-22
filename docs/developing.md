@@ -47,6 +47,10 @@ alongside golden files holding the diagnostic text:
 - `.viper.txt` — the generated Viper code.
 - `.viper.diag.txt` — verification diagnostics. Present only where verification
   reported something.
+- `.trust.txt` — the trust report of the verified declarations, for fixtures
+  with the `TRUST_REPORT` directive. Conversion mode checks the trusted
+  assumptions of each declaration it lists; verification also checks which
+  declarations it lists.
 
 The test runners are generated from the testData tree as part of
 `compileTestKotlin`, so a new file is picked up on the next build.

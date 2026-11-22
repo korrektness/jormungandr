@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.formver.common.services.runChecks
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
-import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationProgress
 import org.jetbrains.kotlin.formver.plugin.compiler.verificationLabel
@@ -52,6 +51,46 @@ fun shouldSkipByTestMode(testServices: TestServices): Boolean = when (getTestMod
 }
 
 
+/** The declarations of [file] whose own program or lambda programs the verification phase verifies. */
+fun verificationTargets(file: FirFile): List<FirDeclaration> {
+    val targets = mutableListOf<FirDeclaration>()
+    fun hasLambdaTargets(decl: FirDeclaration) = decl.lambdaPrograms.orEmpty().any { it.shouldVerify }
+    file.accept(object : FirDefaultVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            when (element) {
+                is FirSimpleFunction -> visitSimpleFunction(element)
+                else -> element.acceptChildren(this)
+            }
+        }
+
+        override fun visitFile(file: FirFile) {
+            if (file.shouldVerify == true) targets.add(file)
+            file.acceptChildren(this)
+        }
+
+        override fun visitRegularClass(regularClass: FirRegularClass) {
+            if (regularClass.shouldVerify == true || hasLambdaTargets(regularClass)) targets.add(regularClass)
+            regularClass.acceptChildren(this)
+        }
+
+        override fun visitProperty(property: FirProperty) {
+            if (hasLambdaTargets(property)) targets.add(property)
+            property.acceptChildren(this)
+        }
+
+        override fun visitPropertyAccessor(propertyAccessor: FirPropertyAccessor) {
+            if (propertyAccessor.shouldVerify == true) targets.add(propertyAccessor)
+            propertyAccessor.acceptChildren(this)
+        }
+
+        override fun visitSimpleFunction(simpleFunction: FirSimpleFunction) {
+            if (simpleFunction.shouldVerify == true || hasLambdaTargets(simpleFunction)) targets.add(simpleFunction)
+            simpleFunction.acceptChildren(this)
+        }
+    })
+    return targets
+}
+
 class ViperProgramVerificationFacade(val testServices: TestServices) :
     AbstractTestFacade<FirOutputArtifact, FirOutputArtifact>() {
     private val reportedErrors = ReportedVerifierErrors()
@@ -60,12 +99,6 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         get() = FrontendKinds.FIR
     override val outputKind: TestArtifactKind<FirOutputArtifact>
         get() = FrontendKinds.FIR
-
-    /**
-     * Returns true iff the given [decl] should be verified.
-     */
-    fun shouldVerify(decl: FirDeclaration, testServices: TestServices): Boolean =
-        decl.shouldVerify == true && !shouldSkipByTestMode(testServices)
 
     /**
      * Extracts the Viper programs and if necessary, verifies them.
@@ -77,51 +110,8 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         inputArtifact: FirOutputArtifact
     ): FirOutputArtifact {
         inputArtifact.partsForDependsOnModules.forEach { part ->
-            val toVerify: MutableList<Pair<TestFile, FirDeclaration>> = mutableListOf()
-            part.firFiles.map { (testFile, firFile) ->
-                firFile.accept(object : FirDefaultVisitorVoid() {
-                    override fun visitElement(element: FirElement) {
-                        when (element) {
-                            is FirSimpleFunction -> visitSimpleFunction(element)
-                            else -> element.acceptChildren(this)
-                        }
-                    }
-
-                    override fun visitFile(file: FirFile) {
-                        if (shouldVerify(file, testServices)) toVerify.add(Pair(testFile, file))
-                        file.acceptChildren(this)
-                    }
-
-                    override fun visitRegularClass(regularClass: FirRegularClass) {
-                        if (shouldVerify(regularClass, testServices) ||
-                            !shouldSkipByTestMode(testServices) && regularClass.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
-                            toVerify.add(Pair(testFile, regularClass))
-                        }
-                        regularClass.acceptChildren(this)
-                    }
-
-                    override fun visitProperty(property: FirProperty) {
-                        if (!shouldSkipByTestMode(testServices) && property.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
-                            toVerify.add(Pair(testFile, property))
-                        }
-                        property.acceptChildren(this)
-                    }
-
-                    override fun visitPropertyAccessor(propertyAccessor: FirPropertyAccessor) {
-                        if (shouldVerify(propertyAccessor, testServices)) {
-                            toVerify.add(Pair(testFile, propertyAccessor))
-                        }
-                        propertyAccessor.acceptChildren(this)
-                    }
-
-                    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction) {
-                        if (shouldVerify(simpleFunction, testServices) ||
-                            !shouldSkipByTestMode(testServices) && simpleFunction.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
-                            toVerify.add(Pair(testFile, simpleFunction))
-                        }
-                        simpleFunction.acceptChildren(this)
-                    }
-                })
+            val toVerify = if (shouldSkipByTestMode(testServices)) emptyList() else part.firFiles.flatMap { (testFile, firFile) ->
+                verificationTargets(firFile).map { Pair(testFile, it) }
             }
             if (toVerify.isNotEmpty()) {
                 val z3 = SiliconFrontend.locateZ3()
@@ -196,11 +186,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
 
     /** Records the verified programs of [decl], whose verification succeeded, in the trust report. */
     private fun recordTrust(testFile: TestFile, decl: FirDeclaration) {
-        val collector = testServices.trustReportCollector
-        if (decl.shouldVerify == true) collector.record(testFile.name, decl.verificationLabel, decl.trust!!)
-        for (lambda in decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }) {
-            collector.record(testFile.name, lambda.label, lambda.trust)
-        }
+        testServices.trustReportCollector.record(testFile.name, decl)
     }
 
     companion object {
