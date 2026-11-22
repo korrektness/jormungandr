@@ -12,6 +12,10 @@ fun <!VIPER_TEXT!>wrapBoundaries<!>(x: Int, y: Int) {
     verify(n == y)
     n -= 1
     verify(n == x)
+    n++
+    verify(n == y)
+    n--
+    verify(n == x)
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x + 1 > x<!>)
 }
 

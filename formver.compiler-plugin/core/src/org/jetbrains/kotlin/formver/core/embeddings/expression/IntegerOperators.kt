@@ -263,6 +263,22 @@ object IntegerOperators {
         return Exp.Sub(value, Exp.Mul(modulus, Exp.Div(Exp.Sub(value, lower), modulus)), pos, info)
     }
 
+    /** `inc` and `dec` with wrapping for the non-`Int` results the wrapping annotations select, keyed like [unary]. */
+    val wrappingIncDec: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = unary.keys.filter {
+        it.operation in listOf("inc", "dec") && it.result in listOf(IntegerKind.UInt, IntegerKind.Long, IntegerKind.ULong)
+    }.associateWith { op ->
+        buildUnaryOperator {
+            setName("wrapping${op.operation}${op.receiver.name}")
+            withSignature {
+                withParam { existing(op.receiver.pretype) }; withReturnType { existing(op.result.pretype) }
+            }
+            viperImplementation {
+                val value = unaryValue(op.operation, args[0])
+                if (op.result == IntegerKind.Long) wrapLong(value, pos, info) else wrapInto(op.result, value, pos, info)
+            }
+        }
+    }
+
     /**
      * The `to` conversions whose target cannot represent every receiver value, which reinterpret the receiver's low
      * bits in the target's width instead of checking its range.
@@ -279,6 +295,6 @@ object IntegerOperators {
         }
     }
 
-    val templates get() = binary.values + flooring.values + wrappingBinary.values + wrappingUnaryMinus.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
+    val templates get() = binary.values + flooring.values + wrappingBinary.values + wrappingUnaryMinus.values + wrappingLongBinary.values + unary.values + wrappingIncDec.values + wrappingNarrowing.values +
         BitwiseOperators.templates
 }

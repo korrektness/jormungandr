@@ -67,7 +67,8 @@ data class If(
  * [headShapes] are the shapes of the variables in scope that the uniqueness checker finds `Unique` at the loop head and
  * that the loop uses, [framedShapes] those of the ones it does not use, which are kept outside the loop, and
  * [exitShapes] the shapes after the loop of the ones it uses. After the loop, [invariants] are asserted where
- * [exitGuard] holds, or everywhere when it is null.
+ * [exitGuard] holds, or everywhere when it is null. When [condition] has side effects, they are asserted only on the
+ * exits where it held, those by `break`; at the exit where it fails they held before it was evaluated.
  */
 data class While(
     val condition: ExpEmbedding,

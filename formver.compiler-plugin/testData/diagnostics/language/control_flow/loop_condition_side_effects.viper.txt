@@ -17,7 +17,65 @@ method postIncrementCondition() returns (v_ret_0: Ref)
     goto cont
   }
   label break
-  assert isSubtype(typeOf(d), intType())
+  assert boolFromRef(anon_1) ==> isSubtype(typeOf(d), intType())
+  v_ret_0 := d
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/loop_condition_side_effects.kt: info: Generated Viper text for postIncrementConditionWithInvariant:
+method postIncrementConditionWithInvariant() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var d: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  d := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(d), intType())
+    invariant intFromRef(d) <= 9
+  anon_0 := d
+  d := plusInts(anon_0, intToRef(1))
+  anon_2 := anon_0
+  anon_1 := ltInts(anon_2, intToRef(8))
+  if (boolFromRef(anon_1)) {
+    goto cont
+  }
+  label break
+  assert boolFromRef(anon_1) ==> isSubtype(typeOf(d), intType())
+  assert boolFromRef(anon_1) ==> intFromRef(d) <= 9
+  v_ret_0 := d
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/loop_condition_side_effects.kt: info: Generated Viper text for breakExitChecksInvariant:
+method breakExitChecksInvariant() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var d: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  d := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(d), intType())
+    invariant intFromRef(d) <= 9
+  anon_0 := d
+  d := plusInts(anon_0, intToRef(1))
+  anon_2 := anon_0
+  anon_1 := ltInts(anon_2, intToRef(8))
+  if (boolFromRef(anon_1)) {
+    if (intFromRef(d) == 5) {
+      d := intToRef(100)
+      goto break
+    }
+    goto cont
+  }
+  label break
+  assert boolFromRef(anon_1) ==> isSubtype(typeOf(d), intType())
+  assert boolFromRef(anon_1) ==> intFromRef(d) <= 9
   v_ret_0 := d
   goto lbl_ret_0
   label lbl_ret_0

@@ -230,8 +230,18 @@ method wrappingMinus(a: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), uintType())
   ensures uintFromRef(a) == 0 ==> uintFromRef(v_ret_0) == 4294967295
 {
+  var u: Ref
+  var anon_0: Ref
+  var anon_1: Ref
   assert 4294967295 * 2 - 4294967296 * ((4294967295 * 2 - 0) \ 4294967296) ==
     4294967295 - 1 - 4294967296 * ((4294967295 - 1 - 0) \ 4294967296)
+  u := uintToRef(0)
+  anon_0 := u
+  u := wrappingdecUInt(anon_0)
+  assert uintFromRef(u) == 4294967295
+  anon_1 := u
+  u := wrappingincUInt(anon_1)
+  assert uintFromRef(u) == 0
   v_ret_0 := wrappingminusUIntUInt(a, uintToRef(1))
   goto lbl_ret_0
   label lbl_ret_0
@@ -260,6 +270,8 @@ function size(this: Ref): Ref
 method wrappingTimes() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var l0_v: Ref
+  var anon: Ref
   assert (9223372036854775807 + (9223372036854775807 + 1)) *
     (9223372036854775807 + (9223372036854775807 + 1)) -
     (9223372036854775807 + (9223372036854775807 + 2)) *
@@ -273,6 +285,10 @@ method wrappingTimes() returns (v_ret_0: Ref)
     ((9223372036854775807 + (9223372036854775807 + 1) + 2 - 0) \
     (9223372036854775807 + (9223372036854775807 + 2))) ==
     1
+  l0_v := ulongToRef(9223372036854775807 + (9223372036854775807 + 1))
+  anon := l0_v
+  l0_v := wrappingincULong(anon)
+  assert ulongFromRef(l0_v) == 0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

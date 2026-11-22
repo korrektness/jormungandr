@@ -578,6 +578,9 @@ method bothWidths(i: Ref, l: Ref) returns (v_ret_0: Ref)
   requires longFromRef(l) == 9223372036854775807
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
   assert (intFromRef(i) + 1 > 2147483647 ?
       intFromRef(i) + 1 - 4294967296 :
       (intFromRef(i) + 1 < -2147483648 ?
@@ -645,6 +648,13 @@ method bothWidths(i: Ref, l: Ref) returns (v_ret_0: Ref)
     -2 -
     2 * --9223372036854775808 *
     ((-2 + --9223372036854775808) \ (2 * --9223372036854775808))
+  n := l
+  anon_0 := n
+  n := wrappingincLong(anon_0)
+  assert longFromRef(n) == -9223372036854775808
+  anon_1 := n
+  n := wrappingdecLong(anon_1)
+  assert longFromRef(n) == longFromRef(l)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -672,18 +682,6 @@ method otherLongOperationsStayChecked(x: Ref, choice: Ref)
     assert remLongInt(x, intToRef(0)) == remLongInt(x, intToRef(0))
   } elseif (intFromRef(anon_0) == 4) {
     assert convertLongToInt(x) == convertLongToInt(x)
-  } elseif (intFromRef(anon_0) == 5) {
-    var l6_n: Ref
-    var anon_1: Ref
-    l6_n := x
-    anon_1 := l6_n
-    l6_n := decLong(anon_1)
-  } elseif (intFromRef(anon_0) == 6) {
-    var l7_n: Ref
-    var anon_2: Ref
-    l7_n := longToRef(9223372036854775807)
-    anon_2 := l7_n
-    l7_n := incLong(anon_2)
   } else {
     assert (let anon_builtin ==
         (remLongInt(x, intToRef(-1))) in

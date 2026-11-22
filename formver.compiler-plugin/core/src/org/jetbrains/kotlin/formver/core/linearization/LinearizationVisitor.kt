@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
+import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.core.purity.isSharedArrayElement
 
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
@@ -149,9 +150,11 @@ data class LinearizationVisitor(
             // The permissions come first, since the user's invariants may read through them.
             val headPermissions = headShapes.mapNotNull { foldState?.permission(it) }
             ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx, e.invariants))
+            var conditionHeld: VariableEmbedding? = null
             withinScope(ctx, e.placedLabels(), leave = { _, state -> state.leaveLoop(e.breakLabel.name) }) {
                 val condVar = ctx.freshAnonVar { boolean() }
                 e.condition.linearize().toViperStoringIn(condVar, ctx)
+                if (!e.condition.isPure()) conditionHeld = condVar
                 ctx.addStatement {
                     ctx.foldState?.normalize(ctx)
                     val bodyBlock = ctx.withFoldStateRestored {
@@ -168,8 +171,9 @@ data class LinearizationVisitor(
             }
             ctx.addLabel(e.breakLabel.toViper(ctx, e.invariants))
 
+            val exitGuard = listOfNotNull(e.exitGuard, conditionHeld).reduceOrNull { a, b -> OperatorExpEmbeddings.And(a, b) }
             e.invariants.forEach {
-                val invariant = e.exitGuard?.let { guard -> OperatorExpEmbeddings.Implies(guard, it) } ?: it
+                val invariant = exitGuard?.let { guard -> OperatorExpEmbeddings.Implies(guard, it).withPosition((it as? WithPosition)?.source) } ?: it
                 ctx.addStatement {
                     Stmt.Assert(invariant.pureToViper(toBuiltin = true, ctx.typeResolver),
                         info = SourceRole.Proof(KotlinCondition.ProofClause.LOOP_INVARIANT).asInfo)

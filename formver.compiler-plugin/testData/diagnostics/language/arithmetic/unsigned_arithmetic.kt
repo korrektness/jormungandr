@@ -58,6 +58,11 @@ fun <!VIPER_TEXT!>decrementUnderflow<!>(a: UByte): UByte {
 fun <!VIPER_TEXT!>wrappingMinus<!>(a: UInt): UInt {
     postconditions<UInt> { r -> (a == 0u) implies (r == UInt.MAX_VALUE) }
     verify(UInt.MAX_VALUE * 2u == UInt.MAX_VALUE - 1u)
+    var u = 0u
+    u--
+    verify(u == UInt.MAX_VALUE)
+    u++
+    verify(u == 0u)
     return a - 1u
 }
 
@@ -69,6 +74,9 @@ fun <!VIPER_TEXT!>wrongUIntWrap<!>() {
 @WrappingLongArithmetic
 fun <!VIPER_TEXT!>wrappingTimes<!>() {
     verify(ULong.MAX_VALUE * ULong.MAX_VALUE == 1uL, ULong.MAX_VALUE + 2uL == 1uL)
+    var v = ULong.MAX_VALUE
+    v++
+    verify(v == 0uL)
 }
 
 @WrappingLongArithmetic

@@ -12,6 +12,8 @@ method wrapBoundaries(x: Ref, y: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
   assert (intFromRef(x) + 1 > 2147483647 ?
       intFromRef(x) + 1 - 4294967296 :
       (intFromRef(x) + 1 < -2147483648 ?
@@ -52,6 +54,12 @@ method wrapBoundaries(x: Ref, y: Ref) returns (v_ret_0: Ref)
   n := wrappingPlusInts(n, intToRef(1))
   assert intFromRef(n) == intFromRef(y)
   n := wrappingMinusInts(n, intToRef(1))
+  assert intFromRef(n) == intFromRef(x)
+  anon_0 := n
+  n := wrappingPlusInts(anon_0, intToRef(1))
+  assert intFromRef(n) == intFromRef(y)
+  anon_1 := n
+  n := wrappingMinusInts(anon_1, intToRef(1))
   assert intFromRef(n) == intFromRef(x)
   assert (intFromRef(x) + 1 > 2147483647 ?
       intFromRef(x) + 1 - 4294967296 :

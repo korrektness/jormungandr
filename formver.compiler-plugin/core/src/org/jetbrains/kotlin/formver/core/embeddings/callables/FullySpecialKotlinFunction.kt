@@ -126,8 +126,11 @@ object SpecialKotlinFunctions {
             addFunction(signature, SpecialPackages.kotlin, className = className, name = op.operation) { args, ctx ->
                 val wrapsNegation = op.result == IntegerKind.Long && ctx.wrapsLongArithmetic ||
                         op.result == IntegerKind.Int && ctx.wrapsIntArithmetic
+                val wrapsStep = op.result in listOf(IntegerKind.Long, IntegerKind.ULong) && ctx.wrapsLongArithmetic ||
+                        op.result == IntegerKind.UInt && ctx.wrapsIntArithmetic
                 val operation = (if (ctx.wrapsNarrowing) IntegerOperators.wrappingNarrowing[op] else null)
                     ?: (if (wrapsNegation) IntegerOperators.wrappingUnaryMinus[op] else null)
+                    ?: (if (wrapsStep) IntegerOperators.wrappingIncDec[op] else null)
                     ?: template
                 operation(args[0])
             }
@@ -188,11 +191,13 @@ object SpecialKotlinFunctions {
         }
 
         withCallableType(intToIntType) {
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "inc") { args, _ ->
-                AddIntInt(args[0], IntLit(1))
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "inc") { args, ctx ->
+                val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingAddIntInt else AddIntInt
+                operation(args[0], IntLit(1))
             }
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "dec") { args, _ ->
-                SubIntInt(args[0], IntLit(1))
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "dec") { args, ctx ->
+                val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingSubIntInt else SubIntInt
+                operation(args[0], IntLit(1))
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "unaryMinus") { args, ctx ->
                 val unaryMinus = IntegerOperators.Unary(IntegerKind.Int, "unaryMinus", IntegerKind.Int)

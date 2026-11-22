@@ -1558,8 +1558,8 @@ method iteratesIterable(xs: Ref) returns (v_ret_0: Ref)
     goto cont
   }
   label break
-  assert isSubtype(typeOf(anon_0), IteratorModel())
-  assert isSubtype(typeOf(xs), IterableModel())
+  assert boolFromRef(anon_3) ==> isSubtype(typeOf(anon_0), IteratorModel())
+  assert boolFromRef(anon_3) ==> isSubtype(typeOf(xs), IterableModel())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

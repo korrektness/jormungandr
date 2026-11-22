@@ -119,6 +119,11 @@ fun <!VIPER_TEXT!>bothWidths<!>(i: Int, l: Long) {
     preconditions { i == Int.MAX_VALUE; l == Long.MAX_VALUE }
     verify(i + 1 == Int.MIN_VALUE, l + 1 == Long.MIN_VALUE)
     verify((i + 1) - 1 == i, (l + 1) - 1 == l, l * 2 == -2L)
+    var n = l
+    n++
+    verify(n == Long.MIN_VALUE)
+    n--
+    verify(n == l)
 }
 
 @WrappingLongArithmetic @WrappingIntArithmetic
@@ -129,8 +134,6 @@ fun <!VIPER_TEXT!>otherLongOperationsStayChecked<!>(x: Long, choice: Int) {
         2 -> <!DIVISION_BY_ZERO, DIVISION_BY_ZERO!>x / 0<!>
         3 -> <!DIVISION_BY_ZERO!>x % 0<!>
         4 -> <!INTEGER_OVERFLOW!>x.toInt()<!>
-        5 -> { var n = x; n<!INTEGER_OVERFLOW!>--<!> }
-        6 -> { var n = Long.MAX_VALUE; n<!INTEGER_OVERFLOW!>++<!> }
         else -> verify(x % -1 == 0L)
     }
 }
