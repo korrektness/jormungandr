@@ -350,11 +350,14 @@ private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCal
 /**
  * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
  * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
- * is not `Unique` on entry; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
+ * is not `Unique` on entry to [element]; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
  * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it. The `size` of a Collection or a
  * Map is at least 0 (docs/soundness.md, "Sizes of collections that are not owned").
  */
-fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAccessExpression): ExpEmbedding? {
+fun StmtConversionContext.convertUnownedSpecifiedMember(
+    access: FirQualifiedAccessExpression,
+    element: FirElement = access,
+): ExpEmbedding? {
     val callee = access.toResolvedCallableSymbol() ?: return null
     val dispatchReceiver = access.dispatchReceiver
     val extensionReceiver = access.extensionReceiver
@@ -363,7 +366,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
         extensionReceiver != null && specifiesOwnedExtensionReceiver(callee) -> extensionReceiver
         else -> return null
     }
-    if (ownsReceiverBefore(access, receiver)) return null
+    if (ownsReceiverBefore(element, receiver)) return null
     val member = callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString()
     reportWarning(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, access.source, KotlinCondition.UncheckedLibraryCall(member)))
     val arguments = (access as? FirFunctionCall)?.contextAndExplicitArguments.orEmpty()
@@ -403,7 +406,7 @@ private fun StmtConversionContext.nonNegativeValue(type: TypeEmbedding): ExpEmbe
  * the path's static type, so the path's predicate holds it. A property reached only through a cast to a subtype is
  * accessed as shared.
  */
-private fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpression, property: PropertyEmbedding): Boolean {
+internal fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpression, property: PropertyEmbedding): Boolean {
     if (!ownsBefore(element, receiver)) return false
     val step = (property.getter as? BackingFieldGetter)?.field ?: property.ownedStep ?: return true
     val uncast = receiver.withoutCasts()

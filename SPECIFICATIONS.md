@@ -276,6 +276,17 @@ element held by the collection itself is contained. These specifications assume 
 equivalence relation consistent with `hashCode` that does not change while the element is in the collection
 (docs/soundness.md, "Element equality in collections").
 
+## Destructuring declarations
+
+A destructuring declaration, `val (a, b) = x`, in a local declaration, a `for` loop or a lambda parameter, calls
+`componentN` on its value, as does an explicit `x.componentN()` call. The `componentN` member of a data class, including
+a library data class such as `Pair`, `Triple` or `IndexedValue`, reads the class's `N`th primary-constructor property,
+and `component1` and `component2` of a `Map.Entry` read its `key` and `value`. The read has the static type of the
+call: the components of a `Pair<Int, String>` are an `Int` and a `String`, and the key and value of an entry in a
+`for` loop over a `Map<String, Int>` are a `String` and an `Int`. A read of a library property without a model reports
+`OPAQUE_CALL` at the destructured name. Any other `componentN`, such as an operator member of a class that is not a
+data class or an extension function, is an ordinary call.
+
 ## Types
 
 A value has the facts of its Kotlin type: its class and whether it can be null. These types have no class of

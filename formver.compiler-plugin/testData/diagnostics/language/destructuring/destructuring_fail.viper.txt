@@ -1,0 +1,127 @@
+/destructuring_fail.kt: info: Generated Viper text for Point:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Point()
+  anon_0 := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_y
+  inhale intFromRef(g_y(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Point_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Point_unique(v_ret_0), write)
+}
+
+/destructuring_fail.kt: info: Generated Viper text for componentsInOrder:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method componentsInOrder(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(y(p))
+{
+  var anon_0: Ref
+  var first: Ref
+  var anon_1: Ref
+  anon_0 := p
+  first := x(anon_0)
+  anon_1 := y(anon_0)
+  v_ret_0 := first
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring_fail.kt: info: Generated Viper text for lambdaComponent:
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lambdaComponent(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(x(p))
+{
+  var anon_0: Ref
+  var v_ret_3: Ref
+  var anon_1: Ref
+  var l1_y: Ref
+  anon_0 := p
+  anon_1 := x(anon_0)
+  l1_y := g_y(anon_0)
+  v_ret_3 := l1_y
+  goto lbl_ret_3
+  label lbl_ret_3
+  v_ret_0 := v_ret_3
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring_fail.kt: info: Generated Viper text for pairComponent:
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pairComponent(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Pair())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon_0: Ref
+  var a: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := p
+  a := first(anon_0)
+  inhale isSubtype(typeOf(a), intType())
+  anon_1 := second(anon_0)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := second(p)
+  inhale isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(a) == intFromRef(anon_2)
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

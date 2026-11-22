@@ -344,7 +344,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: visitElement(expression, data)
 
     override fun visitComponentCall(componentCall: FirComponentCall, data: StmtConversionContext): ExpEmbedding =
-        data.convertMapEntryComponent(componentCall) ?: visitElement(componentCall, data)
+        visitFunctionCall(componentCall, data)
 
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
         data.liftedLambda(functionCall)?.let { return data.constructLambda(it) }
@@ -361,7 +361,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (symbol.isGenericArrayFactory()) return data.convertGenericArrayFactory(functionCall)
         if (functionCall.isPrimitiveArrayElementAccess()) return data.convertPrimitiveArrayElementAccess(functionCall)
         if (functionCall.isPrimitiveArrayInit()) return data.convertPrimitiveArrayInit(functionCall)
-        return functionCall.genericArrayBulk()?.let { data.convertGenericArrayBulk(functionCall, it) }
+        return data.convertPropertyComponent(functionCall)
+            ?: functionCall.genericArrayBulk()?.let { data.convertGenericArrayBulk(functionCall, it) }
             ?: data.convertStdlibHof(functionCall)
             ?: data.convertRangeMembership(functionCall)
             ?: data.convertCoercion(functionCall)

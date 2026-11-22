@@ -1,0 +1,868 @@
+/destructuring.kt: info: Generated Viper text for Point:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Point()
+  anon_0 := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_y
+  inhale intFromRef(g_y(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Point_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Point_unique(v_ret_0), write)
+}
+
+/destructuring.kt: info: Generated Viper text for Labelled:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), Labelled())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function g_point(this: Ref): Ref
+  requires isSubtype(typeOf(this), Labelled())
+  ensures isSubtype(typeOf(result), Point())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_label: Ref, par_point: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_label), stringType())
+  requires isSubtype(typeOf(par_point), Point())
+  ensures isSubtype(typeOf(v_ret_0), Labelled())
+  ensures stringFromRef(g_label(v_ret_0)) == stringFromRef(par_label)
+  ensures g_point(v_ret_0) == par_point
+  ensures stringFromRef(g_label(v_ret_0)) == stringFromRef(par_label)
+  ensures g_point(v_ret_0) == par_point
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Labelled()
+  anon_0 := par_label
+  inhale stringFromRef(g_label(v_ret_0)) == stringFromRef(anon_0)
+  anon_1 := par_point
+  inhale g_point(v_ret_0) == anon_1
+  fold acc(Labelled_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Labelled_unique(v_ret_0), write)
+}
+
+/destructuring.kt: info: Generated Viper text for swapped:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref, par_y: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_2), Point())
+  ensures intFromRef(g_x(ret_2)) == intFromRef(par_x)
+  ensures intFromRef(g_y(ret_2)) == intFromRef(par_y)
+  ensures intFromRef(g_x(ret_2)) == intFromRef(par_x)
+  ensures intFromRef(g_y(ret_2)) == intFromRef(par_y)
+
+
+method swapped(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(g_y(p)) &&
+    intFromRef(g_y(v_ret_0)) == intFromRef(g_x(p))
+{
+  var anon: Ref
+  var l0_x: Ref
+  var l0_y: Ref
+  anon := p
+  l0_x := g_x(anon)
+  l0_y := g_y(anon)
+  v_ret_0 := con(l0_y, l0_x)
+  fold acc(Point_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for skippedComponent:
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method skippedComponent(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(g_y(p))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_y: Ref
+  anon_0 := p
+  anon_1 := x(anon_0)
+  l0_y := g_y(anon_0)
+  v_ret_0 := l0_y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for explicitComponent:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method explicitComponent(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0)
+{
+  if (intFromRef(x(p)) == intFromRef(x(p))) {
+    v_ret_0 := boolToRef(intFromRef(y(p)) == intFromRef(y(p)))
+  } else {
+    v_ret_0 := boolToRef(false)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for nested:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), Labelled())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function g_point(this: Ref): Ref
+  requires isSubtype(typeOf(this), Labelled())
+  ensures isSubtype(typeOf(result), Point())
+
+
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nested(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Labelled())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(g_x(g_point(l)))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_point: Ref
+  var anon_2: Ref
+  var l0_x: Ref
+  var anon_3: Ref
+  anon_0 := l
+  anon_1 := g_label(anon_0)
+  l0_point := g_point(anon_0)
+  anon_2 := l0_point
+  l0_x := g_x(anon_2)
+  anon_3 := y(anon_2)
+  v_ret_0 := l0_x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for lambdaParameter:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lambdaParameter(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(g_x(p))
+{
+  var anon_0: Ref
+  var v_ret_3: Ref
+  var l1_x: Ref
+  var anon_1: Ref
+  anon_0 := p
+  l1_x := g_x(anon_0)
+  anon_1 := y(anon_0)
+  v_ret_3 := l1_x
+  goto lbl_ret_3
+  label lbl_ret_3
+  v_ret_0 := v_ret_3
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for pairTypes:
+function first(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function second(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method isEmpty(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_2) == (|stringFromRef(v_this_extension)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method pairTypes(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Pair())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var n: Ref
+  var s: Ref
+  var anon_1: Ref
+  anon_0 := p
+  n := first(anon_0)
+  inhale isSubtype(typeOf(n), intType())
+  s := second(anon_0)
+  inhale isSubtype(typeOf(s), stringType())
+  anon_1 := isEmpty(s)
+  if (boolFromRef(anon_1)) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := n}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for pairMatchesProperties:
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), Pair())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pairMatchesProperties(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Pair())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon_0: Ref
+  var a: Ref
+  var b: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := p
+  a := first(anon_0)
+  inhale isSubtype(typeOf(a), intType())
+  b := second(anon_0)
+  inhale isSubtype(typeOf(b), intType())
+  anon_1 := first(p)
+  inhale isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(a) == intFromRef(anon_1)
+  anon_2 := second(p)
+  inhale isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(b) == intFromRef(anon_2)
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for tripleTypes:
+function first(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Triple())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function second(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Triple())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function third(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Triple())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method isEmpty(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_2) == (|stringFromRef(v_this_extension)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method tripleTypes(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), Triple())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var s: Ref
+  var n: Ref
+  var b: Ref
+  var anon_1: Ref
+  anon_0 := par_t
+  s := first(anon_0)
+  inhale isSubtype(typeOf(s), stringType())
+  n := second(anon_0)
+  inhale isSubtype(typeOf(n), intType())
+  b := third(anon_0)
+  inhale isSubtype(typeOf(b), boolType())
+  if (boolFromRef(b)) {
+    anon_1 := isEmpty(s)
+  } else {
+    anon_1 := boolToRef(false)}
+  if (boolFromRef(anon_1)) {
+    v_ret_0 := n
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for mapLoop:
+function MapModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(v_this)) == 0)
+
+
+function containsKey(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |iterationSequenceFromRef(keysSequence(v_this))| &&
+      equalsRelation(par_key, iterationSequenceGet(keysSequence(v_this), intToRef(anon_builtin_0)))))
+  ensures (par_key in iterationSequenceFromRef(keysSequence(v_this))) ==>
+    boolFromRef(result)
+
+
+function containsValue(v_this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < |iterationSequenceFromRef(keysSequence(v_this))| &&
+      equalsRelation(par_value, get(v_this, iterationSequenceGet(keysSequence(v_this),
+      intToRef(anon_builtin_1))))))
+
+
+function g_key(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function get(v_this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(containsKey(v_this, par_key)) ==>
+    result == nullValue()
+
+
+function hasNext(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IteratorModel())
+  requires acc(IteratorModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(v_this))| > 0
+
+
+function iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function keysSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function remaining(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IteratorModel())
+  requires acc(IteratorModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), MapModel())
+  requires acc(MapModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method f_isEmpty_Boolean(v_this_extension: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_3) == (|stringFromRef(v_this_extension)| == 0)
+
+
+method iterator(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), MapModel())
+  ensures isSubtype(typeOf(ret_1), IteratorModel())
+
+
+method length(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method mapLoop(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), MapModel())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_13: Ref
+  var anon_1: Ref
+  anon_0 := iterator(m)
+  label cont
+    invariant isSubtype(typeOf(anon_0), IteratorModel())
+    invariant isSubtype(typeOf(m), MapModel())
+  inhale isSubtype(typeOf(anon_1), boolType())
+  anon_13 := anon_1
+  if (boolFromRef(anon_13)) {
+    var anon_3: Ref
+    var anon_2: Ref
+    var k: Ref
+    var l1_v: Ref
+    var anon_14: Ref
+    inhale isSubtype(typeOf(anon_2), EntryModel())
+    anon_3 := anon_2
+    k := g_key(anon_3)
+    inhale isSubtype(typeOf(k), stringType())
+    l1_v := g_value(anon_3)
+    inhale isSubtype(typeOf(l1_v), intType())
+    anon_14 := f_isEmpty_Boolean(k)
+    if (boolFromRef(anon_14)) {
+      v_ret_0 := l1_v
+      goto lbl_ret_0
+    }
+    goto cont
+  }
+  label break
+  assert boolFromRef(anon_13) ==>
+    isSubtype(typeOf(anon_0), IteratorModel())
+  assert boolFromRef(anon_13) ==> isSubtype(typeOf(m), MapModel())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for indexedLoop:
+function CollectionModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(v_this)) == 0)
+
+
+function CollectionModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ListModel_g_size(v_this)) == 0)
+
+
+function ListModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(v_this)) &&
+      equalsRelation(element, get(v_this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(v_this)) &&
+      get(v_this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function g_index(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IndexedValue())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function hasNext(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IteratorModel())
+  requires acc(IteratorModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    |iterationSequenceFromRef(remaining(v_this))| > 0
+
+
+function indexOf(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(v_this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(v_this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(v_this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(v_this, intToRef(anon_builtin_2))))
+
+
+function remaining(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IteratorModel())
+  requires acc(IteratorModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function value(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), IndexedValue())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method f_isEmpty_Boolean(v_this_extension: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_4), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_4) == (|stringFromRef(v_this_extension)| == 0)
+
+
+method indexedLoop(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), ListModel())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var anon_1: Ref
+  anon_13 := withIndex(xs)
+  anon_0 := iterator(anon_13)
+  label cont
+    invariant isSubtype(typeOf(anon_0), IteratorModel())
+    invariant isSubtype(typeOf(xs), ListModel())
+  inhale isSubtype(typeOf(anon_1), boolType())
+  anon_14 := anon_1
+  if (boolFromRef(anon_14)) {
+    var anon_3: Ref
+    var anon_2: Ref
+    var i: Ref
+    var s: Ref
+    var anon_15: Ref
+    inhale isSubtype(typeOf(anon_2), IndexedValue())
+    anon_3 := anon_2
+    i := g_index(anon_3)
+    s := value(anon_3)
+    inhale isSubtype(typeOf(s), stringType())
+    anon_15 := f_isEmpty_Boolean(s)
+    if (boolFromRef(anon_15)) {
+      v_ret_0 := i
+      goto lbl_ret_0
+    }
+    goto cont
+  }
+  label break
+  assert boolFromRef(anon_14) ==>
+    isSubtype(typeOf(anon_0), IteratorModel())
+  assert boolFromRef(anon_14) ==> isSubtype(typeOf(xs), ListModel())
+  v_ret_0 := intToRef(-1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method iterator(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  ensures isSubtype(typeOf(ret_1), IteratorModel())
+
+
+method length(v_this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method withIndex(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), c_IterableModel())
+  ensures isSubtype(typeOf(ret_2), c_IterableModel())
+
+
+/destructuring.kt: info: Generated Viper text for Interval:
+function g_hi(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_lo(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_lo: Ref, par_hi: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_lo), intType())
+  requires isSubtype(typeOf(par_hi), intType())
+  ensures isSubtype(typeOf(v_ret_0), Interval())
+  ensures intFromRef(g_lo(v_ret_0)) == intFromRef(par_lo)
+  ensures intFromRef(g_hi(v_ret_0)) == intFromRef(par_hi)
+  ensures intFromRef(g_lo(v_ret_0)) == intFromRef(par_lo)
+  ensures intFromRef(g_hi(v_ret_0)) == intFromRef(par_hi)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Interval()
+  anon_0 := par_lo
+  inhale intFromRef(g_lo(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_hi
+  inhale intFromRef(g_hi(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Interval_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Interval_unique(v_ret_0), write)
+}
+
+/destructuring.kt: info: Generated Viper text for component1:
+function hi(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function lo(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method component1(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := lo(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for component2:
+function hi(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function lo(this: Ref): Ref
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method component2(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Interval())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := hi(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for component3:
+function x(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method component3(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := x(v_this_extension)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/destructuring.kt: info: Generated Viper text for ordinaryComponents:
+function g_lo(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_x(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function hi(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Interval())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method component1(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), Interval())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method component2(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), Interval())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method component3(v_this_extension: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), Point())
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method ordinaryComponents(i: Ref, p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), Interval())
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var l0_lo: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var l0_x: Ref
+  anon_0 := i
+  l0_lo := component1(anon_0)
+  anon_1 := component2(anon_0)
+  anon_2 := p
+  anon_3 := g_x(anon_2)
+  anon_4 := y(anon_2)
+  l0_x := component3(anon_2)
+  if (intFromRef(l0_lo) < intFromRef(l0_x)) {
+    v_ret_0 := l0_lo
+  } else {
+    v_ret_0 := l0_x}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
