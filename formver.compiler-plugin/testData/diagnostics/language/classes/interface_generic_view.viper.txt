@@ -42,7 +42,7 @@ predicate footprint(this: Ref)
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == g_contents(this))
@@ -51,7 +51,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   g_contents(this)
 }
@@ -71,7 +71,7 @@ function GenericView_f_value(this: Ref): Ref
 
 function g_contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -118,7 +118,7 @@ predicate Serializable_unique(this: Ref) {
 }
 
 method con(par_contents: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  requires isSubtype(typeOf(par_contents), nullable(Flag()))
   ensures isSubtype(typeOf(v_ret_0), GenericCell())
   ensures g_contents(v_ret_0) == par_contents
   ensures g_contents(v_ret_0) == par_contents
@@ -137,7 +137,7 @@ method con(par_contents: Ref) returns (v_ret_0: Ref)
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == contents(this))
@@ -146,7 +146,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   contents(this)
 }
@@ -166,7 +166,7 @@ function GenericView_f_value(this: Ref): Ref
 
 function contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -216,7 +216,7 @@ predicate Serializable_unique(this: Ref) {
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == contents(this))
@@ -225,7 +225,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   contents(this)
 }
@@ -245,7 +245,7 @@ function GenericView_f_value(this: Ref): Ref
 
 function contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -295,7 +295,7 @@ predicate Serializable_unique(this: Ref) {
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == g_contents(this))
@@ -304,7 +304,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   g_contents(this)
 }
@@ -328,7 +328,7 @@ function c_GenericView_f_value(this: Ref): Ref
 
 function g_contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -400,14 +400,15 @@ method GenericCell_c_GenericView_upcast(this: Ref)
   ensures (forall candidate: Ref ::
       { c_GenericView_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), GenericCell())) && true &&
-      old(isSubtype(typeOf(candidate), nullable(anyType()))) ==>
+      old(isSubtype(typeOf(candidate), nullable(Flag()))) &&
+      isSubtype(typeOf(candidate), nullable(anyType())) ==>
       (unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate)) ==
       old(GenericCell_f_same(this, candidate)))
 
 
 method con(par_contents: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  requires isSubtype(typeOf(par_contents), nullable(Flag()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents
@@ -808,7 +809,7 @@ method lendGeneric(view: Ref) returns (v_ret_0: Ref)
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == g_contents(this))
@@ -817,7 +818,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   g_contents(this)
 }
@@ -841,7 +842,7 @@ function c_GenericView_f_value(this: Ref): Ref
 
 function g_contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -918,7 +919,8 @@ method GenericCell_c_GenericView_restore(this: Ref)
   ensures (forall candidate: Ref ::
       { GenericCell_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), c_GenericView())) && true &&
-      old(isSubtype(typeOf(candidate), nullable(anyType()))) ==>
+      old(isSubtype(typeOf(candidate), nullable(anyType()))) &&
+      isSubtype(typeOf(candidate), nullable(Flag())) ==>
       GenericCell_f_same(this, candidate) ==
       old((unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate))))
@@ -934,7 +936,8 @@ method GenericCell_c_GenericView_upcast(this: Ref)
   ensures (forall candidate: Ref ::
       { c_GenericView_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), GenericCell())) && true &&
-      old(isSubtype(typeOf(candidate), nullable(anyType()))) ==>
+      old(isSubtype(typeOf(candidate), nullable(Flag()))) &&
+      isSubtype(typeOf(candidate), nullable(anyType())) ==>
       (unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate)) ==
       old(GenericCell_f_same(this, candidate)))
@@ -963,7 +966,7 @@ method borrowGenericBinding() returns (v_ret_0: Ref)
 }
 
 method con(par_contents: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  requires isSubtype(typeOf(par_contents), nullable(Flag()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents
@@ -994,7 +997,7 @@ method lendGeneric(view: Ref) returns (ret_3: Ref)
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == g_contents(this))
@@ -1003,7 +1006,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   g_contents(this)
 }
@@ -1023,7 +1026,7 @@ function c_GenericView_f_value(this: Ref): Ref
 
 function g_contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -1095,14 +1098,15 @@ method GenericCell_c_GenericView_upcast(this: Ref)
   ensures (forall candidate: Ref ::
       { c_GenericView_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), GenericCell())) && true &&
-      old(isSubtype(typeOf(candidate), nullable(anyType()))) ==>
+      old(isSubtype(typeOf(candidate), nullable(Flag()))) &&
+      isSubtype(typeOf(candidate), nullable(anyType())) ==>
       (unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate)) ==
       old(GenericCell_f_same(this, candidate)))
 
 
 method con(par_contents: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  requires isSubtype(typeOf(par_contents), nullable(Flag()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents
@@ -1138,7 +1142,7 @@ method genericNullableView(token: Ref) returns (v_ret_0: Ref)
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  requires isSubtype(typeOf(candidate), nullable(Flag()))
   ensures isSubtype(typeOf(result), boolType())
 {
   boolToRef(candidate == g_contents(this))
@@ -1147,7 +1151,7 @@ function GenericCell_f_same(this: Ref, candidate: Ref): Ref
 function GenericCell_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 {
   g_contents(this)
 }
@@ -1171,7 +1175,7 @@ function c_GenericView_f_value(this: Ref): Ref
 
 function g_contents(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
-  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(Flag()))
 
 
 function name(this: Ref): Ref
@@ -1243,14 +1247,15 @@ method GenericCell_c_GenericView_upcast(this: Ref)
   ensures (forall candidate: Ref ::
       { c_GenericView_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), GenericCell())) && true &&
-      old(isSubtype(typeOf(candidate), nullable(anyType()))) ==>
+      old(isSubtype(typeOf(candidate), nullable(Flag()))) &&
+      isSubtype(typeOf(candidate), nullable(anyType())) ==>
       (unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate)) ==
       old(GenericCell_f_same(this, candidate)))
 
 
 method con(par_contents: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  requires isSubtype(typeOf(par_contents), nullable(Flag()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents

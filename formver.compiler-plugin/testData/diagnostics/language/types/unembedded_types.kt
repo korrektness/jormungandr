@@ -40,3 +40,23 @@ fun <!VIPER_TEXT!>platformCollection<!>() {
         verify(<!USELESS_IS_CHECK!>o is A<!>, <!USELESS_IS_CHECK!>o is B<!>)
     }
 }
+
+open <!VIPER_TEXT!>class Base<!> {
+    fun <!VIPER_TEXT!>go<!>(): Int = 1
+}
+
+<!VIPER_TEXT!>class BaseHolder<!><T : Base>(val item: T) {
+    fun <!VIPER_TEXT!>field<!>(): Int = item.go()
+}
+
+fun <T : Base> <!VIPER_TEXT!>parameterBound<!>(x: T): Int = x.go()
+
+fun <T : Base?> <!VIPER_TEXT!>nullableBound<!>(x: T): Int = if (x != null) x.go() else 0
+
+fun <T> <!VIPER_TEXT!>multipleBounds<!>(x: T) where T : A, T : B {
+    verify(<!USELESS_IS_CHECK!>x is A<!>, <!USELESS_IS_CHECK!>x is B<!>)
+}
+
+fun <U : Base, T : U> <!VIPER_TEXT!>transitiveBound<!>(x: T): Int = x.go()
+
+inline fun <reified E : Base> <!VIPER_TEXT!>reifiedSmartCast<!>(x: Any): Int = if (x is E) x.go() else 0

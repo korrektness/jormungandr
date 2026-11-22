@@ -21,7 +21,8 @@ context(converter: ProgramConverter)
 internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuilder = when {
     type is ConeErrorType -> error("Encountered an erroneous type: $type")
     type is ConeTypeParameterType -> {
-        isNullable = type.canBeNull(converter.session); any()
+        isNullable = type.canBeNull(converter.session)
+        embedComponents(type.lookupTag.typeParameterSymbol.resolvedBounds.map { it.coneType }, type.isMarkedNullable)
     }
     type is ConeDefinitelyNotNullType -> embedTypeWithBuilder(type.original).also { isNullable = false }
     type is ConeFlexibleType -> embedTypeWithBuilder(type.upperBound)

@@ -54,12 +54,12 @@ method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
   unfold acc(Array_unique(arr), write)
   anon_0 := arr.referenceContents[intFromRef(i)]
   tmp := anon_0
-  inhale isSubtype(typeOf(tmp), anyType())
+  inhale isSubtype(typeOf(tmp), Token())
   assert intFromRef(j) >= 0
   assert intFromRef(j) < referenceArraySize(arr)
   anon_2 := arr.referenceContents[intFromRef(j)]
   anon_1 := anon_2
-  inhale isSubtype(typeOf(anon_1), anyType())
+  inhale isSubtype(typeOf(anon_1), Token())
   assert intFromRef(i) >= 0
   assert intFromRef(i) < referenceArraySize(arr)
   arr.referenceContents := arr.referenceContents[intFromRef(i) := anon_1]

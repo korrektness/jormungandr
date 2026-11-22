@@ -276,8 +276,12 @@ equivalence relation consistent with `hashCode` that does not change while the e
 
 ## Types
 
-A value has the facts of its Kotlin type: its class and whether it can be null. A type parameter gives only
-nullability. These types have no class of their own:
+A value has the facts of its Kotlin type: its class and whether it can be null. These types have no class of
+their own:
+
+- A type parameter has its upper bounds: inside `fun <T : Base> f(x: T)`, `x` is a `Base`. A cast `x as T` or
+  `x as? T` gives only the erased bound that the JVM checks: with `T : A, T : B` for interfaces `A` and `B`, the
+  result is an `A`.
 
 - `T & Any` is `T` without null.
 - An intersection type, such as the `A & B` that a value of type `A` gets when smart cast to `B`, has every

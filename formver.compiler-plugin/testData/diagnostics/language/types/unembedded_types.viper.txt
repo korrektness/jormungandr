@@ -210,3 +210,149 @@ method anonymousObject(this: Ref) returns (v_ret_0: Ref)
 method make(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Factory())
   ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), B())
+
+
+/unembedded_types.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/unembedded_types.kt: info: Generated Viper text for go:
+method go(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unembedded_types.kt: info: Generated Viper text for BaseHolder:
+function g_item(this: Ref): Ref
+  requires isSubtype(typeOf(this), BaseHolder())
+  ensures isSubtype(typeOf(result), Base())
+
+
+method con(par_item: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_item), Base())
+  ensures isSubtype(typeOf(v_ret_0), BaseHolder())
+  ensures g_item(v_ret_0) == par_item
+  ensures g_item(v_ret_0) == par_item
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BaseHolder()
+  anon := par_item
+  inhale g_item(v_ret_0) == anon
+  fold acc(BaseHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BaseHolder_unique(v_ret_0), write)
+}
+
+/unembedded_types.kt: info: Generated Viper text for field:
+function item(this: Ref): Ref
+  requires isSubtype(typeOf(this), BaseHolder())
+  ensures isSubtype(typeOf(result), Base())
+
+
+method f_field(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BaseHolder())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := go(item(this))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method go(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/unembedded_types.kt: info: Generated Viper text for parameterBound:
+method go(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method parameterBound(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), Base())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := go(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unembedded_types.kt: info: Generated Viper text for nullableBound:
+method go(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method nullableBound(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), nullable(Base()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (!(x == nullValue())) {
+    v_ret_0 := go(x)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unembedded_types.kt: info: Generated Viper text for multipleBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method multipleBounds(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), A()) && isSubtype(typeOf(x), B())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert isSubtype(typeOf(x), A())
+  assert isSubtype(typeOf(x), B())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unembedded_types.kt: info: Generated Viper text for transitiveBound:
+method go(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method transitiveBound(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), Base())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := go(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unembedded_types.kt: info: Generated Viper text for reifiedSmartCast:
+method go(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method reifiedSmartCast(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (isSubtype(typeOf(x), Base())) {
+    v_ret_0 := go(x)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}

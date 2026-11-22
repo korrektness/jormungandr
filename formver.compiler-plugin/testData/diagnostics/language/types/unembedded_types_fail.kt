@@ -40,3 +40,20 @@ fun <!VIPER_TEXT!>platformCollection<!>() {
         verify(<!IMPOSSIBLE_IS_CHECK_WARNING, VERIFICATION_CONDITION_NOT_ESTABLISHED!>o is C<!>)
     }
 }
+
+open <!VIPER_TEXT!>class Base<!>
+<!VIPER_TEXT!>class Derived<!> : Base()
+
+fun <T : Base> <!VIPER_TEXT!>boundIsUpper<!>(x: T) {
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x is Derived<!>)
+}
+
+fun <T : Base?> <!VIPER_TEXT!>nullableBoundAdmitsNull<!>(x: T) {
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x != null<!>)
+}
+
+fun <T> <!VIPER_TEXT!>castChecksErasedBound<!>(x: A) where T : A, T : B {
+    @Suppress("UNCHECKED_CAST")
+    val r = x as T
+    verify(<!USELESS_IS_CHECK, VERIFICATION_CONDITION_NOT_ESTABLISHED!>r is B<!>)
+}

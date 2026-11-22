@@ -207,3 +207,78 @@ method anonymousObject(this: Ref) returns (v_ret_0: Ref)
 method make(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Factory())
   ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), B())
+
+
+/unembedded_types_fail.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/unembedded_types_fail.kt: info: Generated Viper text for Derived:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Derived()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/unembedded_types_fail.kt: info: Generated Viper text for boundIsUpper:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method boundIsUpper(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), Base())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert isSubtype(typeOf(x), Derived())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unembedded_types_fail.kt: info: Generated Viper text for nullableBoundAdmitsNull:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nullableBoundAdmitsNull(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), nullable(Base()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert !(x == nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unembedded_types_fail.kt: info: Generated Viper text for castChecksErasedBound:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castChecksErasedBound(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), A())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  inhale isSubtype(typeOf(x), A())
+  l0_r := x
+  assert isSubtype(typeOf(l0_r), B())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

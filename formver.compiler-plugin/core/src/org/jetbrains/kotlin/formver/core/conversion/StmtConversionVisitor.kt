@@ -35,6 +35,10 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomSetter
+import org.jetbrains.kotlin.fir.types.ConeDefinitelyNotNullType
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
+import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
@@ -667,6 +671,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         return receiver
     }
 
+    private fun ConeKotlinType.isTypeParameterType(): Boolean = when (val t = lowerBoundIfFlexible()) {
+        is ConeDefinitelyNotNullType -> t.original.isTypeParameterType()
+        else -> t is ConeTypeParameterType
+    }
+
     override fun visitTypeOperatorCall(
         typeOperatorCall: FirTypeOperatorCall,
         data: StmtConversionContext,
@@ -674,17 +683,19 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val argument = data.convert(typeOperatorCall.arguments[0])
         val target = typeOperatorCall.conversionTypeRef.coneType
         val conversionType = data.embedType(target)
+        val checkedType = data.embedType(target.erasedCastTarget(data.session))
+        val castType = if (target.isTypeParameterType()) checkedType else conversionType
         return when (typeOperatorCall.operation) {
             FirOperation.IS -> Is(argument, conversionType)
             FirOperation.NOT_IS -> Not(Is(argument, conversionType))
             FirOperation.AS -> data.checkedCast(
-                argument, conversionType, data.embedType(target.erasedCastTarget(data.session)),
+                argument, castType, checkedType,
                 targetName = target.renderReadable(),
                 componentSensitive = data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
             )
 
             FirOperation.SAFE_AS -> SafeCast(
-                argument, conversionType, data.embedType(target.erasedCastTarget(data.session)),
+                argument, castType, checkedType,
                 data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
             ).withInvariants(data.typeResolver) {
                 proven = true
