@@ -1205,7 +1205,11 @@ element-dependent predicates, completeness and source order are not modelled.
 The trusted allocation boundary is registered in docs/soundness.md, "Collection builder
 allocation".
 
-Ordinary iterator-based collection `for` loops are unsupported; the templates
+An ordinary `for` loop over a collection calls `iterator()`, `hasNext()` and
+`next()`. Over an owned `List`, the iterator follows the `List.iterator()` model.
+Over a `List` that is not owned, the iterator is owned and its elements are
+unconstrained values of the element type. Over other collections these calls
+are opaque library calls. Such a loop takes no `loopInvariants`; the templates
 provide collection iteration with prefix invariants.
 
 At the start of a collection-template lambda,

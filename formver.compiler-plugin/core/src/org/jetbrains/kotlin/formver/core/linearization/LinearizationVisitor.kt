@@ -1205,6 +1205,23 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitUnconstrainedOwnedValue(e: UnconstrainedOwnedValue): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp {
+                val result = e.result.toLocalVarUse()
+                val cls = e.type.pretype as ClassTypeEmbedding
+                ctx.addStatement {
+                    Stmt.Inhale(Exp.PredicateAccess(cls.uniquePredicateName, listOf(result), PermExp.FullPerm()), ctx.source.asPosition)
+                }
+                ctx.foldState?.acquire(ctx, OwnedPath(e.result))
+                return result
+            }
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) {
+                toViper(ctx)
+            }
+        }
+
     override fun visitCollectionListAllocation(e: CollectionListAllocation): Linearizable =
         object : DirectResultLinearizable(e, this@LinearizationVisitor) {
             override fun toViper(ctx: LinearizationContext): Exp {
@@ -1453,6 +1470,10 @@ data class LinearizationVisitor(
             return root.array
         }
         if (root is CollectionListAllocation) {
+            value.linearize().toViperUnusedResult(ctx)
+            return root.result
+        }
+        if (root is UnconstrainedOwnedValue) {
             value.linearize().toViperUnusedResult(ctx)
             return root.result
         }
@@ -1903,7 +1924,7 @@ private fun LinearizationContext.foldConstructed(obj: VariableEmbedding, cls: Cl
 private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
     is MethodCall -> exp.method.callableType.returnsUnique
     is FunctionCall -> exp.function.callableType.returnsUnique
-    is NullLit, is CollectionListAllocation -> true
+    is NullLit, is CollectionListAllocation, is UnconstrainedOwnedValue -> true
     else -> false
 }
 

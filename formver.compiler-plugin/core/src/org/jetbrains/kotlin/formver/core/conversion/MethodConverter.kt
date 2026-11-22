@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
+import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 
 /**
@@ -94,7 +95,9 @@ class MethodConverter(
 
     override fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath?) {
         if (symbol.name.isSpecial)
-            propertyResolver.registerSpecialProperty(symbol, freshAnonVar(embedType(symbol.resolvedReturnType)))
+            propertyResolver.registerSpecialProperty(symbol, freshAnonVar(embedType(symbol.resolvedReturnType)).let {
+                FirVariableEmbedding(it.name, it.type, symbol)
+            })
         else
             propertyResolver.registerLocalProperty(symbol, embedType(symbol.resolvedReturnType))
         ownershipFrame.analysis?.borrowedSource(symbol)?.let { source ->

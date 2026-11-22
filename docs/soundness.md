@@ -502,7 +502,15 @@ parameter can return such an iterator and be mutated afterwards; the trust repor
 `MutableList` or another mutable collection resolves to a different callable,
 which has no model and converts as the opaque library call.
 
-Tests: `specifications/external/stdlib_member_specs.kt::iterates,iteratesTooFar,iteratesMutableList`.
+A `for` loop over a `List` that is not owned does not use the model's
+contract: the loop's iterator is owned, with unconstrained remaining elements.
+Only the loop calls `hasNext()` and `next()` on it, once per step, so the
+elements a real iterator returns are always some such sequence; this assumes
+nothing about the list.
+
+Tests: `specifications/external/stdlib_member_specs.kt::iterates,iteratesTooFar,iteratesMutableList`,
+`language/control_flow/for_collections.kt::mutatedThroughAlias`,
+`language/control_flow/for_collections_fail.kt`.
 
 ### Allocation
 

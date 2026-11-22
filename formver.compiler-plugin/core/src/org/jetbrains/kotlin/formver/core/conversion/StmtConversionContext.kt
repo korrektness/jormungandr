@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.formver.common.TerminationCondition
 import org.jetbrains.kotlin.formver.common.TerminationRule
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -152,6 +154,17 @@ fun StmtConversionContext.unconstrainedValue(type: TypeEmbedding): ExpEmbedding 
     }
     return blockOf(declaration, value)
 }
+
+/** A value of [type] known only through its type invariants, owned with an unconstrained unique predicate. */
+private fun StmtConversionContext.unconstrainedOwnedValue(type: TypeEmbedding): ExpEmbedding {
+    val declaration = declareAnonVar(type, null)
+    val facts = declaration.variable.withInvariants(typeResolver) { proven = true }
+    return blockOf(declaration, facts, UnconstrainedOwnedValue(declaration.variable))
+}
+
+/** Whether this is the `iterator()` call by which FIR starts a desugared `for` loop. */
+private fun FirQualifiedAccessExpression.isForLoopIterator(): Boolean =
+    source?.kind == KtFakeSourceElementKind.DesugaredForLoop && toResolvedCallableSymbol()?.name == OperatorNameConventions.ITERATOR
 
 /**
  * A reference to the object declaration [symbol]. Each reference is a separate unconstrained value, so the
@@ -329,7 +342,8 @@ private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCal
 /**
  * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
  * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
- * is not `Unique` on entry; `null` for any other access.
+ * is not `Unique` on entry; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
+ * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it.
  */
 fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAccessExpression): ExpEmbedding? {
     val callee = access.toResolvedCallableSymbol() ?: return null
@@ -350,7 +364,8 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
         addAll(evaluated.declarations)
         addAll(evaluated.values)
         if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL)))
-        add(unconstrainedValue(embedType(access.resolvedType)))
+        val type = embedType(access.resolvedType)
+        add(if (access.isForLoopIterator()) unconstrainedOwnedValue(type) else unconstrainedValue(type))
     }
 }
 
