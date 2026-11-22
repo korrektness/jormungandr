@@ -108,12 +108,12 @@ class TrustedAssumptionCollector(
     }
 
     /**
-     * Records the external binding of the function [target], and the `throwsOnlyIf` condition of [model], the callable
-     * its binding gives it, under the bound declaration's name when [model] has one.
+     * Records the external binding of the function [target] as [recordBinding] does, and the `throwsOnlyIf` condition
+     * of [model], the callable its binding gives it, under the bound declaration's name when [model] has one.
      */
     fun recordFunctionBinding(target: FirFunctionSymbol<*>, model: CallableEmbedding) {
+        recordBinding(target)
         val binding = session.externalSpecifications!!.bindingAssumption(target)
-        trusted += binding
         if ((model as? NonInlineCallable)?.throwsCondition != null) {
             trusted += TrustedAssumption(TrustedAssumption.Kind.THROWS_CONDITION, binding.name)
         }
