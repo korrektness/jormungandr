@@ -81,9 +81,16 @@ Root `./gradlew check` runs detekt, `apiCheck` and module checks. Compiler `chec
 aggregates handwritten tiers, full fixture verification and conversion.
 `check-all.sh` adds the published-plugin consumers, pre-commit and
 structural checks. The consumer check and verification
-of everything else run nightly: the host's nightly-tests runner runs the root
-`test.sh`, which is `check-all.sh --rerun` without the outcome cache, and pages the
-operator when it fails. Keep published-plugin and other end-to-end checks in
+of everything else run nightly: the GitHub Actions workflow
+`.github/workflows/nightly.yml` runs the root `test.sh`, which is
+`check-all.sh --rerun` without the outcome cache, every night at 02:17 UTC and on
+`gh workflow run nightly.yml`. It runs on a standard `ubuntu-latest` runner with
+JDK 21, the Z3 4.8.7 the build provisions, pre-commit, and an empty Gradle user
+home, so no build cache entry stands in for a test run. Each run uploads the
+`test-reports` artifact (Gradle test reports, JUnit XML, detekt reports) and the
+`declaration-timings` artifact ([declaration timings](#declaration-timings) of
+every verified declaration). `gh run list --workflow nightly.yml` lists runs;
+`gh run download <run-id>` fetches the artifacts. Keep published-plugin and other end-to-end checks in
 `check-all.sh`; gate selection stays at unit, small integration, conversion and
 changed-fixture verification boundaries.
 

@@ -1,0 +1,66 @@
+name: Nightly
+
+# The full cold suite: the root test.sh (check-all.sh --rerun) without the
+# verification outcome cache. docs/agents-dev.md, "Landing and nightly".
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-disabled: true
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Create the declaration timings directory
+        run: |
+          mkdir "$RUNNER_TEMP/declaration-timings"
+          echo "SNAKT_VERIFICATION_TIMINGS=$RUNNER_TEMP/declaration-timings" >> "$GITHUB_ENV"
+
+      - name: Run test.sh
+        run: ./test.sh
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+            **/build/reports/detekt/
+          if-no-files-found: warn
+
+      - name: Upload declaration timings
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: declaration-timings
+          path: ${{ runner.temp }}/declaration-timings
+          if-no-files-found: warn
