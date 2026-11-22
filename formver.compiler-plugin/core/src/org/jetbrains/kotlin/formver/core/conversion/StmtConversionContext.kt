@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldSetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
+import org.jetbrains.kotlin.formver.core.embeddings.properties.MemberExtensionPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
@@ -230,6 +231,12 @@ fun StmtConversionContext.embedPropertyAccess(
         is FirPropertySymbol -> {
             val type = embedType(calleeSymbol.resolvedReturnType)
             when {
+                accessExpression.dispatchReceiver != null && accessExpression.extensionReceiver != null -> {
+                    val dispatch = convertReceiver(accessExpression.dispatchReceiver!!, calleeSymbol.dispatchReceiverType)
+                    val extension = convertReceiver(accessExpression.extensionReceiver!!, calleeSymbol.resolvedReceiverType)
+                    MemberExtensionPropertyAccess(dispatch, extension, embedProperty(calleeSymbol), type)
+                }
+
                 accessExpression.dispatchReceiver != null -> {
                     val property = calleeSymbol.findFinalParentProperty()?.let {
                         embedProperty(it)

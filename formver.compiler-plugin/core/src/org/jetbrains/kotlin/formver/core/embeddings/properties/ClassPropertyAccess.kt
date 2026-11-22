@@ -38,3 +38,29 @@ class ClassPropertyAccess(
     override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding =
         property.setter!!.setValue(receiver, value, ctx, receiverOwned)
 }
+
+/**
+ * An access to a member extension property, whose accessors take [dispatchReceiver] and then [extensionReceiver]. The
+ * accessors of an extension property are always methods.
+ */
+class MemberExtensionPropertyAccess(
+    val dispatchReceiver: ExpEmbedding,
+    val extensionReceiver: ExpEmbedding,
+    val property: PropertyEmbedding,
+    val type: TypeEmbedding,
+) : PropertyAccessEmbedding {
+    override fun getValue(ctx: StmtConversionContext): ExpEmbedding {
+        val getter = (property.getter as CustomGetter).getterMethod
+        val receivers = listOf(dispatchReceiver, extensionReceiver)
+        val value = if (ctx.mayThrow()) getter.insertCall(receivers, ctx, type) else getter.insertCall(receivers)
+        return value.withNewTypeInvariants(type, ctx.typeResolver) {
+            proven = true
+            access = true
+        }
+    }
+
+    override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding {
+        val setter = (property.setter as CustomSetter).setterMethod
+        return setter.insertCall(listOf(dispatchReceiver, extensionReceiver, value), ctx, setter.callableType.returnType)
+    }
+}

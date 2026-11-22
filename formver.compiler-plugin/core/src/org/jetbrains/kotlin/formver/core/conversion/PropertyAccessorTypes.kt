@@ -27,14 +27,22 @@ internal fun topLevelSetterType(): FunctionTypeEmbedding = buildFunctionPretype 
     withReturnType { nullableAny() }
 }
 
-/** The type of an extension property's getter, which SnaKt treats as opaque. */
-internal fun extensionGetterType(): FunctionTypeEmbedding = buildFunctionPretype {
+/**
+ * The type of an extension property's getter, which SnaKt treats as opaque. A member extension property's getter also
+ * takes the dispatch receiver, when [member] holds.
+ */
+internal fun extensionGetterType(member: Boolean): FunctionTypeEmbedding = buildFunctionPretype {
+    if (member) withDispatchReceiver { any() }
     withExtensionReceiver { nullableAny() }
     withReturnType { nullableAny() }
 }
 
-/** The type of an extension property's setter, which SnaKt treats as opaque. */
-internal fun extensionSetterType(): FunctionTypeEmbedding = buildFunctionPretype {
+/**
+ * The type of an extension property's setter, which SnaKt treats as opaque. A member extension property's setter also
+ * takes the dispatch receiver, when [member] holds.
+ */
+internal fun extensionSetterType(member: Boolean): FunctionTypeEmbedding = buildFunctionPretype {
+    if (member) withDispatchReceiver { any() }
     withExtensionReceiver { nullableAny() }
     withParam { nullableAny() }
     withReturnType { nullableAny() }

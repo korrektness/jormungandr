@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.SubstitutedArgument
@@ -128,7 +129,7 @@ interface NonInlineCallable : NamedCallableEmbedding {
 data class NonInlineCallableImpl(
     val functionSignature: NamedFunctionSignature, override val symbol: FirFunctionSymbol<*>?
 ) : NonInlineCallable, NamedFunctionSignature by functionSignature {
-    override val labelName: String? = symbol?.name?.asString()
+    override val labelName: String? = ((symbol as? FirPropertyAccessorSymbol)?.propertySymbol ?: symbol)?.name?.asString()
 }
 
 fun NonInlineCallable.toMethodCall(

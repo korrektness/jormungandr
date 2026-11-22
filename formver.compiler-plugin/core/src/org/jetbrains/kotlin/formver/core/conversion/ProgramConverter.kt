@@ -869,8 +869,9 @@ class ProgramConverter(
             )
         }
         val extension = symbol.receiverParameterSymbol != null
-        val getterType = if (extension) extensionGetterType() else topLevelGetterType()
-        val setterType = if (extension) extensionSetterType() else topLevelSetterType()
+        val member = symbol.dispatchReceiverType != null
+        val getterType = if (extension) extensionGetterType(member) else topLevelGetterType()
+        val setterType = if (extension) extensionSetterType(member) else topLevelSetterType()
         val getter = embedAccessorFunction(symbol, getterType, defaultBehaviour = false)
         val setter = symbol.isVar.ifTrue { embedAccessorFunction(symbol, setterType, defaultBehaviour = false) }
 

@@ -1,0 +1,554 @@
+/member_extension_properties.kt: info: Generated Viper text for Ctx:
+function g_name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_name: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_name), intType())
+  ensures isSubtype(typeOf(v_ret_0), Ctx())
+  ensures intFromRef(g_name(v_ret_0)) == intFromRef(par_name)
+  ensures intFromRef(g_name(v_ret_0)) == intFromRef(par_name)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Ctx()
+  anon := par_name
+  inhale intFromRef(g_name(v_ret_0)) == intFromRef(anon)
+  fold acc(Ctx_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Ctx_unique(v_ret_0), write)
+}
+
+/member_extension_properties.kt: info: Generated Viper text for positive:
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positive(v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  gtInts(name(v_this_extension), intToRef(0))
+}
+
+/member_extension_properties.kt: info: Generated Viper text for positiveOfName:
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positive(v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  gtInts(name(v_this_extension), intToRef(0))
+}
+
+method positiveOfName(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) == intFromRef(name(c)) > 0
+{
+  v_ret_0 := positive(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/member_extension_properties.kt: info: Generated Viper text for Outer:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), g_offset(v_this))
+}
+
+function g_offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_offset: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(par_offset), intType())
+  ensures isSubtype(typeOf(v_ret_3), Outer())
+  ensures intFromRef(g_offset(v_ret_3)) == intFromRef(par_offset)
+  ensures intFromRef(g_offset(v_ret_3)) == intFromRef(par_offset)
+{
+  var anon: Ref
+  v_ret_3 := new()
+  inhale typeOf(v_ret_3) == Outer()
+  anon := par_offset
+  inhale intFromRef(g_offset(v_ret_3)) == intFromRef(anon)
+  fold acc(Outer_unique(v_ret_3), write)
+  label lbl_ret_3
+  unfold acc(Outer_unique(v_ret_3), write)
+}
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for isOrigin:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(v_this), Outer())
+  inhale isSubtype(typeOf(v_this_extension), Ctx())
+  v_ret_0 := boolToRef(intFromRef(name(v_this_extension)) ==
+    intFromRef(offset(v_this)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/member_extension_properties.kt: info: Generated Viper text for slot:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(v_this), Outer())
+  inhale isSubtype(typeOf(v_this_extension), Ctx())
+  if (intFromRef(name(v_this_extension)) > intFromRef(offset(v_this))) {
+    anon := name(v_this_extension)
+  } else {
+    anon := offset(v_this)}
+  v_ret_1 := anon
+  goto lbl_ret_1
+  label lbl_ret_1
+}
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for slot:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_2), nullable(anyType()))
+{
+  var par_v: Ref
+  inhale isSubtype(typeOf(v_this), Outer())
+  inhale isSubtype(typeOf(v_this_extension), Ctx())
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  label lbl_ret_2
+}
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for atLeast:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for readGetter:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method readGetter(v_this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon: Ref
+  anon := isOrigin(v_this, c)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), boolType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/member_extension_properties.kt: info: Generated Viper text for writeSetter:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method writeSetter(v_this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := es_slot(v_this, c, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_extension_properties.kt: info: Generated Viper text for atLeastUsesBoth:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method atLeastUsesBoth(v_this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) ==
+    intFromRef(name(c)) >= intFromRef(offset(v_this))
+{
+  v_ret_0 := atLeast(v_this, c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for atLeastIsNotPositive:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method atLeastIsNotPositive(v_this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) == intFromRef(name(c)) >= 0
+{
+  v_ret_0 := atLeast(v_this, c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/member_extension_properties.kt: info: Generated Viper text for withDispatchReceiver:
+function atLeast(v_this: Ref, v_this_extension: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  requires isSubtype(typeOf(v_this_extension), Ctx())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(name(v_this_extension), offset(v_this))
+}
+
+function name(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Ctx())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function offset(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_slot(v_this: Ref, v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method es_slot(v_this: Ref, v_this_extension: Ref, arg_0: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method isOrigin(v_this: Ref, v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method withDispatchReceiver(outer: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(outer), Outer())
+  requires isSubtype(typeOf(c), Ctx())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var v_ret_5: Ref
+  var anon_1: Ref
+  anon_0 := outer
+  anon_1 := eg_slot(anon_0, c)
+  v_ret_5 := anon_1
+  inhale isSubtype(typeOf(v_ret_5), intType())
+  goto lbl_ret_5
+  label lbl_ret_5
+  v_ret_0 := v_ret_5
+  goto lbl_ret_0
+  label lbl_ret_0
+}
