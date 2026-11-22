@@ -228,6 +228,7 @@ method con() returns (ret_2: Ref)
 method con() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), Adder())
 {
+  var captured_write_total_508: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == Adder()
   fold acc(Adder_unique(v_ret_0), write)
@@ -240,6 +241,8 @@ method add(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Adder())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var captured_write_total_508: Ref
+  captured_write_total_508 := intToRef(3)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

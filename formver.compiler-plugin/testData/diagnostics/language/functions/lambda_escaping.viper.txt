@@ -224,6 +224,8 @@ trackedBeforeCreation.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -267,6 +269,8 @@ sharedAfterCreation.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -311,6 +315,8 @@ writeAfterCreationIsNotKept.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -354,11 +360,12 @@ readOnlyCaptureIsShared.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_1: Ref
   var anon_0: Ref
-  inhale isSubtype(typeOf(anon_0), intType())
-  anon_1 := anon_0
-  assert plusInts(anon_1, intToRef(1)) == plusInts(anon_1, intToRef(1))
+  var anon_2: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  assert plusInts(anon_2, intToRef(1)) == plusInts(anon_2, intToRef(1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -397,6 +404,8 @@ uncapturedVarStaysTracked.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1080,10 +1089,11 @@ function size(this: Ref): Ref
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon_0: Ref
   var l0_r: Ref
-  var anon: Ref
-  inhale isSubtype(typeOf(anon), intType())
-  l0_r := anon
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  l0_r := anon_1
   assert intFromRef(l0_r) == 0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1120,14 +1130,15 @@ function size(this: Ref): Ref
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var a: Ref
   var anon_0: Ref
-  var b: Ref
+  var a: Ref
   var anon_1: Ref
-  inhale isSubtype(typeOf(anon_0), intType())
-  a := anon_0
+  var b: Ref
+  var anon_2: Ref
   inhale isSubtype(typeOf(anon_1), intType())
-  b := anon_1
+  a := anon_1
+  inhale isSubtype(typeOf(anon_2), intType())
+  b := anon_2
   assert intFromRef(a) == intFromRef(b)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1164,10 +1175,12 @@ function size(this: Ref): Ref
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon_0: Ref
   var l0_r: Ref
-  var anon: Ref
-  inhale isSubtype(typeOf(anon), intType())
-  l0_r := anon
+  var anon_1: Ref
+  anon_0 := intToRef(1)
+  inhale isSubtype(typeOf(anon_1), intType())
+  l0_r := anon_1
   assert intFromRef(l0_r) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1378,6 +1391,8 @@ capturedLambdaTrackedBeforeCreation.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1429,6 +1444,8 @@ capturedLambdaSharesItsCaptures.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1595,10 +1612,11 @@ bodyInvokesCapturedVar.lambda1.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_1: Ref
   var anon_0: Ref
-  inhale isSubtype(typeOf(anon_0), functionType())
-  inhale isSubtype(typeOf(anon_1), unitType())
+  var anon_2: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), functionType())
+  inhale isSubtype(typeOf(anon_2), unitType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1644,8 +1662,9 @@ method invoke() returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  inhale isSubtype(typeOf(anon_1), functionType())
-  anon_0 := later(anon_1)
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_2), functionType())
+  anon_1 := later(anon_2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1659,6 +1678,8 @@ bodyNestedLambdaCapturesVar.lambda1.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1752,6 +1773,8 @@ forBodyVarTrackedBeforeCreation.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1844,6 +1867,8 @@ forBodyVarSharedAfterCreation.lambda0.invoke:
 method invoke() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon: Ref
+  anon := intToRef(2)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

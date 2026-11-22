@@ -1120,7 +1120,8 @@ of its own, against no contract. One written in a property initializer or an
 `init` block is not verified. Its parameters are arbitrary values of their types. Each `val`,
 parameter or receiver it captures is an arbitrary shared value of its type, the
 same at each read. Each local `var` it captures is an arbitrary value at each
-read, and the body's writes to it are not kept. A verification failure in the
+read, and the body's writes to it are not kept. Such a write is still a side
+effect: a `verify` or `refute` condition containing one is a purity violation. A verification failure in the
 body is reported in the body; it does not make the function that creates the
 lambda fail.
 

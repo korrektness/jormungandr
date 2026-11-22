@@ -137,6 +137,8 @@ class CaptureScope(
     val declaration: FirDeclaration,
     val variables: Map<FirVariableSymbol<*>, VariableEmbedding>,
     val receivers: Map<FirBasedSymbol<*>, VariableEmbedding>,
+    /** The variables that receive the writes to each captured `var`, which no read sees. */
+    val sinks: Map<FirVariableSymbol<*>, VariableEmbedding>,
     /** Whether converting the declaration statement records its facts: only in a converter that collects them. */
     val recordsSites: Boolean,
 ) {
@@ -145,16 +147,17 @@ class CaptureScope(
     /** The fact alternatives recorded at each conversion of the declaration statement. */
     val sites = mutableListOf<() -> List<Exp>>()
 
-    fun accesses(program: ProgramConversionContext): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> =
+    fun accesses(): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> =
         captured.associate { symbol ->
-            symbol to (variables[symbol] ?: DetachedVarAccess(program.embedType(symbol.resolvedReturnType)))
+            symbol to (variables[symbol] ?: DetachedVarAccess(sinks.getValue(symbol)))
         } + receivers
 
     /**
-     * Declares the immutable captures and receivers, except those in [declared], and assumes their type invariants and
-     * the facts of every declaration site.
+     * Declares the immutable captures, receivers and write sinks, except those in [declared], and assumes the type
+     * invariants of the captures and receivers and the facts of every declaration site.
      */
     fun entry(program: ProgramConversionContext, declared: Set<FirBasedSymbol<*>> = emptySet()): List<ExpEmbedding> = buildList {
+        sinks.filterKeys { it !in declared }.values.forEach { add(Declare(it, null)) }
         (variables + receivers).filterKeys { it !in declared }.values.forEach { variable ->
             add(Declare(variable, null))
             add(variable.withInvariants(program.typeResolver) {
@@ -189,7 +192,13 @@ class CaptureScope(
                     program.embedType(type), isUnique = false,
                 )
             }.toMap()
-            return CaptureScope(declaration, variables, receivers, recordsSites)
+            val sinks = declaration.capturedLocals().filterNot { it.isImmutableCapture }.associateWith { symbol ->
+                PlaceholderVariableEmbedding(
+                    ScopedName(ParameterScope, PretypeName("captured_write_${symbol.name.asString()}_${symbol.source?.startOffset}")),
+                    program.embedType(symbol.resolvedReturnType), isUnique = false,
+                )
+            }
+            return CaptureScope(declaration, variables, receivers, sinks, recordsSites)
         }
     }
 }

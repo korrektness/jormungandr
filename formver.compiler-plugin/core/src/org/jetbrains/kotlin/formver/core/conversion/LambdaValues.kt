@@ -177,12 +177,12 @@ class SharedLocalAccess(private val variable: VariableEmbedding, private val fla
 
 /**
  * A local `var` as the body of a lambda value or local declaration that captures it sees it: each read is arbitrary,
- * and a write is lost.
+ * and a write goes to [sink], which no read sees. [sink] is declared by the body's entry.
  */
-class DetachedVarAccess(private val type: TypeEmbedding) : PropertyAccessEmbedding {
-    override fun getValue(ctx: StmtConversionContext): ExpEmbedding = ctx.unconstrainedValue(type)
+class DetachedVarAccess(private val sink: VariableEmbedding) : PropertyAccessEmbedding {
+    override fun getValue(ctx: StmtConversionContext): ExpEmbedding = ctx.unconstrainedValue(sink.type)
 
-    override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding = blockOf(value, UnitLit)
+    override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding = blockOf(sink.setValue(value, ctx), UnitLit)
 }
 
 /**
@@ -224,15 +224,16 @@ fun FirAnonymousFunction.valueMethod(name: ScopedName, analysis: FunctionUniquen
     val (signature, target) = symbol.toFunctionSignature().toNamedSignature(name).toNonInlineSignature(null)
         .toCompleteSignature(source) { userFunctionContract() }
     val shared = mutableListOf<VariableEmbedding>()
+    val sinks = mutableListOf<VariableEmbedding>()
     val captures = capturedSymbols.mapValues { (symbol, coneType) ->
         val type = converter.embedType(coneType)
-        if (symbol is FirPropertySymbol && symbol.isVar) DetachedVarAccess(type)
+        if (symbol is FirPropertySymbol && symbol.isVar) DetachedVarAccess(converter.freshAnonVar(type).also(sinks::add))
         else converter.freshAnonVar(type).also(shared::add)
     }
     val resolver = RootParameterResolver(converter, signature, signature.parameterVariables(symbol), symbol.label?.name, target)
     val context = MethodConverter(converter, signature, resolver, converter.scopeIndexProducer.getFresh(),
         OwnershipFrame.lambdaValue(analysis, captures.keys), captures = captures).statementCtxt()
-    val entry = shared.map { Declare(it, context.unconstrainedValue(it.type)) }
+    val entry = shared.map { Declare(it, context.unconstrainedValue(it.type)) } + sinks.map { Declare(it, null) }
     val body = context.convertImpureBody(this, signature, target, entry)
         ?: throw SnaktInternalException(source, "Lambda value has no body")
     return LambdaValueMethod(signature, target, body)

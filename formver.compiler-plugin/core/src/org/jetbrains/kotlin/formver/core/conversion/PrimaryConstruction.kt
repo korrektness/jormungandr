@@ -159,7 +159,7 @@ fun constructionBody(
             ?: program.captureScope(declaring.fir)
         return entered.getOrPut(scope) {
             actions += scope.entry(program, declared = captured.keys.toSet())
-            scope.accesses(program).mapValues { (symbol, access) -> captured.getOrPut(symbol) { access } }
+            scope.accesses().mapValues { (symbol, access) -> captured.getOrPut(symbol) { access } }
         }
     }
 

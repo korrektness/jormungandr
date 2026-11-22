@@ -510,7 +510,7 @@ class ProgramConverter(
         val paramResolver = RootParameterResolver(this, signature.signature, signature.signature.parameterVariables(symbol), labelName, signature.returnTarget)
         val frame = OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature.signature))
         return MethodConverter(this, signature.signature, paramResolver, scopeIndexProducer.getFresh(), frame,
-            captures = scope?.accesses(this).orEmpty()).statementCtxt().withCaptureFacts(scope)
+            captures = scope?.accesses().orEmpty()).statementCtxt().withCaptureFacts(scope)
     }
 
     // endregion

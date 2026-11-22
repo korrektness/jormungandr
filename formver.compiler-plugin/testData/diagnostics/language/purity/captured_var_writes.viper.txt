@@ -1,0 +1,138 @@
+/captured_var_writes.kt: info: Generated Viper text for localFunction:
+method assign() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method decrement() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method increment() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method localFunction() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var c: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_0 := boolToRef(false)
+  c := intToRef(0)
+  anon_0 := boolToRef(true)
+  anon_0 := boolToRef(true)
+  anon_0 := boolToRef(true)
+  anon_0 := boolToRef(true)
+  anon_0 := boolToRef(true)
+  anon_1 := increment()
+  anon_2 := decrement()
+  anon_3 := assign()
+  anon_4 := plusAssign()
+  anon_5 := writeOutsideCondition()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plusAssign() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method writeOutsideCondition() returns (ret_5: Ref)
+  ensures isSubtype(typeOf(ret_5), unitType())
+
+
+/captured_var_writes.kt: info: Generated Viper text for writeOutsideCondition:
+method writeOutsideCondition() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var captured_write_c_84: Ref
+  captured_write_c_84 := intToRef(3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/captured_var_writes.kt: info: Generated Viper text for localClass:
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Counter())
+
+
+method increment(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method localClass() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var c: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := boolToRef(false)
+  c := intToRef(0)
+  anon_0 := boolToRef(true)
+  anon_2 := con()
+  fold acc(Counter_unique(anon_2), write)
+  anon_1 := increment(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/captured_var_writes.kt: info: Generated Viper text for Counter:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+{
+  var captured_write_c_449: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Counter()
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/captured_var_writes.kt: info: Generated Viper text for lambdas:
+method lambdas() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var c: Ref
+  var increment: Ref
+  var anon_1: Ref
+  var assign: Ref
+  var anon_2: Ref
+  var writeOutsideCondition: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  anon_0 := boolToRef(false)
+  c := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_1), functionType())
+  increment := anon_1
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), functionType())
+  assign := anon_2
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_3), functionType())
+  writeOutsideCondition := anon_3
+  inhale isSubtype(typeOf(anon_4), unitType())
+  inhale isSubtype(typeOf(anon_5), unitType())
+  inhale isSubtype(typeOf(anon_6), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+lambdas.lambda2.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := intToRef(2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
