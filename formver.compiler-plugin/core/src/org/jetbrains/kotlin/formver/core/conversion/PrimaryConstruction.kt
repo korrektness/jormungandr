@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.declarations.utils.isInner
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
 import org.jetbrains.kotlin.formver.core.parameterArguments
@@ -148,12 +149,12 @@ fun constructionBody(
     val entered = mutableMapOf<CaptureScope, Map<FirBasedSymbol<*>, PropertyAccessEmbedding>>()
 
     /**
-     * The captures that code of the class [declaring] reads: none when it is not local, those of the body scope when
-     * that scope contains [declaring], else those of [declaring] itself. A capture that an earlier scope declared
-     * keeps its variable.
+     * The captures that code of the class [declaring] reads: none when it is neither local nor inner, those of the
+     * body scope when that scope contains [declaring], else those of [declaring] itself. A capture that an earlier
+     * scope declared keeps its variable.
      */
     fun capturesOf(declaring: FirRegularClassSymbol): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> {
-        if (!declaring.classId.isLocal) return emptyMap()
+        if (!declaring.classId.isLocal && !declaring.isInner) return emptyMap()
         val enclosing = generateSequence(declaring.classId) { it.outerClassId }.toSet()
         val scope = program.bodyScope?.takeIf { (it.declaration.symbol as? FirClassLikeSymbol<*>)?.classId in enclosing }
             ?: program.captureScope(declaring.fir)

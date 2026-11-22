@@ -624,6 +624,16 @@ A contract of a local function or member that reads a captured value, a
 that shares its name with another declaration in one program are reported as
 `UNSUPPORTED_FEATURE`.
 
+### Inner classes and anonymous objects
+
+In a member or constructor of an inner class or anonymous object, the instance
+of an enclosing class, read as `this@Outer` or as the implicit receiver of a
+call or property read, is an arbitrary shared value of that class, the same at
+each read in one body; no facts about it carry over from the object's creation.
+A contract or `@Pure` member that reads an enclosing instance is reported as
+`UNSUPPORTED_FEATURE`. Inside a local class, these receivers follow
+[Local functions and classes](#local-functions-and-classes).
+
 ### Interface laws
 
 Declare a Boolean `@Law @Pure` interface member with a body to state a law. Laws have no value, type, extension,

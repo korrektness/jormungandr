@@ -1,0 +1,348 @@
+/outer_receivers.kt: info: Generated Viper text for value:
+method value(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Getter())
+  ensures isSubtype(typeOf(ret), intType())
+
+
+/outer_receivers.kt: info: Generated Viper text for Base:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  anon := par_n
+  inhale intFromRef(g_n(v_ret_0)) == intFromRef(anon)
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/outer_receivers.kt: info: Generated Viper text for Outer:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Outer())
+  ensures isSubtype(typeOf(v_ret_0), Outer()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Outer()
+  anon_0 := par_n
+  anon_1 := anon_0
+  inhale intFromRef(g_n(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Outer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/outer_receivers.kt: info: Generated Viper text for get:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for In:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(this: Ref, par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Outer_In())
+  ensures isSubtype(typeOf(v_ret_0), Outer_In()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+{
+  var captured_this_0_191: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Outer_In()
+  anon_0 := par_n
+  anon_1 := anon_0
+  inhale intFromRef(g_n(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Base_unique(v_ret_0), write)
+  anon_2 := g_n(captured_this_0_191)
+  inhale intFromRef(outerN(v_ret_0)) == intFromRef(anon_2)
+  fold acc(Outer_In_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_In_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/outer_receivers.kt: info: Generated Viper text for labelled:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method labelled(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_191: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  v_ret_0 := get(captured_this_0_191)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for implicit:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method implicit(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_191: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  v_ret_0 := get(captured_this_0_191)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for innerState:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method innerState(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  requires intFromRef(n(this)) > 5
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_191: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  assert intFromRef(n(this)) > 5
+  v_ret_0 := n(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for outerIsNotInner:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method outerIsNotInner(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  requires intFromRef(n(this)) > 5
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_191: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  assert intFromRef(n(captured_this_0_191)) > 5
+  v_ret_0 := n(captured_this_0_191)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for outerIsOneObject:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method outerIsOneObject(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_191: Ref
+  var first: Ref
+  inhale isSubtype(typeOf(captured_this_0_191), Outer())
+  first := n(captured_this_0_191)
+  assert intFromRef(first) == intFromRef(n(captured_this_0_191))
+  v_ret_0 := first
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for Deeper:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(v_ret_0), Outer_In_Deeper())
+{
+  var captured_this_0_959: Ref
+  var captured_this_1_959: Ref
+  inhale isSubtype(typeOf(captured_this_0_959), Outer_In())
+  inhale isSubtype(typeOf(captured_this_1_959), Outer())
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Outer_In_Deeper()
+  fold acc(Outer_In_Deeper_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_In_Deeper_unique(v_ret_0), write)
+}
+
+/outer_receivers.kt: info: Generated Viper text for twoLevels:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function outerN(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_In())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method twoLevels(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Outer_In_Deeper())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_959: Ref
+  var captured_this_1_959: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(captured_this_0_959), Outer_In())
+  inhale isSubtype(typeOf(captured_this_1_959), Outer())
+  if (intFromRef(n(captured_this_0_959)) ==
+  intFromRef(n(captured_this_0_959))) {
+    anon := boolToRef(intFromRef(n(captured_this_1_959)) ==
+      intFromRef(n(captured_this_1_959)))
+  } else {
+    anon := boolToRef(false)}
+  assert boolFromRef(anon)
+  v_ret_0 := get(captured_this_1_959)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/outer_receivers.kt: info: Generated Viper text for value:
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method value(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Getter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var captured_this_0_1184: Ref
+  inhale isSubtype(typeOf(captured_this_0_1184), Outer())
+  assert intFromRef(n(captured_this_0_1184)) ==
+    intFromRef(n(captured_this_0_1184))
+  v_ret_0 := get(captured_this_0_1184)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

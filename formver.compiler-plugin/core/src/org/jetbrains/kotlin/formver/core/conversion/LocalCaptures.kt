@@ -5,10 +5,13 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.declarations.utils.isInner
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.diagnostics.DiagnosticContext
@@ -101,10 +104,20 @@ fun FirElement.capturedReceivers(): Map<FirBasedSymbol<*>, ConeKotlinType> {
     }
 }
 
-/** The receivers that [this] reads and that neither it nor a class containing it declares. */
+/** The receivers that [this] reads and that neither it nor the class it is a member of declares. */
 private fun FirDeclaration.enclosingReceiverReads(): Set<FirBasedSymbol<*>> {
-    val containing = generateSequence((symbol as? FirCallableSymbol<*>)?.callableId?.classId) { it.outerClassId }.toSet()
-    return capturedReceivers().keys.filterNotTo(mutableSetOf()) { it is FirClassSymbol<*> && it.classId in containing }
+    val own = (symbol as? FirCallableSymbol<*>)?.callableId?.classId
+    return capturedReceivers().keys.filterNotTo(mutableSetOf()) { it is FirClassSymbol<*> && it.classId == own }
+}
+
+/** Whether [this] is an inner class or an anonymous object, whose code reads the receivers of enclosing classes. */
+private val FirBasedSymbol<*>.readsOuterReceivers: Boolean
+    get() = this is FirAnonymousObjectSymbol || this is FirRegularClassSymbol && isInner
+
+/** Whether [this] is a member of an inner class or an anonymous object, or is declared inside one. */
+private fun FirDeclaration.isInOuterReceiverScope(): Boolean = when (val symbol = symbol) {
+    is FirCallableSymbol<*> -> symbol.containingClassLookupTag()?.toSymbol(moduleData.session)?.readsOuterReceivers == true
+    else -> symbol.readsOuterReceivers
 }
 
 /** Whether [this] is a local function or class, or a member of a local class. */
@@ -116,7 +129,7 @@ fun FirDeclaration.isLocallyScoped(): Boolean = when (val symbol = symbol) {
 
 /** Whether the `preconditions`, `postconditions` or `throwsOnlyIf` block of [this] reads a value that it captures. */
 fun FirFunction.contractReadsCapture(): Boolean {
-    if (!isLocallyScoped()) return false
+    if (!isLocallyScoped() && !isInOuterReceiverScope()) return false
     val statements = body?.statements ?: return false
     val specification = extractFirSpecification(statements, returnTypeRef.coneType)
     val blocks = listOfNotNull(specification.precond, specification.postcond, specification.throwsOnlyIf)
@@ -141,8 +154,10 @@ class CaptureScope(
     val sinks: Map<FirVariableSymbol<*>, VariableEmbedding>,
     /** Whether converting the declaration statement records its facts: only in a converter that collects them. */
     val recordsSites: Boolean,
+    /** Whether the declaration captures locals as well as receivers: false for an inner class or anonymous object. */
+    capturesLocals: Boolean = true,
 ) {
-    val captured: List<FirVariableSymbol<*>> = declaration.capturedLocals()
+    val captured: List<FirVariableSymbol<*>> = if (capturesLocals) declaration.capturedLocals() else emptyList()
 
     /** The fact alternatives recorded at each conversion of the declaration statement. */
     val sites = mutableListOf<() -> List<Exp>>()
@@ -180,18 +195,16 @@ class CaptureScope(
 
     companion object {
         fun of(declaration: FirDeclaration, program: ProgramConversionContext, recordsSites: Boolean): CaptureScope {
+            if (declaration.symbol.readsOuterReceivers && !declaration.symbol.isLocalRegularClass) {
+                return CaptureScope(declaration, emptyMap(), receiversOf(declaration, program), emptyMap(), recordsSites, capturesLocals = false)
+            }
             val variables = declaration.capturedLocals().filter { it.isImmutableCapture }.associateWith { symbol ->
                 PlaceholderVariableEmbedding(
                     ScopedName(ParameterScope, PretypeName("captured_${symbol.name.asString()}_${symbol.source?.startOffset}")),
                     program.embedType(symbol.resolvedReturnType), isUnique = false,
                 )
             }
-            val receivers = declaration.capturedReceivers().entries.mapIndexed { index, (symbol, type) ->
-                symbol to PlaceholderVariableEmbedding(
-                    ScopedName(ParameterScope, PretypeName("captured_this_${index}_${declaration.source?.startOffset}")),
-                    program.embedType(type), isUnique = false,
-                )
-            }.toMap()
+            val receivers = receiversOf(declaration, program)
             val sinks = declaration.capturedLocals().filterNot { it.isImmutableCapture }.associateWith { symbol ->
                 PlaceholderVariableEmbedding(
                     ScopedName(ParameterScope, PretypeName("captured_write_${symbol.name.asString()}_${symbol.source?.startOffset}")),
@@ -200,6 +213,14 @@ class CaptureScope(
             }
             return CaptureScope(declaration, variables, receivers, sinks, recordsSites)
         }
+
+        private fun receiversOf(declaration: FirDeclaration, program: ProgramConversionContext): Map<FirBasedSymbol<*>, VariableEmbedding> =
+            declaration.capturedReceivers().entries.mapIndexed { index, (symbol, type) ->
+                symbol to PlaceholderVariableEmbedding(
+                    ScopedName(ParameterScope, PretypeName("captured_this_${index}_${declaration.source?.startOffset}")),
+                    program.embedType(type), isUnique = false,
+                )
+            }.toMap()
     }
 }
 
@@ -241,9 +262,13 @@ class DistinctNames {
     }
 }
 
+private val FirBasedSymbol<*>.isLocalRegularClass: Boolean
+    get() = this is FirRegularClassSymbol && classId.isLocal
+
 /**
  * The local declaration whose captures the body of [declaration] reads, and the declarations that contain it. A local
- * function is its own scope; a member of a local class reads the captures of the outermost local class.
+ * function is its own scope; a member of a local class reads the captures of the outermost local class. Outside local
+ * classes, code of an inner class or anonymous object reads the enclosing receivers that the innermost one captures.
  */
 @OptIn(SymbolInternals::class)
 fun localCaptureScopeOf(declaration: FirDeclaration, containing: List<FirBasedSymbol<*>>): Pair<FirDeclaration, List<FirBasedSymbol<*>>>? {
@@ -251,9 +276,10 @@ fun localCaptureScopeOf(declaration: FirDeclaration, containing: List<FirBasedSy
         return declaration to containing
     }
     val chain = containing + declaration.symbol
-    val index = chain.indexOfFirst { it is FirRegularClassSymbol && it.classId.isLocal }
-    if (index < 0) return null
-    return (chain[index] as FirRegularClassSymbol).fir to chain.take(index)
+    val index = chain.indexOfFirst { it.isLocalRegularClass }.takeIf { it >= 0 }
+        ?: chain.indexOfLast { it.readsOuterReceivers }.takeIf { it >= 0 }
+        ?: return null
+    return chain[index].fir to chain.take(index)
 }
 
 /** The capture scopes of one program, and the scope that the body of its registered declaration reads. */
@@ -328,7 +354,10 @@ private object DiscardingReporter : DiagnosticReporter() {
 
 /** Throws when code of the locally scoped [this], which is [construct], reads a value it captures. */
 fun FirDeclaration.rejectCaptureReads(source: KtSourceElement?, construct: String) {
-    if (isLocallyScoped() && (capturedLocals().isNotEmpty() || enclosingReceiverReads().isNotEmpty())) {
+    val scoped = isLocallyScoped()
+    val readsLocal = scoped && capturedLocals().isNotEmpty()
+    val readsReceiver = (scoped || isInOuterReceiverScope()) && enclosingReceiverReads().isNotEmpty()
+    if (readsLocal || readsReceiver) {
         throw UnsupportedFeatureException(source, "$construct that reads a captured variable")
     }
 }
