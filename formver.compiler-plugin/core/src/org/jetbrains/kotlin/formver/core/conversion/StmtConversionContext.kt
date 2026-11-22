@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.util.OperatorNameConventions
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -343,7 +344,8 @@ private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCal
  * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
  * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
  * is not `Unique` on entry; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
- * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it.
+ * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it. The `size` of a Collection or a
+ * Map is at least 0 (docs/soundness.md, "Sizes of collections that are not owned").
  */
 fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAccessExpression): ExpEmbedding? {
     val callee = access.toResolvedCallableSymbol() ?: return null
@@ -365,8 +367,27 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
         addAll(evaluated.values)
         if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL)))
         val type = embedType(access.resolvedType)
-        add(if (access.isForLoopIterator()) unconstrainedOwnedValue(type) else unconstrainedValue(type))
+        add(
+            when {
+                access.isForLoopIterator() -> unconstrainedOwnedValue(type)
+                callee.name == SIZE && callee is FirPropertySymbol && isIntSized(receiver) -> nonNegativeValue(type)
+                else -> unconstrainedValue(type)
+            }
+        )
     }
+}
+
+private val SIZE = Name.identifier("size")
+
+/**
+ * An `Int` value known only to be at least 0: the `size` of a Collection or a Map. It is a pure expression, so a
+ * specification may read it.
+ */
+private fun StmtConversionContext.nonNegativeValue(type: TypeEmbedding): ExpEmbedding {
+    val declaration = declareAnonVar(type, null)
+    val value = declaration.variable
+    val facts = value.withInvariants(typeResolver) { proven = true }
+    return blockOf(declaration, facts, If(OperatorExpEmbeddings.GeIntInt(value, IntLit(0)), value, IntLit(0), type))
 }
 
 /**

@@ -63,30 +63,50 @@ method tableEntry() returns (v_ret_0: Ref)
 }
 
 /opaque_calls.kt: info: Generated Viper text for firstQuote:
+field contents: Seq[Int]
+
+function arraySize(v_this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method charArrayOf(elements: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(elements), CharArray())
+  ensures isSubtype(typeOf(ret_3), CharArray())
+
+
 method firstQuote(s: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(s), stringType())
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
-  var anon_0: Ref
-  var anon_2: Ref
   var anon_1: Ref
-  var anon_4: Ref
+  var anon_6: Ref
+  var anon_0: Ref
   var anon_3: Ref
-  anon_0 := charToRef(34)
-  inhale isSubtype(typeOf(anon_1), intType())
-  anon_2 := anon_1
-  inhale isSubtype(typeOf(anon_3), boolType())
-  anon_4 := anon_3
+  var anon_2: Ref
+  var anon_5: Ref
+  var anon_4: Ref
+  anon_0 := new()
+  inhale acc(CharArray_unique(anon_0), write)
+  inhale (unfolding acc(CharArray_unique(anon_0), write) in
+      anon_0.contents == Seq(charFromRef(charToRef(34))))
+  inhale isSubtype(typeOf(anon_0), CharArray())
+  anon_6 := anon_0
+  anon_1 := charArrayOf(anon_6)
+  inhale isSubtype(typeOf(anon_2), intType())
+  anon_3 := anon_2
+  inhale isSubtype(typeOf(anon_4), boolType())
+  anon_5 := anon_4
   inhale isSubtype(typeOf(s), CharSequence())
-  v_ret_0 := indexOf(s, anon_0, anon_2, anon_4)
+  v_ret_0 := indexOfAny(s, anon_1, anon_3, anon_5)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+method indexOfAny(v_this_extension: Ref, chars: Ref, startIndex: Ref, ignoreCase: Ref)
   returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this_extension), CharSequence())
-  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(chars), CharArray())
   requires isSubtype(typeOf(startIndex), intType())
   requires isSubtype(typeOf(ignoreCase), boolType())
   ensures isSubtype(typeOf(ret_2), intType())

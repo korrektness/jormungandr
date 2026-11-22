@@ -143,6 +143,8 @@ sealed interface StdLibPostcondition : StdLibCondition {
             CharSequenceIsNotEmptyPostcondition,
             CharSequenceLastIndexPostcondition,
             CharSequenceRepeatPostcondition,
+            CharSequenceIndexOfPostcondition,
+            CharSequenceLastIndexOfPostcondition,
         )
     }
 
@@ -367,6 +369,45 @@ data object CharSequenceRepeatPostcondition : StdLibPostcondition {
 
     override val stdLibInterface = TextPackage
     override val functionName = "repeat"
+}
+
+/**
+ * The result of `indexOf` or `lastIndexOf`, searching a `String` for a `Char` or `String` needle from `startIndex`
+ * (`ignoreCase` does not change it): -1, or an index at which the needle fits, on the searched side of `startIndex`.
+ * An empty needle fits at `length`, and a forward search finds it below a `startIndex` past the end.
+ */
+private fun NamedFunctionSignature.indexSearchPostconditions(result: VariableEmbedding, last: Boolean): List<ExpEmbedding> {
+    val needle = params[0]
+    val startIndex = params[1]
+    val needleLength = if (needle.type == stringType) StringLength(needle) else IntLit(1)
+    val side = if (last) LeIntInt(result, startIndex) else GeIntInt(result, startIndex)
+    val sideOfStart = if (!last && needle.type == stringType) Or(side, EqCmp(needleLength, IntLit(0))) else side
+    return listOf(ifStringReceiver { length ->
+        And(
+            And(GeIntInt(result, IntLit(-1)), LeIntInt(result, SubIntInt(length, needleLength))),
+            Implies(GeIntInt(result, IntLit(0)), sideOfStart),
+        )
+    })
+}
+
+data object CharSequenceIndexOfPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = function.indexSearchPostconditions(returnVariable, last = false)
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "indexOf"
+}
+
+data object CharSequenceLastIndexOfPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = function.indexSearchPostconditions(returnVariable, last = true)
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "lastIndexOf"
 }
 
 fun NamedFunctionSignature.stdLibPreconditions(ctx: TypeResolver): List<ExpEmbedding> {

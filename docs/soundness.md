@@ -674,6 +674,17 @@ gives `Int.MAX_VALUE` for a larger one.
 
 Test: `verification/soundness/iterable_size.kt::countVisited,iterableObserver`.
 
+### Sizes of collections that are not owned
+
+A read of `size` on a Collection or a Map that is not owned is the unchecked
+library call, and its result is at least 0
+(`convertUnownedSpecifiedMember` in `conversion/StmtConversionContext.kt`).
+The JVM's `size` counts elements and gives `Int.MAX_VALUE` for a larger
+collection. A source implementation whose `size` is negative breaks this
+assumption.
+
+Tests: `specifications/external/shared_list_members.kt::sharedSizeNonNegative,sharedSizeMayBeZero`.
+
 ### Closed hierarchies
 
 An exhaustive `when` proves that a branch matches from the enum entries or

@@ -35,16 +35,18 @@ private val annotationPackage = FqName("org.jetbrains.kotlin.formver.plugin")
 /** The classes whose size is an `Int`, with their numbers of type parameters. */
 private val intSizedIterables = listOf("kotlin.collections.Collection" to 1, "kotlin.collections.Map" to 2)
 
+/** Whether [receiver] is a Collection or a Map, whose `size` is its element count. */
+fun StmtConversionContext.isIntSized(receiver: FirExpression): Boolean = intSizedIterables.any { (name, arity) ->
+    val type = ClassId.topLevel(FqName(name)).constructClassLikeType(Array(arity) { ConeStarProjection })
+    receiver.resolvedType.isSubtypeOf(type, session)
+}
+
 /**
  * Rejects iterating [receiver] unless it is a Collection or a Map. An observer's size is an `Int`, which the element
  * count of another Iterable need not be.
  */
 fun StmtConversionContext.requireIntSizedIteration(receiver: FirExpression) {
-    val sized = intSizedIterables.any { (name, arity) ->
-        val type = ClassId.topLevel(FqName(name)).constructClassLikeType(Array(arity) { ConeStarProjection })
-        receiver.resolvedType.isSubtypeOf(type, session)
-    }
-    if (!sized) throw UnsupportedFeatureException(receiver.source, "iteration over an Iterable that is not a Collection")
+    if (!isIntSized(receiver)) throw UnsupportedFeatureException(receiver.source, "iteration over an Iterable that is not a Collection")
 }
 
 /**

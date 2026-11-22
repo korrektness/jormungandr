@@ -535,7 +535,10 @@ method _model@20@member@20@on@20@the@20@object@20@is@20@the@20@unchecked@20@libr
   inhale isSubtype(typeOf(anon_0), boolType())
   empty := anon_0
   inhale isSubtype(typeOf(anon_1), intType())
-  l0_size := anon_1
+  if (intFromRef(anon_1) >= 0) {
+    l0_size := anon_1
+  } else {
+    l0_size := intToRef(0)}
   assert boolFromRef(empty) == (intFromRef(l0_size) == 0)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -978,7 +981,10 @@ method _delegated@20@implementation@20@constructs@20@a@20@shared@20@object(par_i
   anon_10 := con(par_inner)
   headers := anon_10
   inhale isSubtype(typeOf(anon_0), intType())
-  l0_size := anon_0
+  if (intFromRef(anon_0) >= 0) {
+    l0_size := anon_0
+  } else {
+    l0_size := intToRef(0)}
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

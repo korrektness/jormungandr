@@ -1481,7 +1481,10 @@ method aliasingResult() returns (v_ret_0: Ref)
   view := asReversed(list)
   anon_11 := clear(view)
   inhale isSubtype(typeOf(anon_0), intType())
-  v_ret_0 := anon_0
+  if (intFromRef(anon_0) >= 0) {
+    v_ret_0 := anon_0
+  } else {
+    v_ret_0 := intToRef(0)}
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -1701,7 +1704,10 @@ method storingArgument() returns (v_ret_0: Ref)
   outer := emptyMutableListModel()
   anon_10 := fill(outer, inner)
   inhale isSubtype(typeOf(anon_0), intType())
-  v_ret_0 := anon_0
+  if (intFromRef(anon_0) >= 0) {
+    v_ret_0 := anon_0
+  } else {
+    v_ret_0 := intToRef(0)}
   goto lbl_ret_0
   label lbl_ret_0
 }

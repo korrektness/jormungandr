@@ -1,0 +1,672 @@
+/index_of.kt: info: Generated Viper text for afterFirst:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method afterFirst(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := charToRef(44)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, anon_0, anon_2, anon_4)
+  if (!(intFromRef(i) == -1)) {
+    v_ret_0 := suffixModel(s, plusInts(i, intToRef(1)))
+  } else {
+    v_ret_0 := s}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) >= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for beforeLast:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method beforeLast(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := charToRef(47)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := lastIndexOf(s, anon_0, anon_2, anon_4)
+  if (intFromRef(i) >= 0) {
+    v_ret_0 := substringModel(s, intToRef(0), i)
+  } else {
+    v_ret_0 := s}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method lastIndexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) <= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for notFoundIsMinusOne:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) >= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method notFoundIsMinusOne(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := charToRef(97)
+  anon_1 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_2), intType())
+  anon_3 := anon_2
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, anon_0, anon_3, anon_1)
+  if (intFromRef(i) >= -1) {
+    anon_4 := ltInts(i, stringLength(s))
+  } else {
+    anon_4 := boolToRef(false)}
+  assert boolFromRef(anon_4)
+  if (intFromRef(i) < 0) {
+    assert intFromRef(i) == -1
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/index_of.kt: info: Generated Viper text for secondField:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= intFromRef(endIndex)
+  requires intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(endIndex, startIndex)) in
+      intFromRef(endIndex) - intFromRef(startIndex))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_1))) in
+        stringFromRef(result)[anon_builtin_1]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_1), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_1),
+        startIndex))]))
+
+
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) >= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method secondField(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  var j: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_8: Ref
+  var anon_7: Ref
+  anon_0 := charToRef(44)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, anon_0, anon_2, anon_4)
+  if (intFromRef(i) == -1) {
+    v_ret_0 := s
+    goto lbl_ret_0
+  }
+  anon_5 := charToRef(44)
+  anon_6 := plusInts(i, intToRef(1))
+  inhale isSubtype(typeOf(anon_7), boolType())
+  anon_8 := anon_7
+  inhale isSubtype(typeOf(s), CharSequence())
+  j := indexOf(s, anon_5, anon_6, anon_8)
+  if (intFromRef(j) == -1) {
+    v_ret_0 := suffixModel(s, plusInts(i, intToRef(1)))
+  } else {
+    v_ret_0 := substringModel(s, plusInts(i, intToRef(1)), j)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/index_of.kt: info: Generated Viper text for lastBeforeStart:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lastBeforeStart(s: Ref, start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  anon_0 := charToRef(47)
+  inhale isSubtype(typeOf(anon_1), boolType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := lastIndexOf(s, anon_0, start, anon_2)
+  if (!(intFromRef(i) == -1)) {
+    var anon_3: Ref
+    if (intFromRef(i) <= intFromRef(start)) {
+      anon_3 := ltInts(i, stringLength(s))
+    } else {
+      anon_3 := boolToRef(false)}
+    assert boolFromRef(anon_3)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lastIndexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) <= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for afterSeparator:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method afterSeparator(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := stringLit()
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, anon_0, anon_2, anon_4)
+  if (!(intFromRef(i) == -1)) {
+    v_ret_0 := suffixModel(s, plusInts(i, intToRef(2)))
+  } else {
+    v_ret_0 := s}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method indexOf(v_this_extension: Ref, string: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(string), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), stringLength(string))) in
+      intFromRef(stringLength(v_this_extension)) -
+      intFromRef(stringLength(string))) &&
+    (intFromRef(ret_2) >= 0 ==>
+    intFromRef(ret_2) >= intFromRef(startIndex) ||
+    |stringFromRef(string)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for lastSeparator:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method lastIndexOf(v_this_extension: Ref, string: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(string), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), stringLength(string))) in
+      intFromRef(stringLength(v_this_extension)) -
+      intFromRef(stringLength(string))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) <= intFromRef(startIndex))
+
+
+method lastSeparator(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := stringLit()
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := lastIndexOf(s, anon_0, anon_2, anon_4)
+  if (!(intFromRef(i) == -1)) {
+    v_ret_0 := suffixModel(s, plusInts(i, intToRef(2)))
+  } else {
+    v_ret_0 := s}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for emptyNeedleFitsAtLength:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0
+  requires intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
+method emptyNeedleFitsAtLength(s: Ref, par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(par_t), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var i: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_0), intType())
+  anon_1 := anon_0
+  inhale isSubtype(typeOf(anon_2), boolType())
+  anon_3 := anon_2
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, par_t, anon_1, anon_3)
+  if (!(intFromRef(i) == -1)) {
+    v_ret_0 := suffixModel(s, plusInts(i, intToRef(1)))
+  } else {
+    v_ret_0 := s}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method indexOf(v_this_extension: Ref, string: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(string), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), stringLength(string))) in
+      intFromRef(stringLength(v_this_extension)) -
+      intFromRef(stringLength(string))) &&
+    (intFromRef(ret_2) >= 0 ==>
+    intFromRef(ret_2) >= intFromRef(startIndex) ||
+    |stringFromRef(string)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for emptyNeedleBeforeStart:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method emptyNeedleBeforeStart(s: Ref, par_t: Ref, start: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(par_t), stringType())
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), boolType())
+  anon_1 := anon_0
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, par_t, start, anon_1)
+  if (!(intFromRef(i) == -1)) {
+    assert intFromRef(i) >= intFromRef(start)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method indexOf(v_this_extension: Ref, string: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(string), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), stringLength(string))) in
+      intFromRef(stringLength(v_this_extension)) -
+      intFromRef(stringLength(string))) &&
+    (intFromRef(ret_2) >= 0 ==>
+    intFromRef(ret_2) >= intFromRef(startIndex) ||
+    |stringFromRef(string)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/index_of.kt: info: Generated Viper text for foundMayBeLast:
+method foundMayBeLast(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := charToRef(44)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  i := indexOf(s, anon_0, anon_2, anon_4)
+  if (!(intFromRef(i) == -1)) {
+    v_ret_0 := stringGet(s, plusInts(i, intToRef(1)))
+  } else {
+    v_ret_0 := charToRef(32)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(ret_2) >= -1 &&
+    intFromRef(ret_2) <=
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1))) &&
+    (intFromRef(ret_2) >= 0 ==> intFromRef(ret_2) >= intFromRef(startIndex))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))

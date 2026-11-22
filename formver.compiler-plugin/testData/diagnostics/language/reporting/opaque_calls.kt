@@ -16,7 +16,7 @@ fun <!VIPER_TEXT!>tableEntry<!>(): String? {
     return <!POSSIBLE_INDEX_OUT_OF_BOUND!>table[0]<!>
 }
 
-fun <!VIPER_TEXT!>firstQuote<!>(s: String): Int = <!OPAQUE_CALL!>s.indexOf('"')<!>
+fun <!VIPER_TEXT!>firstQuote<!>(s: String): Int = <!OPAQUE_CALL!>s.indexOfAny(<!OPAQUE_CALL!>charArrayOf('"')<!>)<!>
 
 fun <!VIPER_TEXT!>codePoint<!>(c: Int): Boolean = <!OPAQUE_CALL!>Character.isValidCodePoint(c)<!>
 

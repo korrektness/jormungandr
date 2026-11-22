@@ -2,6 +2,7 @@
 // WITH_STDLIB
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/AssociativeCollections.kt
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -29,10 +30,15 @@ fun <!VIPER_TEXT!>sharedGetCaught<!>(xs: List<Int>, i: Int): Int {
     return result
 }
 
-// A shared receiver gets no facts from the specification.
-fun <!VIPER_TEXT!>sharedSizeUnknown<!>(xs: List<Int>) {
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!UNCHECKED_LIBRARY_CALL!>xs.size<!> >= 0<!>)
+fun <!VIPER_TEXT!>sharedSizeNonNegative<!>(xs: List<Int>, m: Map<Int, Int>) {
+    verify(<!UNCHECKED_LIBRARY_CALL!>xs.size<!> >= 0 && <!UNCHECKED_LIBRARY_CALL!>m.size<!> >= 0)
 }
+
+fun <!VIPER_TEXT!>sharedSizeMayBeZero<!>(xs: List<Int>) {
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!UNCHECKED_LIBRARY_CALL!>xs.size<!> > 0<!>)
+}
+
+fun <!VIPER_TEXT!>sharedTable<!>(xs: List<Int>): IntArray = IntArray(<!UNCHECKED_LIBRARY_CALL!>xs.size<!>)
 
 fun <!VIPER_TEXT!>uniqueMembers<!>(xs: @Unique @Borrowed List<Int>) {
     preconditions { xs.size > 1 }
