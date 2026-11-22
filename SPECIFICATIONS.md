@@ -428,7 +428,9 @@ receiver and result, but not of the dispatch receiver. An override or inherited 
 need not be `@Pure`, and the class may implement a model observer by delegation.
 
 External contracts, `throwsOnlyIf` conditions, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
-callers against them without proving the dependency's implementation. Audit each model against the exact
+callers against them without proving the dependency's implementation. A call of a `@Pure` model has no exceptional
+exit, so a `@Pure` binding asserts that the library function does not throw wherever the model's precondition holds;
+bind a function that may throw on other inputs without `@Pure`, or with a precondition that excludes them. Audit each model against the exact
 library version in the compilation classpath; a matching signature alone establishes no behavioral compatibility.
 A binding to a declaration that SnaKt verified in another module is reported as the warning
 `EXTERNAL_SPEC_OF_VERIFIED_DECLARATION` on the model: the model's contract replaces the one SnaKt proved. SnaKt marks

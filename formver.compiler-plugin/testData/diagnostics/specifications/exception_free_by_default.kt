@@ -114,3 +114,10 @@ fun <!VIPER_TEXT!>inlinesChecked<!>(x: Int): Int = checkedInline(x)
 }
 
 fun <!VIPER_TEXT!>readsAccessor<!>(g: Gauge): Int = <!EXCEPTION_FROM_UNSPECIFIED_CALL!>g.level<!>
+
+fun <!VIPER_TEXT!>parses<!>(s: String): Int = <!EXCEPTION_FROM_UNSPECIFIED_CALL!>s.toInt()<!>
+
+fun <!VIPER_TEXT!>firstOfNonEmpty<!>(list: @Unique @Borrowed List<Int>): Int {
+    if (list.isEmpty()) return 0
+    return list.first()
+}

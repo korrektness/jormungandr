@@ -51,7 +51,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.text/to-int.html: the decimal value; throws
 // NumberFormatException for an empty string or one that is not a valid Int.
 @ExternalFunction("kotlin.text.toInt")
-@Pure internal fun String.toIntModel(): Int = 0
+internal fun String.toIntModel(): Int = TODO()
 @SpecOf("toIntModel") internal fun String.toIntSpec() {
     postconditions<Int> { length > 0 }
 }
