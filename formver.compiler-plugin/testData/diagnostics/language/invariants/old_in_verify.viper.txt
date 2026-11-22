@@ -1,0 +1,106 @@
+/old_in_verify.kt: info: Generated Viper text for Reader:
+field bf_pos: Ref
+
+method con(par_pos: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_pos), intType())
+  ensures isSubtype(typeOf(v_ret_0), Reader())
+  ensures isSubtype(typeOf(v_ret_0), Reader()) &&
+    acc(v_ret_0.bf_pos, write) &&
+    isSubtype(typeOf(v_ret_0.bf_pos), intType())
+  ensures intFromRef(v_ret_0.bf_pos) == intFromRef(par_pos)
+  ensures intFromRef(v_ret_0.bf_pos) == intFromRef(par_pos)
+{
+  v_ret_0 := new(bf_pos)
+  inhale typeOf(v_ret_0) == Reader()
+  v_ret_0.bf_pos := par_pos
+  fold acc(Reader_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Reader_unique(v_ret_0), write)
+}
+
+/old_in_verify.kt: info: Generated Viper text for bump:
+field pos: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(par_r: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_r), Reader())
+  requires acc(Reader_unique(par_r), write)
+  requires (unfolding acc(Reader_unique(par_r), write) in
+      intFromRef(par_r.pos) == 5)
+  ensures acc(Reader_unique(par_r), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Reader_unique(par_r), write)
+  anon_0 := par_r.pos
+  par_r.pos := plusInts(anon_0, intToRef(1))
+  assert old(intFromRef((unfolding acc(Reader_unique(par_r), write) in
+      par_r.pos))) ==
+    5
+  anon_1 := par_r.pos
+  assert intFromRef(anon_1) == 6
+  label lbl_ret_0
+  fold acc(Reader_unique(par_r), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/old_in_verify.kt: info: Generated Viper text for skip:
+field pos: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method skip(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Reader())
+  requires acc(Reader_unique(v_this_extension), write)
+  requires isSubtype(typeOf(n), intType())
+  requires (unfolding acc(Reader_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.pos) == 0) &&
+    intFromRef(n) >= 0
+  ensures acc(Reader_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(Reader_unique(v_this_extension), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(v_this_extension), Reader())
+    invariant intFromRef(i) <= intFromRef(n) &&
+      (unfolding acc(Reader_unique(v_this_extension), write) in
+        intFromRef(v_this_extension.pos) == intFromRef(i))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    var anon_2: Ref
+    unfold acc(Reader_unique(v_this_extension), write)
+    anon_1 := v_this_extension.pos
+    v_this_extension.pos := plusInts(anon_1, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    assert old(intFromRef((unfolding acc(Reader_unique(v_this_extension), write) in
+        v_this_extension.pos))) ==
+      0
+    anon_2 := v_this_extension.pos
+    assert intFromRef(anon_2) == intFromRef(i)
+    fold acc(Reader_unique(v_this_extension), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(v_this_extension), Reader())
+  assert intFromRef(i) <= intFromRef(n) &&
+    (unfolding acc(Reader_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.pos) == intFromRef(i))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

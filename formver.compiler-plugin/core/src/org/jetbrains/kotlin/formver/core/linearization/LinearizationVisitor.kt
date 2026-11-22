@@ -944,8 +944,14 @@ data class LinearizationVisitor(
             listOfNotNull((exp as? VariableEmbedding)?.takeIf { it.viewSource != null }?.viewOf) +
                     exp.children().flatMap { viewSources(it) }
 
-        private fun oldContext(ctx: LinearizationContext): LinearizationContext = ctx.forSpecification().let {
-            if (it is PureExpLinearizer) it.copy(oldViewSources = it.oldViewSources + viewSources(e.inner)) else it
+        /**
+         * A method body reads heap locations through statements, which would evaluate them in the current state:
+         * the operand of `old` there is linearized as a specification expression instead.
+         */
+        private fun oldContext(ctx: LinearizationContext): LinearizationContext = when (val spec = ctx.forSpecification()) {
+            is PureExpLinearizer -> spec.copy(oldViewSources = spec.oldViewSources + viewSources(e.inner))
+            is Linearizer -> PureExpLinearizer(spec.source, spec.typeResolver, oldViewSources = viewSources(e.inner).toSet())
+            else -> spec
         }
 
         override fun toViper(ctx: LinearizationContext): Exp =
