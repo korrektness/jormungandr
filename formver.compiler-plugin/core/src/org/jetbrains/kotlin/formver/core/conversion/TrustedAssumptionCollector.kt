@@ -96,14 +96,18 @@ class TrustedAssumptionCollector(
 
     /**
      * Records the external binding of [target]. A binding of `List.iterator` to the bundled model also records that
-     * the model assumes the list is not mutated through any reference while the iterator is live.
+     * the model assumes the list is not mutated through any reference while the iterator is live. A binding of a
+     * collection query to a bundled `@Pure` model also records that the model assumes the elements' `equals` and
+     * `hashCode` neither throw nor have effects.
      */
     fun recordBinding(target: FirBasedSymbol<*>) {
         val assumption = session.externalSpecifications!!.bindingAssumption(target)
         trusted += assumption
-        val bundled = assumption.kind == TrustedAssumption.Kind.BUNDLED_SPEC
-        if (bundled && target is FirCallableSymbol<*> && target.unwrapFakeOverrides().callableId == LIST_ITERATOR) {
-            trusted += TrustedAssumption(TrustedAssumption.Kind.SNAPSHOT_ITERATOR, assumption.name)
+        if (assumption.kind != TrustedAssumption.Kind.BUNDLED_SPEC || target !is FirCallableSymbol<*>) return
+        val callableId = target.unwrapFakeOverrides().callableId
+        if (callableId == LIST_ITERATOR) trusted += TrustedAssumption(TrustedAssumption.Kind.SNAPSHOT_ITERATOR, assumption.name)
+        if (callableId in PURE_ELEMENT_EQUALITY_QUERIES) {
+            trusted += TrustedAssumption(TrustedAssumption.Kind.PURE_ELEMENT_EQUALITY, assumption.name)
         }
     }
 
@@ -152,3 +156,14 @@ class TrustedAssumptionCollector(
 }
 
 private val LIST_ITERATOR = CallableId(StandardClassIds.List, Name.identifier("iterator"))
+
+/** The collection queries whose bundled `@Pure` models compare elements or keys with their `equals` and `hashCode`. */
+private val PURE_ELEMENT_EQUALITY_QUERIES = setOf(
+    CallableId(StandardClassIds.Collection, Name.identifier("contains")),
+    CallableId(StandardClassIds.List, Name.identifier("contains")),
+    CallableId(StandardClassIds.List, Name.identifier("indexOf")),
+    CallableId(StandardClassIds.Set, Name.identifier("contains")),
+    CallableId(StandardClassIds.Map, Name.identifier("containsKey")),
+    CallableId(StandardClassIds.Map, Name.identifier("containsValue")),
+    CallableId(StandardClassIds.Map, Name.identifier("get")),
+)

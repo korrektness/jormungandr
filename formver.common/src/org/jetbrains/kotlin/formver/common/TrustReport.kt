@@ -23,6 +23,7 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
         OPAQUE_LIBRARY_CALL("opaque library call"),
         NON_RETAINING_LIBRARY_CALL("non-retaining library call"),
         SNAPSHOT_ITERATOR("snapshot iterator"),
+        PURE_ELEMENT_EQUALITY("pure element equality"),
         ASSUMED_TERMINATING("assumed terminating"),
         THROWS_CONDITION("throwsOnlyIf"),
     }

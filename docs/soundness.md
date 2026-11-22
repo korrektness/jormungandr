@@ -86,6 +86,8 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
   reference to them (see "Non-retaining library calls" below).
 - `snapshot iterator`: `List.iterator()` bound to the bundled model, whose contract assumes the
   list is not mutated through any reference while the iterator is live (see "Snapshot iterators" below).
+- `pure element equality`: a collection query bound to a bundled `@Pure` model
+  that compares elements or keys (see "Element equality in pure collection queries" below).
 - `assumed terminating`: a library callable, operators included, that a
   termination-checked function or one of its source callees calls; see [Termination of functions and loops](#termination-of-functions-and-loops).
 
@@ -511,6 +513,16 @@ nothing about the list.
 Tests: `specifications/external/stdlib_member_specs.kt::iterates,iteratesTooFar,iteratesMutableList`,
 `language/control_flow/for_collections.kt::mutatedThroughAlias`,
 `language/control_flow/for_collections_fail.kt`.
+
+### Element equality in pure collection queries
+
+The bundled models of `Collection.contains`, `List.contains`, `List.indexOf`, `Set.contains`, `Map.containsKey`,
+`Map.containsValue` and `Map.get` are `@Pure`, so a call has no exceptional exit and changes no state. The real
+functions call the `equals` and `hashCode` of the elements or keys, which a class may override to throw or to have
+effects. SnaKt trusts that the element `equals` and `hashCode` these queries use neither throw nor have effects; the
+trust report lists each bound query a verified declaration calls as `pure element equality`.
+
+Test: `specifications/external/stdlib_member_specs.kt::mapSet`.
 
 ### Allocation
 
