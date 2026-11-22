@@ -197,6 +197,16 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         }
     }
 
+    private fun purityMessage(condition: PurityCondition): String {
+        val inlined = if (condition.inlined) " of a function inlined here" else ""
+        return when (condition.rule) {
+            PurityRule.FUNCTION_BODY -> "Impure function body detected in pure function"
+            PurityRule.LAW_BODY -> "Impure law body"
+            PurityRule.ASSERT_CONDITION -> "Assert condition$inlined is impure"
+            PurityRule.REFUTE_CONDITION -> "Refute condition$inlined is impure"
+        }
+    }
+
     private fun obligationMessage(failure: Failure): String = when (val condition = failure.condition) {
             is KotlinCondition.IntegerOverflow ->
                 "Could not establish that ${operator(condition.operation)} stays within the ${condition.resultType} range [${condition.lower}, ${condition.upper}]."
@@ -204,12 +214,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.CastFailure -> "Could not establish that the cast operand has runtime type ${condition.target}."
             KotlinCondition.NullAssertion -> "Could not establish that the operand of !! is non-null."
             is KotlinCondition.Proof -> proofMessage(condition)
-            is PurityCondition -> when (condition.rule) {
-                PurityRule.FUNCTION_BODY -> "Impure function body detected in pure function"
-                PurityRule.LAW_BODY -> "Impure law body"
-                PurityRule.ASSERT_CONDITION -> "Assert condition is impure"
-                PurityRule.REFUTE_CONDITION -> "Refute condition is impure"
-            }
+            is PurityCondition -> purityMessage(condition)
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
             is TerminationCondition -> terminationMessage(condition)
             KotlinCondition.Termination, KotlinCondition.LoopTermination -> decreaseMessage(condition)

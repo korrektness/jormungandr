@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.RelatedLocation
 import org.jetbrains.kotlin.formver.common.UnsupportedReason
 import org.jetbrains.kotlin.formver.common.PurityCondition
 import org.jetbrains.kotlin.formver.common.TerminationCondition
@@ -134,8 +135,8 @@ class ProgramConverter(
         if (firstConversionError == null) firstConversionError = failure
     }
 
-    override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition) =
-        emit(purityFailure(source, condition))
+    override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition, related: List<RelatedLocation>) =
+        emit(purityFailure(source, condition, related))
 
     override fun reportUnsupportedOwnership(source: KtSourceElement?, condition: ConversionOwnershipCondition) =
         emit(unsupportedOwnershipFailure(source, condition))

@@ -40,8 +40,8 @@ import kotlin.test.*
 class ConversionFailureReportingTest {
     private class Errors : ErrorCollectionContext {
         val failures = mutableListOf<Failure>()
-        override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition) {
-            failures += purityFailure(source, condition)
+        override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition, related: List<RelatedLocation>) {
+            failures += purityFailure(source, condition, related)
         }
         override fun reportUnsupportedOwnership(source: KtSourceElement?, condition: ConversionOwnershipCondition) {
             failures += unsupportedOwnershipFailure(source, condition)
@@ -64,26 +64,28 @@ class ConversionFailureReportingTest {
         override val symbol = property
     }
 
-    private fun source(offset: Int): KtSourceElement {
-        val node = object : LighterASTNode {
-            override fun getTokenType() = KtTokens.IDENTIFIER
-            override fun getStartOffset() = offset
-            override fun getEndOffset() = offset + 1
-        }
-        val tree = object : FlyweightCapableTreeStructure<LighterASTNode> {
-            override fun getRoot() = node
-            override fun getParent(node: LighterASTNode): LighterASTNode? = null
-            override fun getChildren(node: LighterASTNode, into: Ref<Array<LighterASTNode>>): Int {
-                into.set(emptyArray())
-                return 0
-            }
-            override fun disposeChildren(nodes: Array<LighterASTNode>, count: Int) {}
-            override fun toString(node: LighterASTNode): CharSequence = "x"
-            override fun getStartOffset(node: LighterASTNode) = node.startOffset
-            override fun getEndOffset(node: LighterASTNode) = node.endOffset
-        }
-        return KtLightSourceElement(node, offset, offset + 1, tree)
+    private fun node(offset: Int) = object : LighterASTNode {
+        override fun getTokenType() = KtTokens.IDENTIFIER
+        override fun getStartOffset() = offset
+        override fun getEndOffset() = offset + 1
     }
+
+    private fun file(): FlyweightCapableTreeStructure<LighterASTNode> = object : FlyweightCapableTreeStructure<LighterASTNode> {
+        private val root = node(0)
+        override fun getRoot() = root
+        override fun getParent(node: LighterASTNode): LighterASTNode? = null
+        override fun getChildren(node: LighterASTNode, into: Ref<Array<LighterASTNode>>): Int {
+            into.set(emptyArray())
+            return 0
+        }
+        override fun disposeChildren(nodes: Array<LighterASTNode>, count: Int) {}
+        override fun toString(node: LighterASTNode): CharSequence = "x"
+        override fun getStartOffset(node: LighterASTNode) = node.startOffset
+        override fun getEndOffset(node: LighterASTNode) = node.endOffset
+    }
+
+    private fun source(offset: Int, file: FlyweightCapableTreeStructure<LighterASTNode> = file()): KtSourceElement =
+        KtLightSourceElement(node(offset), offset, offset + 1, file)
 
     private fun assertDiagnostic(failure: Failure, kind: FailureKind) {
         assertEquals(kind, failure.kind)
@@ -171,8 +173,9 @@ class ConversionFailureReportingTest {
 
     @Test
     fun `purity traversal attributes assertion and refutation failures to their conditions`() {
-        val fallback = source(0)
-        val conditionSource = source(10)
+        val file = file()
+        val fallback = source(0, file)
+        val conditionSource = source(10, file)
         for ((embedding, rule) in listOf(
             Assert(WithPosition(Unreachable, conditionSource)) to PurityRule.ASSERT_CONDITION,
             Refute(WithPosition(Unreachable, conditionSource)) to PurityRule.REFUTE_CONDITION,
@@ -181,10 +184,28 @@ class ConversionFailureReportingTest {
             assertFalse(embedding.checkValidity(fallback, errors))
             val failure = errors.failures.single()
             assertSame(conditionSource, failure.primary)
-            assertEquals(rule, assertIs<PurityCondition>(failure.condition).rule)
+            val condition = assertIs<PurityCondition>(failure.condition)
+            assertEquals(rule, condition.rule)
+            assertFalse(condition.inlined)
+            assertTrue(failure.related.isEmpty())
             assertDiagnostic(failure, FailureKind.PURITY_VIOLATION)
         }
         assertTrue(Assert(BooleanLit(true)).checkValidity(fallback, Errors()))
+    }
+
+    @Test
+    fun `purity traversal reports a condition from another file at the closest position in the checked file`() {
+        val file = file()
+        val callSource = source(5, file)
+        val inlinedSource = source(10)
+        val errors = Errors()
+        val call = WithPosition(WithPosition(Assert(WithPosition(Unreachable, inlinedSource)), inlinedSource), callSource)
+        assertFalse(call.checkValidity(source(0, file), errors))
+        val failure = errors.failures.single()
+        assertSame(callSource, failure.primary)
+        assertTrue(assertIs<PurityCondition>(failure.condition).inlined)
+        assertEquals(listOf(inlinedSource), failure.related.map { it.source })
+        assertDiagnostic(failure, FailureKind.PURITY_VIOLATION)
     }
 
     @Test

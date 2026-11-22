@@ -6,7 +6,12 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 
 enum class PurityRule { FUNCTION_BODY, LAW_BODY, ASSERT_CONDITION, REFUTE_CONDITION }
-data class PurityCondition(val rule: PurityRule, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
+/** [inlined]: the impure expression is in another file, inlined into the reported position. */
+data class PurityCondition(
+    val rule: PurityRule,
+    val declaration: FirBasedSymbol<*>? = null,
+    val inlined: Boolean = false,
+) : KotlinCondition
 
 /**
  * [MISSING_VARIANT]: a loop of a termination-checked function has no variant. [INT_MEASURE]: a measure of a function
@@ -57,8 +62,11 @@ sealed interface ConversionOwnershipCondition : KotlinCondition {
     data object TryWithOwnership : ConversionOwnershipCondition
 }
 
-fun purityFailure(source: KtSourceElement?, condition: PurityCondition): Failure =
-    Failure(FailureKind.PURITY_VIOLATION, source, condition)
+fun purityFailure(
+    source: KtSourceElement?,
+    condition: PurityCondition,
+    related: List<RelatedLocation> = emptyList(),
+): Failure = Failure(FailureKind.PURITY_VIOLATION, source, condition, related = related)
 
 fun unsupportedOwnershipFailure(source: KtSourceElement?, condition: ConversionOwnershipCondition): Failure =
     Failure(FailureKind.UNSUPPORTED_OWNERSHIP, source, condition,

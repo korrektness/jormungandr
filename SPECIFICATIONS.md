@@ -139,7 +139,9 @@ The registry groups user-visible problems as follows:
 - Tool failures: internal invariants or unexpected exceptions, verifier availability and invalid generated Viper programs.
 
 Primary locations identify the failing use or implementation. A postcondition of an impure function that does not
-hold is reported at the `return` it fails on, or at the function body when the body ends without one. Related
+hold is reported at the `return` it fails on, or at the function body when the body ends without one. An impure
+`verify` or `refute` condition of an inline function in another file is reported at the call that inlines it, with the
+condition as a related location. Related
 locations retain available clause declarations, ownership-loss origins and counterexample binding declarations. When
 the failing clause of a contract lies apart from the primary location, the message quotes it with its line and column.
 A loop invariant failure says whether the invariant was not established on entry, not preserved by an iteration, or

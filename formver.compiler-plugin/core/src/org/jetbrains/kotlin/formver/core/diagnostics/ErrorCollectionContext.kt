@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.diagnostics
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.RelatedLocation
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 
 /**
@@ -16,7 +17,7 @@ import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
  */
 interface ErrorCollectionContext {
     /** Report a purity violation at [source]. */
-    fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition)
+    fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition, related: List<RelatedLocation> = emptyList())
 
     /** Report code whose ownership the permission encoding cannot follow, at [source]. */
     fun reportUnsupportedOwnership(source: KtSourceElement?, condition: ConversionOwnershipCondition)

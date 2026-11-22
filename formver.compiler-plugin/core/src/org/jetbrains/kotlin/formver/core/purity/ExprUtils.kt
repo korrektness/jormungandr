@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.purity
 
+import org.jetbrains.kotlin.KtLightSourceElement
+import org.jetbrains.kotlin.KtPsiSourceElement
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
@@ -29,16 +31,37 @@ fun ExpEmbedding.preorder(currentSource: KtSourceElement? = null): Sequence<Pair
 /**
  * Validates all nodes using the isValid function.
  * Avoids `all` to prevent short-circuiting, ensuring all errors are reported.
+ * A node is reported in the file of [source]: at its position there, or, when its position is in another file, at the
+ * closest enclosing position in that file.
  */
 fun ExpEmbedding.checkValidity(source: KtSourceElement?, errors: ErrorCollectionContext): Boolean =
-    preorder(source)
-        .exhaustiveAll {
-            val embedding = it.first
-            val source = checkNotNull(it.second) {
+    anchoredPreorder(source, source, source)
+        .exhaustiveAll { (embedding, position, anchor) ->
+            val position = checkNotNull(position) {
                 "Purity-check expected a KtSourceElement, but none was present"
             }
-            embedding.isValid(DefaultPurityContext(source, errors))
+            embedding.isValid(DefaultPurityContext(position, anchor ?: position, errors))
         }
+
+/** Like [preorder], with each node's closest position in the file of [root] as the third component. */
+private fun ExpEmbedding.anchoredPreorder(
+    root: KtSourceElement?,
+    currentSource: KtSourceElement?,
+    currentAnchor: KtSourceElement?,
+): Sequence<Triple<ExpEmbedding, KtSourceElement?, KtSourceElement?>> = sequence {
+    val position = (this@anchoredPreorder as? WithPosition)?.source
+    val nextSource = position ?: currentSource
+    val nextAnchor = position?.takeIf { root == null || it.isInFileOf(root) } ?: currentAnchor
+    if (this@anchoredPreorder !is WithPosition) yield(Triple(this@anchoredPreorder, nextSource, nextAnchor))
+    yieldAll(this@anchoredPreorder.children().flatMap { it.anchoredPreorder(root, nextSource, nextAnchor) })
+}
+
+/** Whether [this] and [other] are positions in the same source file. */
+internal fun KtSourceElement.isInFileOf(other: KtSourceElement): Boolean = when {
+    this is KtPsiSourceElement && other is KtPsiSourceElement -> psi.containingFile == other.psi.containingFile
+    this is KtLightSourceElement && other is KtLightSourceElement -> treeStructure === other.treeStructure
+    else -> false
+}
 
 /**
  * Whether [this] has no side effects. With [admitsInlinedCalls], an inlined call whose body has none counts as pure.
