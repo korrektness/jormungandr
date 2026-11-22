@@ -201,7 +201,7 @@ fun StmtConversionContext.convertForRangeLoop(forLoop: ForRangeLoop): ExpEmbeddi
     val exitGuard = Not(And(condition, lastElement))
 
     val loop = convertLoop(
-        forLoop.loop, condition, extractLoopInvariants(forLoop.body), listOf(bounds), { loopHeadLabelName() }, exitGuard,
+        forLoop.loop, { condition }, extractLoopInvariants(forLoop.body), listOf(bounds), { loopHeadLabelName() }, exitGuard,
     ) {
         val body = convertStatements(forLoop.body)
         val advance = If(lastElement, Goto(LabelLink(breakLabelName())), stepped, buildType { unit() })

@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.names
 import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.conversion.ClassPropertyPair
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.PropertyKotlinName
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.name.SpecialNames
 
 /* This file contains classes to mangle names present in the Kotlin source.
  *
@@ -166,6 +168,9 @@ fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName
  */
 fun FirPropertySymbol.embedMemberPropertyName(ctx: ProgramConversionContext): ClassPropertyPair {
     val callable = memberCallableId
+    if (callable.classId?.shortClassName == SpecialNames.ANONYMOUS) {
+        throw UnsupportedFeatureException(source, "property of an anonymous object")
+    }
     val className =
         callable?.classId?.embedName() ?: throw SnaktInternalException(source, "Property is not part of a class")
     val propertyName = callable.embedMemberPropertyName(scopePolicy(this, ctx))

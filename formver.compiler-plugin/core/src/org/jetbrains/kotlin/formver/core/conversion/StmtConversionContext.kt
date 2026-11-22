@@ -746,19 +746,22 @@ fun StmtConversionContext.mayThrow(): Boolean = activeCatchLabels.isNotEmpty() |
  * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an
  * inlined body, then [boundInvariants], then the user's [userInvariants], then the invariants of the paths retained
  * by inlined calls in progress, as [loopOverUsedRoots] builds it. A `decreases` call among [userInvariants] gives the
- * loop's variant; a loop of a termination-checked function needs one unless [boundInvariants] bound it. The body is
- * converted in the loop's own context; [headLabelName] names the head there. [exitGuard] is the [While]'s.
+ * loop's variant; a loop of a termination-checked function needs one unless [boundInvariants] bound it. [condition]
+ * is converted after the variables in scope are taken, so the temporaries it declares carry no invariant at the head.
+ * The body is converted in the loop's own context and receives the converted condition; [headLabelName] names the
+ * head there. [exitGuard] is the [While]'s.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirLoop,
-    condition: ExpEmbedding,
+    condition: StmtConversionContext.() -> ExpEmbedding,
     userInvariants: FirBlock?,
     boundInvariants: List<ExpEmbedding> = emptyList(),
     headLabelName: StmtConversionContext.() -> SymbolicName = { continueLabelName() },
     exitGuard: ExpEmbedding? = null,
-    body: StmtConversionContext.() -> ExpEmbedding,
+    body: StmtConversionContext.(condition: ExpEmbedding) -> ExpEmbedding,
 ): ExpEmbedding {
     val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
+    val convertedCondition = condition()
     val typeInvariants = inScope.flatMap { it.provenInvariants() }
     val (variantCalls, invariantStatements) = userInvariants?.statements.orEmpty().partition { it.decreasesCall() != null }
     val invariants = buildList {
@@ -773,9 +776,15 @@ fun StmtConversionContext.convertLoop(
     val headShapes = ownedShapes({ it.stateAtLoopHead(loop) }, inScope)
     val exitShapes = ownedShapes({ it.stateAfter(loop) }, inScope)
     return withFreshWhile(loop.label) {
-        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes, exitGuard, variant)
+        loopOverUsedRoots(convertedCondition, body(convertedCondition), headLabelName(), typeInvariants, invariants, headShapes, exitShapes, exitGuard, variant)
     }
 }
+
+/** A `while` loop: its condition is evaluated at the head and the body runs on the path where it holds. */
+fun StmtConversionContext.convertWhileLoop(whileLoop: FirWhileLoop): ExpEmbedding =
+    convertLoop(whileLoop, { convert(whileLoop.condition).withType { boolean() } }, extractLoopInvariants(whileLoop.block.statements)) {
+        withCreationPathFact(it) { convert(whileLoop.block) }
+    }
 
 private fun StmtConversionContext.loopVariant(loop: FirLoop, calls: List<FirFunctionCall>, bounded: Boolean): LoopVariant? {
     fun report(kind: FailureKind, source: KtSourceElement?, rule: TerminationRule) =

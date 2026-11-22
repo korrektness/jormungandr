@@ -480,12 +480,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitGetClassCall(getClassCall: FirGetClassCall, data: StmtConversionContext): ExpEmbedding =
         data.convertGetClassCall(getClassCall)
 
-    override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
-        val condition = data.convert(whileLoop.condition).withType { boolean() }
-        return data.convertLoop(whileLoop, condition, data.extractLoopInvariants(whileLoop.block.statements)) {
-            withCreationPathFact(condition) { convert(whileLoop.block) }
-        }
-    }
+    override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding =
+        data.convertWhileLoop(whileLoop)
 
     /**
      * A `do`-`while` loop runs its body, then, at the label `continue` reaches, evaluates its condition in the body's
@@ -494,7 +490,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
      */
     override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop, data: StmtConversionContext): ExpEmbedding =
         data.convertLoop(
-            doWhileLoop, BooleanLit(true), data.extractLoopInvariants(doWhileLoop.block.statements), emptyList(),
+            doWhileLoop, { BooleanLit(true) }, data.extractLoopInvariants(doWhileLoop.block.statements), emptyList(),
             { loopHeadLabelName() },
         ) {
             val body = convert(doWhileLoop.block)
