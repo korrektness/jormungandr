@@ -28,14 +28,14 @@ function size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method addLast(this: Ref, element: Ref) returns (ret_43: Ref)
+method addLast(this: Ref, element: Ref) returns (ret_13: Ref)
   requires isSubtype(typeOf(this), ArrayDequeModel())
   requires acc(ArrayDequeModel_unique(this), write)
   requires isSubtype(typeOf(element), nullable(anyType()))
   requires (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
       intFromRef(size(this)) < 715827882)
   ensures acc(ArrayDequeModel_unique(this), write)
-  ensures isSubtype(typeOf(ret_43), unitType())
+  ensures isSubtype(typeOf(ret_13), unitType())
   ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
       intFromRef(size(this))) ==
     (let anon_builtin_neg1 ==
@@ -50,28 +50,396 @@ method addLast(this: Ref, element: Ref) returns (ret_43: Ref)
       get(this, (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
         minusInts(size(this), intToRef(1)))) ==
       element)
-  ensures (forall anon_builtin_38: Int ::
-      { get(this, intToRef(anon_builtin_38)) }
-      -2147483648 <= anon_builtin_38 && anon_builtin_38 <= 2147483647 ==>
-      0 <= anon_builtin_38 &&
-      anon_builtin_38 <
+  ensures (forall anon_builtin_8: Int ::
+      { get(this, intToRef(anon_builtin_8)) }
+      -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
+      0 <= anon_builtin_8 &&
+      anon_builtin_8 <
       old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
         intFromRef(size(this)))) ==>
       (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
-        get(this, intToRef(anon_builtin_38))) ==
+        get(this, intToRef(anon_builtin_8))) ==
       old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
-        get(this, intToRef(anon_builtin_38)))))
+        get(this, intToRef(anon_builtin_8)))))
 
 
-method check(value: Ref) returns (ret_42: Ref)
+method check(value: Ref) returns (ret_12: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_42), unitType())
+  ensures isSubtype(typeOf(ret_12), unitType())
   ensures true ==> boolFromRef(value)
 
 
-method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: Ref,
-  queue: Ref, u: Ref, processed: Ref, found: Ref)
+method scanSkipLast(offsets: Ref, targets: Ref, parent: Ref, rank: Ref, queue: Ref,
+  u: Ref, found: Ref)
   returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(offsets), IntArray())
+  requires acc(IntArray_unique(offsets), write)
+  requires isSubtype(typeOf(targets), IntArray())
+  requires acc(IntArray_unique(targets), write)
+  requires isSubtype(typeOf(parent), IntArray())
+  requires acc(IntArray_unique(parent), write)
+  requires isSubtype(typeOf(rank), IntArray())
+  requires acc(IntArray_unique(rank), write)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  requires isSubtype(typeOf(u), intType())
+  requires isSubtype(typeOf(found), intType())
+  requires arraySize(offsets) >= 1
+  requires arraySize(parent) ==
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  requires arraySize(rank) ==
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  requires (forall anon_builtin_0: Int ::
+      { offsets.contents[anon_builtin_0] }
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < arraySize(offsets) ==>
+      (unfolding acc(IntArray_unique(offsets), write) in
+        0 <= offsets.contents[anon_builtin_0]) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[anon_builtin_0] <= arraySize(targets)))
+  requires (forall anon_builtin_1: Int ::
+      { targets.contents[anon_builtin_1] }
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < arraySize(targets) ==>
+      (unfolding acc(IntArray_unique(targets), write) in
+        0 <= targets.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(targets), write) in
+        targets.contents[anon_builtin_1] <
+        (let anon_builtin_neg1 ==
+          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+          intFromRef(intToRef(arraySize(offsets))) -
+          intFromRef(intToRef(1)))))
+  requires (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) <
+    715827882
+  requires 0 <= intFromRef(u) &&
+    intFromRef(u) <
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  requires 0 <= intFromRef(found)
+  requires (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      intFromRef(size(queue)) <= intFromRef(found))
+  ensures acc(IntArray_unique(offsets), write)
+  ensures acc(IntArray_unique(targets), write)
+  ensures acc(IntArray_unique(parent), write)
+  ensures acc(IntArray_unique(rank), write)
+  ensures acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(IntArray_unique(offsets), write) in
+      (forall anon_builtin_2: Int ::
+        { offsets.contents[anon_builtin_2] }
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < arraySize(offsets) ==>
+        offsets.contents[anon_builtin_2] ==
+        old((unfolding acc(IntArray_unique(offsets), write) in
+          offsets.contents[anon_builtin_2]))))
+  ensures (unfolding acc(IntArray_unique(targets), write) in
+      (forall anon_builtin_3: Int ::
+        { targets.contents[anon_builtin_3] }
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < arraySize(targets) ==>
+        targets.contents[anon_builtin_3] ==
+        old((unfolding acc(IntArray_unique(targets), write) in
+          targets.contents[anon_builtin_3]))))
+  ensures (forall anon_builtin_4: Int ::
+      { targets.contents[anon_builtin_4] }
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
+      (unfolding acc(IntArray_unique(offsets), write) in
+        0 <= offsets.contents[intFromRef(u)]) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[(let anon_builtin_neg1 ==
+          (plusInts(u, intToRef(1))) in
+          intFromRef(u) + intFromRef(intToRef(1)))] <=
+        arraySize(targets)) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[intFromRef(u)] <= anon_builtin_4) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        anon_builtin_4 <
+        offsets.contents[(let anon_builtin_neg1 ==
+          (plusInts(u, intToRef(1))) in
+          intFromRef(u) + intFromRef(intToRef(1)))]) &&
+      (unfolding acc(IntArray_unique(targets), write) in
+        0 <= targets.contents[anon_builtin_4]) &&
+      (unfolding acc(IntArray_unique(targets), write) in
+        targets.contents[anon_builtin_4] <
+        (let anon_builtin_neg1 ==
+          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+          intFromRef(intToRef(arraySize(offsets))) -
+          intFromRef(intToRef(1)))) ==>
+      (unfolding acc(IntArray_unique(rank), write) in
+        (unfolding acc(IntArray_unique(targets), write) in
+          0 <= rank.contents[targets.contents[anon_builtin_4]])))
+{
+  var f: Ref
+  var k: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  f := found
+  assert intFromRef(u) >= 0
+  assert intFromRef(u) < arraySize(offsets)
+  unfold acc(IntArray_unique(offsets), write)
+  anon_2 := intToRef(offsets.contents[intFromRef(u)])
+  k := anon_2
+  fold acc(IntArray_unique(offsets), write)
+  label cont
+    invariant acc(IntArray_unique(offsets), write)
+    invariant acc(IntArray_unique(targets), write)
+    invariant acc(IntArray_unique(parent), write)
+    invariant acc(IntArray_unique(rank), write)
+    invariant acc(ArrayDequeModel_unique(queue), write)
+    invariant isSubtype(typeOf(f), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(offsets), IntArray())
+    invariant isSubtype(typeOf(targets), IntArray())
+    invariant isSubtype(typeOf(parent), IntArray())
+    invariant isSubtype(typeOf(rank), IntArray())
+    invariant isSubtype(typeOf(queue), ArrayDequeModel())
+    invariant isSubtype(typeOf(u), intType())
+    invariant isSubtype(typeOf(found), intType())
+    invariant (unfolding acc(IntArray_unique(offsets), write) in
+        (forall anon_builtin_5: Int ::
+          { offsets.contents[anon_builtin_5] }
+          -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
+          0 <= anon_builtin_5 && anon_builtin_5 < arraySize(offsets) ==>
+          offsets.contents[anon_builtin_5] ==
+          old((unfolding acc(IntArray_unique(offsets), write) in
+            offsets.contents[anon_builtin_5]))))
+    invariant (unfolding acc(IntArray_unique(targets), write) in
+        (forall anon_builtin_6: Int ::
+          { targets.contents[anon_builtin_6] }
+          -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
+          0 <= anon_builtin_6 && anon_builtin_6 < arraySize(targets) ==>
+          targets.contents[anon_builtin_6] ==
+          old((unfolding acc(IntArray_unique(targets), write) in
+            targets.contents[anon_builtin_6]))))
+    invariant arraySize(offsets) >= 1
+    invariant arraySize(parent) ==
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+    invariant arraySize(rank) ==
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+    invariant 0 <= intFromRef(u) &&
+      intFromRef(u) <
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+    invariant (let anon_builtin_neg1 ==
+        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) <
+      715827882
+    invariant 0 <= intFromRef(f)
+    invariant (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+        intFromRef(size(queue)) <= intFromRef(f))
+    invariant (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[intFromRef(u)] <= intFromRef(k))
+    invariant (forall anon_builtin_7: Int ::
+        { targets.contents[anon_builtin_7] }
+        -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
+        (unfolding acc(IntArray_unique(offsets), write) in
+          0 <= offsets.contents[intFromRef(u)]) &&
+        (unfolding acc(IntArray_unique(offsets), write) in
+          offsets.contents[(let anon_builtin_neg1 ==
+            (plusInts(u, intToRef(1))) in
+            intFromRef(u) + intFromRef(intToRef(1)))] <=
+          arraySize(targets)) &&
+        (unfolding acc(IntArray_unique(offsets), write) in
+          offsets.contents[intFromRef(u)] <= anon_builtin_7) &&
+        anon_builtin_7 < intFromRef(k) &&
+        (unfolding acc(IntArray_unique(offsets), write) in
+          anon_builtin_7 <
+          offsets.contents[(let anon_builtin_neg1 ==
+            (plusInts(u, intToRef(1))) in
+            intFromRef(u) + intFromRef(intToRef(1)))]) &&
+        (unfolding acc(IntArray_unique(targets), write) in
+          0 <= targets.contents[anon_builtin_7]) &&
+        (unfolding acc(IntArray_unique(targets), write) in
+          targets.contents[anon_builtin_7] <
+          (let anon_builtin_neg1 ==
+            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+            intFromRef(intToRef(arraySize(offsets))) -
+            intFromRef(intToRef(1)))) ==>
+        (unfolding acc(IntArray_unique(rank), write) in
+          (unfolding acc(IntArray_unique(targets), write) in
+            0 <= rank.contents[targets.contents[anon_builtin_7]])))
+  assert (let anon_builtin_neg1 ==
+      (plusInts(u, intToRef(1))) in
+      intFromRef(u) + intFromRef(intToRef(1))) >=
+    0
+  assert (let anon_builtin_neg1 ==
+      (plusInts(u, intToRef(1))) in
+      intFromRef(u) + intFromRef(intToRef(1))) <
+    arraySize(offsets)
+  unfold acc(IntArray_unique(offsets), write)
+  anon_4 := intToRef(offsets.contents[(let anon_builtin_neg1 ==
+      (plusInts(u, intToRef(1))) in
+      intFromRef(u) + intFromRef(intToRef(1)))])
+  anon_3 := ltInts(k, minusInts(anon_4, intToRef(1)))
+  fold acc(IntArray_unique(offsets), write)
+  if (boolFromRef(anon_3)) {
+    var w: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    var anon_1: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(targets)
+    unfold acc(IntArray_unique(targets), write)
+    anon_5 := intToRef(targets.contents[intFromRef(k)])
+    w := anon_5
+    assert intFromRef(w) >= 0
+    assert intFromRef(w) < arraySize(rank)
+    unfold acc(IntArray_unique(rank), write)
+    anon_6 := intToRef(rank.contents[intFromRef(w)])
+    fold acc(IntArray_unique(targets), write)
+    fold acc(IntArray_unique(rank), write)
+    if (intFromRef(anon_6) < 0) {
+      var anon_7: Ref
+      var anon_8: Ref
+      var anon_0: Ref
+      anon_7 := check(ltInts(f, intToRef(arraySize(rank))))
+      assert intFromRef(w) >= 0
+      assert intFromRef(w) < arraySize(rank)
+      unfold acc(IntArray_unique(rank), write)
+      rank.contents := rank.contents[intFromRef(w) := intFromRef(f)]
+      assert intFromRef(w) >= 0
+      assert intFromRef(w) < arraySize(parent)
+      unfold acc(IntArray_unique(parent), write)
+      parent.contents := parent.contents[intFromRef(w) := intFromRef(u)]
+      anon_8 := addLast(queue, w)
+      anon_0 := f
+      f := plusInts(anon_0, intToRef(1))
+      fold acc(IntArray_unique(parent), write)
+      fold acc(IntArray_unique(rank), write)
+    }
+    anon_1 := k
+    k := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(f), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(offsets), IntArray())
+  assert isSubtype(typeOf(targets), IntArray())
+  assert isSubtype(typeOf(parent), IntArray())
+  assert isSubtype(typeOf(rank), IntArray())
+  assert isSubtype(typeOf(queue), ArrayDequeModel())
+  assert isSubtype(typeOf(u), intType())
+  assert isSubtype(typeOf(found), intType())
+  assert (unfolding acc(IntArray_unique(offsets), write) in
+      (forall anon_builtin_5: Int ::
+        { offsets.contents[anon_builtin_5] }
+        -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
+        0 <= anon_builtin_5 && anon_builtin_5 < arraySize(offsets) ==>
+        offsets.contents[anon_builtin_5] ==
+        old((unfolding acc(IntArray_unique(offsets), write) in
+          offsets.contents[anon_builtin_5]))))
+  assert (unfolding acc(IntArray_unique(targets), write) in
+      (forall anon_builtin_6: Int ::
+        { targets.contents[anon_builtin_6] }
+        -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
+        0 <= anon_builtin_6 && anon_builtin_6 < arraySize(targets) ==>
+        targets.contents[anon_builtin_6] ==
+        old((unfolding acc(IntArray_unique(targets), write) in
+          targets.contents[anon_builtin_6]))))
+  assert arraySize(offsets) >= 1
+  assert arraySize(parent) ==
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  assert arraySize(rank) ==
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  assert 0 <= intFromRef(u) &&
+    intFromRef(u) <
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
+  assert (let anon_builtin_neg1 ==
+      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) <
+    715827882
+  assert 0 <= intFromRef(f)
+  assert (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      intFromRef(size(queue)) <= intFromRef(f))
+  assert (unfolding acc(IntArray_unique(offsets), write) in
+      offsets.contents[intFromRef(u)] <= intFromRef(k))
+  assert (forall anon_builtin_7: Int ::
+      { targets.contents[anon_builtin_7] }
+      -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
+      (unfolding acc(IntArray_unique(offsets), write) in
+        0 <= offsets.contents[intFromRef(u)]) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[(let anon_builtin_neg1 ==
+          (plusInts(u, intToRef(1))) in
+          intFromRef(u) + intFromRef(intToRef(1)))] <=
+        arraySize(targets)) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        offsets.contents[intFromRef(u)] <= anon_builtin_7) &&
+      anon_builtin_7 < intFromRef(k) &&
+      (unfolding acc(IntArray_unique(offsets), write) in
+        anon_builtin_7 <
+        offsets.contents[(let anon_builtin_neg1 ==
+          (plusInts(u, intToRef(1))) in
+          intFromRef(u) + intFromRef(intToRef(1)))]) &&
+      (unfolding acc(IntArray_unique(targets), write) in
+        0 <= targets.contents[anon_builtin_7]) &&
+      (unfolding acc(IntArray_unique(targets), write) in
+        targets.contents[anon_builtin_7] <
+        (let anon_builtin_neg1 ==
+          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
+          intFromRef(intToRef(arraySize(offsets))) -
+          intFromRef(intToRef(1)))) ==>
+      (unfolding acc(IntArray_unique(rank), write) in
+        (unfolding acc(IntArray_unique(targets), write) in
+          0 <= rank.contents[targets.contents[anon_builtin_7]])))
+  v_ret_0 := f
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/arraydeque_bfs_negative.kt: info: Generated Viper text for scanSuccessors:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method scanSuccessors(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: Ref,
+  queue: Ref, u: Ref, processed: Ref, found: Ref)
+  returns (ret: Ref)
   requires isSubtype(typeOf(offsets), IntArray())
   requires acc(IntArray_unique(offsets), write)
   requires isSubtype(typeOf(targets), IntArray())
@@ -336,12 +704,12 @@ method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: R
   ensures acc(IntArray_unique(parent), write)
   ensures acc(IntArray_unique(rank), write)
   ensures acc(ArrayDequeModel_unique(queue), write)
-  ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(found) <= intFromRef(v_ret_0)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(found) <= intFromRef(ret)
   ensures (unfolding acc(IntArray_unique(rank), write) in
       rank.contents[intFromRef(start)] == 0)
-  ensures 1 <= intFromRef(v_ret_0) &&
-    intFromRef(v_ret_0) <=
+  ensures 1 <= intFromRef(ret) &&
+    intFromRef(ret) <=
     (let anon_builtin_neg1 ==
       (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
       intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
@@ -356,7 +724,7 @@ method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: R
       (unfolding acc(IntArray_unique(rank), write) in
         -1 <= rank.contents[anon_builtin_12]) &&
       (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_12] < intFromRef(v_ret_0)))
+        rank.contents[anon_builtin_12] < intFromRef(ret)))
   ensures (forall anon_builtin_13: Int ::
       { parent.contents[anon_builtin_13] }
       -2147483648 <= anon_builtin_13 && anon_builtin_13 <= 2147483647 ==>
@@ -429,8 +797,8 @@ method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: R
   ensures (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
       intFromRef(size(queue)) ==
       (let anon_builtin_neg1 ==
-        (minusInts(v_ret_0, plusInts(processed, intToRef(1)))) in
-        intFromRef(v_ret_0) - intFromRef(plusInts(processed, intToRef(1)))))
+        (minusInts(ret, plusInts(processed, intToRef(1)))) in
+        intFromRef(ret) - intFromRef(plusInts(processed, intToRef(1)))))
   ensures (forall anon_builtin_16: Int ::
       { intFromRef(get(queue, intToRef(anon_builtin_16))) }
       -2147483648 <= anon_builtin_16 && anon_builtin_16 <= 2147483647 ==>
@@ -479,7 +847,7 @@ method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: R
           intFromRef(processed) + intFromRef(intToRef(1))) <=
         rank.contents[anon_builtin_18]) &&
       (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_18] < intFromRef(v_ret_0)) ==>
+        rank.contents[anon_builtin_18] < intFromRef(ret)) ==>
       (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
         (unfolding acc(IntArray_unique(rank), write) in
           intFromRef(get(queue, minusInts(intToRef(rank.contents[anon_builtin_18]),
@@ -544,698 +912,7 @@ method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: R
         targets.contents[anon_builtin_22] ==
         old((unfolding acc(IntArray_unique(targets), write) in
           targets.contents[anon_builtin_22]))))
-{
-  var f: Ref
-  var k: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var anon_4: Ref
-  f := found
-  assert intFromRef(u) >= 0
-  assert intFromRef(u) < arraySize(offsets)
-  unfold acc(IntArray_unique(offsets), write)
-  anon_2 := intToRef(offsets.contents[intFromRef(u)])
-  k := anon_2
-  fold acc(IntArray_unique(offsets), write)
-  label cont
-    invariant acc(IntArray_unique(offsets), write)
-    invariant acc(IntArray_unique(targets), write)
-    invariant acc(IntArray_unique(parent), write)
-    invariant acc(IntArray_unique(rank), write)
-    invariant acc(ArrayDequeModel_unique(queue), write)
-    invariant isSubtype(typeOf(f), intType())
-    invariant isSubtype(typeOf(k), intType())
-    invariant isSubtype(typeOf(offsets), IntArray())
-    invariant isSubtype(typeOf(targets), IntArray())
-    invariant isSubtype(typeOf(start), intType())
-    invariant isSubtype(typeOf(parent), IntArray())
-    invariant isSubtype(typeOf(rank), IntArray())
-    invariant isSubtype(typeOf(queue), ArrayDequeModel())
-    invariant isSubtype(typeOf(u), intType())
-    invariant isSubtype(typeOf(processed), intType())
-    invariant isSubtype(typeOf(found), intType())
-    invariant (unfolding acc(IntArray_unique(offsets), write) in
-        (forall anon_builtin_23: Int ::
-          { offsets.contents[anon_builtin_23] }
-          -2147483648 <= anon_builtin_23 && anon_builtin_23 <= 2147483647 ==>
-          0 <= anon_builtin_23 && anon_builtin_23 < arraySize(offsets) ==>
-          offsets.contents[anon_builtin_23] ==
-          old((unfolding acc(IntArray_unique(offsets), write) in
-            offsets.contents[anon_builtin_23]))))
-    invariant (unfolding acc(IntArray_unique(targets), write) in
-        (forall anon_builtin_24: Int ::
-          { targets.contents[anon_builtin_24] }
-          -2147483648 <= anon_builtin_24 && anon_builtin_24 <= 2147483647 ==>
-          0 <= anon_builtin_24 && anon_builtin_24 < arraySize(targets) ==>
-          targets.contents[anon_builtin_24] ==
-          old((unfolding acc(IntArray_unique(targets), write) in
-            targets.contents[anon_builtin_24]))))
-    invariant arraySize(offsets) >= 1
-    invariant (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) <
-      715827882
-    invariant arraySize(parent) ==
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-    invariant arraySize(rank) ==
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-    invariant 0 <= intFromRef(start) &&
-      intFromRef(start) <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-    invariant (forall anon_builtin_25: Int ::
-        { offsets.contents[anon_builtin_25] }
-        -2147483648 <= anon_builtin_25 && anon_builtin_25 <= 2147483647 ==>
-        0 <= anon_builtin_25 && anon_builtin_25 < arraySize(offsets) ==>
-        (unfolding acc(IntArray_unique(offsets), write) in
-          0 <= offsets.contents[anon_builtin_25]) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[anon_builtin_25] <= arraySize(targets)))
-    invariant (forall anon_builtin_26: Int ::
-        { targets.contents[anon_builtin_26] }
-        -2147483648 <= anon_builtin_26 && anon_builtin_26 <= 2147483647 ==>
-        0 <= anon_builtin_26 && anon_builtin_26 < arraySize(targets) ==>
-        (unfolding acc(IntArray_unique(targets), write) in
-          0 <= targets.contents[anon_builtin_26]) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          targets.contents[anon_builtin_26] <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))))
-    invariant 0 <= intFromRef(u) &&
-      intFromRef(u) <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-    invariant 0 <= intFromRef(processed) &&
-      intFromRef(processed) < intFromRef(f)
-    invariant (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[intFromRef(u)] == intFromRef(processed))
-    invariant (forall anon_builtin_27: Int ::
-        { rank.contents[anon_builtin_27] }
-        -2147483648 <= anon_builtin_27 && anon_builtin_27 <= 2147483647 ==>
-        0 <= anon_builtin_27 &&
-        anon_builtin_27 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_27] == intFromRef(processed)) ==>
-        anon_builtin_27 == intFromRef(u))
-    invariant intFromRef(found) <= intFromRef(f)
-    invariant (unfolding acc(IntArray_unique(offsets), write) in
-        offsets.contents[intFromRef(u)] <= intFromRef(k))
-    invariant (forall anon_builtin_28: Int ::
-        { targets.contents[anon_builtin_28] }
-        -2147483648 <= anon_builtin_28 && anon_builtin_28 <= 2147483647 ==>
-        (unfolding acc(IntArray_unique(offsets), write) in
-          0 <= offsets.contents[intFromRef(u)]) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[(let anon_builtin_neg1 ==
-            (plusInts(u, intToRef(1))) in
-            intFromRef(u) + intFromRef(intToRef(1)))] <=
-          arraySize(targets)) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[intFromRef(u)] <= anon_builtin_28) &&
-        anon_builtin_28 < intFromRef(k) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          anon_builtin_28 <
-          offsets.contents[(let anon_builtin_neg1 ==
-            (plusInts(u, intToRef(1))) in
-            intFromRef(u) + intFromRef(intToRef(1)))]) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          0 <= targets.contents[anon_builtin_28]) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          targets.contents[anon_builtin_28] <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))) ==>
-        (unfolding acc(IntArray_unique(rank), write) in
-          (unfolding acc(IntArray_unique(targets), write) in
-            0 <= rank.contents[targets.contents[anon_builtin_28]])))
-    invariant (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[intFromRef(start)] == 0)
-    invariant 1 <= intFromRef(f) &&
-      intFromRef(f) <=
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-    invariant (forall anon_builtin_29: Int ::
-        { rank.contents[anon_builtin_29] }
-        -2147483648 <= anon_builtin_29 && anon_builtin_29 <= 2147483647 ==>
-        0 <= anon_builtin_29 &&
-        anon_builtin_29 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) ==>
-        (unfolding acc(IntArray_unique(rank), write) in
-          -1 <= rank.contents[anon_builtin_29]) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_29] < intFromRef(f)))
-    invariant (forall anon_builtin_30: Int ::
-        { parent.contents[anon_builtin_30] }
-        -2147483648 <= anon_builtin_30 && anon_builtin_30 <= 2147483647 ==>
-        0 <= anon_builtin_30 &&
-        anon_builtin_30 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_30] > 0) ==>
-        (unfolding acc(IntArray_unique(parent), write) in
-          0 <= parent.contents[anon_builtin_30]) &&
-        (unfolding acc(IntArray_unique(parent), write) in
-          parent.contents[anon_builtin_30] <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            0 <= rank.contents[parent.contents[anon_builtin_30]])) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            rank.contents[parent.contents[anon_builtin_30]] <
-            rank.contents[anon_builtin_30])))
-    invariant (forall anon_builtin_31: Int ::
-        { parent.contents[anon_builtin_31] }
-        -2147483648 <= anon_builtin_31 && anon_builtin_31 <= 2147483647 ==>
-        0 <= anon_builtin_31 &&
-        anon_builtin_31 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_31] > 0) &&
-        (unfolding acc(IntArray_unique(parent), write) in
-          0 <= parent.contents[anon_builtin_31]) &&
-        (unfolding acc(IntArray_unique(parent), write) in
-          parent.contents[anon_builtin_31] <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            0 <= offsets.contents[parent.contents[anon_builtin_31]])) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            offsets.contents[(let anon_builtin_neg1 ==
-              (plusInts(intToRef(parent.contents[anon_builtin_31]), intToRef(1))) in
-              intFromRef(intToRef(parent.contents[anon_builtin_31])) +
-              intFromRef(intToRef(1)))] <=
-            arraySize(targets))) ==>
-        (exists anon_builtin_32: Int :: { targets.contents[anon_builtin_32] } -2147483648 <=
-          anon_builtin_32 &&
-          anon_builtin_32 <= 2147483647 &&
-          ((unfolding acc(IntArray_unique(offsets), write) in
-            (unfolding acc(IntArray_unique(parent), write) in
-              offsets.contents[parent.contents[anon_builtin_31]] <=
-              anon_builtin_32)) &&
-          (unfolding acc(IntArray_unique(offsets), write) in
-            (unfolding acc(IntArray_unique(parent), write) in
-              anon_builtin_32 <
-              offsets.contents[(let anon_builtin_neg1 ==
-                (plusInts(intToRef(parent.contents[anon_builtin_31]), intToRef(1))) in
-                intFromRef(intToRef(parent.contents[anon_builtin_31])) +
-                intFromRef(intToRef(1)))])) &&
-          (unfolding acc(IntArray_unique(targets), write) in
-            targets.contents[anon_builtin_32] == anon_builtin_31))))
-    invariant (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        intFromRef(size(queue)) ==
-        (let anon_builtin_neg1 ==
-          (minusInts(f, plusInts(processed, intToRef(1)))) in
-          intFromRef(f) - intFromRef(plusInts(processed, intToRef(1)))))
-    invariant (forall anon_builtin_33: Int ::
-        { intFromRef(get(queue, intToRef(anon_builtin_33))) }
-        -2147483648 <= anon_builtin_33 && anon_builtin_33 <= 2147483647 ==>
-        0 <= anon_builtin_33 &&
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          anon_builtin_33 < intFromRef(size(queue))) ==>
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          0 <= intFromRef(get(queue, intToRef(anon_builtin_33)))) &&
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          intFromRef(get(queue, intToRef(anon_builtin_33))) <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))))
-    invariant (forall anon_builtin_34: Int ::
-        { rank.contents[intFromRef(get(queue, intToRef(anon_builtin_34)))] }
-        -2147483648 <= anon_builtin_34 && anon_builtin_34 <= 2147483647 ==>
-        0 <= anon_builtin_34 &&
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          anon_builtin_34 < intFromRef(size(queue))) &&
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          0 <= intFromRef(get(queue, intToRef(anon_builtin_34)))) &&
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          intFromRef(get(queue, intToRef(anon_builtin_34))) <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))) ==>
-        (unfolding acc(IntArray_unique(rank), write) in
-          (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-            rank.contents[intFromRef(get(queue, intToRef(anon_builtin_34)))] ==
-            (let anon_builtin_neg1 ==
-              (plusInts(plusInts(processed, intToRef(1)), intToRef(anon_builtin_34))) in
-              intFromRef(plusInts(processed, intToRef(1))) +
-              anon_builtin_34))))
-    invariant (forall anon_builtin_35: Int ::
-        { rank.contents[anon_builtin_35] }
-        -2147483648 <= anon_builtin_35 && anon_builtin_35 <= 2147483647 ==>
-        0 <= anon_builtin_35 &&
-        anon_builtin_35 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          (let anon_builtin_neg1 ==
-            (plusInts(processed, intToRef(1))) in
-            intFromRef(processed) + intFromRef(intToRef(1))) <=
-          rank.contents[anon_builtin_35]) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_35] < intFromRef(f)) ==>
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          (unfolding acc(IntArray_unique(rank), write) in
-            intFromRef(get(queue, minusInts(intToRef(rank.contents[anon_builtin_35]),
-            plusInts(processed, intToRef(1))))) ==
-            anon_builtin_35)))
-    invariant (forall anon_builtin_36: Int ::
-        { rank.contents[anon_builtin_36] }
-        -2147483648 <= anon_builtin_36 && anon_builtin_36 <= 2147483647 ==>
-        0 <= anon_builtin_36 &&
-        anon_builtin_36 <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1))) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          0 <= rank.contents[anon_builtin_36]) &&
-        (unfolding acc(IntArray_unique(rank), write) in
-          rank.contents[anon_builtin_36] < intFromRef(processed)) ==>
-        (forall anon_builtin_37: Int ::
-          { targets.contents[anon_builtin_37] }
-          -2147483648 <= anon_builtin_37 && anon_builtin_37 <= 2147483647 ==>
-          (unfolding acc(IntArray_unique(offsets), write) in
-            0 <= offsets.contents[anon_builtin_36]) &&
-          (unfolding acc(IntArray_unique(offsets), write) in
-            offsets.contents[(let anon_builtin_neg1 ==
-              (plusInts(intToRef(anon_builtin_36), intToRef(1))) in
-              anon_builtin_36 + intFromRef(intToRef(1)))] <=
-            arraySize(targets)) &&
-          (unfolding acc(IntArray_unique(offsets), write) in
-            offsets.contents[anon_builtin_36] <= anon_builtin_37) &&
-          (unfolding acc(IntArray_unique(offsets), write) in
-            anon_builtin_37 <
-            offsets.contents[(let anon_builtin_neg1 ==
-              (plusInts(intToRef(anon_builtin_36), intToRef(1))) in
-              anon_builtin_36 + intFromRef(intToRef(1)))]) &&
-          (unfolding acc(IntArray_unique(targets), write) in
-            0 <= targets.contents[anon_builtin_37]) &&
-          (unfolding acc(IntArray_unique(targets), write) in
-            targets.contents[anon_builtin_37] <
-            (let anon_builtin_neg1 ==
-              (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-              intFromRef(intToRef(arraySize(offsets))) -
-              intFromRef(intToRef(1)))) ==>
-          (unfolding acc(IntArray_unique(rank), write) in
-            (unfolding acc(IntArray_unique(targets), write) in
-              0 <= rank.contents[targets.contents[anon_builtin_37]]))))
-  assert (let anon_builtin_neg1 ==
-      (plusInts(u, intToRef(1))) in
-      intFromRef(u) + intFromRef(intToRef(1))) >=
-    0
-  assert (let anon_builtin_neg1 ==
-      (plusInts(u, intToRef(1))) in
-      intFromRef(u) + intFromRef(intToRef(1))) <
-    arraySize(offsets)
-  unfold acc(IntArray_unique(offsets), write)
-  anon_4 := intToRef(offsets.contents[(let anon_builtin_neg1 ==
-      (plusInts(u, intToRef(1))) in
-      intFromRef(u) + intFromRef(intToRef(1)))])
-  anon_3 := ltInts(k, minusInts(anon_4, intToRef(1)))
-  fold acc(IntArray_unique(offsets), write)
-  if (boolFromRef(anon_3)) {
-    var w: Ref
-    var anon_5: Ref
-    var anon_6: Ref
-    var anon_1: Ref
-    assert intFromRef(k) >= 0
-    assert intFromRef(k) < arraySize(targets)
-    unfold acc(IntArray_unique(targets), write)
-    anon_5 := intToRef(targets.contents[intFromRef(k)])
-    w := anon_5
-    assert intFromRef(w) >= 0
-    assert intFromRef(w) < arraySize(rank)
-    unfold acc(IntArray_unique(rank), write)
-    anon_6 := intToRef(rank.contents[intFromRef(w)])
-    fold acc(IntArray_unique(targets), write)
-    fold acc(IntArray_unique(rank), write)
-    if (intFromRef(anon_6) < 0) {
-      var anon_7: Ref
-      var anon_8: Ref
-      var anon_0: Ref
-      anon_7 := check(ltInts(f, intToRef(arraySize(rank))))
-      assert intFromRef(w) >= 0
-      assert intFromRef(w) < arraySize(rank)
-      unfold acc(IntArray_unique(rank), write)
-      rank.contents := rank.contents[intFromRef(w) := intFromRef(f)]
-      assert intFromRef(w) >= 0
-      assert intFromRef(w) < arraySize(parent)
-      unfold acc(IntArray_unique(parent), write)
-      parent.contents := parent.contents[intFromRef(w) := intFromRef(u)]
-      anon_8 := addLast(queue, w)
-      anon_0 := f
-      f := plusInts(anon_0, intToRef(1))
-      fold acc(IntArray_unique(parent), write)
-      fold acc(IntArray_unique(rank), write)
-    }
-    anon_1 := k
-    k := plusInts(anon_1, intToRef(1))
-    goto cont
-  }
-  label break
-  assert isSubtype(typeOf(f), intType())
-  assert isSubtype(typeOf(k), intType())
-  assert isSubtype(typeOf(offsets), IntArray())
-  assert isSubtype(typeOf(targets), IntArray())
-  assert isSubtype(typeOf(start), intType())
-  assert isSubtype(typeOf(parent), IntArray())
-  assert isSubtype(typeOf(rank), IntArray())
-  assert isSubtype(typeOf(queue), ArrayDequeModel())
-  assert isSubtype(typeOf(u), intType())
-  assert isSubtype(typeOf(processed), intType())
-  assert isSubtype(typeOf(found), intType())
-  assert (unfolding acc(IntArray_unique(offsets), write) in
-      (forall anon_builtin_23: Int ::
-        { offsets.contents[anon_builtin_23] }
-        -2147483648 <= anon_builtin_23 && anon_builtin_23 <= 2147483647 ==>
-        0 <= anon_builtin_23 && anon_builtin_23 < arraySize(offsets) ==>
-        offsets.contents[anon_builtin_23] ==
-        old((unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[anon_builtin_23]))))
-  assert (unfolding acc(IntArray_unique(targets), write) in
-      (forall anon_builtin_24: Int ::
-        { targets.contents[anon_builtin_24] }
-        -2147483648 <= anon_builtin_24 && anon_builtin_24 <= 2147483647 ==>
-        0 <= anon_builtin_24 && anon_builtin_24 < arraySize(targets) ==>
-        targets.contents[anon_builtin_24] ==
-        old((unfolding acc(IntArray_unique(targets), write) in
-          targets.contents[anon_builtin_24]))))
-  assert arraySize(offsets) >= 1
-  assert (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) <
-    715827882
-  assert arraySize(parent) ==
-    (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-  assert arraySize(rank) ==
-    (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-  assert 0 <= intFromRef(start) &&
-    intFromRef(start) <
-    (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-  assert (forall anon_builtin_25: Int ::
-      { offsets.contents[anon_builtin_25] }
-      -2147483648 <= anon_builtin_25 && anon_builtin_25 <= 2147483647 ==>
-      0 <= anon_builtin_25 && anon_builtin_25 < arraySize(offsets) ==>
-      (unfolding acc(IntArray_unique(offsets), write) in
-        0 <= offsets.contents[anon_builtin_25]) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        offsets.contents[anon_builtin_25] <= arraySize(targets)))
-  assert (forall anon_builtin_26: Int ::
-      { targets.contents[anon_builtin_26] }
-      -2147483648 <= anon_builtin_26 && anon_builtin_26 <= 2147483647 ==>
-      0 <= anon_builtin_26 && anon_builtin_26 < arraySize(targets) ==>
-      (unfolding acc(IntArray_unique(targets), write) in
-        0 <= targets.contents[anon_builtin_26]) &&
-      (unfolding acc(IntArray_unique(targets), write) in
-        targets.contents[anon_builtin_26] <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))))
-  assert 0 <= intFromRef(u) &&
-    intFromRef(u) <
-    (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-  assert 0 <= intFromRef(processed) &&
-    intFromRef(processed) < intFromRef(f)
-  assert (unfolding acc(IntArray_unique(rank), write) in
-      rank.contents[intFromRef(u)] == intFromRef(processed))
-  assert (forall anon_builtin_27: Int ::
-      { rank.contents[anon_builtin_27] }
-      -2147483648 <= anon_builtin_27 && anon_builtin_27 <= 2147483647 ==>
-      0 <= anon_builtin_27 &&
-      anon_builtin_27 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_27] == intFromRef(processed)) ==>
-      anon_builtin_27 == intFromRef(u))
-  assert intFromRef(found) <= intFromRef(f)
-  assert (unfolding acc(IntArray_unique(offsets), write) in
-      offsets.contents[intFromRef(u)] <= intFromRef(k))
-  assert (forall anon_builtin_28: Int ::
-      { targets.contents[anon_builtin_28] }
-      -2147483648 <= anon_builtin_28 && anon_builtin_28 <= 2147483647 ==>
-      (unfolding acc(IntArray_unique(offsets), write) in
-        0 <= offsets.contents[intFromRef(u)]) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        offsets.contents[(let anon_builtin_neg1 ==
-          (plusInts(u, intToRef(1))) in
-          intFromRef(u) + intFromRef(intToRef(1)))] <=
-        arraySize(targets)) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        offsets.contents[intFromRef(u)] <= anon_builtin_28) &&
-      anon_builtin_28 < intFromRef(k) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        anon_builtin_28 <
-        offsets.contents[(let anon_builtin_neg1 ==
-          (plusInts(u, intToRef(1))) in
-          intFromRef(u) + intFromRef(intToRef(1)))]) &&
-      (unfolding acc(IntArray_unique(targets), write) in
-        0 <= targets.contents[anon_builtin_28]) &&
-      (unfolding acc(IntArray_unique(targets), write) in
-        targets.contents[anon_builtin_28] <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))) ==>
-      (unfolding acc(IntArray_unique(rank), write) in
-        (unfolding acc(IntArray_unique(targets), write) in
-          0 <= rank.contents[targets.contents[anon_builtin_28]])))
-  assert (unfolding acc(IntArray_unique(rank), write) in
-      rank.contents[intFromRef(start)] == 0)
-  assert 1 <= intFromRef(f) &&
-    intFromRef(f) <=
-    (let anon_builtin_neg1 ==
-      (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-      intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1)))
-  assert (forall anon_builtin_29: Int ::
-      { rank.contents[anon_builtin_29] }
-      -2147483648 <= anon_builtin_29 && anon_builtin_29 <= 2147483647 ==>
-      0 <= anon_builtin_29 &&
-      anon_builtin_29 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) ==>
-      (unfolding acc(IntArray_unique(rank), write) in
-        -1 <= rank.contents[anon_builtin_29]) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_29] < intFromRef(f)))
-  assert (forall anon_builtin_30: Int ::
-      { parent.contents[anon_builtin_30] }
-      -2147483648 <= anon_builtin_30 && anon_builtin_30 <= 2147483647 ==>
-      0 <= anon_builtin_30 &&
-      anon_builtin_30 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_30] > 0) ==>
-      (unfolding acc(IntArray_unique(parent), write) in
-        0 <= parent.contents[anon_builtin_30]) &&
-      (unfolding acc(IntArray_unique(parent), write) in
-        parent.contents[anon_builtin_30] <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        (unfolding acc(IntArray_unique(parent), write) in
-          0 <= rank.contents[parent.contents[anon_builtin_30]])) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        (unfolding acc(IntArray_unique(parent), write) in
-          rank.contents[parent.contents[anon_builtin_30]] <
-          rank.contents[anon_builtin_30])))
-  assert (forall anon_builtin_31: Int ::
-      { parent.contents[anon_builtin_31] }
-      -2147483648 <= anon_builtin_31 && anon_builtin_31 <= 2147483647 ==>
-      0 <= anon_builtin_31 &&
-      anon_builtin_31 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_31] > 0) &&
-      (unfolding acc(IntArray_unique(parent), write) in
-        0 <= parent.contents[anon_builtin_31]) &&
-      (unfolding acc(IntArray_unique(parent), write) in
-        parent.contents[anon_builtin_31] <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        (unfolding acc(IntArray_unique(parent), write) in
-          0 <= offsets.contents[parent.contents[anon_builtin_31]])) &&
-      (unfolding acc(IntArray_unique(offsets), write) in
-        (unfolding acc(IntArray_unique(parent), write) in
-          offsets.contents[(let anon_builtin_neg1 ==
-            (plusInts(intToRef(parent.contents[anon_builtin_31]), intToRef(1))) in
-            intFromRef(intToRef(parent.contents[anon_builtin_31])) +
-            intFromRef(intToRef(1)))] <=
-          arraySize(targets))) ==>
-      (exists anon_builtin_32: Int :: { targets.contents[anon_builtin_32] } -2147483648 <=
-        anon_builtin_32 &&
-        anon_builtin_32 <= 2147483647 &&
-        ((unfolding acc(IntArray_unique(offsets), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            offsets.contents[parent.contents[anon_builtin_31]] <=
-            anon_builtin_32)) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          (unfolding acc(IntArray_unique(parent), write) in
-            anon_builtin_32 <
-            offsets.contents[(let anon_builtin_neg1 ==
-              (plusInts(intToRef(parent.contents[anon_builtin_31]), intToRef(1))) in
-              intFromRef(intToRef(parent.contents[anon_builtin_31])) +
-              intFromRef(intToRef(1)))])) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          targets.contents[anon_builtin_32] == anon_builtin_31))))
-  assert (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-      intFromRef(size(queue)) ==
-      (let anon_builtin_neg1 ==
-        (minusInts(f, plusInts(processed, intToRef(1)))) in
-        intFromRef(f) - intFromRef(plusInts(processed, intToRef(1)))))
-  assert (forall anon_builtin_33: Int ::
-      { intFromRef(get(queue, intToRef(anon_builtin_33))) }
-      -2147483648 <= anon_builtin_33 && anon_builtin_33 <= 2147483647 ==>
-      0 <= anon_builtin_33 &&
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        anon_builtin_33 < intFromRef(size(queue))) ==>
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        0 <= intFromRef(get(queue, intToRef(anon_builtin_33)))) &&
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        intFromRef(get(queue, intToRef(anon_builtin_33))) <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))))
-  assert (forall anon_builtin_34: Int ::
-      { rank.contents[intFromRef(get(queue, intToRef(anon_builtin_34)))] }
-      -2147483648 <= anon_builtin_34 && anon_builtin_34 <= 2147483647 ==>
-      0 <= anon_builtin_34 &&
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        anon_builtin_34 < intFromRef(size(queue))) &&
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        0 <= intFromRef(get(queue, intToRef(anon_builtin_34)))) &&
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        intFromRef(get(queue, intToRef(anon_builtin_34))) <
-        (let anon_builtin_neg1 ==
-          (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-          intFromRef(intToRef(arraySize(offsets))) -
-          intFromRef(intToRef(1)))) ==>
-      (unfolding acc(IntArray_unique(rank), write) in
-        (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-          rank.contents[intFromRef(get(queue, intToRef(anon_builtin_34)))] ==
-          (let anon_builtin_neg1 ==
-            (plusInts(plusInts(processed, intToRef(1)), intToRef(anon_builtin_34))) in
-            intFromRef(plusInts(processed, intToRef(1))) + anon_builtin_34))))
-  assert (forall anon_builtin_35: Int ::
-      { rank.contents[anon_builtin_35] }
-      -2147483648 <= anon_builtin_35 && anon_builtin_35 <= 2147483647 ==>
-      0 <= anon_builtin_35 &&
-      anon_builtin_35 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        (let anon_builtin_neg1 ==
-          (plusInts(processed, intToRef(1))) in
-          intFromRef(processed) + intFromRef(intToRef(1))) <=
-        rank.contents[anon_builtin_35]) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_35] < intFromRef(f)) ==>
-      (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
-        (unfolding acc(IntArray_unique(rank), write) in
-          intFromRef(get(queue, minusInts(intToRef(rank.contents[anon_builtin_35]),
-          plusInts(processed, intToRef(1))))) ==
-          anon_builtin_35)))
-  assert (forall anon_builtin_36: Int ::
-      { rank.contents[anon_builtin_36] }
-      -2147483648 <= anon_builtin_36 && anon_builtin_36 <= 2147483647 ==>
-      0 <= anon_builtin_36 &&
-      anon_builtin_36 <
-      (let anon_builtin_neg1 ==
-        (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-        intFromRef(intToRef(arraySize(offsets))) - intFromRef(intToRef(1))) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        0 <= rank.contents[anon_builtin_36]) &&
-      (unfolding acc(IntArray_unique(rank), write) in
-        rank.contents[anon_builtin_36] < intFromRef(processed)) ==>
-      (forall anon_builtin_37: Int ::
-        { targets.contents[anon_builtin_37] }
-        -2147483648 <= anon_builtin_37 && anon_builtin_37 <= 2147483647 ==>
-        (unfolding acc(IntArray_unique(offsets), write) in
-          0 <= offsets.contents[anon_builtin_36]) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[(let anon_builtin_neg1 ==
-            (plusInts(intToRef(anon_builtin_36), intToRef(1))) in
-            anon_builtin_36 + intFromRef(intToRef(1)))] <=
-          arraySize(targets)) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          offsets.contents[anon_builtin_36] <= anon_builtin_37) &&
-        (unfolding acc(IntArray_unique(offsets), write) in
-          anon_builtin_37 <
-          offsets.contents[(let anon_builtin_neg1 ==
-            (plusInts(intToRef(anon_builtin_36), intToRef(1))) in
-            anon_builtin_36 + intFromRef(intToRef(1)))]) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          0 <= targets.contents[anon_builtin_37]) &&
-        (unfolding acc(IntArray_unique(targets), write) in
-          targets.contents[anon_builtin_37] <
-          (let anon_builtin_neg1 ==
-            (minusInts(intToRef(arraySize(offsets)), intToRef(1))) in
-            intFromRef(intToRef(arraySize(offsets))) -
-            intFromRef(intToRef(1)))) ==>
-        (unfolding acc(IntArray_unique(rank), write) in
-          (unfolding acc(IntArray_unique(targets), write) in
-            0 <= rank.contents[targets.contents[anon_builtin_37]]))))
-  v_ret_0 := f
-  goto lbl_ret_0
-  label lbl_ret_0
-}
+
 
 /arraydeque_bfs_negative.kt: info: Generated Viper text for bfsWithoutVertexBound:
 field contents: Seq[Int]
@@ -1941,7 +1618,7 @@ method bfsWithoutVertexBound(offsets: Ref, targets: Ref, start: Ref, parent: Ref
     anon_6 := removeFirst(l0_queue)
     l2_u := anon_6
     inhale isSubtype(typeOf(l2_u), intType())
-    l0_found := scanSkipLast(offsets, targets, start, parent, rank, l0_queue,
+    l0_found := scanSuccessors(offsets, targets, start, parent, rank, l0_queue,
       l2_u, l0_processed, l0_found)
     anon_1 := l0_processed
     l0_processed := plusInts(anon_1, intToRef(1))
@@ -2232,7 +1909,7 @@ method removeFirst(this: Ref) returns (ret_36: Ref)
         get(this, plusInts(intToRef(anon_builtin_29), intToRef(1))))))
 
 
-method scanSkipLast(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: Ref,
+method scanSuccessors(offsets: Ref, targets: Ref, start: Ref, parent: Ref, rank: Ref,
   par_queue: Ref, par_u: Ref, par_processed: Ref, par_found: Ref)
   returns (ret_38: Ref)
   requires isSubtype(typeOf(offsets), IntArray())

@@ -3,7 +3,54 @@
 // TRUST_REPORT
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun <!VIPER_TEXT!>scanSkipLast<!>(offsets: @Unique @Borrowed IntArray, targets: @Unique @Borrowed IntArray, start: Int, parent: @Unique @Borrowed IntArray, rank: @Unique @Borrowed IntArray, queue: @Unique @Borrowed ArrayDeque<Int>, u: Int, processed: Int, found: Int): Int {
+fun <!VIPER_TEXT!>scanSkipLast<!>(offsets: @Unique @Borrowed IntArray, targets: @Unique @Borrowed IntArray, parent: @Unique @Borrowed IntArray, rank: @Unique @Borrowed IntArray, queue: @Unique @Borrowed ArrayDeque<Int>, u: Int, found: Int): Int {
+    preconditions {
+        offsets.size >= 1
+        parent.size == offsets.size - 1
+        rank.size == offsets.size - 1
+        forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (0 <= offsets[i] && offsets[i] <= targets.size) }
+        forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (0 <= targets[j] && targets[j] < offsets.size - 1) }
+        offsets.size - 1 < 715827882
+        0 <= u && u < offsets.size - 1
+        0 <= found
+        queue.size <= found
+    }
+    postconditions<Int> { r ->
+        forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (offsets[i] == old(offsets[i])) }
+        forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (targets[j] == old(targets[j])) }
+        forAll<Int> { j -> triggers(targets[j]); (0 <= offsets[u] && offsets[u + 1] <= targets.size && offsets[u] <= j && j < offsets[u + 1] && 0 <= targets[j] && targets[j] < offsets.size - 1) implies (0 <= rank[targets[j]]) }
+    }
+    var f = found
+    var k = offsets[u]
+    while (k < offsets[u + 1] - 1) {
+        loopInvariants {
+            forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (offsets[i] == old(offsets[i])) }
+            forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (targets[j] == old(targets[j])) }
+            offsets.size >= 1
+            parent.size == offsets.size - 1
+            rank.size == offsets.size - 1
+            0 <= u && u < offsets.size - 1
+            offsets.size - 1 < 715827882
+            0 <= f
+            queue.size <= f
+            offsets[u] <= k
+            forAll<Int> { j -> triggers(targets[j]); (0 <= offsets[u] && offsets[u + 1] <= targets.size && offsets[u] <= j && j < k && j < offsets[u + 1] && 0 <= targets[j] && targets[j] < offsets.size - 1) implies (0 <= rank[targets[j]]) }
+        }
+        val w = targets[k]
+        if (rank[w] < 0) {
+            check(f < rank.size)
+            rank[w] = f
+            parent[w] = u
+            queue.addLast(w)
+            f++
+        }
+        k++
+    }
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return f<!>
+}
+
+@NeverVerify
+fun <!VIPER_TEXT!>scanSuccessors<!>(offsets: @Unique @Borrowed IntArray, targets: @Unique @Borrowed IntArray, start: Int, parent: @Unique @Borrowed IntArray, rank: @Unique @Borrowed IntArray, queue: @Unique @Borrowed ArrayDeque<Int>, u: Int, processed: Int, found: Int): Int {
     preconditions {
         offsets.size >= 1
         offsets.size - 1 < 715827882
@@ -44,7 +91,7 @@ fun <!VIPER_TEXT!>scanSkipLast<!>(offsets: @Unique @Borrowed IntArray, targets: 
     }
     var f = found
     var k = offsets[u]
-    while (k < offsets[u + 1] - 1) {
+    while (k < offsets[u + 1]) {
         loopInvariants {
             forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (offsets[i] == old(offsets[i])) }
             forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (targets[j] == old(targets[j])) }
@@ -53,8 +100,6 @@ fun <!VIPER_TEXT!>scanSkipLast<!>(offsets: @Unique @Borrowed IntArray, targets: 
             parent.size == offsets.size - 1
             rank.size == offsets.size - 1
             0 <= start && start < offsets.size - 1
-            forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (0 <= offsets[i] && offsets[i] <= targets.size) }
-            forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (0 <= targets[j] && targets[j] < offsets.size - 1) }
             0 <= u && u < offsets.size - 1
             0 <= processed && processed < f
             rank[u] == processed
@@ -83,7 +128,7 @@ fun <!VIPER_TEXT!>scanSkipLast<!>(offsets: @Unique @Borrowed IntArray, targets: 
         }
         k++
     }
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return f<!>
+    return f
 }
 
 fun <!VIPER_TEXT!>bfsWithoutVertexBound<!>(offsets: @Unique @Borrowed IntArray, targets: @Unique @Borrowed IntArray, start: Int, parent: @Unique @Borrowed IntArray, rank: @Unique @Borrowed IntArray): Int {
@@ -150,7 +195,7 @@ fun <!VIPER_TEXT!>bfsWithoutVertexBound<!>(offsets: @Unique @Borrowed IntArray, 
             forAll<Int> { v -> triggers(rank[v]); (0 <= v && v < offsets.size - 1 && 0 <= rank[v] && rank[v] < processed) implies forAll<Int> { j -> triggers(targets[j]); (0 <= offsets[v] && offsets[v + 1] <= targets.size && offsets[v] <= j && j < offsets[v + 1] && 0 <= targets[j] && targets[j] < offsets.size - 1) implies (0 <= rank[targets[j]]) } }
         }
         val u = queue.removeFirst()
-        found = <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>scanSkipLast(offsets, targets, start, parent, rank, queue, u, processed, found)<!>
+        found = <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>scanSuccessors(offsets, targets, start, parent, rank, queue, u, processed, found)<!>
         processed++
     }
     return found
