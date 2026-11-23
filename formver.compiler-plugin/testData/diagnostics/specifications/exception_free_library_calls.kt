@@ -9,7 +9,7 @@ fun <!VIPER_TEXT!>letLiteral<!>(x: Int): Int = x.let { half(it) }
 
 fun <!VIPER_TEXT!>letThrows<!>(x: Int): Int = x.let { if (it < 0) <!EXCEPTION_FROM_THROW!>throw <!EXCEPTION_FROM_THROW!>IllegalArgumentException()<!><!>; it }
 
-fun <!VIPER_TEXT!>letFunctionObject<!>(x: Int, f: (Int) -> Int): Int = <!EXCEPTION_FROM_UNSPECIFIED_CALL, OPAQUE_CALL!>x.let(f)<!>
+fun <!VIPER_TEXT!>letFunctionObject<!>(x: Int, f: (Int) -> Int): Int = <!EXCEPTION_FROM_FUNCTION_OBJECT!>x.let(f)<!>
 
 fun <!VIPER_TEXT!>takeIfLiteral<!>(x: Int): Int? = x.takeIf { it > 0 }
 

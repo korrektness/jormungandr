@@ -138,7 +138,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     /**
      * Converts a string template to a chain of `String.plus` calls, one per part, merging adjacent literal parts.
-     * The chain starts from the leading literal, or from `""` when the template starts with an expression.
+     * The chain starts from the leading literal, or from `""` when the template starts with an expression. A part
+     * that the concatenation converts by a library `toString` throws only by resource exhaustion.
      */
     override fun visitStringConcatenationCall(
         stringConcatenationCall: FirStringConcatenationCall, data: StmtConversionContext
@@ -147,23 +148,25 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val plus = stringClass.declaredMemberScope(data.session, memberRequiredPhase = null)
             .getFunctions(OperatorNameConventions.PLUS).single()
         val plusEmbedding = data.embedAnyFunction(plus)
-        val parts = buildList {
+        val parts = buildList<Pair<ExpEmbedding, FirExpression?>> {
             val literal = StringBuilder()
             for (arg in stringConcatenationCall.arguments) {
                 if (arg is FirLiteralExpression) {
                     literal.append(arg.value.toString())
                     continue
                 }
-                if (literal.isNotEmpty()) add(StringLit(literal.toString()))
+                if (literal.isNotEmpty()) add(StringLit(literal.toString()) to null)
                 literal.clear()
-                add(data.convert(arg))
+                add(data.convert(arg) to arg)
             }
-            if (literal.isNotEmpty()) add(StringLit(literal.toString()))
+            if (literal.isNotEmpty()) add(StringLit(literal.toString()) to null)
         }
-        val start = parts.firstOrNull() as? StringLit
+        val start = parts.firstOrNull()?.first as? StringLit
         val stringType = buildType { string() }
-        return (if (start == null) parts else parts.drop(1)).fold<ExpEmbedding, ExpEmbedding>(start ?: StringLit("")) { acc, part ->
-            plusEmbedding.insertCall(listOf(acc, part), data, stringType)
+        return (if (start == null) parts else parts.drop(1)).fold<Pair<ExpEmbedding, FirExpression?>, ExpEmbedding>(start ?: StringLit("")) { acc, (part, arg) ->
+            if (arg?.resolvedType?.isConcatenatedByToString() == true) {
+                data.withoutExceptionalExits { plusEmbedding.insertCall(listOf(acc, part), this, stringType) }
+            } else plusEmbedding.insertCall(listOf(acc, part), data, stringType)
         }
     }
 

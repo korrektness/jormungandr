@@ -5,9 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
-import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
-import org.jetbrains.kotlin.formver.core.conversion.exceptionalExit
+import org.jetbrains.kotlin.formver.core.conversion.resourceExhaustionExit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildFunctionPretype
@@ -38,10 +37,9 @@ abstract class AbstractPartiallySpecialKotlinFunction(
 class StringPlusAnyFunction : AbstractPartiallySpecialKotlinFunction("kotlin", className = "String", name = "plus") {
     override fun tryInsertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding? {
         val argType = args[1].type
-        val callee = (baseEmbedding as? NamedFunctionSignature)?.symbol
         return when {
-            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee))
-            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee))
+            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.resourceExhaustionExit())
+            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.resourceExhaustionExit())
             else -> null
         }
     }

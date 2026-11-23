@@ -41,6 +41,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbeddin
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.isLibraryDeclaration
+import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.IterationSequenceSize
 import org.jetbrains.kotlin.name.FqName
@@ -133,13 +136,47 @@ private fun StmtConversionContext.stdlibHof(call: FirFunctionCall): Pair<StdlibH
     // Without the trusted collection view, as in a common source set the bundled specifications do not reach, the
     // call stays an opaque library call.
     if (call.isCollectionLoop() && !hasCollectionIterationModels(call.hasMapReceiver())) return null
-    val lambda = when (val argument = call.arguments.last()) {
+    val lambda = lambdaArgument(call) ?: return null
+    return hof to lambda
+}
+
+/** The last argument of [call] as a lambda: a lambda literal, or an inline parameter bound to one; `null` otherwise. */
+private fun StmtConversionContext.lambdaArgument(call: FirFunctionCall): LambdaExp? =
+    when (val argument = call.arguments.last()) {
         is FirAnonymousFunctionExpression -> convert(argument)
         is FirPropertyAccessExpression ->
             argument.calleeReference.toResolvedValueParameterSymbol()?.let(::resolveParameter)
         else -> null
-    }?.ignoringMetaNodes() as? LambdaExp ?: return null
-    return hof to lambda
+    }?.ignoringMetaNodes() as? LambdaExp
+
+/** The scope function [call] names when its last argument is a variable or property holding a function object. */
+private fun StmtConversionContext.scopeFunctionObjectCall(call: FirFunctionCall): StdlibHof? {
+    if (call.arguments.lastOrNull() !is FirPropertyAccessExpression) return null
+    val symbol = call.toResolvedCallableSymbol() ?: return null
+    val hof = stdlibHofKind(symbol, call.arguments.size)?.takeIf { it.isScope } ?: return null
+    return hof.takeIf { lambdaArgument(call) == null }
+}
+
+private val builderFunctions = setOf(
+    CallableId(textPackage, Name.identifier("buildString")),
+    CallableId(collectionsPackage, Name.identifier("buildList")),
+    CallableId(collectionsPackage, Name.identifier("buildSet")),
+    CallableId(collectionsPackage, Name.identifier("buildMap")),
+)
+
+/**
+ * Converts a call of `buildString`, `buildList`, `buildSet` or `buildMap` with a lambda and no capacity: the lambda
+ * runs inlined on a builder known only by its type, and the result is known only by its type. `null` for any other
+ * call.
+ */
+private fun StmtConversionContext.convertBuilderCall(call: FirFunctionCall): ExpEmbedding? {
+    val symbol = call.toResolvedCallableSymbol() ?: return null
+    if (!symbol.isLibraryDeclaration() || symbol.callableId !in builderFunctions || call.arguments.size != 1) return null
+    val lambda = lambdaArgument(call) ?: return null
+    val builderType = lambda.function.receiverParameter?.typeRef?.coneType ?: return null
+    val builder = declareAnonVar(embedType(builderType), unconstrainedValue(embedType(builderType)))
+    val invocation = withCallSite(call) { lambda.insertCall(listOf(builder.variable), this) }
+    return blockOf(builder, invocation, unconstrainedValue(embedType(call)))
 }
 
 /**
@@ -166,9 +203,21 @@ private data class TemplateReceiver(
  * index and at no index before it.
  */
 fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding? {
+    convertBuilderCall(call)?.let { return it }
+    scopeFunctionObjectCall(call)?.let { hof ->
+        return convertScopeCall(call, hof) { args ->
+            val function = convert(call.arguments.last())
+            val type = when (hof) {
+                StdlibHof.Also, StdlibHof.Apply -> buildType { unit() }
+                StdlibHof.TakeIf, StdlibHof.TakeUnless -> buildType { boolean() }
+                else -> embedType(call)
+            }
+            InvokeFunctionObject(function, args, type, exceptionalExit(KotlinCondition.ExceptionSource.FUNCTION_OBJECT).takeIf { mayThrow() })
+        }
+    }
     val (hof, lambda) = stdlibHof(call) ?: return null
     return when {
-        hof.isScope -> convertScopeCall(call, hof, lambda)
+        hof.isScope -> convertScopeCall(call, hof) { args -> withCallSite(call) { lambda.insertCall(args, this) } }
         hof == StdlibHof.MapElements || hof == StdlibHof.FilterElements ->
             convertElementTemplate(call, hof, lambda, TemplateFamily.Builder)
         hof == StdlibHof.Fold || hof == StdlibHof.Count || hof.searches ->
@@ -398,15 +447,18 @@ private fun StmtConversionContext.builderFacts(
     ))))
 }
 
-/** Calls the scope lambda through the same inlining path as source inline functions. */
+/**
+ * Converts the scope function [call], passing its receiver, if any, to [invoke]: a lambda through the same inlining
+ * path as source inline functions, or a function object as its invocation.
+ */
 private fun StmtConversionContext.convertScopeCall(
     call: FirFunctionCall,
     hof: StdlibHof,
-    lambda: LambdaExp,
+    invoke: (List<ExpEmbedding>) -> ExpEmbedding,
 ): ExpEmbedding {
     val receiver = if (hof == StdlibHof.With || hof == StdlibHof.Context) call.arguments.first() else call.extensionReceiver
     val declaration = receiver?.let { declareAnonVar(embedType(it), convert(it)) }
-    val invocation = withCallSite(call) { lambda.insertCall(listOfNotNull(declaration?.variable), this) }
+    val invocation = invoke(listOfNotNull(declaration?.variable))
     val result = when (hof) {
         StdlibHof.Also, StdlibHof.Apply -> blockOf(invocation, declaration!!.variable)
         StdlibHof.TakeIf, StdlibHof.TakeUnless -> {

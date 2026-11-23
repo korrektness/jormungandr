@@ -296,6 +296,25 @@ clauses: it relies on the map's `get` and `containsKey` not throwing, as the
 
 Tests: `specifications/exception_free_library_calls.kt::showsInt,hashesString,constructsPair,hashesAny,showsAny,lookupPresent,lookupMissing`.
 
+The same check covers further library calls on trusted knowledge of their
+implementations: `String.plus` of a value of those final types, the
+`StringBuilder` constructors without a capacity or `CharSequence`, collection
+factories that only allocate (a hashed factory's `vararg` overload only for a
+key type among those final types), and `add(element)` on a `MutableList` or
+`ArrayList` that a `mutableListOf`, `arrayListOf` or `ArrayList` constructor
+call created, directly or through a `val` that cannot be overridden and has no
+custom getter. Such a `val` is assumed initialized wherever it is read, as all
+field reads are. Concatenation and `StringBuilder.append` past
+`Int.MAX_VALUE` code units leave by `resourceExhaustionExit`
+(`conversion/StmtConversionContext.kt`): catches may receive the exit, and it
+checks no `throwsOnlyIf` condition, since resource exhaustion is outside the
+claim. `buildString`, `buildList`, `buildSet` and `buildMap` run their lambda
+on an unconstrained shared builder and return an unconstrained value; the
+claim that the call itself throws nothing else rests on their library
+implementations.
+
+Tests: `specifications/exception_free_allocations.kt::concatenates,concatenatesAny,templatesAny,buildsWithCapacity,buildsStringThrowing,anySet,anyMap,addsToLocal,addsToParameter,addsToVar`.
+
 ### Arrays
 
 A primitive array's predicate holds a sequence of integers bounded by its element type. An `Array<T>`'s

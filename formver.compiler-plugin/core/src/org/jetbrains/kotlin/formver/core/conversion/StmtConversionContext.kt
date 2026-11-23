@@ -400,7 +400,9 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
     return Block {
         addAll(evaluated.declarations)
         addAll(evaluated.values)
-        if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee)))
+        if (mayThrow() && (access as? FirFunctionCall)?.isExceptionFreeLibraryCall() != true) {
+            add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee)))
+        }
         val type = embedType(access.resolvedType)
         add(
             when {
@@ -798,6 +800,16 @@ fun StmtConversionContext.exceptionalExit(
 ): ExpEmbedding = Block {
     activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
     exceptionEscape?.let { add(it.at(source, callee?.let { session.externalSpecifications?.boundTarget(it) ?: it })) }
+    add(Unreachable)
+}
+
+/**
+ * Leaves by resource exhaustion, such as the `OutOfMemoryError` of a String longer than `Int.MAX_VALUE`: any enclosing
+ * catch of this function may receive it. Its escape from the function is outside the verification claim
+ * (SPECIFICATIONS.md, "Exceptions boundary"), so no `throwsOnlyIf` condition is checked there.
+ */
+fun StmtConversionContext.resourceExhaustionExit(): ExpEmbedding = Block {
+    activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
     add(Unreachable)
 }
 

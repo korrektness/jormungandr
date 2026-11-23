@@ -1369,9 +1369,30 @@ The option covers declarations as follows:
   static type is `String`, `Char`, `Boolean` or a signed or unsigned primitive number type, possibly nullable, throws
   nothing. These classes are final, so the call runs the library's own implementation. On any other receiver, such
   as `Any`, the call may dispatch to an override and reports `EXCEPTION_FROM_UNSPECIFIED_CALL`.
+- String concatenation, `+` or a string template, and `StringBuilder.append` of a `Char` or a `String` throw only when
+  the result would exceed `Int.MAX_VALUE` UTF-16 code units, which is resource exhaustion (see
+  [Exceptions boundary](#exceptions-boundary)): that exit may reach an enclosing `catch`, and no condition is checked
+  where it leaves the function. A value concatenated by its `toString` throws nothing when its static type is one of
+  the final types above; any other value, such as an `Any`, reports `EXCEPTION_FROM_UNSPECIFIED_CALL`.
+- The `StringBuilder` constructors without an argument or with a `String` throw nothing; the capacity constructor
+  throws for a negative capacity, and the `CharSequence` constructor calls the argument's methods.
+- A collection factory that only allocates throws nothing: `emptyList`, `emptySet`, `emptyMap`, `listOf`,
+  `listOfNotNull`, `mutableListOf`, `arrayListOf`, and the overloads of `setOf`, `mutableSetOf`, `hashSetOf`,
+  `linkedSetOf`, `mapOf`, `mutableMapOf`, `hashMapOf` and `linkedMapOf` that take no `vararg`. Their `vararg`
+  overloads call `hashCode` and `equals` of the elements or keys, so they throw nothing only when the element or key
+  type is one of the final types above.
+- `add(element)` on a `MutableList` or `ArrayList` throws nothing when its receiver is known to be growable: a call of
+  `mutableListOf`, `arrayListOf` or an `ArrayList` constructor, or a `val` initialized by one that has no custom
+  getter and cannot be overridden. Any other `MutableList`, such as a parameter, may be read-only or fixed-size and
+  throw `UnsupportedOperationException`, so its `add` reports `EXCEPTION_FROM_UNSPECIFIED_CALL`. `add(index, element)`
+  is not covered.
 - A scope function (see [Inline functions](#inline-functions-and-default-arguments)) or an inline collection template
-  (see [Collection iteration](#collection-iteration)) that inlines its lambda raises only what the lambda raises. Given
-  a function object, or a template receiver that is not owned, the call is an opaque library call.
+  (see [Collection iteration](#collection-iteration)) that inlines its lambda raises only what the lambda raises. A
+  scope function given a variable or property holding a function object invokes it, which reports
+  `EXCEPTION_FROM_FUNCTION_OBJECT`; given any other function-valued expression, or a template receiver that is not
+  owned, the call is an opaque library call.
+- `buildString`, `buildList`, `buildSet` and `buildMap` given a lambda and no capacity raise only what the lambda
+  raises. The lambda runs on a builder known only by its type, and the result is known only by its type.
 - The bundled model of `Map.getValue` throws only if the map does not contain the key.
 
 A function whose verification is skipped keeps its condition, so its callers still assume it throws nothing, as they
@@ -1825,7 +1846,7 @@ through an owned path consumes that path.
 
 ## Exceptions boundary
 
-Resource exhaustion is outside the verification safety claim. String values have at most `Int.MAX_VALUE` UTF-16 code units. Executable concatenation whose combined length exceeds that limit takes an abnormal exit; on normal return its length is the sum. Pure and specification concatenation requires no size precondition: its result is a bounded String, with exact concatenation semantics guarded by the combined length fitting within the limit. Above that limit the result is unspecified.
+Resource exhaustion is outside the verification safety claim. String values have at most `Int.MAX_VALUE` UTF-16 code units. Executable concatenation whose combined length exceeds that limit takes an abnormal exit, an `OutOfMemoryError` on the JVM; an enclosing `catch` may receive it, and no `throwsOnlyIf` condition is checked where it leaves the function. On normal return its length is the sum. Pure and specification concatenation requires no size precondition: its result is a bounded String, with exact concatenation semantics guarded by the combined length fitting within the limit. Above that limit the result is unspecified.
 
 ## Additional Plugin Options
 
