@@ -56,8 +56,8 @@ sed -E 's/<!([A-Z_]*!)?>//g' "$bfs_tests/arraydeque_bfs.kt" >"$consumer/src/bfs/
 {
     echo 'import org.jetbrains.kotlin.formver.plugin.*'
     echo
-    sed -n '/^fun <!VIPER_TEXT!>scanSkipLast</,/^fun <!VIPER_TEXT!>bfsWithoutVertexBound</p' \
-        "$bfs_tests/arraydeque_bfs_negative.kt" | sed '$d'
+    sed -n '/^fun <!VIPER_TEXT!>scanSkipLast</,/^}/p' \
+        "$bfs_tests/arraydeque_bfs_negative.kt"
 } | sed -E 's/<!([A-Z_]*!)?>//g' >"$consumer/src/badClaim/kotlin/BadScan.kt"
 scan_return="$(grep -n '^    return f$' "$consumer/src/badClaim/kotlin/BadScan.kt" | cut -d: -f1)"
 if [[ -z "$scan_return" || "$(wc -l <<<"$scan_return")" -ne 1 ]]; then
