@@ -420,7 +420,9 @@ A member whose model owns its dispatch receiver (`@Unique`, or `@get:Unique` for
 and so does an extension whose model's extension receiver is `@Unique`. A
 call whose receiver is unique just before it gets the model's contract, observers and laws. A call on any other
 receiver is the opaque library call: it may throw, and its result is known only through its type, except that the
-`size` of a Collection or a Map is at least 0. Such a call is
+`size` of a Collection or a Map is at least 0, and that an extension whose model returns a `@Unique` result and
+consumes no parameter (every `@Unique` parameter and receiver is `@Borrowed`), such as `map` or `filter`, gives an
+owned result whose contents are unknown. Such a call is
 reported as `UNCHECKED_LIBRARY_CALL`, and a specification cannot contain one. A parameter declared
 `@Unique @Borrowed` gives the function's calls the model's contract. A member declared in source that owns its receiver
 accepts only a unique one.

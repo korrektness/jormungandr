@@ -55,6 +55,8 @@ import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.formver.core.isUnique
+import org.jetbrains.kotlin.formver.core.isBorrowed
+import org.jetbrains.kotlin.formver.core.returnsUnique
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
@@ -355,11 +357,27 @@ private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCal
 }
 
 /**
+ * Whether [this] library extension returns a fresh object: its external specification declares the result `@Unique`
+ * and consumes no parameter, so the result cannot be one the caller passed in.
+ */
+private fun StmtConversionContext.specifiesFreshExtensionResult(callee: FirCallableSymbol<*>): Boolean {
+    val model = callee.externalSpecificationSymbol(session) as? FirFunctionSymbol<*> ?: return false
+    if (model == callee || callee.dispatchReceiverType != null) return false
+    return context(checkerContext) {
+        model.returnsUnique() &&
+            (listOfNotNull(model.receiverParameterSymbol) + model.contextParameterSymbols + model.valueParameterSymbols)
+                .none { it.isUnique() && !it.isBorrowed() }
+    }
+}
+
+/**
  * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
  * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
  * is not `Unique` on entry to [element]; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
- * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it. The `size` of a Collection or a
- * Map is at least 0 (docs/soundness.md, "Sizes of collections that are not owned").
+ * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it. An extension that returns a
+ * fresh object (see `specifiesFreshExtensionResult`) gives an owned result with unconstrained state (docs/soundness.md,
+ * "Fresh results of library calls on objects that are not owned"). The `size` of a Collection or a Map is at least 0
+ * (docs/soundness.md, "Sizes of collections that are not owned").
  */
 fun StmtConversionContext.convertUnownedSpecifiedMember(
     access: FirQualifiedAccessExpression,
@@ -386,7 +404,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
         val type = embedType(access.resolvedType)
         add(
             when {
-                access.isForLoopIterator() -> unconstrainedOwnedValue(type)
+                access.isForLoopIterator() || specifiesFreshExtensionResult(callee) -> unconstrainedOwnedValue(type)
                 callee.name == SIZE && callee is FirPropertySymbol && isIntSized(receiver) -> nonNegativeValue(type)
                 else -> unconstrainedValue(type)
             }

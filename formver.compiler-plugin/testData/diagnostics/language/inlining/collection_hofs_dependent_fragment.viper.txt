@@ -97,10 +97,13 @@ method positives(values: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), ListModel())
 {
   var anon_10: Ref
+  var anon_11: Ref
   var anon_0: Ref
-  inhale isSubtype(typeOf(anon_10), functionType())
+  inhale isSubtype(typeOf(anon_11), functionType())
   inhale isSubtype(typeOf(anon_0), ListModel())
-  v_ret_0 := anon_0
+  inhale acc(ListModel_unique(anon_0), write)
+  anon_10 := anon_0
+  v_ret_0 := anon_10
   goto lbl_ret_0
   label lbl_ret_0
 }

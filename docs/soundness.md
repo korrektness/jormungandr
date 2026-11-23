@@ -689,6 +689,20 @@ gives `Int.MAX_VALUE` for a larger one.
 
 Test: `verification/soundness/iterable_size.kt::countVisited,iterableObserver`.
 
+### Fresh results of library calls on objects that are not owned
+
+An unchecked library call of an extension whose model declares its result
+`@Unique` and consumes no parameter, such as `map`, `filter` or `mapValues`,
+gives an owned result with unconstrained contents
+(`specifiesFreshExtensionResult` in `conversion/StmtConversionContext.kt`).
+This trusts the model's `@Unique` result to mean the library returns an object
+that no other reference reaches. An extension that consumes a `@Unique`
+parameter, such as `orEmpty`, can return that parameter, so its result on an
+object that is not owned stays shared. Member calls are excluded, since a
+source implementation of the receiver's type can override them.
+
+Tests: `language/inlining/shared_collection_hofs.kt::sharedMapThenLoop,sharedFilterThenAny,sharedFilterForEach,sharedMapThenCheckedMap,sharedOrEmptyAliasesReceiver`.
+
 ### Sizes of collections that are not owned
 
 A read of `size` on a Collection or a Map that is not owned is the unchecked
