@@ -38,9 +38,10 @@ abstract class AbstractPartiallySpecialKotlinFunction(
 class StringPlusAnyFunction : AbstractPartiallySpecialKotlinFunction("kotlin", className = "String", name = "plus") {
     override fun tryInsertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding? {
         val argType = args[1].type
+        val callee = (baseEmbedding as? NamedFunctionSignature)?.symbol
         return when {
-            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
-            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
+            argType.equalToType { string() } -> OperatorExpEmbeddings.AddStringString(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee))
+            argType.equalToType { char() } -> OperatorExpEmbeddings.AddStringChar(args[0], args[1], exceptionalExit = ctx.exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee))
             else -> null
         }
     }

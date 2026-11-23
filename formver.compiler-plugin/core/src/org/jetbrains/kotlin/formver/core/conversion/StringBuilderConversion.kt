@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
+import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderAppend
@@ -34,7 +35,7 @@ fun StmtConversionContext.convertStringBuilderIntrinsic(
         StringBuilderIntrinsic.TO_STRING -> StringBuilderToString(builder, owned)
         StringBuilderIntrinsic.APPEND_CHAR, StringBuilderIntrinsic.APPEND_STRING -> {
             val value = (access as FirFunctionCall).arguments.single()
-            StringBuilderAppend(builder, convert(value), owned, exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL))
+            StringBuilderAppend(builder, convert(value), owned, exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, access.toResolvedCallableSymbol()))
         }
         StringBuilderIntrinsic.CLEAR -> StringBuilderClear(builder, owned)
     }

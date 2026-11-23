@@ -21,7 +21,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         is SourceRole.Arithmetic -> role.condition
         is SourceRole.CastCheck -> role.condition
         is SourceRole.Termination -> role.condition
-        is SourceRole.ExceptionEscape -> KotlinCondition.ExceptionEscape(role.source, role.declaration)
+        is SourceRole.ExceptionEscape -> KotlinCondition.ExceptionEscape(role.source, role.declaration, role.callee)
         is SourceRole.Proof -> KotlinCondition.Proof(
             role.clause, role.declaration, role.subject,
             position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source },

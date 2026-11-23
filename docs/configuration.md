@@ -123,7 +123,8 @@ must throw no exception, and its callers assume it throws none. The covered decl
 what raises each escaping exception, are defined in
 [Exception freedom](../SPECIFICATIONS.md#exception-freedom). In a [declaration report](#declaration-reports), the
 `verification_detail` of a failed program lists these error kinds, so a declaration that verifies apart from
-exception freedom is one whose failures are all `EXCEPTION_FROM_*` or `EXCEPTION_IN_TRY`.
+exception freedom is one whose failures are all `EXCEPTION_FROM_*` or `EXCEPTION_IN_TRY`, and its
+`exception_callees` name the callees whose calls raise them.
 
 ## External specification inputs
 
@@ -171,6 +172,7 @@ A compilation replaces the file. The first line names the columns:
 | `verification` | For a converted program: `verified`, `failed`, `timeout`, `error`, `skipped` when conversion found errors that prevent verification, or `not_selected`. |
 | `verification_detail` | For `failed`, the `FailureKind` of each verification error, sorted and comma-separated; for `skipped`, the skip reason; for `error`, the reason and message. |
 | `seconds` | Verification time of the program. |
+| `exception_callees` | For `failed`, one entry per `EXCEPTION_FROM_UNSPECIFIED_CALL` or `EXCEPTION_FROM_THROWING_CALL` error whose call has a declared callee, sorted and comma-separated. An entry is `KIND:origin:callee`: the error's `FailureKind`; `source` when the callee is declared in the compiled sources, `library` when it is read from a compiled dependency; and the callee's fully qualified name, including its owning class or package, named as the error message names it (see [Exception freedom](../SPECIFICATIONS.md#exception-freedom)), such as `kotlin.Any.toString`. |
 
 Compilations run by the test facade write no rows for converted programs,
 because the facade verifies them itself.

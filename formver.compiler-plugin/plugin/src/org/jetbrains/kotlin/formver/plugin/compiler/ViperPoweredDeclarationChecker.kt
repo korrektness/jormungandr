@@ -274,12 +274,15 @@ internal class ViperPoweredDeclarationChecker(
             fun seconds() = (elapsedNanos ?: (System.nanoTime() - start)) / NANOS_PER_SECOND
             try {
                 val failedKinds = mutableListOf<String>()
+                val exceptionCallees = mutableListOf<String>()
                 val timeout = progress.run(name, declaration.source, { elapsedNanos }) {
                     val result = obtainResult()
                     elapsedNanos = result.elapsedNanos
                     result.errors.forEach { err ->
                         val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
-                        failedKinds += when (err) { is VerificationError -> err.toFailure(source).kind.name }
+                        val failure = when (err) { is VerificationError -> err.toFailure(source) }
+                        failedKinds += failure.kind.name
+                        failure.exceptionCallee?.let { exceptionCallees += it }
                         if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
                     }
                     result.throwFailure()
@@ -293,7 +296,11 @@ internal class ViperPoweredDeclarationChecker(
                 recordOutcome(declaration, index) {
                     when {
                         timeout != null -> copy(verification = "timeout")
-                        failedKinds.isNotEmpty() -> copy(verification = "failed", verificationDetail = failedKinds.sorted().joinToString(","))
+                        failedKinds.isNotEmpty() -> copy(
+                            verification = "failed",
+                            verificationDetail = failedKinds.sorted().joinToString(","),
+                            exceptionCallees = exceptionCallees.sorted().joinToString(","),
+                        )
                         else -> copy(verification = "verified")
                     }.copy(seconds = seconds())
                 }
@@ -378,6 +385,16 @@ internal class ViperPoweredDeclarationChecker(
             is ConversionOwnershipCondition.MissingFacts -> condition.rule.name
             is ConversionOwnershipCondition.Read -> condition.reason.name
             else -> condition::class.java.simpleName
+        }
+
+    /**
+     * The `exception_callees` entry of this failure, `KIND:origin:callee`, when it is an escaping exception that a call
+     * raises; see docs/configuration.md#declaration-reports.
+     */
+    private val Failure.exceptionCallee: String?
+        get() {
+            val escape = condition as? KotlinCondition.ExceptionEscape ?: return null
+            return "${kind.name}:${escape.calleeOrigin ?: return null}:${escape.calleeName}"
         }
 
     private val Failure.detail: String

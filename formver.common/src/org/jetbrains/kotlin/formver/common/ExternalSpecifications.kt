@@ -149,6 +149,11 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         }
     }
 
+    private val targets by lazy { initialize(); callables.entries.associate { (target, model) -> model to target } }
+
+    /** The declaration that the model [symbol] is bound to, or null when [symbol] is not a bound model. */
+    fun boundTarget(symbol: FirCallableSymbol<*>): FirCallableSymbol<*>? = targets[symbol]
+
     private fun modelCallable(symbol: FirCallableSymbol<*>): FirCallableSymbol<*>? =
         callables[symbol.unwrapUseSiteSubstitutionOverrides().unwrapFakeOverrides()]
 

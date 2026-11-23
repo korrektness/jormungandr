@@ -834,7 +834,7 @@ class ProgramConverter(
     }.also {
         fullSignatures.putIfAbsent(it.signature.name, it.signature)
         accessorReturnTargets.putIfAbsent(it.signature.name, it.returnTarget)
-    }.signature
+    }.signature.copy(accessedProperty = symbol)
 
     override fun embedEnumEntry(symbol: FirEnumEntrySymbol): ExpEmbedding {
         val functionType = buildFunctionPretype {

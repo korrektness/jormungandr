@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 
 /**
  * Especially when working with type information, there are a number of expressions that do not have a corresponding `ExpEmbedding`.
@@ -121,9 +122,17 @@ data class ThrowsConditionCheck(
     val exceptionFree: Boolean = false,
     val source: KotlinCondition.ExceptionSource = KotlinCondition.ExceptionSource.THROW,
     val forcedSource: KotlinCondition.ExceptionSource? = null,
+    val callee: FirCallableSymbol<*>? = null,
 ) : ExpEmbedding {
-    /** This check placed at an exit that [source] raises. */
-    fun at(source: KotlinCondition.ExceptionSource): ThrowsConditionCheck = copy(source = forcedSource ?: source)
+    /**
+     * This check placed at an exit that [source] raises, in a call of [callee] when a call raises it. The check keeps
+     * [callee] only when the exit stays attributed to a call.
+     */
+    fun at(source: KotlinCondition.ExceptionSource, callee: FirCallableSymbol<*>? = null): ThrowsConditionCheck {
+        val attributed = forcedSource ?: source
+        val call = attributed == KotlinCondition.ExceptionSource.UNSPECIFIED_CALL || attributed == KotlinCondition.ExceptionSource.THROWING_CALL
+        return copy(source = attributed, callee = callee.takeIf { call })
+    }
 
     /** This check with every exit it is placed at attributed to [source], unless an enclosing attribution holds. */
     fun forcing(source: KotlinCondition.ExceptionSource): ThrowsConditionCheck = copy(forcedSource = forcedSource ?: source)

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings
 
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.Position
@@ -17,10 +18,14 @@ sealed interface SourceRole {
      */
     data object ThrowsAssumption : SourceRole
 
-    /** An exceptional exit of [declaration], which is exception-free by default; [source] says what raises it. */
+    /**
+     * An exceptional exit of [declaration], which is exception-free by default; [source] says what raises it, and
+     * [callee] is the called declaration that raises it, when a call does.
+     */
     data class ExceptionEscape(
         val source: org.jetbrains.kotlin.formver.common.KotlinCondition.ExceptionSource,
         val declaration: FirBasedSymbol<*>?,
+        val callee: FirCallableSymbol<*>? = null,
     ) : SourceRole
 
     data class CastCheck(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole

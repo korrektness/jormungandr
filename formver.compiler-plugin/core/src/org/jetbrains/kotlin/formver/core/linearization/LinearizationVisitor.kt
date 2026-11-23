@@ -546,7 +546,7 @@ data class LinearizationVisitor(
             val pos = ctx.source.asPosition
             val condition = Exp.FuncApp(e.function, e.args.map { it.toLocalVarUse(pos) }, Type.Bool, pos)
             ctx.addStatement {
-                val role = if (e.exceptionFree) SourceRole.ExceptionEscape(e.source, e.declaration)
+                val role = if (e.exceptionFree) SourceRole.ExceptionEscape(e.source, e.declaration, e.callee)
                     else SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.THROWS_ONLY_IF, e.declaration)
                 Stmt.Assert(Exp.Old(condition, pos), pos, role.asInfo)
             }

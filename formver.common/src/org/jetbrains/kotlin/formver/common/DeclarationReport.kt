@@ -25,10 +25,12 @@ class DeclarationReport(private val target: File) {
         val verification: String = "",
         val verificationDetail: String = "",
         val seconds: Double? = null,
+        val exceptionCallees: String = "",
     ) {
         fun render(): String = listOf(
             file, line.toString(), declaration, program, conversion, conversionKind, conversionReason,
             conversionDetail, verification, verificationDetail, seconds?.let { "%.3f".format(it) }.orEmpty(),
+            exceptionCallees,
         ).joinToString("\t") { it.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ') }
     }
 
@@ -45,7 +47,7 @@ class DeclarationReport(private val target: File) {
     companion object {
         val COLUMNS = listOf(
             "file", "line", "declaration", "program", "conversion", "conversion_kind", "conversion_reason",
-            "conversion_detail", "verification", "verification_detail", "seconds",
+            "conversion_detail", "verification", "verification_detail", "seconds", "exception_callees",
         )
     }
 }

@@ -11,7 +11,9 @@ import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.expressions.FirBlock
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
@@ -111,10 +113,14 @@ interface NonInlineCallable : NamedCallableEmbedding {
     /** The Viper function giving this callable's `throwsOnlyIf` condition at its arguments, when it has one. */
     val throwsCondition: SymbolicName? get() = null
 
+    /** The declaration that a call of this callable names when it raises an exception. */
+    val callee: FirCallableSymbol<*>? get() = symbol
+
     override fun insertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding =
         if (isPure || !ctx.mayThrow()) insertCall(args)
         else MethodCall(this, args, ctx.exceptionalExit(
-            if (throwsCondition == null) KotlinCondition.ExceptionSource.UNSPECIFIED_CALL else KotlinCondition.ExceptionSource.THROWING_CALL
+            if (throwsCondition == null) KotlinCondition.ExceptionSource.UNSPECIFIED_CALL else KotlinCondition.ExceptionSource.THROWING_CALL,
+            callee,
         ))
 
     // When the function does not need to be inlined, we do not need a context to call it. This is helpful, because
@@ -148,7 +154,8 @@ fun NonInlineCallable.toFuncApp(
 
 /**
  * [throwsOnlyIf] is the `throwsOnlyIf` condition over the formal arguments, read in the entry state. [exceptionFree] is
- * set when that condition is the default `false` of a function without a `throwsOnlyIf` block.
+ * set when that condition is the default `false` of a function without a `throwsOnlyIf` block. [accessedProperty] is the
+ * property whose accessor this is, when the signature has no accessor symbol.
  */
 data class NonInlineFunctionSignature(
     val signature: NamedFunctionSignature,
@@ -158,8 +165,10 @@ data class NonInlineFunctionSignature(
     val openConstructedClass: ClassTypeEmbedding? = null,
     val throwsOnlyIf: ExpEmbedding? = null,
     val exceptionFree: Boolean = false,
+    val accessedProperty: FirPropertySymbol? = null,
 ) : CompleteFunctionSignature, NonInlineCallable, NamedFunctionSignature by signature {
     override val throwsCondition: SymbolicName? get() = throwsOnlyIf?.let { ThrowsConditionName(name) }
+    override val callee: FirCallableSymbol<*>? get() = symbol ?: accessedProperty
 }
 
 

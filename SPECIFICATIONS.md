@@ -1340,6 +1340,10 @@ Where an exception may leave an exception-free function, the error names what ra
 | `EXCEPTION_FROM_FUNCTION_OBJECT` | An invocation of a function object. |
 | `EXCEPTION_IN_TRY` | Any of the above inside a `try` with a `catch`. A `catch` may receive the exception, but catch selection is over-approximated, so the exception may also escape. |
 
+The two call errors also name the callee, when the call has a declared one, by its fully qualified name and as a
+`source` or `library` callee: the declaration resolved at the call, the inherited declaration for a fake override,
+the library declaration for an external specification model, and the property for an accessor.
+
 The exit after a `finally` block that rethrows the exception of its `try` is not reported again: the exit that
 raised the exception reports it.
 

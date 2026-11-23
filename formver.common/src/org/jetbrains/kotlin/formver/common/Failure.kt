@@ -6,6 +6,8 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 
 object FailureDiagnostics : org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer() {
@@ -143,7 +145,20 @@ sealed interface KotlinCondition {
         /** Any exit inside a `try` with a `catch`, which may receive the exception. */
         TRY,
     }
-    data class ExceptionEscape(val source: ExceptionSource, val declaration: FirBasedSymbol<*>?) : KotlinCondition
+    /** An exception that may leave [declaration], raised by [source]; [callee] is the called declaration that raises it, when a call does. */
+    data class ExceptionEscape(
+        val source: ExceptionSource,
+        val declaration: FirBasedSymbol<*>?,
+        val callee: FirCallableSymbol<*>? = null,
+    ) : KotlinCondition {
+        /** `library` when [callee] is read from a compiled dependency, else `source`; `null` without a callee. */
+        val calleeOrigin: String?
+            get() = callee?.let { if (it.isLibraryDeclaration()) "library" else "source" }
+
+        /** The fully qualified name of [callee], fake overrides resolved to the declaration they inherit. */
+        val calleeName: String?
+            get() = callee?.unwrapFakeOverrides()?.let { it.callableId?.asSingleFqName()?.asString() ?: it.name.asString() }
+    }
     data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
     data class DivisionByZero(val operation: String) : KotlinCondition
     data class CastFailure(val target: String) : KotlinCondition

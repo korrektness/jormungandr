@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.TerminationCondition
 import org.jetbrains.kotlin.formver.common.TerminationRule
 import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -381,7 +382,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
     return Block {
         addAll(evaluated.declarations)
         addAll(evaluated.values)
-        if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL)))
+        if (mayThrow()) add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee)))
         val type = embedType(access.resolvedType)
         add(
             when {
@@ -770,11 +771,15 @@ fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEm
 
 /**
  * Leaves by an exception, which may be caught by any enclosing catch of this function, whatever its declared type,
- * or leave the function, in which case the postcondition does not apply. [source] is what raises the exception.
+ * or leave the function, in which case the postcondition does not apply. [source] is what raises the exception, and
+ * [callee] the called declaration that raises it, when a call does; a bound external specification model stands for the
+ * declaration it is bound to.
  */
-fun StmtConversionContext.exceptionalExit(source: KotlinCondition.ExceptionSource): ExpEmbedding = Block {
+fun StmtConversionContext.exceptionalExit(
+    source: KotlinCondition.ExceptionSource, callee: FirCallableSymbol<*>? = null,
+): ExpEmbedding = Block {
     activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
-    exceptionEscape?.let { add(it.at(source)) }
+    exceptionEscape?.let { add(it.at(source, callee?.let { session.externalSpecifications?.boundTarget(it) ?: it })) }
     add(Unreachable)
 }
 

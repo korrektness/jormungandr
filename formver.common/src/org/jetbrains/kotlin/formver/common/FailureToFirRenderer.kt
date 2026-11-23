@@ -207,11 +207,14 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         }
     }
 
+    private fun callee(condition: KotlinCondition.ExceptionEscape): String =
+        condition.calleeName?.let { "${condition.calleeOrigin} callee '$it'" } ?: "callee"
+
     private fun exceptionEscapeMessage(condition: KotlinCondition.ExceptionEscape): String {
         val raised = when (condition.source) {
             KotlinCondition.ExceptionSource.THROW -> "this operation may throw"
-            KotlinCondition.ExceptionSource.UNSPECIFIED_CALL -> "the callee has no 'throwsOnlyIf' condition"
-            KotlinCondition.ExceptionSource.THROWING_CALL -> "the callee's 'throwsOnlyIf' condition may hold"
+            KotlinCondition.ExceptionSource.UNSPECIFIED_CALL -> "the ${callee(condition)} has no 'throwsOnlyIf' condition"
+            KotlinCondition.ExceptionSource.THROWING_CALL -> "the 'throwsOnlyIf' condition of the ${callee(condition)} may hold"
             KotlinCondition.ExceptionSource.FUNCTION_OBJECT -> "a function object may throw"
             KotlinCondition.ExceptionSource.TRY -> "a 'catch' may receive the exception, but it may also escape"
         }
