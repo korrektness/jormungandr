@@ -125,6 +125,9 @@ data class StmtConverter(
     override fun <R> withExceptionEscape(escape: ThrowsConditionCheck?, action: StmtConversionContext.() -> R): R =
         copy(exceptionEscape = escape).action()
 
+    override fun <R> withoutExceptionalExits(action: StmtConversionContext.() -> R): R =
+        copy(activeCatchLabels = emptyList(), exceptionEscape = null).action()
+
     override fun <R> withEntryStateReads(action: StmtConversionContext.() -> R): R = copy(readsEntryState = true).action()
 
     override fun <R> withActiveCatchLabels(labels: List<LabelEmbedding>, action: StmtConversionContext.() -> R): R =

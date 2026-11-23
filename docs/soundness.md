@@ -281,6 +281,21 @@ Tests: `specifications/throws_only_if.kt::throwTooOften,requireTooStrict,callerT
 `specifications/external/throws_only_if_external.kt::digitTooStrict,unclausedLibraryCall`,
 `specifications/throws_only_if_varint.kt::readVarintTooEager`.
 
+### Exception-free library calls
+
+`isExceptionFreeLibraryCall` (`conversion/ExceptionFreeLibraryCalls.kt`) gives
+no exceptional exit to `to`, to the `Pair` and `Triple` constructors, and to
+`toString`, `hashCode` and `equals` on a receiver whose static type is
+`String`, `Char`, `Boolean` or a signed or unsigned primitive number type. The
+claim rests on the library's implementations of these final classes, which
+SnaKt does not check; the check names the receiver's static type, so a call on
+`Any` or a type parameter keeps its exit. The bundled model of `Map.getValue`
+gives the condition `!containsKey(key)`, trusted like the model's other
+clauses: it relies on the map's `get` and `containsKey` not throwing, as the
+`@Pure` models of those members already do.
+
+Tests: `specifications/exception_free_library_calls.kt::showsInt,hashesString,constructsPair,hashesAny,showsAny,lookupPresent,lookupMissing`.
+
 ### Arrays
 
 A primitive array's predicate holds a sequence of integers bounded by its element type. An `Array<T>`'s

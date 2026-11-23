@@ -95,6 +95,12 @@ interface StmtConversionContext : MethodConversionContext {
     /** Whether `old` reads the state it is evaluated in: in a `throwsOnlyIf` condition, that is the entry state. */
     val readsEntryState: Boolean
     fun <R> withExceptionEscape(escape: ThrowsConditionCheck?, action: StmtConversionContext.() -> R): R
+
+    /**
+     * Runs [action] where an operation has no exceptional exit: no enclosing `catch` receives one and none leaves the
+     * function.
+     */
+    fun <R> withoutExceptionalExits(action: StmtConversionContext.() -> R): R
     fun <R> withEntryStateReads(action: StmtConversionContext.() -> R): R
 
     /** The call being inserted, once its arguments are converted. Bodies inlined at it are bound there. */

@@ -149,6 +149,15 @@ internal fun <K, V> (@Unique @Borrowed MutableMapModel<K, V>).setModel(key: K, v
     }
 }
 
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/get-value.html: the mapped value; throws
+// NoSuchElementException when the key is absent and the map has no default.
+@ExternalFunction("kotlin.collections.getValue")
+internal fun <K, V> (@Unique @Borrowed MapModel<K, V>).getValueModel(key: K): V = TODO()
+@SpecOf("getValueModel") internal fun <K, V> (@Unique @Borrowed MapModel<K, V>).getValueSpec(key: K) {
+    postconditions<V> { result -> containsKey(key) implies (result === get(key)) }
+    throwsOnlyIf { !containsKey(key) }
+}
+
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-values.html: new map with the same keys in the
 // same iteration order and transformed values.
 @ExternalFunction("kotlin.collections.mapValues")

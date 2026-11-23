@@ -414,9 +414,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             return data.insertCallWithMappedArguments(functionCall, symbol, callee, returnType)
         }
         val operands = functionCall.functionCallArguments.withVarargsHandled(data, functionCall, callee)
-        return data.evaluateOperands(operands).around { args ->
-            data.withCallSite(functionCall) { callee.insertCall(args, this, returnType) }
-        }
+        return data.evaluateOperands(operands).around { args -> data.insertCallAt(functionCall, callee, args, returnType) }
     }
 
     override fun visitImplicitInvokeCall(

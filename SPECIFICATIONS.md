@@ -1082,11 +1082,13 @@ fun caller(c: @Unique @Borrowed Counter) {
 }
 ```
 
-The standard-library scope functions `let`, `also`, `apply`, `run` (with or
-without a receiver), and `with` inline a literal lambda, or an inline parameter
-bound to one. Kotlin's calls-in-place analysis supplies the lambda's ownership
-facts. The receiver is evaluated once before the lambda. `let`, `run`, and
-`with` return the lambda's result; `also` and `apply` return the receiver.
+The standard-library scope functions `let`, `also`, `apply`, `takeIf`,
+`takeUnless`, `run` (with or without a receiver), and `with` inline a literal
+lambda, or an inline parameter bound to one. Kotlin's calls-in-place analysis
+supplies the lambda's ownership facts. The receiver is evaluated once before the
+lambda. `let`, `run`, and `with` return the lambda's result; `also` and `apply`
+return the receiver; `takeIf` returns the receiver when the lambda gives `true`
+and `null` otherwise, and `takeUnless` the reverse.
 Assertions, exceptions, and labelled returns in the lambda are verified in the
 caller's flow.
 
@@ -1357,6 +1359,14 @@ The option covers declarations as follows:
   against the condition of the function it is inlined into.
 - A custom property accessor and a lambda converted as a program of its own are not checked, and a call of a custom
   accessor gives no assumption.
+- A call of `to`, of the `Pair` or `Triple` constructor, or of `toString`, `hashCode` or `equals` on a receiver whose
+  static type is `String`, `Char`, `Boolean` or a signed or unsigned primitive number type, possibly nullable, throws
+  nothing. These classes are final, so the call runs the library's own implementation. On any other receiver, such
+  as `Any`, the call may dispatch to an override and reports `EXCEPTION_FROM_UNSPECIFIED_CALL`.
+- A scope function (see [Inline functions](#inline-functions-and-default-arguments)) or an inline collection template
+  (see [Collection iteration](#collection-iteration)) that inlines its lambda raises only what the lambda raises. Given
+  a function object, or a template receiver that is not owned, the call is an opaque library call.
+- The bundled model of `Map.getValue` throws only if the map does not contain the key.
 
 A function whose verification is skipped keeps its condition, so its callers still assume it throws nothing, as they
 assume its other contract clauses.

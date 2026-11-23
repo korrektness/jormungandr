@@ -65,6 +65,8 @@ private enum class StdlibHof(val callableName: Name, val arity: Int, private val
     Repeat(Name.identifier("repeat"), arity = 2),
     Let(Name.identifier("let"), arity = 1),
     Also(Name.identifier("also"), arity = 1),
+    TakeIf(Name.identifier("takeIf"), arity = 1),
+    TakeUnless(Name.identifier("takeUnless"), arity = 1),
     Apply(Name.identifier("apply"), arity = 1),
     Run(Name.identifier("run"), arity = 1),
     With(Name.identifier("with"), arity = 2),
@@ -405,9 +407,16 @@ private fun StmtConversionContext.convertScopeCall(
     val receiver = if (hof == StdlibHof.With || hof == StdlibHof.Context) call.arguments.first() else call.extensionReceiver
     val declaration = receiver?.let { declareAnonVar(embedType(it), convert(it)) }
     val invocation = withCallSite(call) { lambda.insertCall(listOfNotNull(declaration?.variable), this) }
-    val result = if (hof == StdlibHof.Also || hof == StdlibHof.Apply) {
-        blockOf(invocation, declaration!!.variable)
-    } else invocation
+    val result = when (hof) {
+        StdlibHof.Also, StdlibHof.Apply -> blockOf(invocation, declaration!!.variable)
+        StdlibHof.TakeIf, StdlibHof.TakeUnless -> {
+            val type = embedType(call)
+            val kept = declaration!!.variable.withType(type)
+            val absent = NullLit.withType(type)
+            if (hof == StdlibHof.TakeIf) If(invocation, kept, absent, type) else If(invocation, absent, kept, type)
+        }
+        else -> invocation
+    }
     return (listOfNotNull(declaration) + result).toBlock()
 }
 
