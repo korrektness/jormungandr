@@ -140,3 +140,62 @@ method unclausedLibraryCall(d: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/throws_only_if_external.kt: info: Generated Viper text for modeledTrimCall:
+method modeledTrimCall(text: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(text), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := trimModel(text)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method trimModel(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires stringFromRef(this) == stringFromRef(stringLit())
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/throws_only_if_external.kt: info: Generated Viper text for modeledFileCall:
+function throws_fileModel(path: Ref): Bool
+  requires isSubtype(typeOf(path), stringType())
+{
+  stringFromRef(path) == stringFromRef(stringLit())
+}
+
+function throws_modeledFileCall(path: Ref): Bool
+  requires isSubtype(typeOf(path), stringType())
+{
+  false
+}
+
+method fileModel(path: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(ret_2), FileModel())
+
+
+method modeledFileCall(path: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(v_ret_0), FileModel())
+{
+  var anon: Ref
+  if (boolFromRef(anon)) {
+    inhale throws_fileModel(path)
+    assert old(throws_modeledFileCall(path))
+    inhale false
+  }
+  v_ret_0 := fileModel(path)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throws_only_if_external.kt: info: Generated Viper text for scopeTarget:
+method scopeTarget(text: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(stringType()))
+{
+  v_ret_0 := text
+  goto lbl_ret_0
+  label lbl_ret_0
+}

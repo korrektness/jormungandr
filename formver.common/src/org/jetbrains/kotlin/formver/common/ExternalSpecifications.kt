@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.fir.extensions.predicate.LookupPredicate
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
+import org.jetbrains.kotlin.fir.scopes.getDeclaredConstructors
 import org.jetbrains.kotlin.fir.scopes.unsubstitutedScope
 import org.jetbrains.kotlin.fir.resolve.ScopeSession
 import org.jetbrains.kotlin.fir.scopes.ScopeFunctionRequiresPrewarm
@@ -310,7 +311,8 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
             return
         }
         val params = model.typeParameterSymbols.zip(target.typeParameterSymbols).toMap()
-        val candidates = target.declarationSymbols.filterIsInstance<FirConstructorSymbol>().filter { constructor ->
+        val scope = target.unsubstitutedScope(session, ScopeSession(), false, org.jetbrains.kotlin.fir.declarations.FirResolvePhase.BODY_RESOLVE)
+        val candidates = scope.getDeclaredConstructors().filter { constructor ->
             constructor.resolvedStatus.visibility == org.jetbrains.kotlin.descriptors.Visibilities.Public &&
                 constructor.contextParameterSymbols.isEmpty() && model.contextParameterSymbols.isEmpty() && !model.resolvedStatus.isSuspend &&
                 model.valueParameterSymbols.size == constructor.valueParameterSymbols.size &&

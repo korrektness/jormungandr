@@ -631,10 +631,10 @@ Test: `verification/pure_functions/lifted_lambda_creation_facts.kt`.
 
 ### Lambda values
 
-A lambda value is a fresh value of its function type with no other facts, and a
-call of it is a call of a function object (see "Calls of function objects"),
-so no fact about its body reaches the caller. Its holder may run it at any
-later point, so from its creation on each local `var` it captures reads as an
+A lambda value is a fresh value of its function type, or of its interface type
+for an ordinary SAM conversion, with no other facts. Invocation uses the
+function-object or interface method model, respectively; neither gives the
+caller facts about the callback body. Its holder may run it at any later point, so from its creation on each local `var` it captures reads as an
 arbitrary value of its type: the conversion keeps a flag per such `var`, set at
 creation, and a read under the flag havocs the `var` first. A `var` that no
 lambda value captures stays tracked. A captured object is shared: an annotated
@@ -647,16 +647,17 @@ has to keep one that captures a `var` as a value, it rejects it.
 
 The body of a lambda value written in a function body is a Viper method of its
 own with no contract (`valueMethod` in `conversion/LambdaValues.kt`), verified
-in its own program. A lambda value written in a property initializer or an
-`init` block is not verified, which loses failures in its body but assumes
-nothing. The body assumes nothing about what it captures: each captured `val`,
+in its own program. In a class property initializer or `init` block, a
+function-typed lambda value is modeled without checking its body, and an
+ordinary SAM literal is rejected. A checked body assumes nothing about what
+it captures: each captured `val`,
 parameter or receiver is one unconstrained value of its type, declared on entry;
 each read of a captured `var` is a fresh unconstrained value, and a write to it
 is evaluated and dropped. Captured objects are shared in the body. Annotated
 owned roots are never captured, as the uniqueness checker rejects that.
 
 Tests: `language/functions/lambda_escaping.kt`,
-`ownership/functions/capture_rejected.kt`.
+`language/functions/ordinary_sam.kt`, `ownership/functions/capture_rejected.kt`.
 
 ### Override refinement
 

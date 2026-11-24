@@ -116,7 +116,8 @@ internal class ViperPoweredDeclarationChecker(
             return
         }
         declaration.lambdaPrograms = emptyList()
-        val root = ProgramConverter(session, config, context, reporter)
+        val written = declaration.writtenLambdas()
+        val root = functionProgram(written)
         val dumps = mutableListOf<String>()
         reportConversionErrors(declaration, root, 0) {
             val pureGetter = declaration is FirPropertyAccessor && declaration.isGetter && declaration.symbol.isPure(session)
@@ -127,14 +128,14 @@ internal class ViperPoweredDeclarationChecker(
         val converters = mutableListOf(root)
         root.specifiedLambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
-            val converter = ProgramConverter(session, config, context, reporter)
+            val converter = functionProgram(written)
             converters += converter
             reportConversionErrors(declaration, converter, index + 1) {
                 converter.registerLambda(lambda, root.specifiedLambdas)
                 convert(declaration, converter, index + 1, dumps)
             }
         }
-        convertLambdaValues(declaration, converters, root.specifiedLambdas.size + 1, dumps)
+        convertLambdaValues(declaration, written, converters, root.specifiedLambdas.size + 1, dumps)
         if (dumps.isNotEmpty()) {
             reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.verificationName, dumps.joinToString("\n\n"))
         }
@@ -147,21 +148,15 @@ internal class ViperPoweredDeclarationChecker(
      */
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun convertLambdaValues(
-        declaration: FirFunction, converters: List<ProgramConverter>, firstIndex: Int, dumps: MutableList<String>,
+        declaration: FirFunction, written: Set<FirAnonymousFunction>, converters: List<ProgramConverter>,
+        firstIndex: Int, dumps: MutableList<String>,
     ) {
-        val written = mutableSetOf<FirAnonymousFunction>()
-        declaration.accept(object : FirVisitorVoid() {
-            override fun visitElement(element: FirElement) {
-                if (element is FirAnonymousFunction) written += element
-                element.acceptChildren(this)
-            }
-        })
         val pending = ArrayDeque(converters.flatMap { it.lambdaValues })
         var index = firstIndex
         while (pending.isNotEmpty()) {
             val function = pending.removeFirst()
             if (function !in written || !processedLambdas.add(function.symbol)) continue
-            val converter = ProgramConverter(session, config, context, reporter)
+            val converter = functionProgram(written)
             val current = index++
             reportConversionErrors(function, converter, current, owner = declaration) {
                 converter.registerLambdaValueBody(function, declaration.symbol.embedName(converter), current - 1)
@@ -169,6 +164,19 @@ internal class ViperPoweredDeclarationChecker(
             }
             pending += converter.lambdaValues
         }
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun functionProgram(written: Set<FirAnonymousFunction>): ProgramConverter =
+        ProgramConverter(session, config, context, reporter).also { it.setSchedulableLambdaValues(written) }
+
+    private fun FirFunction.writtenLambdas(): Set<FirAnonymousFunction> = buildSet {
+        accept(object : FirVisitorVoid() {
+            override fun visitElement(element: FirElement) {
+                if (element is FirAnonymousFunction) add(element)
+                element.acceptChildren(this)
+            }
+        })
     }
 
     /** Converts the specified lambdas of [declaration] that no function contains, and returns their Viper dumps. */

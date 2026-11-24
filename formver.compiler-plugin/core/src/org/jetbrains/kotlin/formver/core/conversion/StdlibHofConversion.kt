@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.fir.expressions.unwrapArgument
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
@@ -204,6 +206,27 @@ private data class TemplateReceiver(
  */
 fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding? {
     convertBuilderCall(call)?.let { return it }
+    val symbol = call.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
+    val scope = symbol?.let { stdlibHofKind(it, call.arguments.size) }?.takeIf { it.isScope }
+    if (scope != null) {
+        val callback = call.resolvedArgumentMapping?.entries?.singleOrNull { it.value.symbol == symbol.valueParameterSymbols.last() }?.key
+        callback?.unwrapArgument()?.let(::knownCallableReference)?.let { resolveReference ->
+            requireUnmodeledReferenceCall(symbol, call)
+            if (callback.unwrapArgument() !== call.arguments.last().unwrapArgument()) {
+                throw UnsupportedFeatureException(call.source, "scope call to ${symbol.callableId} passes a callable reference before its receiver")
+            }
+            requireSharedReferenceInvocation(call, listOfNotNull(scopeReceiver(call, scope)))
+            val reference = resolveReference()
+            return convertScopeCall(call, scope) { args ->
+                val result = when (scope) {
+                    StdlibHof.Also, StdlibHof.Apply -> UnitLit.type
+                    StdlibHof.TakeIf, StdlibHof.TakeUnless -> buildType { boolean() }
+                    else -> embedType(call)
+                }
+                invokeCallableReference(call, reference, args, result)
+            }
+        }
+    }
     scopeFunctionObjectCall(call)?.let { hof ->
         return convertScopeCall(call, hof) { args ->
             val function = convert(call.arguments.last())
@@ -447,17 +470,19 @@ private fun StmtConversionContext.builderFacts(
     ))))
 }
 
+private fun scopeReceiver(call: FirFunctionCall, hof: StdlibHof) =
+    if (hof == StdlibHof.With || hof == StdlibHof.Context) call.arguments.first().unwrapArgument() else call.extensionReceiver
+
 /**
- * Converts the scope function [call], passing its receiver, if any, to [invoke]: a lambda through the same inlining
- * path as source inline functions, or a function object as its invocation.
+ * Converts a scope [call], passing its receiver, if any, to [invoke] to inline a lambda, call a known reference,
+ * or invoke a function object.
  */
 private fun StmtConversionContext.convertScopeCall(
     call: FirFunctionCall,
     hof: StdlibHof,
     invoke: (List<ExpEmbedding>) -> ExpEmbedding,
 ): ExpEmbedding {
-    val receiver = if (hof == StdlibHof.With || hof == StdlibHof.Context) call.arguments.first() else call.extensionReceiver
-    val declaration = receiver?.let { declareAnonVar(embedType(it), convert(it)) }
+    val declaration = scopeReceiver(call, hof)?.let { declareAnonVar(embedType(it), convert(it)) }
     val invocation = invoke(listOfNotNull(declaration?.variable))
     val result = when (hof) {
         StdlibHof.Also, StdlibHof.Apply -> blockOf(invocation, declaration!!.variable)

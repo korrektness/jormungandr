@@ -1,0 +1,726 @@
+/callable_references.kt: info: Generated Viper text for requirePositive:
+method requirePositive(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(x)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for aliasReference:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method aliasReference() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  l0_result := requirePositive(intToRef(1))
+  assert intFromRef(l0_result) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method requirePositive(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(x)
+
+
+/callable_references.kt: info: Generated Viper text for badArgument:
+method badArgument() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := requirePositive(intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method requirePositive(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(x)
+
+
+/callable_references.kt: info: Generated Viper text for scopeBadArgument:
+method requirePositive(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(x)
+
+
+method scopeBadArgument() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(0)
+  anon_1 := requirePositive(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for Source:
+function g_expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method con(par_expected: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_expected), stringType())
+  ensures isSubtype(typeOf(v_ret_0), Source())
+  ensures stringFromRef(g_expected(v_ret_0)) == stringFromRef(par_expected)
+  ensures stringFromRef(g_expected(v_ret_0)) == stringFromRef(par_expected)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Source()
+  anon := par_expected
+  inhale stringFromRef(g_expected(v_ret_0)) == stringFromRef(anon)
+  fold acc(Source_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Source_unique(v_ret_0), write)
+}
+
+/callable_references.kt: info: Generated Viper text for isBundled:
+function expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method isBundled(this: Ref, path: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Source())
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) ==
+    (stringFromRef(path) == stringFromRef(expected(this)))
+{
+  v_ret_0 := boolToRef(stringFromRef(path) == stringFromRef(expected(this)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for boundReference:
+function expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method boundReference(sources: Ref, other: Ref, path: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sources), Source())
+  requires isSubtype(typeOf(other), Source())
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var receiver: Ref
+  var anon_0: Ref
+  var answer: Ref
+  var anon_1: Ref
+  receiver := sources
+  anon_0 := receiver
+  receiver := other
+  anon_1 := path
+  answer := isBundled(anon_0, anon_1)
+  assert boolFromRef(answer) ==
+    (stringFromRef(path) == stringFromRef(expected(sources)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method isBundled(this: Ref, path: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Source())
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1) ==
+    (stringFromRef(path) == stringFromRef(expected(this)))
+
+
+/callable_references.kt: info: Generated Viper text for ReferenceSingleton:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ReferenceSingleton())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ReferenceSingleton()
+  fold acc(ReferenceSingleton_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReferenceSingleton_unique(v_ret_0), write)
+}
+
+/callable_references.kt: info: Generated Viper text for argument:
+method argument(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReferenceSingleton())
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(value)
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for boundSingletonReference:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method argument(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), ReferenceSingleton())
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(value)
+
+
+method boundSingletonReference() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var l0_result: Ref
+  inhale isSubtype(typeOf(anon_0), ReferenceSingleton())
+  anon_1 := anon_0
+  l0_result := argument(anon_1, intToRef(7))
+  assert intFromRef(l0_result) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for Bundled:
+function expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function g_sources(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bundled())
+  ensures isSubtype(typeOf(result), Source())
+
+
+method con(par_sources: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_sources), Source())
+  ensures isSubtype(typeOf(v_ret_0), Bundled())
+  ensures g_sources(v_ret_0) == par_sources
+  ensures g_sources(v_ret_0) == par_sources
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bundled()
+  anon := par_sources
+  inhale g_sources(v_ret_0) == anon
+  fold acc(Bundled_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bundled_unique(v_ret_0), write)
+}
+
+/callable_references.kt: info: Generated Viper text for contains:
+function expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function sources(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bundled())
+  ensures isSubtype(typeOf(result), Source())
+
+
+method contains(this: Ref, path: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Bundled())
+  requires isSubtype(typeOf(path), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon_2: Ref
+  if (path != nullValue()) {
+    var anon_3: Ref
+    var anon_1: Ref
+    var anon_0: Ref
+    anon_1 := path
+    anon_0 := sources(this)
+    anon_3 := isBundled(anon_0, anon_1)
+    anon_2 := anon_3
+  } else {
+    anon_2 := nullValue()}
+  v_ret_0 := boolToRef(anon_2 == boolToRef(true))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method isBundled(this: Ref, path: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Source())
+  requires isSubtype(typeOf(path), stringType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1) ==
+    (stringFromRef(path) == stringFromRef(expected(this)))
+
+
+/callable_references.kt: info: Generated Viper text for ownedSource:
+function g_expected(this: Ref): Ref
+  requires isSubtype(typeOf(this), Source())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method con(par_expected: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_expected), stringType())
+  ensures isSubtype(typeOf(ret_1), Source())
+  ensures stringFromRef(g_expected(ret_1)) == stringFromRef(par_expected)
+  ensures stringFromRef(g_expected(ret_1)) == stringFromRef(par_expected)
+
+
+method ownedSource() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Source())
+  ensures acc(Source_unique(v_ret_0), write)
+{
+  v_ret_0 := con(stringLit())
+  fold acc(Source_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for dropResult:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method dropResult() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := requirePositive(intToRef(1))
+  anon_0 := unitValue()
+  l0_result := anon_0
+  assert unitValue() == l0_result
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method requirePositive(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(x)
+
+
+/callable_references.kt: info: Generated Viper text for ReferenceBox:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), ReferenceBox())
+  ensures isSubtype(typeOf(v_ret_0), ReferenceBox()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == ReferenceBox()
+  v_ret_0.bf_value := par_value
+  fold acc(ReferenceBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReferenceBox_unique(v_ret_0), write)
+}
+
+/callable_references.kt: info: Generated Viper text for setReferenceBox:
+field value: Ref
+
+method setReferenceBox(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), ReferenceBox())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for sharedScopeReceiver:
+field value: Ref
+
+method setReferenceBox(box: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(box), ReferenceBox())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method sharedScopeReceiver(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), ReferenceBox())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := box
+  anon_1 := setReferenceBox(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for ownedReferenceBox:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), ReferenceBox())
+  ensures isSubtype(typeOf(ret_1), ReferenceBox()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+
+
+method ownedReferenceBox() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ReferenceBox())
+  ensures acc(ReferenceBox_unique(v_ret_0), write)
+{
+  v_ret_0 := con(intToRef(0))
+  fold acc(ReferenceBox_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for isNullArgument:
+method isNullArgument(text: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) == (text == nullValue())
+{
+  v_ret_0 := boolToRef(text == nullValue())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for nullableReferenceArguments:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method isNullArgument(text: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1) == (text == nullValue())
+
+
+method nullableReferenceArguments() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var direct: Ref
+  var scoped: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  direct := isNullArgument(nullValue())
+  anon_0 := nullValue()
+  scoped := isNullArgument(anon_0)
+  if (boolFromRef(direct)) {
+    anon_1 := scoped
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for firstReferenceArgument:
+method firstReferenceArgument(first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+  ensures stringFromRef(v_ret_0) == stringFromRef(first)
+{
+  v_ret_0 := first
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for snapshotReferenceArguments:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method firstReferenceArgument(par_first: Ref, second: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(ret_1), stringType())
+  ensures stringFromRef(ret_1) == stringFromRef(par_first)
+
+
+method snapshotReferenceArguments() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_first: Ref
+  var l0_result: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_3: Ref
+  l0_first := stringLit_0()
+  anon_0 := l0_first
+  l0_first := stringLit_1()
+  v_ret_3 := l0_first
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_1 := v_ret_3
+  l0_result := firstReferenceArgument(anon_0, anon_1)
+  assert stringFromRef(l0_result) == stringFromRef(stringLit_0())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for throwingTarget:
+function throws_throwingTarget(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method throwingTarget(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      var anon_2: Ref
+      assert old(throws_throwingTarget(x))
+      inhale false
+    }
+    anon_0 := con()
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
+    assert old(throws_throwingTarget(x))
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for unexpectedThrow:
+function throws_throwingTarget(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+function throws_unexpectedThrow(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  false
+}
+
+method throwingTarget(x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method unexpectedThrow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if (boolFromRef(anon_1)) {
+    inhale throws_throwingTarget(x)
+    assert old(throws_unexpectedThrow(x))
+    inhale false
+  }
+  anon_0 := throwingTarget(x)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_references.kt: info: Generated Viper text for allowedThrow:
+function throws_allowedThrow(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+function throws_throwingTarget(x: Ref): Bool
+  requires isSubtype(typeOf(x), intType())
+{
+  intFromRef(x) < 0
+}
+
+method allowedThrow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := x
+  if (boolFromRef(anon_2)) {
+    inhale throws_throwingTarget(anon_0)
+    assert old(throws_allowedThrow(x))
+    inhale false
+  }
+  anon_1 := throwingTarget(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method throwingTarget(x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/callable_references.kt: info: Generated Viper text for pathFile:
+method con(p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_1), File())
+
+
+method pathFile(path: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(path), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(File()))
+{
+  var anon_1: Ref
+  if (path != nullValue()) {
+    var anon_0: Ref
+    anon_0 := path
+    anon_1 := con(anon_0)
+    fold acc(File_unique(anon_1), write)
+  } else {
+    anon_1 := nullValue()}
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for nullableFilePath:
+function throws_nullableFilePath(path: Ref): Bool
+  requires isSubtype(typeOf(path), nullable(stringType()))
+{
+  false
+}
+
+method con(p0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_2), File())
+
+
+method nullableFilePath(path: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(path), nullable(stringType()))
+  ensures isSubtype(typeOf(v_ret_0), File())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  anon_0 := path
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+    anon_2 := anon_0
+  } else {
+    assert old(throws_nullableFilePath(path))
+    inhale false
+  }
+  anon_1 := con(anon_2)
+  fold acc(File_unique(anon_1), write)
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for trimString:
+method trimString(text: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(text), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := text
+  inhale isSubtype(typeOf(anon_1), stringType())
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_references.kt: info: Generated Viper text for platformTrim:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method getProperty(p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_1), nullable(stringType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method platformTrim() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var text: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var e: Ref
+  text := getProperty(stringLit())
+  anon_1 := text
+  anon_2 := anon_1
+  if (isSubtype(typeOf(anon_2), stringType())) {
+    inhale isSubtype(typeOf(anon_2), stringType())
+  } else {
+    var anon_4: Ref
+    if (boolFromRef(anon_4)) {
+      goto catch
+    }
+    inhale false
+  }
+  inhale isSubtype(typeOf(anon_3), stringType())
+  anon_0 := anon_3
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  assert false
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

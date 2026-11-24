@@ -1674,9 +1674,11 @@ data class LinearizationVisitor(
 
     // region Lambda
 
+    override fun visitCallableReferenceValue(e: CallableReferenceValue): Linearizable = e.unsupportedUse()
+
     /**
      * A lambda that is invoked in place is inlined at its invocation and never linearized as a value. As a value, it is
-     * a fresh object of its function type, and each local `var` and owned object it captures is shared from here on.
+     * a fresh object of its function type or SAM interface type. Each local `var` and owned object it captures is shared.
      */
     override fun visitLambdaExp(e: LambdaExp): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
@@ -1704,8 +1706,11 @@ data class LinearizationVisitor(
         )
         for (flag in e.sharedLocalFlags.values.filterNotNull()) Assign(flag, BooleanLit(true)).linearize().toViperUnusedResult(ctx)
         for ((symbol, root) in e.capturedRoots) {
-            val captured = root.ignoringCastsAndMetaNodes() as? LambdaExp
-            if (captured != null) createAsValue(captured, ctx) else ctx.shareCapturedRoot(e, symbol, root)
+            when (val captured = root.ignoringCastsAndMetaNodes()) {
+                is CallableReferenceValue -> visitCallableReferenceValue(captured)
+                is LambdaExp -> createAsValue(captured, ctx)
+                else -> ctx.shareCapturedRoot(e, symbol, root)
+            }
         }
         e.registerAsValue()
     }
@@ -1714,11 +1719,11 @@ data class LinearizationVisitor(
 }
 
 /** Gives up the unique predicate of a root of class type a lambda value captures, whatever share of it is held. */
-private fun LinearizationContext.shareCapturedRoot(lambda: LambdaExp, symbol: FirVariableSymbol<*>, root: ExpEmbedding) {
+private fun LinearizationContext.shareCapturedRoot(lambda: LambdaExp, symbol: FirBasedSymbol<*>, root: ExpEmbedding) {
     val cls = (root.type.pretype as? ClassTypeEmbedding)?.takeUnless { with(typeResolver) { it.isManual } } ?: return
     val variable = root.ignoringCastsAndMetaNodes() as? VariableEmbedding
         ?: throw UnsupportedFeatureException(
-            lambda.function.source, "a lambda value that captures '${symbol.name}', which is not bound to a variable"
+            lambda.function.source, "a lambda value that captures '${(symbol as? FirVariableSymbol<*>)?.name ?: "this"}', which is not bound to a variable"
         )
     foldState?.let { state ->
         OwnedPath(variable).takeIf(state::holds)?.let {

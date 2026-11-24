@@ -1152,9 +1152,9 @@ fun counter() {
 }
 ```
 
-The body of a lambda value written in a function body is verified as a function
-of its own, against no contract. One written in a property initializer or an
-`init` block is not verified. Its parameters are arbitrary values of their types. Each `val`,
+The body of a function-typed lambda value written in a function body is verified
+as a function of its own, against no contract. One written in a property
+initializer or an `init` block is not verified. Its parameters are arbitrary values of their types. Each `val`,
 parameter or receiver it captures is an arbitrary shared value of its type, the
 same at each read. Each local `var` it captures is an arbitrary value at each
 read, and the body's writes to it are not kept. Such a write is still a side
@@ -1178,11 +1178,48 @@ local is shared from the capture on, so passing it to a `@Unique` parameter
 afterwards is a `UNIQUENESS_MISMATCH`. Capturing a root whose type is annotated
 `@Unique` or `@Borrowed` is rejected (see [Rejected constructs](#rejected-constructs)).
 A lambda that is inlined, has a `callsInPlace` contract, is an argument of a
-specification or of an array constructor, is SAM-converted or is lifted to a
-class does not share the local `var`s it captures. If the conversion has to keep
-such a lambda as a value, such as one passed to a non-inline function with a
+specification or of an array constructor, or is lifted to a class does not share
+its captured local `var`s under the lambda-value model. If the conversion has to
+keep such a lambda as a value, such as one passed to a non-inline function with a
 `callsInPlace` contract, it is an `UNSUPPORTED_FEATURE` when it captures a local
 `var`.
+
+### Ordinary SAM conversions
+
+A literal lambda converted to a single-abstract-method (SAM) interface without
+specification or ownership requirements follows the escaping lambda model. The
+callback body is checked independently, and its captures become shared at
+conversion. A call through the resulting interface value does not inline the
+callback body or use it to infer the result or when the call throws.
+
+The ordinary conversion requires a literal callback whose body the checker can
+schedule from a checked function. An ordinary SAM literal in a class property
+initializer or `init` block is unsupported because its body is not scheduled.
+SAM methods with contracts the lambda would need to refine, such as `@Unique`
+parameters, are unsupported, as are callbacks that use `super` on an enclosing
+receiver.
+[Ghost observer bindings](#observers) use the specified-lambda model.
+
+### Callable references
+
+A statically known reference to a supported function or constructor is checked
+at direct invocation, through a local `val` alias, or in a modeled scope
+function such as `let`. A bound reference evaluates and saves its receiver at
+creation. In a scope function with a separate receiver argument, the callback
+reference must follow that argument. A scope call with a bound external
+specification does not use the built-in adapter. The invocation checks the
+modeled target's obligations, including its preconditions and possible
+exceptions.
+
+Returning a reference as a function value, passing it to a lazy operation such
+as `Sequence.map`, and binding a receiver in an ownership-sensitive body are
+unsupported. Invocation also requires a body and operands without tracked
+ownership. References with platform result types are unsupported. The library
+adapters cover `String::trim` without arguments and the single-path
+`java.io.File` constructor only when the target has no bound external
+specification. These rules do not relax the
+[termination checker](#termination-of-functions-and-loops)'s
+rejection of callable references.
 
 ### Collection iteration
 
@@ -1387,10 +1424,11 @@ The option covers declarations as follows:
   throw `UnsupportedOperationException`, so its `add` reports `EXCEPTION_FROM_UNSPECIFIED_CALL`. `add(index, element)`
   is not covered.
 - A scope function (see [Inline functions](#inline-functions-and-default-arguments)) or an inline collection template
-  (see [Collection iteration](#collection-iteration)) that inlines its lambda raises only what the lambda raises. A
-  scope function given a variable or property holding a function object invokes it, which reports
-  `EXCEPTION_FROM_FUNCTION_OBJECT`; given any other function-valued expression, or a template receiver that is not
-  owned, the call is an opaque library call.
+  (see [Collection iteration](#collection-iteration)) that inlines its lambda raises only what the lambda raises.
+  A scope function given a [supported callable reference](#callable-references), literal or held in a local `val`,
+  uses the referenced target's exception model. A scope function given a variable or property holding an opaque
+  function object reports `EXCEPTION_FROM_FUNCTION_OBJECT`; given any other function-valued expression, or a
+  template receiver that is not owned, the call is an opaque library call.
 - `buildString`, `buildList`, `buildSet` and `buildMap` given a lambda and no capacity raise only what the lambda
   raises. The lambda runs on a builder known only by its type, and the result is known only by its type.
 - The bundled model of `Map.getValue` throws only if the map does not contain the key.

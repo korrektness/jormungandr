@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.uniqueness.plugin.extendsLocalFlow
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirSamConversionExpression
+import org.jetbrains.kotlin.fir.expressions.unwrapArgument
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -91,8 +93,8 @@ val FirAnonymousFunction.capturedLocalVars: List<FirPropertySymbol>
 
 /**
  * Collects the local `var`s captured by lambdas that may escape and by local functions and classes. A lambda argument of a call that the conversion runs
- * in place, a specification or an array initializer, does not escape as a lambda value. Nor does a SAM-converted
- * lambda or one [isLifted] finds lifted to a class, which the conversion does not create as a lambda value.
+ * in place, a specification or an array initializer, does not escape as a lambda value. Nor does a lambda that
+ * [isLifted] finds lifted to a class with explicit capture storage.
  */
 private class EscapingCaptureCollector(private val isLifted: (FirExpression) -> Boolean) : FirVisitorVoid() {
     val captured = mutableSetOf<FirPropertySymbol>()
@@ -102,7 +104,7 @@ private class EscapingCaptureCollector(private val isLifted: (FirExpression) -> 
         when (element) {
             is FirFunctionCall ->
                 if (element.runsLambdaArguments || isLifted(element)) element.arguments.forEach(::markRanInPlace)
-            is FirSamConversionExpression -> markRanInPlace(element.expression)
+            is FirSamConversionExpression -> if (isLifted(element)) markRanInPlace(element.expression)
             is FirAnonymousFunction ->
                 if (element !in ranInPlace && element.mayEscape) captured.addAll(element.capturedLocalVars)
             is FirSimpleFunction, is FirRegularClass ->
@@ -113,7 +115,7 @@ private class EscapingCaptureCollector(private val isLifted: (FirExpression) -> 
     }
 
     private fun markRanInPlace(argument: FirExpression) {
-        (argument as? FirAnonymousFunctionExpression)?.let { ranInPlace.add(it.anonymousFunction) }
+        (argument.unwrapArgument() as? FirAnonymousFunctionExpression)?.let { ranInPlace.add(it.anonymousFunction) }
     }
 }
 
@@ -141,14 +143,18 @@ private fun List<FirStatement>.varsCapturedByEscapingCode(isLifted: (FirExpressi
 }
 
 /** Embeds the lambda [function] as a [LambdaExp], with the flags and roots it shares if created as a value. */
-fun StmtConversionContext.convertLambda(function: FirAnonymousFunction): ExpEmbedding {
+fun StmtConversionContext.convertLambda(function: FirAnonymousFunction, samType: TypeEmbedding? = null): LambdaExp {
     val (signature, _) = function.symbol.toFunctionSignature()
     val captured = function.capturedLocals.filter { capturedAccess(it) == null }
     val vars = function.capturedLocalVars.filter { capturedAccess(it) == null }
-    return LambdaExp(
-        signature, function, this, function.symbol.label?.name, vars.associateWith { sharedLocalFlag(it) },
-        captured.associateWith { embedLocalSymbol(it) },
-    )
+    val roots = linkedMapOf<FirBasedSymbol<*>, ExpEmbedding>()
+    captured.associateWithTo(roots) { embedLocalSymbol(it) }
+    if (samType != null) {
+        function.capturedReceivers.forEach { (symbol, receiver) ->
+            if (capturedAccess(symbol) == null) roots[symbol] = convert(receiver)
+        }
+    }
+    return LambdaExp(signature, function, this, function.symbol.label?.name, vars.associateWith { sharedLocalFlag(it) }, roots, samType)
 }
 
 /**
@@ -185,28 +191,32 @@ class DetachedVarAccess(private val sink: VariableEmbedding) : PropertyAccessEmb
     override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding = blockOf(sink.setValue(value, ctx), UnitLit)
 }
 
-/**
- * The symbols through which this lambda's body reaches state of the code that creates it, with the type of each:
- * captured locals and parameters, and receivers of enclosing declarations.
- */
-private val FirAnonymousFunction.capturedSymbols: Map<FirBasedSymbol<*>, ConeKotlinType>
+/** References to enclosing receivers, excluding receivers supplied to this lambda or its nested lambdas. */
+private val FirAnonymousFunction.capturedReceivers: Map<FirBasedSymbol<*>, FirThisReceiverExpression>
     get() {
-        val captures = linkedMapOf<FirBasedSymbol<*>, ConeKotlinType>()
-        capturedLocals.associateWithTo(captures) { it.resolvedReturnType }
+        val captures = linkedMapOf<FirBasedSymbol<*>, FirThisReceiverExpression>()
         val ownReceivers = mutableSetOf<FirBasedSymbol<*>>()
         accept(object : FirVisitorVoid() {
             override fun visitElement(element: FirElement) {
-                if (element is FirAnonymousFunction) element.receiverParameter?.symbol?.let(ownReceivers::add)
+                when (element) {
+                    is FirFunction -> {
+                        element.receiverParameter?.symbol?.let(ownReceivers::add)
+                        element.symbol.contextParameterSymbols.forEach(ownReceivers::add)
+                    }
+                    is FirRegularClass -> ownReceivers.add(element.symbol)
+                    else -> {}
+                }
                 element.acceptChildren(this)
             }
         })
         accept(object : FirVisitorVoid() {
             override fun visitElement(element: FirElement) {
                 if (element is FirThisReceiverExpression) {
-                    val symbol = element.calleeReference.boundSymbol
-                    val captured = symbol is FirClassSymbol<*> && symbol.classKind != ClassKind.OBJECT ||
-                        symbol is FirReceiverParameterSymbol && symbol !in ownReceivers
-                    if (captured) captures.getOrPut(symbol!!) { element.resolvedType }
+                    val symbol = element.calleeReference.boundSymbol as? FirBasedSymbol<*>
+                    val receiver = symbol is FirReceiverParameterSymbol || symbol is FirClassSymbol<*> && symbol.classKind != ClassKind.OBJECT
+                    if (symbol != null && receiver && symbol !in ownReceivers) {
+                        captures.putIfAbsent(symbol, element)
+                    }
                 }
                 element.acceptChildren(this)
             }
@@ -225,7 +235,10 @@ fun FirAnonymousFunction.valueMethod(name: ScopedName, analysis: FunctionUniquen
         .toCompleteSignature(source) { userFunctionContract() }
     val shared = mutableListOf<VariableEmbedding>()
     val sinks = mutableListOf<VariableEmbedding>()
-    val captures = capturedSymbols.mapValues { (symbol, coneType) ->
+    val captureTypes = linkedMapOf<FirBasedSymbol<*>, ConeKotlinType>()
+    capturedLocals.associateWithTo(captureTypes) { it.resolvedReturnType }
+    captureTypes.putAll(capturedReceivers.mapValues { it.value.resolvedType })
+    val captures = captureTypes.mapValues { (symbol, coneType) ->
         val type = converter.embedType(coneType)
         if (symbol is FirPropertySymbol && symbol.isVar) DetachedVarAccess(converter.freshAnonVar(type).also(sinks::add))
         else converter.freshAnonVar(type).also(shared::add)
@@ -244,12 +257,25 @@ interface LambdaValueRegistry {
     /** The lambdas [registerLambdaValue] recorded, in the order it met them. */
     val lambdaValues: Set<FirAnonymousFunction>
 
+    /** Sets the lambda bodies the checker can schedule separately for this program. */
+    fun setSchedulableLambdaValues(functions: Set<FirAnonymousFunction>)
+
+    /** Whether this program's checker can schedule the body of [function] separately. */
+    fun schedulesLambdaValue(function: FirAnonymousFunction): Boolean
+
     /** Records that the conversion creates [function] as a function value. */
     fun registerLambdaValue(function: FirAnonymousFunction)
 }
 
 class LambdaValueSet : LambdaValueRegistry {
     override val lambdaValues = linkedSetOf<FirAnonymousFunction>()
+    private var schedulable = emptySet<FirAnonymousFunction>()
+
+    override fun setSchedulableLambdaValues(functions: Set<FirAnonymousFunction>) {
+        schedulable = functions
+    }
+
+    override fun schedulesLambdaValue(function: FirAnonymousFunction): Boolean = function in schedulable
 
     override fun registerLambdaValue(function: FirAnonymousFunction) {
         lambdaValues += function

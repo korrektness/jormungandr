@@ -1,4 +1,5 @@
 // FULL_JDK
+// DIAGNOSTIC_KINDS
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/AssociativeCollections.kt
@@ -172,8 +173,8 @@ fun <!VIPER_TEXT!>foldPrefix<!>(values: @Unique @Borrowed List<Int>): Int {
     return result
 }
 
-fun <!VERIFICATION_SKIPPED!>javaEntryCallback<!>(values: @Unique @Borrowed Map<Int, Int>) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
-    <!OPAQUE_CALL!>values.forEach <!UNSUPPORTED_FEATURE!>{ key, value -> verify(key == value) }<!><!>
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>javaEntryCallback<!>(values: @Unique @Borrowed Map<Int, Int>) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
+    <!OPAQUE_CALL!>values.forEach { key, value -> verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>key == value<!>) }<!>
 }<!>
 
 fun <!VIPER_TEXT!>mapFilterRejected<!>(values: Map<Int, Int>) {

@@ -25,6 +25,16 @@ data class InheritedImplementationObligation(
 )
 
 context(context: CheckerContext)
+internal fun FirNamedFunctionSymbol.overrideFamily(): Set<FirNamedFunctionSymbol> {
+    val declarations = linkedSetOf<FirNamedFunctionSymbol>()
+    fun collect(symbol: FirNamedFunctionSymbol) {
+        if (declarations.add(symbol)) symbol.directOverriddenSymbolsSafe().filterIsInstance<FirNamedFunctionSymbol>().forEach(::collect)
+    }
+    collect(this)
+    return declarations
+}
+
+context(context: CheckerContext)
 @OptIn(ScopeFunctionRequiresPrewarm::class, SymbolInternals::class)
 fun FirRegularClassSymbol.inheritedImplementationObligations(): List<InheritedImplementationObligation> {
     val scope = unsubstitutedScope()
@@ -38,12 +48,7 @@ fun FirRegularClassSymbol.inheritedImplementationObligations(): List<InheritedIm
     for (name in scope.getCallableNames()) {
         scope.processFunctionsByName(name) { member ->
             if (member.isObserverOrOverride() || member.specOfTargetName(context.session) != null) return@processFunctionsByName
-            val declarations = linkedSetOf<FirNamedFunctionSymbol>()
-            fun collect(symbol: FirNamedFunctionSymbol) {
-                if (!declarations.add(symbol)) return
-                symbol.directOverriddenSymbolsSafe().filterIsInstance<FirNamedFunctionSymbol>().forEach(::collect)
-            }
-            collect(member)
+            val declarations = member.overrideFamily()
             val implementation = declarations.asSequence().map { it.unwrapFakeOverrides() }
                 .firstOrNull { !it.isAbstract && it.fir.body != null } ?: return@processFunctionsByName
             if (implementation.getContainingClassSymbol() == this || implementation.isPure(context.session)) return@processFunctionsByName

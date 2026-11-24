@@ -98,6 +98,7 @@ internal class ExprPurityVisitor(
         return e.allChildrenPure(this)
     }
     override fun visitLambdaExp(e: LambdaExp) = false
+    override fun visitCallableReferenceValue(e: CallableReferenceValue) = false
     override fun visitInvokeFunctionObject(e: InvokeFunctionObject) = false
     override fun visitBindOwnedField(e: BindOwnedField): Boolean = false
     override fun visitAllocateObject(e: AllocateObject): Boolean = false

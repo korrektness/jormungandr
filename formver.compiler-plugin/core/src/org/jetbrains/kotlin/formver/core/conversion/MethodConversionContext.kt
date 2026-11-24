@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.expression.CallableReferenceValue
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
@@ -64,6 +65,8 @@ interface MethodConversionContext : ProgramConversionContext {
 
     fun capturedAccess(symbol: FirBasedSymbol<*>): org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding?
 
+    fun resolveCallableReference(symbol: FirPropertySymbol): CallableReferenceValue?
+    fun registerCallableReference(symbol: FirPropertySymbol, value: CallableReferenceValue)
     fun resolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding
     fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding
     fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath? = null)
@@ -93,7 +96,7 @@ fun MethodConversionContext.embedLocalVariable(symbol: FirVariableSymbol<*>): Va
 
 fun MethodConversionContext.embedLocalSymbol(symbol: FirBasedSymbol<*>): ExpEmbedding = when (symbol) {
     is FirValueParameterSymbol -> embedParameter(symbol)
-    is FirPropertySymbol -> embedLocalProperty(symbol)
+    is FirPropertySymbol -> resolveCallableReference(symbol) ?: embedLocalProperty(symbol)
     is FirVariableSymbol<*> -> embedLocalVariable(symbol)
     else -> throw IllegalArgumentException("Symbol $symbol cannot be embedded as a local symbol.")
 }

@@ -230,6 +230,14 @@ class CaptureScope(
  */
 fun StmtConversionContext.declareLocal(declaration: FirDeclaration): ExpEmbedding {
     val scope = captureScope(declaration)
+    scope.captured.filterIsInstance<FirPropertySymbol>().firstOrNull { resolveCallableReference(it) != null }?.let { alias ->
+        val owner = when (val symbol = declaration.symbol) {
+            is FirCallableSymbol<*> -> symbol.callableId ?: symbol.name
+            is FirClassLikeSymbol<*> -> symbol.classId
+            else -> symbol
+        }
+        throw UnsupportedFeatureException(declaration.source, "local declaration $owner captures callable reference alias '${alias.name}'")
+    }
     if (scope.recordsSites && scope.variables.isNotEmpty()) {
         val immutable = scope.variables.map { (symbol, variable) -> currentValue(symbol) to variable as ExpEmbedding }
         scope.sites += creationFactContext(immutable, scope.variables.values.mapTo(mutableSetOf()) { it.name })

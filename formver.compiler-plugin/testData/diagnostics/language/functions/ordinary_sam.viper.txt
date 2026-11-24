@@ -1,0 +1,527 @@
+/ordinary_sam.kt: info: Generated Viper text for comparator:
+method comparator() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Comparator())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), Comparator())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+comparator.lambda0.invoke:
+method invoke(left: Ref, right: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(left), nullable(intType()))
+  requires isSubtype(typeOf(right), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  anon_0 := left
+  if (isSubtype(typeOf(anon_0), intType())) {
+    inhale isSubtype(typeOf(anon_0), intType())
+    anon_2 := anon_0
+  } else {
+    inhale false}
+  anon_1 := right
+  if (isSubtype(typeOf(anon_1), intType())) {
+    inhale isSubtype(typeOf(anon_1), intType())
+    anon_3 := anon_1
+  } else {
+    inhale false}
+  v_ret_0 := minusInts(anon_2, anon_3)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for retain:
+method retain(action: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(action), Consumer())
+  ensures isSubtype(typeOf(v_ret_0), Consumer())
+{
+  v_ret_0 := action
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for callbackMayThrow:
+function throws_callbackMayThrow(): Bool
+{
+  false
+}
+
+method accept(this: Ref, p0: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Consumer())
+  requires isSubtype(typeOf(p0), intType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method callbackMayThrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var action: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_0), Consumer())
+  action := anon_0
+  if (boolFromRef(anon_2)) {
+    var anon_3: Ref
+    assert old(throws_callbackMayThrow())
+    inhale false
+  }
+  anon_1 := accept(action, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+callbackMayThrow.lambda0.invoke:
+method error(message: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(message), anyType())
+  ensures false
+  ensures isSubtype(typeOf(ret_1), nothingType())
+
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := error(stringLit())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for sharedAfterConversion:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method ifPresent(this: Ref, p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Optional())
+  requires isSubtype(typeOf(p0), Consumer())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method sharedAfterConversion(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), Optional())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var x: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_0 := boolToRef(false)
+  x := intToRef(0)
+  anon_0 := boolToRef(true)
+  inhale isSubtype(typeOf(anon_4), Consumer())
+  anon_3 := anon_4
+  anon_2 := ifPresent(value, anon_3)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), intType())
+    anon_5 := anon_1
+  } else {
+    anon_5 := x}
+  assert intFromRef(anon_5) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+sharedAfterConversion.lambda0.invoke:
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := plusInts(it, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for run:
+method run(v_this: Ref, v_this_extension: Ref, other: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(v_this), ReceiverAction())
+  requires isSubtype(typeOf(v_this_extension), intType())
+  requires isSubtype(typeOf(other), intType())
+  ensures isSubtype(typeOf(ret), intType())
+
+
+/ordinary_sam.kt: info: Generated Viper text for receiverAction:
+method receiverAction(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), intType())
+  ensures isSubtype(typeOf(v_ret_0), ReceiverAction())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), ReceiverAction())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+receiverAction.lambda0.invoke:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(v_this_extension: Ref, other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), intType())
+  requires isSubtype(typeOf(other), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := anon_1
+  assert intFromRef(v_this_extension) == intFromRef(anon_0)
+  assert intFromRef(v_this_extension) == intFromRef(other)
+  v_ret_0 := v_this_extension
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for SamBox:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), SamBox())
+  ensures isSubtype(typeOf(v_ret_0), SamBox()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == SamBox()
+  v_ret_0.bf_n := par_n
+  fold acc(SamBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SamBox_unique(v_ret_0), write)
+}
+
+/ordinary_sam.kt: info: Generated Viper text for ownedBox:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), SamBox())
+  ensures isSubtype(typeOf(ret_1), SamBox()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method ownedBox() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SamBox())
+  ensures acc(SamBox_unique(v_ret_0), write)
+{
+  v_ret_0 := con(intToRef(0))
+  fold acc(SamBox_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for consumeBox:
+field n: Ref
+
+method consumeBox(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), SamBox())
+  requires acc(SamBox_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for cannotConsumeCapture:
+field n: Ref
+
+method cannotConsumeCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_box: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  l0_box := ownedBox()
+  exhale acc(SamBox_unique(l0_box), perm(SamBox_unique(l0_box)))
+  inhale isSubtype(typeOf(anon_2), Consumer())
+  anon_1 := anon_2
+  anon_0 := retain(anon_1)
+  anon_3 := consumeBox(l0_box)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method consumeBox(par_box: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_box), SamBox())
+  requires acc(SamBox_unique(par_box), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method ownedBox() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), SamBox())
+  ensures acc(SamBox_unique(ret_1), write)
+
+
+method retain(action: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(action), Consumer())
+  ensures isSubtype(typeOf(ret_2), Consumer())
+
+
+cannotConsumeCapture.lambda0.invoke:
+field n: Ref
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), SamBox())
+  anon_0 := anon_1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for result:
+method f_result(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), LowerBound())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) >= 0
+
+
+/ordinary_sam.kt: info: Generated Viper text for result:
+method f_result(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), UpperBound())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) <= 0
+
+
+/ordinary_sam.kt: info: Generated Viper text for result:
+method BothBounds_f_result(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), BothBounds())
+  ensures isSubtype(typeOf(ret_0), intType())
+
+
+method LowerBound_f_result(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), LowerBound())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= 0
+
+
+method UpperBound_f_result(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), UpperBound())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) <= 0
+
+
+method refines_LowerBound_f_result(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), LowerBound())
+  requires isSubtype(typeOf(this), BothBounds())
+{
+  ret_1 := BothBounds_f_result(this)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= 0
+}
+
+method refines_UpperBound_f_result(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), UpperBound())
+  requires isSubtype(typeOf(this), BothBounds())
+{
+  ret_2 := BothBounds_f_result(this)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) <= 0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for use:
+field n: Ref
+
+method use(this: Ref, box: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), OwningAction())
+  requires isSubtype(typeOf(box), SamBox())
+  requires acc(SamBox_unique(box), write)
+  ensures isSubtype(typeOf(ret), unitType())
+
+
+/ordinary_sam.kt: info: Generated Viper text for SamSuperBase:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SamSuperBase())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SamSuperBase()
+  fold acc(SamSuperBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SamSuperBase_unique(v_ret_0), write)
+}
+
+/ordinary_sam.kt: info: Generated Viper text for answer:
+method answer(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SamSuperBase())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 42
+{
+  v_ret_0 := intToRef(42)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ordinary_sam.kt: info: Generated Viper text for localSuperReceiver:
+method localSuperReceiver() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Consumer())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), Consumer())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+localSuperReceiver.lambda0.invoke:
+method check(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Local())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Local())
+  ensures isSubtype(typeOf(ret_2), Local()) &&
+    isSubtype(typeOf(ret_2), SamSuperBase())
+
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := con()
+  fold acc(SamSuperBase_unique(anon_1), write)
+  fold acc(Local_unique(anon_1), write)
+  anon_0 := check(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for Local:
+method Local_c_SamSuperBase_f_answer_inherited_body_c_SamSuperBase_f_answer(this: Ref)
+  returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Local())
+  requires typeOf(this) == Local()
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == 42
+{
+  v_ret_3 := intToRef(42)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method Local_c_SamSuperBase_f_answer_inherited_contract_c_SamSuperBase_f_answer(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Local())
+  requires typeOf(this) == Local()
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) == 42
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Local())
+  ensures isSubtype(typeOf(v_ret_0), Local()) &&
+    isSubtype(typeOf(v_ret_0), c_SamSuperBase())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Local()
+  fold acc(c_SamSuperBase_unique(v_ret_0), write)
+  fold acc(Local_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Local_unique(v_ret_0), write)
+  unfold acc(c_SamSuperBase_unique(v_ret_0), write)
+}
+
+method refines_Local_c_SamSuperBase_f_answer_inherited_contract_c_SamSuperBase_f_answer(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Local())
+  requires typeOf(this) == Local()
+  requires isSubtype(typeOf(this), Local())
+{
+  ret_5 := Local_c_SamSuperBase_f_answer_inherited_body_c_SamSuperBase_f_answer(this)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(ret_5) == 42
+}
+
+/ordinary_sam.kt: info: Generated Viper text for check:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method answer(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), SamSuperBase())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 42
+
+
+method check(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Local())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  l0_result := answer(this)
+  assert intFromRef(l0_result) == 42
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ordinary_sam.kt: info: Generated Viper text for SamSuperCapture:
+method SamSuperCapture_c_SamSuperBase_f_answer_inherited_body_c_SamSuperBase_f_answer(this: Ref)
+  returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), SamSuperCapture())
+  requires typeOf(this) == SamSuperCapture()
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == 42
+{
+  v_ret_3 := intToRef(42)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method SamSuperCapture_c_SamSuperBase_f_answer_inherited_contract_c_SamSuperBase_f_answer(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), SamSuperCapture())
+  requires typeOf(this) == SamSuperCapture()
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) == 42
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SamSuperCapture())
+  ensures isSubtype(typeOf(v_ret_0), SamSuperCapture()) &&
+    isSubtype(typeOf(v_ret_0), c_SamSuperBase())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SamSuperCapture()
+  fold acc(c_SamSuperBase_unique(v_ret_0), write)
+  fold acc(SamSuperCapture_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SamSuperCapture_unique(v_ret_0), write)
+  unfold acc(c_SamSuperBase_unique(v_ret_0), write)
+}
+
+method refines_SamSuperCapture_c_SamSuperBase_f_answer_inherited_contract_c_SamSuperBase_f_answer(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), SamSuperCapture())
+  requires typeOf(this) == SamSuperCapture()
+  requires isSubtype(typeOf(this), SamSuperCapture())
+{
+  ret_5 := SamSuperCapture_c_SamSuperBase_f_answer_inherited_body_c_SamSuperBase_f_answer(this)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(ret_5) == 42
+}

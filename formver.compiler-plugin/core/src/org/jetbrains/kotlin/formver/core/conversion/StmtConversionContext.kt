@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirOperation
@@ -138,6 +139,26 @@ interface StmtConversionContext : MethodConversionContext {
         catches: List<FirCatch>,
         action: StmtConversionContext.(catchBlockListData: CatchBlockListData) -> R,
     ): Pair<CatchBlockListData, R>
+}
+
+internal fun StmtConversionContext.convertLocalProperty(property: FirProperty): ExpEmbedding {
+    val symbol = property.symbol
+    if (property.delegate != null) return declareLocalDelegate(symbol)
+    if (!symbol.isLocal) throw SnaktInternalException(property.source, "Non-local property '${symbol.name}' reached local property conversion")
+
+    // The declaration stands even when its initializer is unsupported, so later statements can use the name.
+    val initializer = property.initializer?.let {
+        platformNullCheck(it, convertReportingUnsupported(it), symbol.resolvedReturnType)
+    }
+    val adapter = initializer?.ignoringMetaNodes() as? CallableReferenceValue
+    if (symbol.isVal && adapter != null) {
+        registerCallableReference(symbol, adapter.captured())
+        return adapter.capture?.let { blockOf(it, UnitLit) } ?: UnitLit
+    }
+    val declaration = declareLocalProperty(symbol, initializer)
+    val frame = ownershipFrame
+    if (declaration.variable.viewSource != null || frame.analysis == null) return declaration
+    return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
 }
 
 fun StmtConversionContext.declareLocalProperty(symbol: FirPropertySymbol, initializer: ExpEmbedding?): Declare {

@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.formver.core.conversion.MethodConversionContext
@@ -28,13 +28,14 @@ class LambdaExp(
     override val labelName: String?,
     /** Each local `var` the lambda captures, with the flag that creating it as a value sets, or null if none is declared. */
     val sharedLocalFlags: Map<FirPropertySymbol, VariableEmbedding?>,
-    /** The locals and parameters the lambda captures, which are shared once it exists as a value. */
-    val capturedRoots: Map<FirVariableSymbol<*>, ExpEmbedding>,
+    /** The roots the lambda captures, which are shared once it exists as a value. */
+    val capturedRoots: Map<FirBasedSymbol<*>, ExpEmbedding>,
+    private val samType: TypeEmbedding? = null,
 ) : CallableEmbedding,
     ExpEmbedding,
     FunctionSignature by signature {
     override val type: TypeEmbedding
-        get() = callableType.asTypeEmbedding()
+        get() = samType ?: callableType.asTypeEmbedding()
 
     override fun insertCall(
         args: List<ExpEmbedding>,

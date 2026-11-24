@@ -28,6 +28,7 @@ interface ExpVisitor<R> {
     fun visitElvis(e: Elvis): R
     fun visitReturn(e: Return): R
     fun visitLambdaExp(e: LambdaExp): R
+    fun visitCallableReferenceValue(e: CallableReferenceValue): R
     fun visitMethodCall(e: MethodCall): R
     fun visitFunctionCall(e: FunctionCall): R
     fun visitSafeCast(e: SafeCast): R
@@ -126,6 +127,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitElvis(e: Elvis): R = visitDefault(e)
     override fun visitReturn(e: Return): R = visitDefault(e)
     override fun visitLambdaExp(e: LambdaExp): R = visitDefault(e)
+    override fun visitCallableReferenceValue(e: CallableReferenceValue): R = visitDefault(e)
     override fun visitMethodCall(e: MethodCall): R = visitDefault(e)
     override fun visitFunctionCall(e: FunctionCall): R = visitDefault(e)
     override fun visitSafeCast(e: SafeCast): R = visitDefault(e)

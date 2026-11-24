@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.expression.CallableReferenceValue
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
@@ -90,8 +91,10 @@ class MethodConverter(
         propertyResolver.tryResolveLoopName(name) ?: throw IllegalArgumentException("Loop $name not found in scope.")
 
     override fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding =
-        propertyResolver.tryResolveLocalProperty(symbol) ?: parent?.resolveLocal(symbol)
-        ?: throw IllegalArgumentException("Property ${symbol.name} not found in scope.")
+        propertyResolver.tryResolveLocalProperty(symbol)
+            ?: (symbol as? FirPropertySymbol)?.let(callableReferences::get)?.unsupportedUse()
+            ?: parent?.resolveLocal(symbol)
+            ?: throw IllegalArgumentException("Property ${symbol.name} not found in scope.")
 
     override fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath?) {
         if (symbol.name.isSpecial)
@@ -108,6 +111,15 @@ class MethodConverter(
 
     override fun registerLocalVariable(symbol: FirVariableSymbol<*>, type: TypeEmbedding) {
         propertyResolver.registerLocalVariable(symbol, type)
+    }
+
+    private val callableReferences = mutableMapOf<FirPropertySymbol, CallableReferenceValue>()
+
+    override fun resolveCallableReference(symbol: FirPropertySymbol): CallableReferenceValue? =
+        callableReferences[symbol] ?: parent?.resolveCallableReference(symbol)
+
+    override fun registerCallableReference(symbol: FirPropertySymbol, value: CallableReferenceValue) {
+        callableReferences[symbol] = value
     }
 
     private val sharedLocalFlags = mutableMapOf<FirPropertySymbol, VariableEmbedding>()

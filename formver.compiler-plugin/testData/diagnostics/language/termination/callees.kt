@@ -1,4 +1,5 @@
 // FULL_JDK
+// DIAGNOSTIC_KINDS
 // TRUST_REPORT
 import org.jetbrains.kotlin.formver.plugin.*
 

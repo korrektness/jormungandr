@@ -235,6 +235,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression: FirPropertyAccessExpression,
         data: StmtConversionContext,
     ): ExpEmbedding {
+        data.knownCallableReference(propertyAccessExpression)?.let { return it() }
         (propertyAccessExpression.calleeReference.symbol?.let(::receiverTemporaryAlias)?.let { data.convert(it) }
             ?: data.delegatedRead(propertyAccessExpression))?.let { return it }
         data.convertIntrinsicPropertyRead(propertyAccessExpression)?.let { return it }
@@ -344,15 +345,19 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
 
     override fun visitSamConversionExpression(expression: FirSamConversionExpression, data: StmtConversionContext): ExpEmbedding =
-        data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: visitElement(expression, data)
+        data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: data.convertSamValue(expression, expression.expression)
 
     override fun visitComponentCall(componentCall: FirComponentCall, data: StmtConversionContext): ExpEmbedding =
         visitFunctionCall(componentCall, data)
 
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
-        data.liftedLambda(functionCall)?.let { return data.constructLambda(it) }
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
+        val special = data.liftedLambda(functionCall)?.let { data.constructLambda(it) } ?: when (symbol.origin) {
+            FirDeclarationOrigin.SamConstructor -> data.convertSamValue(functionCall, functionCall.arguments.singleOrNull())
+            else -> data.convertExplicitReferenceInvocation(functionCall)
+        }
+        if (special != null) return special
         data.typeResolver.classLawExpansion?.let { expansion ->
             if (expansion.isOwnAccess(functionCall)) return data.convertOwnObserverCall(expansion, functionCall, symbol)
         }
@@ -427,6 +432,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (implicitInvokeCall.dispatchReceiver?.resolvedType?.toRegularClassSymbol(data.session)?.isFun == true) {
             return visitFunctionCall(implicitInvokeCall, data)
         }
+        implicitInvokeCall.dispatchReceiver?.let { data.convertReferenceInvocation(implicitInvokeCall, it) }?.let { return it }
         val receiver =
             implicitInvokeCall.dispatchReceiver as? FirPropertyAccessExpression ?: throw UnsupportedFeatureException(
                 implicitInvokeCall.source, "implicit invoke on a receiver that is not a variable"
@@ -455,29 +461,14 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     }
 
     override fun visitProperty(property: FirProperty, data: StmtConversionContext): ExpEmbedding {
-        val symbol = property.symbol
-        if (receiverTemporaryAlias(symbol) != null) return UnitLit
-        if (property.delegate != null) return data.declareLocalDelegate(symbol)
-        if (!symbol.isLocal) {
-            throw SnaktInternalException(
-                property.source,
-                "StmtConversionVisitor should not encounter non-local properties."
-            )
-        }
-
-        // The declaration stands even when its initializer is unsupported, so later statements can use the name.
-        val declaration = data.declareLocalProperty(symbol, property.initializer?.let {
-            data.platformNullCheck(it, data.convertReportingUnsupported(it), symbol.resolvedReturnType)
-        })
-        val frame = data.ownershipFrame
-        if (declaration.variable.viewSource != null || frame.analysis == null) return declaration
-        return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
+        if (receiverTemporaryAlias(property.symbol) != null) return UnitLit
+        return data.convertLocalProperty(property)
     }
 
     override fun visitCallableReferenceAccess(
         callableReferenceAccess: FirCallableReferenceAccess,
         data: StmtConversionContext,
-    ): ExpEmbedding = data.delegateAccessorReference(callableReferenceAccess) ?: visitElement(callableReferenceAccess, data)
+    ): ExpEmbedding = data.delegateAccessorReference(callableReferenceAccess) ?: data.convertCallableReference(callableReferenceAccess)
 
     override fun visitGetClassCall(getClassCall: FirGetClassCall, data: StmtConversionContext): ExpEmbedding =
         data.convertGetClassCall(getClassCall)
