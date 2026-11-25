@@ -45,6 +45,8 @@ internal data class Refinement(
     val spelling: String,
     val source: KtSourceElement?,
 ) {
+    val name get() = RefinementName(overridden.name)
+
     /**
      * The refinement method: it assumes the overridden precondition and that the receiver has the override's class,
      * calls the override, and asserts the overridden postcondition. A failure of the call's precondition or of an
@@ -114,7 +116,7 @@ internal data class Refinement(
                 position, role(SourceRole.OverrideRefinement.Clause.THROWS_ONLY_IF)))
         }
         return UserMethod(
-            RefinementName(overridden.name),
+            name,
             overridden.formalArgs.map { it.toLocalVarDecl() },
             returnVariable.toLocalVarDecl(),
             (argumentTypes + overridden.preconditions + receiverType).pureToViper(toBuiltin = true, typeResolver).map { pre ->

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionExp
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -37,13 +38,21 @@ class ConvertedBodyResolver {
     private val impure: MutableMap<SymbolicName, ConvertedMethodBody> = mutableMapOf()
     private val pure: MutableMap<SymbolicName, ExpEmbedding> = mutableMapOf()
 
-    fun storeImpure(name: SymbolicName, body: ConvertedMethodBody) {
+    private val impureSources = mutableMapOf<SymbolicName, FirFunction>()
+    private val pureSources = mutableMapOf<SymbolicName, FirFunction>()
+
+    fun storeImpure(name: SymbolicName, body: ConvertedMethodBody, declaration: FirFunction? = null) {
         check(impure.put(name, body) == null) { "Converted method body for $name was already stored" }
+        if (declaration != null) impureSources[name] = declaration
     }
 
-    fun storePure(name: SymbolicName, body: ExpEmbedding) {
+    fun storePure(name: SymbolicName, body: ExpEmbedding, declaration: FirFunction? = null) {
         check(pure.put(name, body) == null) { "Converted function body for $name was already stored" }
+        if (declaration != null) pureSources[name] = declaration
     }
+
+    internal fun sourceBody(name: SymbolicName, pure: Boolean): FirFunction? =
+        if (pure) pureSources[name] else impureSources[name]
 
     fun lookupImpure(name: SymbolicName): ConvertedMethodBody? = impure[name]
     fun lookupPure(name: SymbolicName): ExpEmbedding? = pure[name]

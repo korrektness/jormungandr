@@ -24,11 +24,14 @@ import org.jetbrains.kotlin.formver.core.linearization.nullBaseCase
 import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.linearization.MethodTermination
 import org.jetbrains.kotlin.formver.core.linearization.TerminationCheckMethod
 import org.jetbrains.kotlin.formver.core.names.TerminationCheckName
+import org.jetbrains.kotlin.formver.viper.ast.Program
 
 /** Validates converted bodies and produces callable definitions, including headers for absent bodies. */
 internal class ProgramBodyProcessor(
@@ -41,6 +44,25 @@ internal class ProgramBodyProcessor(
     /** Called with each recursive function that has no measure, and a call path from it back to itself. */
     private val onMissingMeasure: (CompleteFunctionSignature, List<CompleteFunctionSignature>) -> Unit,
 ) {
+    private val runtimeDefinitions = mutableMapOf<SymbolicName, SymbolicName>()
+
+    fun emittedCallableBodies(program: Program, registered: List<RegisteredFunction>): List<FirFunction> {
+        val methods = program.methods.filter { it.body != null }.map { it.name }.toSet()
+        val functions = program.functions.filter { it.body != null }.map { it.name }.toSet()
+        val refinementsByBody = refinements.groupBy { it.override.name }
+        return registered.filterNot { it.declaration is FirConstructor }.groupBy { it.declaration }
+            .filterValues { obligations ->
+                obligations.all { obligation ->
+                    val name = obligation.signature.name
+                    val pure = obligation.signature.isPure
+                    val definitions = if (pure) functions else methods
+                    val definition = runtimeDefinitions[name] ?: name
+                    converter.convertedBodyResolver.sourceBody(name, pure) === obligation.declaration &&
+                        definition in definitions && refinementsByBody[name].orEmpty().all { it.name in methods }
+                }
+            }.keys.toList()
+    }
+
     private val measures: Map<SymbolicName, TerminationMeasure>
         get() = terminationMeasures.measures
 
@@ -114,6 +136,7 @@ internal class ProgramBodyProcessor(
                 method.pres + Exp.EqCmp(RuntimeTypeDomain.typeOf(receiver.toLocalVarUse()), view.runtimeType),
                 method.posts, method.body, method.pos, method.info)
             converter.linearizedBodyResolver.storeMethod(proofName, proof)
+            runtimeDefinitions[name] = proofName
             converter.linearizedBodyResolver.storeMethod(name, signature.toViperMethod(converter.typeResolver, null))
         } else {
             converter.linearizedBodyResolver.storeMethod(name, method)

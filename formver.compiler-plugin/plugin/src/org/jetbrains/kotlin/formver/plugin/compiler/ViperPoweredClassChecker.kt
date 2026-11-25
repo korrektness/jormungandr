@@ -68,7 +68,7 @@ internal class ViperPoweredClassChecker(
             val site = config.programReportSite(declaration, inherited = obligations.inherited)
             val (converter, program) = try {
                 val converter = ProgramConverter(session, config, context, reporter)
-                converter to programs.convert(declaration, obligations, dumps, converter)
+                converter to programs.convert(declaration, obligations, dumps, converter, trackBodies = site?.tracksBodies == true)
             } catch (error: UnsupportedFeatureException) {
                 reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
                 checker.recordTranslationStop(site, error)
@@ -93,12 +93,17 @@ internal class ViperPoweredClassChecker(
                 declaration.viperProgram = program.program
                 declaration.shouldVerify = program.verify
                 declaration.trust = program.trust
-            } else if (program.verify) {
-                if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel, site)) return@decide false
             } else {
-                val skip = converter.verificationSkipReason
-                site?.record {
-                    if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
+                val emittedSite = site?.withEmittedBodies(program.emittedBodies)
+                if (program.verify) {
+                    if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel, emittedSite)) {
+                        return@decide false
+                    }
+                } else {
+                    val skip = converter.verificationSkipReason
+                    emittedSite?.record {
+                        if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
+                    }
                 }
             }
             program.verifiesConstruction

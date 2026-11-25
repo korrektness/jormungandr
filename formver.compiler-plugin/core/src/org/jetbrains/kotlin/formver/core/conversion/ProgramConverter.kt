@@ -84,7 +84,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 
-private data class RegisteredFunction(
+internal data class RegisteredFunction(
     val declaration: FirFunction,
     val signature: CompleteFunctionSignature,
     val returnTarget: ReturnTarget,
@@ -223,31 +223,8 @@ class ProgramConverter(
         return program.copy(domains = listOf(runtimeTypes) + program.domains)
     }
 
-    // Arguments are evaluated in the order written, and the domains go last: converting the other members
-    // may find that a specification states the relation of an `==`, which needs its domain.
-    private fun buildProgramWithoutRuntimeTypes(): Program = Program(
-        functions = TerminationMeasures.withTerminationSpecifications(
-            SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
-                    SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
-                linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
-                typeResolver.unmatchedWhenFunctions + typeResolver.castDefinednessFunctions +
-                listOfNotNull(PrimitiveArrayEmbedding.arraySizeFunction.takeIf { usesPrimitiveArray },
-                    GenericArrayEmbedding.arraySizeFunction.takeIf { usesGenericArray })
-        ),
-        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods +
-            vacuityProbes.methods(linearizedBodyResolver.methods, linearizedBodyResolver.functions),
-        predicates = typeResolver.predicates(),
-        // Public fields with the same name are represented differently at `FieldEmbedding` level
-        // but map to the same Viper field, so we deduplicate before emitting.
-        fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
-                listOfNotNull(contentsField.takeIf { usesPrimitiveArray || usesStringBuilder },
-                    GenericArrayEmbedding.contentsField.takeIf { usesGenericArray }),
-        adts = emptyList(),
-        domains = listOfNotNull(SeqMultisetDomain.takeIf { uses(PrimitiveArrayEmbedding.INT) && typeResolver.usesMultiset }) +
-                listOfNotNull(typeResolver.equalsRelationDomain()) +
-                TerminationMeasures.domains(linearizedBodyResolver.functions),
-    ).withoutUncalledFunctions(SpecialFunctions.allNames)
-
+    /** Registered callable bodies whose definitions and refinements all occur in the emitted program. */
+    fun emittedCallableBodies(program: Program): List<FirFunction> = bodyProcessor.emittedCallableBodies(program, registered)
 
     // region Callable Conversion
 
@@ -289,6 +266,7 @@ class ProgramConverter(
         registeredSymbol = function.symbol
         val method = convert()
         fullSignatures[method.signature.name] = method.signature
+        convertedBodyResolver.storeImpure(method.signature.name, method.body, function)
         registered += RegisteredFunction(function, method.signature, method.target, hasErrors)
     }
 
@@ -343,7 +321,7 @@ class ProgramConverter(
         val body = context.convertImpureBody(declaration, header, returnTarget, entry)
         checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
         declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
-        body?.let { convertedBodyResolver.storeImpure(header.name, it) }
+        body?.let { convertedBodyResolver.storeImpure(header.name, it, declaration) }
         registered += RegisteredFunction(declaration, header, returnTarget, uniquenessOutcomeOf(declaration).hasErrors)
     }
 
@@ -524,7 +502,8 @@ class ProgramConverter(
      */
     @OptIn(SymbolInternals::class)
     private fun embedFunctionBody(
-        symbol: FirFunctionSymbol<*>, signature: SignatureWithTarget<CompleteFunctionSignature>
+        symbol: FirFunctionSymbol<*>, signature: SignatureWithTarget<CompleteFunctionSignature>,
+        reportSourceBody: Boolean = true,
     ) {
         val declaration = symbol.fir
         if (session.externalSpecifications?.isModel(symbol) == true) return
@@ -539,17 +518,18 @@ class ProgramConverter(
         if (signature.signature.isPure) declaration.rejectCaptureReads(symbol.source.takeIf { symbol == registeredSymbol }, "a `@Pure` function")
         val scope = bodyScope.takeIf { symbol == registeredSymbol }
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis, scope)
+        val sourceBody = declaration.takeIf { reportSourceBody }
         if (signature.signature.isPure) {
             val body = context.convertPureBody(declaration)
             checkVarReads(declaration) { body.checkReadOnlyVarReads(it, this) }
-            convertedBodyResolver.storePure(signature.signature.name, body)
+            convertedBodyResolver.storePure(signature.signature.name, body, sourceBody)
         } else {
             val body = context.withExceptionEscape(signature.signature.exceptionEscape(symbol)) {
                 convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget, scope?.entry(this@ProgramConverter).orEmpty())
             }
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
-            body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
+            body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it, sourceBody) }
         }
     }
 
@@ -598,7 +578,7 @@ class ProgramConverter(
             if (existing !is PartiallySpecialKotlinFunction) return@also
             if (existing.baseEmbedding != null) return@also
             val signature = embedCompleteSignature(symbol)
-            embedFunctionBody(symbol, signature)
+            embedFunctionBody(symbol, signature, reportSourceBody = false)
             existing.initBaseEmbedding(signature.signature)
         }
     }
@@ -949,6 +929,31 @@ class ProgramConverter(
 
     // endregion
 }
+
+// Arguments are evaluated in the order written, and the domains go last: converting the other members
+// may find that a specification states the relation of an `==`, which needs its domain.
+private fun ProgramConverter.buildProgramWithoutRuntimeTypes(): Program = Program(
+    functions = TerminationMeasures.withTerminationSpecifications(
+        SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
+                SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
+            linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
+            typeResolver.unmatchedWhenFunctions + typeResolver.castDefinednessFunctions +
+            listOfNotNull(PrimitiveArrayEmbedding.arraySizeFunction.takeIf { usesPrimitiveArray },
+                GenericArrayEmbedding.arraySizeFunction.takeIf { usesGenericArray })
+    ),
+    methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods +
+        vacuityProbes.methods(linearizedBodyResolver.methods, linearizedBodyResolver.functions),
+    predicates = typeResolver.predicates(),
+    // Public fields with the same name are represented differently at `FieldEmbedding` level
+    // but map to the same Viper field, so we deduplicate before emitting.
+    fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
+            listOfNotNull(contentsField.takeIf { usesPrimitiveArray || usesStringBuilder },
+                GenericArrayEmbedding.contentsField.takeIf { usesGenericArray }),
+    adts = emptyList(),
+    domains = listOfNotNull(SeqMultisetDomain.takeIf { uses(PrimitiveArrayEmbedding.INT) && typeResolver.usesMultiset }) +
+            listOfNotNull(typeResolver.equalsRelationDomain()) +
+            TerminationMeasures.domains(linearizedBodyResolver.functions),
+).withoutUncalledFunctions(SpecialFunctions.allNames)
 
 /** Whether any declaration of this program uses one of [names]. */
 private fun Program.refersToAny(names: Set<SymbolicName>): Boolean {

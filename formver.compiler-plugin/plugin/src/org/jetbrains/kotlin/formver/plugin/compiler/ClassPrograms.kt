@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
@@ -57,6 +58,7 @@ data class ClassProgram(
     /** Whether [program] proves the class's constructors and nothing skips its verification. */
     val verifiesConstruction: Boolean,
     val trust: TrustedAssumptionCollector,
+    val emittedBodies: List<FirFunction> = emptyList(),
 )
 
 /** Converts the Viper program that checks a concrete class. */
@@ -101,6 +103,7 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
     context(reporter: DiagnosticReporter)
     internal fun convert(
         declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>, converter: ProgramConverter,
+        trackBodies: Boolean = false,
     ): ClassProgram? {
         val provesConstruction = obligations.constructors.isNotEmpty() && !obligations.skipsConstructor
         if (provesConstruction) converter.provenConstruction = declaration.symbol
@@ -126,7 +129,8 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         SiliconFrontend.checkConsistency(viperProgram)
         val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
             !converter.skipsVerification
-        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust)
+        val bodies = if (trackBodies) converter.emittedCallableBodies(program) else emptyList()
+        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust, bodies)
     }
 
     /**

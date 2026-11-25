@@ -28,6 +28,15 @@ class DeclarationReportTest {
         @NeverConvert fun ignored(): Int = 2
         @Pure fun impure(): Int = increment(1)
         class Counter(val start: Int)
+        @Pure fun constant(): Int = 6
+        @Pure fun recurse(x: Int): Int = recurse(x) + 1
+        fun outer(): Int {
+            fun local(): Int = 3
+            return local()
+        }
+        var computed: Int
+            get() = 4
+            set(value) { org.jetbrains.kotlin.formver.plugin.verify(value == value) }
     """.trimIndent()
 
     private fun location(type: Class<*>) = Paths.get(type.protectionDomain.codeSource.location.toURI()).toString()
@@ -133,6 +142,7 @@ class DeclarationReportTest {
 
     @Test
     fun `the report distinguishes conversion from verification for functions and classes`() {
+        val rows = report()
         assertEquals(
             mapOf(
                 "one.body" to listOf("4", "converted", "", "", "not_selected", ""),
@@ -143,9 +153,20 @@ class DeclarationReportTest {
                 "ignored.body" to listOf("8", "excluded", "", "NEVER_CONVERT", "", ""),
                 "impure.body" to listOf("9", "stopped", "PURITY_VIOLATION", "FUNCTION_BODY", "", ""),
                 "Counter.class" to listOf("10", "converted", "", "", "not_selected", ""),
+                "constant.body" to listOf("11", "converted", "", "", "not_selected", ""),
+                "recurse.body" to listOf("12", "converted", "", "", "skipped", "MISSING_TERMINATION_MEASURE"),
+                "outer.body" to listOf("13", "converted", "", "", "not_selected", ""),
+                "<local>.local.body" to listOf("14", "converted", "", "", "not_selected", ""),
+                "computed.get.body" to listOf("18", "converted", "", "", "not_selected", ""),
+                "computed.set.body" to listOf("19", "converted", "", "", "not_selected", ""),
             ),
-            report().outcomes,
+            rows.outcomes,
         )
+        val withBodies = setOf("one.body", "increment.body", "supplier.body", "supplier.lambda0", "constant.body",
+            "outer.body", "<local>.local.body", "computed.get.body", "computed.set.body")
+        assertEquals(withBodies.associateWith { rows.ids.getValue(it)[1] },
+            rows.ids.mapValues { (_, ids) -> ids.last() }.filterValues(String::isNotEmpty))
+        assertTrue(rows.ids.getValue("recurse.body")[1].isNotEmpty())
     }
 
     @Test

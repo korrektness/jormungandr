@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirFile
+import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
@@ -35,12 +36,17 @@ import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierEr
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessExtensionRegistrar
 import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
+import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.junit.jupiter.api.io.TempDir
 import java.security.MessageDigest
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import kotlin.test.*
+import viper.silver.ast.Assert
+import viper.silver.ast.FalseLit
+import viper.silver.verifier.errors.AssertFailed
+import viper.silver.verifier.reasons.AssertionFalse
 
 class ClassProgramReportTest {
     @TempDir
@@ -63,6 +69,7 @@ class ClassProgramReportTest {
         locateSolver: () -> String = { "unused-z3" },
         verificationCacheDirectory: String? = null,
         useLightTree: Boolean = false,
+        checkFunctions: Boolean = false,
     ): Result {
         val file = temp.resolve("Classes.kt").apply { writeText(source.trimIndent()) }
         val report = temp.resolve("classes.tsv")
@@ -101,7 +108,14 @@ class ClassProgramReportTest {
                                         ReportedVerifierErrors(), sink, useVerificationFacade = false)
                                     val classes = declaration.declarations.filterIsInstance<FirRegularClass>()
                                     failure = runCatching {
-                                        with(checkReporter) { classes.forEach { checker.check(it) } }
+                                        with(checkReporter) {
+                                            classes.forEach { checker.check(it) }
+                                            if (checkFunctions) {
+                                                val functions = ViperPoweredDeclarationChecker(session, config,
+                                                    VerifierLocator(locateSolver), ReportedVerifierErrors(), sink, useVerificationFacade = false)
+                                                declaration.declarations.filterIsInstance<FirSimpleFunction>().forEach { functions.check(it) }
+                                            }
+                                        }
                                         flush()
                                     }.exceptionOrNull()
                                     for (owner in classes) skipped[owner.name.asString()] = owner.verificationSkipped == true
@@ -328,7 +342,40 @@ class ClassProgramReportTest {
     }
 
     @Test
-    fun `class-hosted copies identify the source implementation as a candidate of each host`() {
+    fun `a failed nested body has its own emitted link and a green caller cannot fill a missing body`() {
+        val result = compile(
+            """
+            import org.jetbrains.kotlin.formver.plugin.NeverVerify
+            import org.jetbrains.kotlin.formver.plugin.verify
+
+            fun supplier(): () -> Int = { verify(false); 1 }
+            @NeverVerify fun opaque(): Int = 2
+            fun caller(): Int { return opaque() }
+            """,
+            VerificationSink { request, replay ->
+                val nodes = request.program.iterator()
+                val errors = generateSequence { if (nodes.hasNext()) nodes.next() else null }
+                    .filterIsInstance<Assert>().filter { it.exp() is FalseLit }
+                    .map { VerificationError(AssertFailed(it, AssertionFalse(it.exp()), false)) }.toList()
+                replay { VerificationResult(errors) }
+            },
+            checkFunctions = true,
+        )
+        assertNull(result.failure)
+        assertEquals(mapOf("supplier.body" to "verified", "supplier.lambda0" to "failed", "opaque.body" to "not_selected",
+            "caller.body" to "verified"), result.rows.mapValues { it.value.verification })
+        val lambda = regionId("LAMBDA", "{ verify(false); 1 }")
+        val owner = regionId("FUNCTION", "{ verify(false); 1 }")
+        val caller = regionId("FUNCTION", "{ return opaque() }")
+        val expected = mapOf("supplier.body" to owner, "supplier.lambda0" to lambda, "caller.body" to caller)
+            .mapKeys { result.ids.getValue(it.key)[0] }
+        val emitted = result.ids.values.filter { it.last().isNotEmpty() }.associate { it[0] to it.last() }
+        assertEquals(expected, emitted)
+        assertEquals(regionId("FUNCTION", "2"), result.ids.getValue("opaque.body")[1])
+    }
+
+    @Test
+    fun `each class-hosted copy links the body of the source implementation`() {
         val result = compile(
             """
             import org.jetbrains.kotlin.formver.plugin.*
@@ -345,8 +392,9 @@ class ClassProgramReportTest {
         val second = result.ids.getValue("Second.class")
         assertNotEquals(first[0], second[0])
         val candidate = regionId("FUNCTION", "{ preconditions { x >= 0 }; return x }")
-        assertEquals(listOf("", candidate), first.drop(1))
-        assertEquals(listOf("", candidate), second.drop(1))
+        assertEquals(listOf("", candidate, candidate), first.drop(1))
+        assertEquals(listOf("", candidate, candidate), second.drop(1))
+        assertEquals("", result.ids.getValue("Base.class").last())
     }
 
     private fun regionId(kind: String, anchor: String): String {

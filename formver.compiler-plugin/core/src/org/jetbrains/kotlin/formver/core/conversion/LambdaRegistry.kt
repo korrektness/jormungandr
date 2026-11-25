@@ -53,7 +53,7 @@ internal class LambdaRegistry(
         val analysis = converter.uniquenessAnalysisOf(lambda.function.symbol)
         converter.convertedBodyResolver.storeImpure(signature.name, with(converter) {
             implementation.invokeBody(signature, target, analysis)
-        })
+        }, lambda.function)
         val refinement = if (context(converter.checkerContext) { lambda.invoke.specificationOwner() } != null) {
             Refinement(signature, inherited, lambda.invoke.refinementSpelling, lambda.function.source)
         } else null

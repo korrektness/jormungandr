@@ -21,7 +21,20 @@ import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import java.io.IOException
 
 /** Carries the same reporting identity from conversion to terminal result replay. */
-internal class ProgramReportSite(private val report: DeclarationReport, private val row: DeclarationReport.Row) {
+internal class ProgramReportSite(
+    private val report: DeclarationReport,
+    private val row: DeclarationReport.Row,
+    private val regions: Map<FirDeclaration, String> = emptyMap(),
+) {
+    val tracksBodies: Boolean get() = regions.isNotEmpty()
+
+    fun withEmittedBodies(bodies: List<FirFunction>): ProgramReportSite {
+        val emitted = bodies.toSet()
+        val links = regions.entries.groupBy({ it.value }, { it.key })
+            .filterValues { targets -> targets.all { it in emitted } }.keys.sorted()
+        return ProgramReportSite(report, row.copy(directBodyRegionIds = links.joinToString(",")))
+    }
+
     fun record(outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
         try {
             report.write(row.outcome())
@@ -69,10 +82,14 @@ internal fun PluginConfiguration.programReportSite(
         }
         val file = psi.containingFile as KtFile
         if (externalSpecs.isExternalSpec(file.virtualFilePath)) return@mapNotNull null
-        sourceIndex.file(file).requireRegion(implementation.verificationLabel, psi, RegionKind.FUNCTION)
-    }.distinct().sorted()
+        implementation to sourceIndex.file(file).requireRegion(implementation.verificationLabel, psi, RegionKind.FUNCTION)
+    }.toMap()
+    val regions = buildMap<FirDeclaration, String> {
+        if (regionId != null) put(target, regionId)
+        putAll(candidates)
+    }
     return ProgramReportSite(report, row.copy(programId = programId, targetRegionId = regionId.orEmpty(),
-        inheritedCandidateRegionIds = candidates.joinToString(",")))
+        inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(",")), regions)
 }
 
 private fun FirDeclaration.psiOwner() = (source as? KtPsiSourceElement)?.psi?.let {

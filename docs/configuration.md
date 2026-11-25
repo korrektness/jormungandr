@@ -176,8 +176,9 @@ replaces the file. The first line names the columns:
 | `program_id` | Stable per-compilation identifier for the reporting slot. A callable or standalone lambda uses its own region identity, and a class program uses the receiving class's syntax span. The progress label, lambda index and worker completion order are not part of the ID. |
 | `target_region_id` | Census region targeted by the callable conversion or standalone lambda conversion; blank for class programs. |
 | `inherited_candidate_region_ids` | Sorted comma-separated source implementation region IDs from the receiving class's selected inherited obligations. A candidate can appear in multiple classes' rows. |
+| `direct_body_region_ids` | Sorted comma-separated region IDs with callable bodies in this emitted program. A link requires every body definition and refinement for that region in this program. A header without a body does not qualify. |
 
-The report always includes the three identity columns. They remain blank unless
+The report always includes the identity and membership columns. They remain blank unless
 `proof_checkout` (the census checkout root) and `proof_compilation` (the census
 compilation ID) are supplied with `declaration_report`. Identity mode uses
 compiler PSI (`-Xuse-fir-lt=false`) and is incompatible with `inputs_only`.
@@ -187,12 +188,15 @@ using the [source census](developing.md#production-kotlin-input-evidence) fields
 binds exact bytes; syntax spans count UTF-16 code units after BOM removal and
 line-ending normalization.
 
-Target and candidate IDs describe intent, including on stopped or excluded rows.
-They do not establish body membership. For example, `ProgramBodyProcessor` can
-emit a header instead of a definition; a terminal `verified` row for that
-program does not prove the absent body. No census region receives coverage
-credit without separate lowering evidence and reconciliation with all applicable
-terminal outcomes.
+Target and candidate IDs identify required program–region pairs, including on
+stopped or excluded rows. For coverage, reconcile each pair against an emitted
+`direct_body_region_ids` link **on that program** and a terminal `verified`
+outcome. Membership describes emission, so it can accompany a nonpassing
+outcome. Missing links are unaccounted even if every reported program is green.
+Class-hosted copies are separate obligations; a base method's own program does
+not discharge them. A callee definition included as proof context does not
+replace its own proof program. Constructor, initializer and builtin lowering
+do not produce these links.
 
 Queued verification jobs that never start have no terminal row. This includes
 jobs left in a stopped worker batch and jobs queued when checking aborts before

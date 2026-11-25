@@ -298,6 +298,6 @@ fun ProgramConverter.registerLambdaValueBody(function: FirAnonymousFunction, own
         ?: throw SnaktInternalException(function.source, "Lambda value has no control-flow graph")
     val outcome = if (graph.extendsLocalFlow) UniquenessOutcome(null, hasErrors = false) else uniquenessOutcomeOf(function)
     registerMethod(function, outcome.hasErrors) {
-        with(this) { function.valueMethod(name, outcome.analysis) }.also { convertedBodyResolver.storeImpure(it.signature.name, it.body) }
+        with(this) { function.valueMethod(name, outcome.analysis) }
     }
 }

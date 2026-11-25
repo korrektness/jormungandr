@@ -259,13 +259,17 @@ internal class ViperPoweredDeclarationChecker(
                 declaration.lambdaPrograms = declaration.lambdaPrograms.orEmpty() +
                     LambdaVerificationProgram(viperProgram, shouldVerify, trusted, name)
             }
-        } else if (!shouldVerify) {
-            val skip = programConversionContext.verificationSkipReason
-            site?.record {
-                if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
-            }
         } else {
-            verifyProgram(declaration, programConversionContext, index, viperProgram, name, site)
+            val emittedSite = site?.takeIf { it.tracksBodies }
+                ?.withEmittedBodies(programConversionContext.emittedCallableBodies(program)) ?: site
+            if (shouldVerify) {
+                verifyProgram(declaration, programConversionContext, index, viperProgram, name, emittedSite)
+            } else {
+                val skip = programConversionContext.verificationSkipReason
+                emittedSite?.record {
+                    if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
+                }
+            }
         }
     }
 

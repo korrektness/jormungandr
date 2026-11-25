@@ -29,11 +29,12 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
         val programId: String = "",
         val targetRegionId: String = "",
         val inheritedCandidateRegionIds: String = "",
+        val directBodyRegionIds: String = "",
     ) {
         fun render(): String = listOf(
             file, line.toString(), declaration, program, conversion, conversionKind, conversionReason,
             conversionDetail, verification, verificationDetail, seconds?.let { "%.3f".format(it) }.orEmpty(),
-            exceptionCallees, programId, targetRegionId, inheritedCandidateRegionIds,
+            exceptionCallees, programId, targetRegionId, inheritedCandidateRegionIds, directBodyRegionIds,
         ).joinToString("\t") { it.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ') }
     }
 
@@ -51,7 +52,7 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
         val COLUMNS = listOf(
             "file", "line", "declaration", "program", "conversion", "conversion_kind", "conversion_reason",
             "conversion_detail", "verification", "verification_detail", "seconds", "exception_callees",
-            "program_id", "target_region_id", "inherited_candidate_region_ids",
+            "program_id", "target_region_id", "inherited_candidate_region_ids", "direct_body_region_ids",
         )
     }
 }
