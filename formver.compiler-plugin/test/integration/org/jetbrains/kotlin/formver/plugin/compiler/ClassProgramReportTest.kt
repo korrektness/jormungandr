@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import org.jetbrains.kotlin.formver.core.conversion.ConstructionVerdicts
 import org.jetbrains.kotlin.formver.core.verificationSkipped
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar
@@ -35,8 +36,10 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessExtensionRegistr
 import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import org.junit.jupiter.api.io.TempDir
+import java.security.MessageDigest
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 import kotlin.test.*
 
 class ClassProgramReportTest {
@@ -46,6 +49,7 @@ class ClassProgramReportTest {
     private data class Outcome(val conversion: String, val kind: String, val reason: String, val verification: String)
     private data class Result(
         val rows: Map<String, Outcome>,
+        val ids: Map<String, List<String>>,
         val diagnostics: List<String>,
         val skipped: Map<String, Boolean>,
         val failure: Throwable?,
@@ -58,12 +62,14 @@ class ClassProgramReportTest {
         conversionFailure: (() -> Throwable)? = null,
         locateSolver: () -> String = { "unused-z3" },
         verificationCacheDirectory: String? = null,
+        useLightTree: Boolean = false,
     ): Result {
         val file = temp.resolve("Classes.kt").apply { writeText(source.trimIndent()) }
         val report = temp.resolve("classes.tsv")
         val config = PluginConfiguration(
             LogLevel.ONLY_WARNINGS, ErrorStyle.USER_FRIENDLY, TargetsSelection.ALL_TARGETS, TargetsSelection.ALL_TARGETS,
-            false, MessageCollector.NONE, declarationReport = DeclarationReport(report),
+            false, MessageCollector.NONE,
+            declarationReport = DeclarationReport(report, ProofSourceIndex(":test:compileKotlin", temp.toPath())),
             verificationCacheDirectory = verificationCacheDirectory,
         )
         val diagnostics = mutableListOf<String>()
@@ -106,11 +112,12 @@ class ClassProgramReportTest {
                 }
             }
         }
-        runFrontend(file, registrar)
+        runFrontend(file, registrar, useLightTree)
         val rows = if (report.isDirectory) emptyList() else report.readLines().drop(1).map { it.split('\t') }
         val mapped = rows.associate { "${it[2]}.${it[3]}" to Outcome(it[4], it[5], it[6], it[8]) }
         assertEquals(rows.size, mapped.size)
-        return Result(mapped, diagnostics, skipped, failure)
+        val ids = rows.associate { "${it[2]}.${it[3]}" to it.drop(12) }
+        return Result(mapped, ids, diagnostics, skipped, failure)
     }
 
     @Test
@@ -244,9 +251,50 @@ class ClassProgramReportTest {
     }
 
     @Test
+    fun `class outcomes retain distinct program IDs when workers complete out of order`() {
+        val source = "class Good(val n: Int); class Bad(val n: Int)"
+        val invalidProgram = InvalidViperProgramException(listOf("invalid"))
+        var first = true
+        val immediate = compile(source, VerificationSink { _, replay ->
+            val failure = if (first) null else invalidProgram
+            first = false
+            replay { VerificationResult(emptyList(), failure) }
+        })
+
+        val submitted = mutableListOf<viper.silver.ast.Program>()
+        val secondStored = CountDownLatch(1)
+        val workers = FileVerificationSink(2) { request ->
+            val isFirst = request.program === submitted.first()
+            object : FileVerificationBackend {
+                override fun verify(program: viper.silver.ast.Program, onError: (VerifierError) -> Unit) {
+                    if (isFirst) secondStored.await() else throw invalidProgram
+                }
+
+                override fun close() {
+                    if (!isFirst) secondStored.countDown()
+                }
+            }
+        }
+        val batched = compile(source, VerificationSink { request, replay ->
+            submitted += request.program
+            workers.submit(request, replay)
+        }, flush = {
+            assertEquals(2, submitted.size)
+            assertNotSame(submitted[0], submitted[1])
+            workers.flush()
+        })
+        assertNull(batched.failure)
+        assertEquals(listOf("Good.class", "Bad.class"), batched.rows.keys.toList())
+        assertEquals(mapOf("Good.class" to Outcome("converted", "", "", "verified"), "Bad.class" to backendError), batched.rows)
+        assertEquals(immediate.ids, batched.ids)
+        val ids = batched.ids.values.map { it.first() }
+        assertEquals(2, ids.toSet().size)
+        ids.forEach { assertEquals(64, it.length) }
+    }
+
+    @Test
     fun `class-owned lambda overflow gets the lambda skip diagnostic and does not escape`() {
-        val result = compile(
-            """
+        val source = """
             import org.jetbrains.kotlin.formver.plugin.*
             fun interface Spec {
                 @Unique @Borrowed fun invoke(x: Int): Int
@@ -258,12 +306,56 @@ class ClassProgramReportTest {
                     x
                 }
             }
-            """, VerificationSink { _, replay -> replay { throw StackOverflowError() } },
-        )
+            """.trimIndent()
+        val sink = VerificationSink { _, replay -> replay { throw StackOverflowError() } }
+        val result = compile(source, sink)
         assertNull(result.failure)
         assertEquals(listOf(FailureKind.INTERNAL_ERROR.name, FailureKind.VERIFICATION_SKIPPED.name), result.diagnostics)
         assertEquals(true, result.skipped["Owner"])
         assertEquals(mapOf("Owner.lambda0" to backendError), result.rows)
+        val (program, region) = result.ids.getValue("Owner.lambda0")
+        assertEquals(64, program.length)
+        assertEquals(regionId("LAMBDA", "{ x ->\n        exposes(Spec::class) { state() == 0 }\n        x\n    }"), region)
+
+        val missingPsi = compile(source, sink, useLightTree = true)
+        val failure = assertIs<IllegalStateException>(missingPsi.failure)
+        val message = assertNotNull(failure.message)
+        assertTrue("Owner" in message)
+        assertTrue("lambda0" in message)
+        assertTrue(temp.resolve("Classes.kt").path in message)
+        val reportedOffset = message.substringAfterLast(' ').removeSuffix(")").toIntOrNull()
+        assertEquals(source.indexOf("{ x ->"), reportedOffset)
+    }
+
+    @Test
+    fun `class-hosted copies identify the source implementation as a candidate of each host`() {
+        val result = compile(
+            """
+            import org.jetbrains.kotlin.formver.plugin.*
+            open class Base {
+                @Unique @Borrowed fun inc(x: Int): Int { preconditions { x >= 0 }; return x }
+            }
+            class First : Base()
+            class Second : Base()
+            """,
+            VerificationSink { _, replay -> replay { VerificationResult(emptyList(), null) } },
+        )
+        assertNull(result.failure)
+        val first = result.ids.getValue("First.class")
+        val second = result.ids.getValue("Second.class")
+        assertNotEquals(first[0], second[0])
+        val candidate = regionId("FUNCTION", "{ preconditions { x >= 0 }; return x }")
+        assertEquals(listOf("", candidate), first.drop(1))
+        assertEquals(listOf("", candidate), second.drop(1))
+    }
+
+    private fun regionId(kind: String, anchor: String): String {
+        val text = temp.resolve("Classes.kt").readText()
+        val start = text.indexOf(anchor)
+        assertTrue(start >= 0)
+        fun digest(value: String) = MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).toHexString()
+        val key = "census-region-v1\t:test:compileKotlin\tcheckout\tClasses.kt\t${digest(text)}\t$kind:$start:${start + anchor.length}:0"
+        return digest(key)
     }
 
     private companion object {
@@ -271,12 +363,12 @@ class ClassProgramReportTest {
     }
 }
 
-private fun runFrontend(file: File, checkers: FirExtensionRegistrar) {
+private fun runFrontend(file: File, checkers: FirExtensionRegistrar, useLightTree: Boolean) {
     val compiler = K2JVMCompiler()
     val stdlib = File(KotlinVersion::class.java.protectionDomain.codeSource.location.toURI())
     val classpath = listOf(stdlib.path, System.getProperty("annotationsRuntime.classpath")).joinToString(File.pathSeparator)
     val args = compiler.createArguments()
-    compiler.parseArguments(arrayOf("-no-stdlib", "-no-reflect", "-classpath", classpath, file.path), args)
+    compiler.parseArguments(arrayOf("-no-stdlib", "-no-reflect", "-Xuse-fir-lt=$useLightTree", "-classpath", classpath, file.path), args)
     val root = Disposer.newDisposable()
     try {
         val messages = GroupingMessageCollector(MessageCollector.NONE, false, false)

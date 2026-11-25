@@ -1,6 +1,10 @@
 package org.jetbrains.kotlin.formver.census
 
+import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
+import org.jetbrains.kotlin.formver.common.source.SourceIdentity
 import org.junit.jupiter.api.io.TempDir
+import java.nio.charset.CharacterCodingException
+import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 import kotlin.io.path.createDirectories
@@ -9,11 +13,30 @@ import kotlin.io.path.writeText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class SourceCensusTest {
     @TempDir
     lateinit var work: Path
+
+    @Test
+    fun `proof index rejects an invalid compilation ID before indexing any input`() {
+        assertFailsWith<IllegalArgumentException> { ProofSourceIndex(":project:unrelatedTask", work) }
+    }
+
+    @Test
+    fun `invalid UTF-8 retains the input path and decoding cause`() {
+        val source = work.resolve("Malformed.kt")
+        Files.write(source, byteArrayOf(0xc3.toByte()))
+        val failure = assertFailsWith<IllegalArgumentException> {
+            SourceIdentity.fromParsedFile(":compileKotlin", work, source, "")
+        }
+        assertIs<CharacterCodingException>(failure.cause)
+        assertTrue(source.toRealPath().toString() in assertNotNull(failure.message))
+    }
 
     @Test
     fun `keys survive relocation and manifest order with reused files and basenames`() {
@@ -121,6 +144,19 @@ class SourceCensusTest {
             mapOf("PROPERTY_INITIALIZER" to listOf("20"), "DEFAULT_ARGUMENT" to listOf("40"), "FUNCTION" to listOf("value")),
             regions.groupBy({ it[4] }, { it.anchor(text) }),
         )
+    }
+
+    @Test
+    fun `invalid input identity retains the manifest and the offending row`() {
+        val input = Input(":app:unrelatedTask", "generated/Example.kt", "fun example() = 1")
+        val row = input.identity().joinToString("\t")
+        val manifest = work.resolve("inputs.tsv").apply { writeText("census-inputs-v1\n$row\n") }
+        val failure = assertFailsWith<IllegalArgumentException> {
+            writeSourceCensus(work, manifest, work.resolve("census.tsv"))
+        }
+        val message = assertNotNull(failure.message)
+        assertTrue(manifest.toString() in message)
+        assertTrue(row in message)
     }
 
     @Test

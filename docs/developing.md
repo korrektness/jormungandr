@@ -21,7 +21,7 @@ The printed run directory contains the raw manifests and, on success,
 `reconciled.json` and `census.tsv`.
 
 The reconciled inventory lists one row per file, including generated files,
-using checkout-relative paths and SHA-256 digests of the raw bytes. The checker
+using slash-separated checkout-relative paths and SHA-256 digests of the raw bytes. The checker
 also compares the text in the parsed syntax tree with the file after removing a
 leading UTF-8 BOM and normalizing line endings to LF. A task without Kotlin
 sources needs an explicit `confirmed-empty` record. Sources outside the checkout

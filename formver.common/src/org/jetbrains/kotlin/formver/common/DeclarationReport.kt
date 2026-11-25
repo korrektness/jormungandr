@@ -5,13 +5,14 @@
 
 package org.jetbrains.kotlin.formver.common
 
+import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import java.io.File
 
 /**
  * A compilation's program outcomes in a tab-separated file at [target]. Construction replaces [target].
  * See docs/configuration.md#declaration-reports for row coverage and column definitions.
  */
-class DeclarationReport(private val target: File) {
+class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIndex? = null) {
     data class Row(
         val file: String,
         val line: Int,
@@ -25,11 +26,14 @@ class DeclarationReport(private val target: File) {
         val verificationDetail: String = "",
         val seconds: Double? = null,
         val exceptionCallees: String = "",
+        val programId: String = "",
+        val targetRegionId: String = "",
+        val inheritedCandidateRegionIds: String = "",
     ) {
         fun render(): String = listOf(
             file, line.toString(), declaration, program, conversion, conversionKind, conversionReason,
             conversionDetail, verification, verificationDetail, seconds?.let { "%.3f".format(it) }.orEmpty(),
-            exceptionCallees,
+            exceptionCallees, programId, targetRegionId, inheritedCandidateRegionIds,
         ).joinToString("\t") { it.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ') }
     }
 
@@ -47,6 +51,7 @@ class DeclarationReport(private val target: File) {
         val COLUMNS = listOf(
             "file", "line", "declaration", "program", "conversion", "conversion_kind", "conversion_reason",
             "conversion_detail", "verification", "verification_detail", "seconds", "exception_callees",
+            "program_id", "target_region_id", "inherited_candidate_region_ids",
         )
     }
 }

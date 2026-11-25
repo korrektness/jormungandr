@@ -24,7 +24,9 @@ tasks.test { useJUnitPlatform() }
 
 dependencies {
     add(sourceCensus.implementationConfigurationName, kotlin("compiler"))
+    add(sourceCensus.implementationConfigurationName, project(":formver.common"))
     testImplementation(sourceCensus.output)
+    testImplementation(project(":formver.common"))
     testImplementation(kotlin("compiler"))
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

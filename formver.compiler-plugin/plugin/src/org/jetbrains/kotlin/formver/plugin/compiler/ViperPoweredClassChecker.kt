@@ -65,27 +65,28 @@ internal class ViperPoweredClassChecker(
     private fun checkObligations(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>) {
         val verdicts = checkNotNull(session.constructionVerdicts) { "the plugin registers construction verdicts" }
         verdicts.decide(declaration.symbol) {
+            val site = config.programReportSite(declaration, inherited = obligations.inherited)
             val (converter, program) = try {
                 val converter = ProgramConverter(session, config, context, reporter)
                 converter to programs.convert(declaration, obligations, dumps, converter)
             } catch (error: UnsupportedFeatureException) {
                 reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
-                checker.recordTranslationStop(declaration, 0, error)
+                checker.recordTranslationStop(site, error)
                 return@decide false
             } catch (error: Exception) {
-                reportInternalConversionError(declaration, error)
+                reportInternalConversionError(declaration, error, site)
                 return@decide false
             } catch (error: NotImplementedError) {
-                reportInternalConversionError(declaration, error)
+                reportInternalConversionError(declaration, error, site)
                 return@decide false
             } catch (error: Throwable) {
                 if (config.declarationReport == null) throw error
                 error.rethrowAfterRecording {
-                    checker.recordInternalStop(declaration, 0, error.asInternalErrorAt(declaration.source))
+                    checker.recordInternalStop(site, error.asInternalErrorAt(declaration.source))
                 }
             }
             if (program == null) {
-                checker.recordConversionStop(declaration, 0, checkNotNull(converter.firstConversionError))
+                checker.recordConversionStop(site, checkNotNull(converter.firstConversionError))
                 return@decide false
             }
             if (useVerificationFacade) {
@@ -93,10 +94,10 @@ internal class ViperPoweredClassChecker(
                 declaration.shouldVerify = program.verify
                 declaration.trust = program.trust
             } else if (program.verify) {
-                if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel)) return@decide false
+                if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel, site)) return@decide false
             } else {
                 val skip = converter.verificationSkipReason
-                checker.recordOutcome(declaration, 0) {
+                site?.record {
                     if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
                 }
             }
@@ -105,11 +106,11 @@ internal class ViperPoweredClassChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportInternalConversionError(declaration: FirRegularClass, error: Throwable) {
+    private fun reportInternalConversionError(declaration: FirRegularClass, error: Throwable, site: ProgramReportSite?) {
         val internal = (error as? SnaktInternalException) ?: error.asInternalErrorAt(declaration.source)
         reporter.reportInternalFailure(declaration.source, internal)
         config.messageCollector.report(CompilerMessageSeverity.LOGGING, error.stackTraceToString())
-        checker.recordInternalStop(declaration, 0, internal)
+        checker.recordInternalStop(site, internal)
     }
 }
 

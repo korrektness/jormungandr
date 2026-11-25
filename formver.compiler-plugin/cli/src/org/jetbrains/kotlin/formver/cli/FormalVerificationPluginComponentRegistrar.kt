@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.config.hmppModuleStructure
 import org.jetbrains.kotlin.config.messageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar
 import org.jetbrains.kotlin.formver.plugin.compiler.FormalVerificationPluginExtensionRegistrar
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessExtensionRegistrar
@@ -32,6 +33,11 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         val inputManifest = configuration.get(FormalVerificationConfigurationKeys.INPUT_MANIFEST)
         if (configuration.get(FormalVerificationConfigurationKeys.INPUTS_ONLY, false)) {
+            val checkout = configuration.get(FormalVerificationConfigurationKeys.PROOF_CHECKOUT)
+            val compilation = configuration.get(FormalVerificationConfigurationKeys.PROOF_COMPILATION)
+            require(checkout == null && compilation == null) {
+                "inputs_only=true conflicts with proof report options: proof_checkout=$checkout, proof_compilation=$compilation"
+            }
             requireNotNull(inputManifest) { "inputs_only requires input_manifest" }
             FirExtensionRegistrarAdapter.registerExtension(CompilerInputManifest(inputManifest, ExternalSpecSources.NONE))
             return
@@ -77,7 +83,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             verificationWorkers = configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_WORKERS, 0),
             trustLedger = TrustLedger(),
             verifiedDeclarations = VerifiedDeclarations(),
-            declarationReport = configuration.get(FormalVerificationConfigurationKeys.DECLARATION_REPORT)?.let(::DeclarationReport),
+            declarationReport = configuration.declarationReport(),
             exceptionFreeByDefault = configuration.get(FormalVerificationConfigurationKeys.EXCEPTION_FREE_BY_DEFAULT, false),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
@@ -96,6 +102,17 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             FirExtensionRegistrarAdapter.registerExtension(UniquenessExtensionRegistrar())
         }
     }
+}
+
+private fun CompilerConfiguration.declarationReport(): DeclarationReport? {
+    val target = get(FormalVerificationConfigurationKeys.DECLARATION_REPORT)
+    val checkout = get(FormalVerificationConfigurationKeys.PROOF_CHECKOUT)
+    val compilation = get(FormalVerificationConfigurationKeys.PROOF_COMPILATION)
+    if (checkout == null && compilation == null) return target?.let { DeclarationReport(it) }
+    require(target != null && checkout != null && compilation != null) {
+        "Incomplete proof report options: declaration_report=$target, proof_checkout=$checkout, proof_compilation=$compilation"
+    }
+    return DeclarationReport(target, ProofSourceIndex(compilation, checkout.toPath()))
 }
 
 /**

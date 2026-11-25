@@ -156,9 +156,9 @@ contents and interpretation are defined in
 
 `declaration_report` makes a direct compiler invocation write a tab-separated
 file with program outcomes for function and property accessor bodies,
-standalone lambda programs, and class programs. A class program contains the
-selected constructor, law, and inherited implementation obligations. A
-compilation replaces the file. The first line names the columns:
+standalone lambda programs, and class programs. Class programs target selected
+constructor, law, and inherited implementation obligations. A compilation
+replaces the file. The first line names the columns:
 
 | Column | Value |
 |:--|:--|
@@ -173,6 +173,26 @@ compilation replaces the file. The first line names the columns:
 | `verification_detail` | For `failed`, the `FailureKind` of each verification error, sorted and comma-separated; for `skipped`, the skip reason; for `error`, the reason and message. |
 | `seconds` | Verification time of the program. |
 | `exception_callees` | For `failed`, one entry per `EXCEPTION_FROM_UNSPECIFIED_CALL` or `EXCEPTION_FROM_THROWING_CALL` error whose call has a declared callee, sorted and comma-separated. An entry is `KIND:origin:callee`: the error's `FailureKind`; `source` when the callee is declared in the compiled sources, `library` when it is read from a compiled dependency; and the callee's fully qualified name, including its owning class or package, named as the error message names it (see [Exception freedom](../SPECIFICATIONS.md#exception-freedom)), such as `kotlin.Any.toString`. |
+| `program_id` | Stable per-compilation identifier for the reporting slot. A callable or standalone lambda uses its own region identity, and a class program uses the receiving class's syntax span. The progress label, lambda index and worker completion order are not part of the ID. |
+| `target_region_id` | Census region targeted by the callable conversion or standalone lambda conversion; blank for class programs. |
+| `inherited_candidate_region_ids` | Sorted comma-separated source implementation region IDs from the receiving class's selected inherited obligations. A candidate can appear in multiple classes' rows. |
+
+The report always includes the three identity columns. They remain blank unless
+`proof_checkout` (the census checkout root) and `proof_compilation` (the census
+compilation ID) are supplied with `declaration_report`. Identity mode uses
+compiler PSI (`-Xuse-fir-lt=false`) and is incompatible with `inputs_only`.
+A region ID is the lowercase SHA-256 of the UTF-8 serialization
+`census-region-v1<TAB>compilation<TAB>root<TAB>path<TAB>sha256<TAB>kind:start:end:discriminator`,
+using the [source census](developing.md#production-kotlin-input-evidence) fields. The input digest
+binds exact bytes; syntax spans count UTF-16 code units after BOM removal and
+line-ending normalization.
+
+Target and candidate IDs describe intent, including on stopped or excluded rows.
+They do not establish body membership. For example, `ProgramBodyProcessor` can
+emit a header instead of a definition; a terminal `verified` row for that
+program does not prove the absent body. No census region receives coverage
+credit without separate lowering evidence and reconciliation with all applicable
+terminal outcomes.
 
 Queued verification jobs that never start have no terminal row. This includes
 jobs left in a stopped worker batch and jobs queued when checking aborts before

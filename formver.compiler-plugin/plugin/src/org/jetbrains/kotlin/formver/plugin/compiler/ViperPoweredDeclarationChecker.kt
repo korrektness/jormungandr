@@ -42,7 +42,6 @@ import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.formver.common.FoldOwnershipCondition
 import org.jetbrains.kotlin.formver.common.PurityCondition
 import org.jetbrains.kotlin.formver.common.TerminationCondition
-import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.toFailure
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.common.LogLevel
@@ -112,27 +111,29 @@ internal class ViperPoweredDeclarationChecker(
             declaration.source?.kind == KtFakeSourceElementKind.EnumGeneratedDeclaration
         ) return
         config.exclusion(declaration)?.let { reason ->
-            recordOutcome(declaration, 0) { copy(conversion = "excluded", conversionReason = reason) }
+            config.programReportSite(declaration)?.record { copy(conversion = "excluded", conversionReason = reason) }
             return
         }
         declaration.lambdaPrograms = emptyList()
         val written = declaration.writtenLambdas()
         val root = functionProgram(written)
         val dumps = mutableListOf<String>()
-        reportConversionErrors(declaration, root, 0) {
+        val rootSite = config.programReportSite(declaration)
+        reportConversionErrors(declaration, root, rootSite) {
             val pureGetter = declaration is FirPropertyAccessor && declaration.isGetter && declaration.symbol.isPure(session)
             if (declaration is FirPropertyAccessor && !pureGetter) root.registerAccessor(declaration)
             else root.register(declaration)
-            convert(declaration, root, 0, dumps)
+            convert(declaration, root, 0, dumps, rootSite)
         }
         val converters = mutableListOf(root)
         root.specifiedLambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
             val converter = functionProgram(written)
             converters += converter
-            reportConversionErrors(declaration, converter, index + 1) {
+            val site = config.programReportSite(declaration, index + 1, lambda.function)
+            reportConversionErrors(declaration, converter, site) {
                 converter.registerLambda(lambda, root.specifiedLambdas)
-                convert(declaration, converter, index + 1, dumps)
+                convert(declaration, converter, index + 1, dumps, site)
             }
         }
         convertLambdaValues(declaration, written, converters, root.specifiedLambdas.size + 1, dumps)
@@ -158,9 +159,10 @@ internal class ViperPoweredDeclarationChecker(
             if (function !in written || !processedLambdas.add(function.symbol)) continue
             val converter = functionProgram(written)
             val current = index++
-            reportConversionErrors(function, converter, current, owner = declaration) {
+            val site = config.programReportSite(declaration, current, function)
+            reportConversionErrors(function, converter, site) {
                 converter.registerLambdaValueBody(function, declaration.symbol.embedName(converter), current - 1)
-                convert(declaration, converter, current, dumps)
+                convert(declaration, converter, current, dumps, site)
             }
             pending += converter.lambdaValues
         }
@@ -191,9 +193,10 @@ internal class ViperPoweredDeclarationChecker(
         lambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
             val converter = ProgramConverter(session, config, context, reporter)
-            reportConversionErrors(declaration, converter, index + 1) {
+            val site = config.programReportSite(declaration, index + 1, lambda.function)
+            reportConversionErrors(declaration, converter, site) {
                 converter.registerLambda(lambda, lambdas)
-                convert(declaration, converter, index + 1, dumps)
+                convert(declaration, converter, index + 1, dumps, site)
             }
         }
         return dumps
@@ -217,7 +220,10 @@ internal class ViperPoweredDeclarationChecker(
         }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun convert(declaration: FirDeclaration, programConversionContext: ProgramConverter, index: Int, dumps: MutableList<String>) {
+    private fun convert(
+        declaration: FirDeclaration, programConversionContext: ProgramConverter, index: Int, dumps: MutableList<String>,
+        site: ProgramReportSite?,
+    ) {
         programConversionContext.validateAll()
         if (shouldDumpExpEmbeddings(declaration)) {
             with(SimpleNameResolver()) {
@@ -227,7 +233,7 @@ internal class ViperPoweredDeclarationChecker(
             }
         }
         programConversionContext.firstConversionError?.let { failure ->
-            recordConversionStop(declaration, index, failure)
+            recordConversionStop(site, failure)
             return
         }
         programConversionContext.linearizeAll()
@@ -255,11 +261,11 @@ internal class ViperPoweredDeclarationChecker(
             }
         } else if (!shouldVerify) {
             val skip = programConversionContext.verificationSkipReason
-            recordOutcome(declaration, index) {
+            site?.record {
                 if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
             }
         } else {
-            verifyProgram(declaration, programConversionContext, index, viperProgram, name)
+            verifyProgram(declaration, programConversionContext, index, viperProgram, name, site)
         }
     }
 
@@ -271,6 +277,7 @@ internal class ViperPoweredDeclarationChecker(
         index: Int,
         viperProgram: viper.silver.ast.Program,
         name: String,
+        site: ProgramReportSite?,
     ): Boolean {
         val classProgram = index == 0 && declaration is FirRegularClass
         var unavailableReason: String? = null
@@ -281,7 +288,7 @@ internal class ViperPoweredDeclarationChecker(
             z3Exe?.let { config.verificationRequest(viperProgram, it) }
         } catch (error: Throwable) {
             if (!classProgram) throw error
-            fun recordError(detail: String) = recordOutcome(declaration, index) {
+            fun recordError(detail: String) = site?.record {
                 copy(verification = "error", verificationDetail = detail)
             }
             when (error) {
@@ -306,10 +313,10 @@ internal class ViperPoweredDeclarationChecker(
         }
         if (request == null) {
             val reason = checkNotNull(unavailableReason)
-            recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "SOLVER_UNAVAILABLE: $reason") }
+            site?.record { copy(verification = "error", verificationDetail = "SOLVER_UNAVAILABLE: $reason") }
         } else {
             sink.submit(request) { obtainResult ->
-                replayVerification(declaration, programConversionContext, index, name, classProgram, obtainResult)
+                replayVerification(declaration, programConversionContext, index, name, classProgram, site, obtainResult)
             }
         }
         return true
@@ -322,6 +329,7 @@ internal class ViperPoweredDeclarationChecker(
         index: Int,
         name: String,
         classProgram: Boolean,
+        site: ProgramReportSite?,
         obtainResult: () -> VerificationResult,
     ) {
         var elapsedNanos: Long? = null
@@ -382,12 +390,12 @@ internal class ViperPoweredDeclarationChecker(
                     if (!classProgram || config.declarationReport == null) throw e
                     e.rethrowAfterRecording {
                         val internal = e.asInternalErrorAt(declaration.source)
-                        recordOutcome(declaration, index) { errorRow("${internal.reason.name}: ${internal.message}")().copy(seconds = seconds()) }
+                        site?.record { errorRow("${internal.reason.name}: ${internal.message}")().copy(seconds = seconds()) }
                     }
                 }
             }
         }
-        recordOutcome(declaration, index) { outcome().copy(seconds = seconds()) }
+        site?.record { outcome().copy(seconds = seconds()) }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -398,7 +406,7 @@ internal class ViperPoweredDeclarationChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportConversionErrors(
-        declaration: FirDeclaration, converter: ProgramConverter, index: Int, owner: FirDeclaration = declaration, convert: () -> Unit,
+        declaration: FirDeclaration, converter: ProgramConverter, site: ProgramReportSite?, convert: () -> Unit,
     ) {
         try {
             convert()
@@ -407,56 +415,29 @@ internal class ViperPoweredDeclarationChecker(
         } catch (e: UnsupportedFeatureException) {
             reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
             converter.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
-            recordTranslationStop(owner, index, e)
+            recordTranslationStop(site, e)
         } catch (e: SnaktInternalException) {
             reportInternalError(e, declaration, converter)
-            recordInternalStop(owner, index, e)
+            recordInternalStop(site, e)
         } catch (e: Exception) {
             val internal = e.asInternalErrorAt(declaration.source)
             reportInternalError(internal, declaration, converter)
-            recordInternalStop(owner, index, internal)
+            recordInternalStop(site, internal)
         } catch (e: NotImplementedError) {
             val internal = e.asInternalErrorAt(declaration.source)
             reportInternalError(internal, declaration, converter)
-            recordInternalStop(owner, index, internal)
+            recordInternalStop(site, internal)
         }
     }
 
-    context(context: CheckerContext)
-    fun recordTranslationStop(declaration: FirDeclaration, index: Int, e: UnsupportedFeatureException) =
-        recordOutcome(declaration, index) { stoppedBy(FailureKind.UNSUPPORTED_FEATURE.name, e.reason.name, e.message) }
+    fun recordTranslationStop(site: ProgramReportSite?, e: UnsupportedFeatureException) =
+        site?.record { stoppedBy(FailureKind.UNSUPPORTED_FEATURE.name, e.reason.name, e.message) }
 
-    context(context: CheckerContext)
-    fun recordInternalStop(declaration: FirDeclaration, index: Int, e: SnaktInternalException) =
-        recordOutcome(declaration, index) { stoppedBy(FailureKind.INTERNAL_ERROR.name, e.reason.name, e.message) }
+    fun recordInternalStop(site: ProgramReportSite?, e: SnaktInternalException) =
+        site?.record { stoppedBy(FailureKind.INTERNAL_ERROR.name, e.reason.name, e.message) }
 
-    /** Writes the outcome of program [index] of [declaration] to the declaration report, when one is configured. */
-    context(context: CheckerContext)
-    fun recordOutcome(declaration: FirDeclaration, index: Int, outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
-        val report = config.declarationReport ?: return
-        if (declaration is FirFunction && declaration.body == null) return
-        @OptIn(SymbolInternals::class)
-        val line = context.containingFileSymbol!!.fir.sourceFileLinesMapping!!.getLineByOffset(declaration.source!!.startOffset)
-        val program = when {
-            index > 0 -> "lambda${index - 1}"
-            declaration is FirRegularClass -> "class"
-            else -> "body"
-        }
-        val row = DeclarationReport.Row(
-            context.containingFilePath!!, line + 1, declaration.verificationLabel, program, conversion = "converted",
-        ).outcome()
-        try {
-            report.write(row)
-        } catch (error: java.io.IOException) {
-            throw ReportAppendException(error)
-        }
-    }
-
-    private class ReportAppendException(cause: java.io.IOException) : java.io.IOException(cause)
-
-    context(context: CheckerContext)
-    fun recordConversionStop(declaration: FirDeclaration, index: Int, failure: Failure) =
-        recordOutcome(declaration, index) { stoppedBy(failure.kind.name, failure.reasonCode, failure.detail) }
+    fun recordConversionStop(site: ProgramReportSite?, failure: Failure) =
+        site?.record { stoppedBy(failure.kind.name, failure.reasonCode, failure.detail) }
 
     private fun DeclarationReport.Row.stoppedBy(kind: String, reason: String, detail: String) =
         copy(conversion = "stopped", conversionKind = kind, conversionReason = reason, conversionDetail = detail)

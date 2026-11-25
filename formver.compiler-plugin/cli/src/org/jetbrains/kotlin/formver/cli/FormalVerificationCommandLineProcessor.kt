@@ -43,6 +43,8 @@ object FormalVerificationConfigurationKeys {
     val INPUTS_ONLY: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("record inputs without verification")
     val INPUT_MANIFEST: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("compiler input manifest")
     val DECLARATION_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("declaration report")
+    val PROOF_CHECKOUT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("proof checkout")
+    val PROOF_COMPILATION: CompilerConfigurationKey<String> = CompilerConfigurationKey.create("proof compilation")
     val EXCEPTION_FREE_BY_DEFAULT: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("exception free by default")
 }
 
@@ -123,6 +125,14 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
+        private val PROOF_CHECKOUT_OPTION = CliOption(
+            "proof_checkout", "<path>", "Logical checkout root for proof program identities",
+            required = false, allowMultipleOccurrences = false,
+        )
+        private val PROOF_COMPILATION_OPTION = CliOption(
+            "proof_compilation", "<id>", "Census compilation ID for proof program identities",
+            required = false, allowMultipleOccurrences = false,
+        )
         val EXCEPTION_FREE_BY_DEFAULT_OPTION = CliOption(
             FormalVerificationPluginNames.EXCEPTION_FREE_BY_DEFAULT_OPTION_NAME,
             "<true|false>",
@@ -146,6 +156,8 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         EXTERNAL_SPEC_OPTION,
         TRUST_REPORT_OPTION,
         DECLARATION_REPORT_OPTION,
+        PROOF_CHECKOUT_OPTION,
+        PROOF_COMPILATION_OPTION,
         INPUT_MANIFEST_OPTION,
         INPUTS_ONLY_OPTION,
         EXCEPTION_FREE_BY_DEFAULT_OPTION,
@@ -209,6 +221,16 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                 DECLARATION_REPORT_OPTION -> {
                     require(value.isNotBlank())
                     configuration.put(FormalVerificationConfigurationKeys.DECLARATION_REPORT, File(value))
+                }
+
+                PROOF_CHECKOUT_OPTION -> {
+                    require(value.isNotBlank())
+                    configuration.put(FormalVerificationConfigurationKeys.PROOF_CHECKOUT, File(value))
+                }
+
+                PROOF_COMPILATION_OPTION -> {
+                    require(value.isNotBlank())
+                    configuration.put(FormalVerificationConfigurationKeys.PROOF_COMPILATION, value)
                 }
 
                 EXCEPTION_FREE_BY_DEFAULT_OPTION ->

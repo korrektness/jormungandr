@@ -1,11 +1,11 @@
-package org.jetbrains.kotlin.formver.census
+package org.jetbrains.kotlin.formver.common.source
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import java.util.IdentityHashMap
 
-internal enum class RegionKind {
+enum class RegionKind {
     FILE, FUNCTION, LAMBDA, GETTER, SETTER, DEFAULT_ARGUMENT,
     PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR, CONSTRUCTOR_DELEGATION, ENUM_ENTRY,
     SUPERTYPE_CALL, SUPERTYPE_DELEGATE, INIT_BLOCK, SCRIPT_STATEMENT,
@@ -13,14 +13,14 @@ internal enum class RegionKind {
     OTHER_BODY, OTHER_INITIALIZER,
 }
 
-internal data class RegionSpan(val kind: RegionKind, val start: Int, val end: Int)
+data class RegionSpan(val kind: RegionKind, val start: Int, val end: Int)
 
-internal data class RegionId(val span: RegionSpan, val discriminator: Int) {
+data class RegionId(val span: RegionSpan, val discriminator: Int) {
     fun reference(): String = "${span.kind}:${span.start}:${span.end}:$discriminator"
 }
 
 /** Assigns discriminators in owner PSI preorder and finds parents by anchor ancestry, including shared nodes. */
-internal fun sourceRegions(file: KtFile): List<Pair<RegionId, RegionId?>> {
+fun sourceRegions(file: KtFile): List<SourceRegion> {
     val anchors = IdentityHashMap<PsiElement, RegionId>()
     val occurrences = mutableMapOf<RegionSpan, Int>()
     val regions = mutableListOf<AnchoredRegion>()
@@ -32,18 +32,20 @@ internal fun sourceRegions(file: KtFile): List<Pair<RegionId, RegionId?>> {
                 val index = occurrences.getOrDefault(span, 0)
                 occurrences[span] = index + 1
                 val id = RegionId(span, index)
-                regions.add(AnchoredRegion(id, node, anchors.put(node, id)))
+                regions.add(AnchoredRegion(id, element, node, anchors.put(node, id)))
             }
             super.visitKtElement(element)
         }
     })
-    return regions.map { (id, node, outerAtNode) ->
+    return regions.map { (id, owner, node, outerAtNode) ->
         val enclosing = outerAtNode ?: generateSequence(node.parent) { it.parent }.firstNotNullOfOrNull(anchors::get)
-        id to enclosing
+        SourceRegion(id, owner, enclosing)
     }
 }
 
-private data class AnchoredRegion(val id: RegionId, val node: PsiElement, val outerAtNode: RegionId?)
+data class SourceRegion(val id: RegionId, val owner: KtElement, val parent: RegionId?)
+
+private data class AnchoredRegion(val id: RegionId, val owner: KtElement, val node: PsiElement, val outerAtNode: RegionId?)
 
 private fun regionAnchors(element: KtElement): List<Pair<RegionKind, PsiElement>> = buildList {
     fun anchor(kind: RegionKind, node: PsiElement?) {
