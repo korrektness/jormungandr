@@ -85,7 +85,8 @@ class TrustReport(
             for ((label, assumptions) in declarations) {
                 appendLine("$DECLARATION_INDENT$label")
                 for (assumption in assumptions) appendLine("$ASSUMPTION_INDENT${assumption.kind.label}: ${assumption.name}")
-                for (mode in semanticOptIns[file]?.get(label).orEmpty()) {
+                val modes = semanticOptIns[file]?.get(label) ?: continue
+                for (mode in modes) {
                     appendLine("${ASSUMPTION_INDENT}${mode.kind.label}: ${mode.name}")
                 }
             }

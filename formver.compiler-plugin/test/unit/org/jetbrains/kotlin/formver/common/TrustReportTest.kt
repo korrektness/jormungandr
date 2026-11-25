@@ -44,16 +44,17 @@ class TrustReportTest {
         val mode = SemanticOptIn(SemanticOptIn.Kind.WRAPPING_INT, "capacity(Int, Int): Int")
         val longMode = SemanticOptIn(SemanticOptIn.Kind.WRAPPING_LONG, mode.name)
         val ledger = TrustLedger()
+        ledger.record("kept.kt", "baseline") { emptySet() }
         ledger.record("kept.kt", "capacity", { setOf(longMode, mode) }) { emptySet() }
         val clean = ledger.snapshot()
-        assertEquals(TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()))).summary, clean.summary)
-        val mixed = clean.updatedWith(TrustReport(mapOf("other.kt" to mapOf("caller" to setOf(abs)))), emptySet()) { true }
+        val kept = mapOf("kept.kt" to mapOf("baseline" to emptySet<TrustedAssumption>(), "capacity" to emptySet()))
+        assertEquals(TrustReport(kept).summary, clean.summary)
+        val other = mapOf("other.kt" to mapOf("caller" to setOf(abs)))
+        val mixed = clean.updatedWith(TrustReport(other), emptySet()) { true }
         val parsed = TrustReport.parse(mixed.renamed { "src/$it" }.render())
+        assertEquals(mapOf("baseline" to emptyList(), "capacity" to emptyList()), parsed.files.getValue("src/kept.kt"))
         assertEquals(mapOf("src/kept.kt" to mapOf("capacity" to listOf(mode, longMode))), parsed.semanticOptIns)
-        assertEquals(
-            TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()), "other.kt" to mapOf("caller" to setOf(abs)))).summary,
-            parsed.summary,
-        )
+        assertEquals(TrustReport(kept + other).summary, parsed.summary)
         val replaced = parsed.updatedWith(
             TrustReport(mapOf("src/kept.kt" to mapOf("capacity" to emptySet()))), setOf("src/kept.kt"),
         ) { true }
