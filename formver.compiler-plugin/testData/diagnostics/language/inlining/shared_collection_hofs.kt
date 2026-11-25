@@ -1,4 +1,5 @@
 // FULL_JDK
+// DIAGNOSTIC_KINDS
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
 
@@ -65,6 +66,19 @@ fun <!VIPER_TEXT!>sharedMapThenCheckedMap<!>(xs: List<Int>) {
     val ys = <!UNCHECKED_LIBRARY_CALL!>xs.map { it }<!>
     val zs = ys.map { 1 }
     verify(zs.size == ys.size)
+}
+
+fun <!VIPER_TEXT!>appendAfterBoundedMap<!>(xs: @Unique @Borrowed List<Int>) {
+    preconditions { xs.size == 1 }
+    val mapped = xs.map { it }
+    val extended = mapped + 7
+    verify(extended.size == 2)
+    verify(extended[1] == 7)
+}
+
+fun <!VIPER_TEXT!>appendAfterSharedMap<!>(xs: List<Int>) {
+    val mapped = <!UNCHECKED_LIBRARY_CALL!>xs.map { it }<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>mapped + 7<!>
 }
 
 fun <!VERIFICATION_SKIPPED!>sharedOrEmptyAliasesReceiver<!>(xs: List<String>?) {

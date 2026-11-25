@@ -52,7 +52,7 @@ fun FirBasedSymbol<*>.isNonRetainingStdlibMember(session: FirSession): Boolean {
     }.unwrapFakeOverrides()
     if (!callable.isUnmodelledFinalStdlibMember(session)) return false
     val parameters = (callable as? FirFunctionSymbol<*>)?.valueParameterSymbols.orEmpty().map { it.resolvedReturnType }
-    if (!(parameters + callable.resolvedReturnType).all { it.isNonAliasing }) return false
+    if (!parameters.all { it.isNonAliasing } || !callable.resolvedReturnType.isNonAliasing) return false
     val receivers = listOfNotNull(callable.resolvedReceiverTypeRef?.coneType, callable.dispatchReceiverType)
     return receivers.none { it.isSomeFunctionType(session) } && receivers.any { it.isOwnableIn(session) }
 }

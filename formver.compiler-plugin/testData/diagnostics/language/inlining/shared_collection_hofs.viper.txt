@@ -3207,3 +3207,639 @@ method invoke(it: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/shared_collection_hofs.kt: info: Generated Viper text for appendAfterBoundedMap:
+function BooleanArray_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ListModel_g_size(v_this)) == 0)
+
+
+function ListModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_CollectionModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_CollectionModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_CollectionModel_g_size(v_this)) == 0)
+
+
+function c_CollectionModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_CollectionModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_4: Int :: anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) &&
+      (anon_builtin_4 >= 0 &&
+      anon_builtin_4 < intFromRef(ListModel_g_size(v_this)) &&
+      equalsRelation(element, get(v_this, intToRef(anon_builtin_4)))))
+  ensures (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+      anon_builtin_5 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      anon_builtin_5 >= 0 &&
+      anon_builtin_5 < intFromRef(ListModel_g_size(v_this)) &&
+      get(v_this, intToRef(anon_builtin_5)) == element ==>
+      boolFromRef(result))
+
+
+function get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(v_this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(v_this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(v_this, result))
+  ensures (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+      anon_builtin_6 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+      anon_builtin_6 >= 0 && anon_builtin_6 < intFromRef(result) ==>
+      !equalsRelation(element, get(v_this, intToRef(anon_builtin_6))))
+
+
+method ListModel_c_CollectionModel_restore(v_this: Ref)
+  requires acc(c_CollectionModel_unique(v_this), write)
+  requires isSubtype(typeOf(v_this), ListModel())
+  ensures acc(ListModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), c_CollectionModel())) &&
+    true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_g_size(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_CollectionModel())) &&
+    true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_f_isEmpty(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_IterableModel())) && true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)))
+
+
+method ListModel_c_CollectionModel_upcast(v_this: Ref)
+  requires acc(ListModel_unique(v_this), write)
+  ensures acc(c_CollectionModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), ListModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_g_size(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), ListModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_f_isEmpty(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_IterableModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)))
+
+
+method appendAfterBoundedMap(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), ListModel())
+  requires acc(ListModel_unique(xs), write)
+  requires (unfolding acc(ListModel_unique(xs), wildcard) in
+      intFromRef(ListModel_g_size(xs)) == 1)
+  ensures acc(ListModel_unique(xs), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var mapped: Ref
+  var anon_15: Ref
+  var anon_0: Ref
+  var anon_16: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_17: Ref
+  var anon_5: Ref
+  var anon_18: Ref
+  var extended: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  var anon_21: Ref
+  anon_16 := (unfolding acc(ListModel_unique(xs), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(xs))
+  anon_0 := anon_16
+  inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |iterationSequenceFromRef(anon_0)| ==>
+      isSubtype(typeOf(iterationSequenceFromRef(anon_0)[anon_builtin_0]), intType()))
+  anon_1 := intToRef(0)
+  anon_2 := iterationSequenceToRef(Seq[Ref]())
+  label cont
+    invariant acc(ListModel_unique(xs), write)
+    invariant isSubtype(typeOf(xs), ListModel())
+    invariant isSubtype(typeOf(anon_0), iterationSequenceType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), iterationSequenceType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |iterationSequenceFromRef(anon_0)|
+    invariant (unfolding acc(ListModel_unique(xs), wildcard) in
+        iterationSequenceFromRef(anon_0) ==
+        iterationSequenceFromRef(ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(xs)))
+    invariant |iterationSequenceFromRef(anon_2)| >= 0
+    invariant |iterationSequenceFromRef(anon_2)| == intFromRef(anon_1)
+    invariant (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(anon_1) &&
+        isSubtype(typeOf(iterationSequenceGet(anon_0, intToRef(anon_builtin_1))),
+        intType()) ==>
+        iterationSequenceGet(anon_2, intToRef(anon_builtin_1)) ==
+        iterationSequenceGet(anon_0, intToRef(anon_builtin_1)))
+  anon_17 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_17)) {
+    var anon_4: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := iterationSequenceGet(anon_0, anon_1)
+    inhale isSubtype(typeOf(anon_3), intType())
+    v_ret_3 := anon_3
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_4 := v_ret_3
+    anon_2 := iterationSequenceAppend(anon_2, iterationSequenceToRef(Seq(anon_4)))
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(xs), ListModel())
+  assert isSubtype(typeOf(anon_0), iterationSequenceType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), iterationSequenceType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |iterationSequenceFromRef(anon_0)|
+  assert (unfolding acc(ListModel_unique(xs), wildcard) in
+      iterationSequenceFromRef(anon_0) ==
+      iterationSequenceFromRef(ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(xs)))
+  assert |iterationSequenceFromRef(anon_2)| >= 0
+  assert |iterationSequenceFromRef(anon_2)| == intFromRef(anon_1)
+  assert (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(anon_1) &&
+      isSubtype(typeOf(iterationSequenceGet(anon_0, intToRef(anon_builtin_1))),
+      intType()) ==>
+      iterationSequenceGet(anon_2, intToRef(anon_builtin_1)) ==
+      iterationSequenceGet(anon_0, intToRef(anon_builtin_1)))
+  anon_5 := new()
+  inhale acc(ListModel_unique(anon_5), write)
+  anon_18 := (unfolding acc(ListModel_unique(anon_5), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(anon_5))
+  inhale iterationSequenceFromRef(anon_18) ==
+    iterationSequenceFromRef(anon_2)
+  anon_15 := anon_5
+  mapped := anon_15
+  ListModel_c_CollectionModel_upcast(mapped)
+  extended := plusElementModel(mapped, intToRef(7))
+  ListModel_c_CollectionModel_restore(mapped)
+  anon_19 := (unfolding acc(ListModel_unique(extended), wildcard) in
+      ListModel_g_size(extended))
+  assert intFromRef(anon_19) == 2
+  anon_21 := (unfolding acc(ListModel_unique(extended), wildcard) in
+      get(extended, intToRef(1)))
+  anon_20 := anon_21
+  inhale isSubtype(typeOf(anon_20), intType())
+  assert intFromRef(anon_20) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plusElementModel(v_this_extension: Ref, element: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this_extension), c_CollectionModel())
+  requires acc(c_CollectionModel_unique(v_this_extension), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension)) < 2147483647)
+  ensures acc(c_CollectionModel_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_4), ListModel())
+  ensures acc(ListModel_unique(ret_4), write)
+  ensures (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension))) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension))))
+  ensures (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|))
+  ensures (forall anon_builtin_2: Int ::
+      { iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+      intToRef(anon_builtin_2)) }
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
+      anon_builtin_2 >= 0 &&
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        anon_builtin_2 <
+        |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==>
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+        intToRef(anon_builtin_2))) ==
+      old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+        intToRef(anon_builtin_2)))))
+  ensures (unfolding acc(ListModel_unique(ret_4), wildcard) in
+      intFromRef(ListModel_g_size(ret_4)) ==
+      (let anon_builtin_neg1 ==
+        ((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          plusInts(c_CollectionModel_g_size(v_this_extension), intToRef(1)))) in
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          intFromRef(c_CollectionModel_g_size(v_this_extension)) +
+          intFromRef(intToRef(1)))))
+  ensures (unfolding acc(ListModel_unique(ret_4), wildcard) in
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        get(ret_4, c_CollectionModel_g_size(v_this_extension)) == element))
+  ensures (unfolding acc(ListModel_unique(ret_4), wildcard) in
+      (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+        anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        anon_builtin_3 >= 0 &&
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          anon_builtin_3 <
+          intFromRef(c_CollectionModel_g_size(v_this_extension))) &&
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          anon_builtin_3 <
+          |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==>
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          get(ret_4, intToRef(anon_builtin_3)) ==
+          iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+          intToRef(anon_builtin_3)))))
+
+
+/shared_collection_hofs.kt: info: Generated Viper text for appendAfterSharedMap:
+function ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ListModel_g_size(v_this)) == 0)
+
+
+function ListModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_CollectionModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_CollectionModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_CollectionModel_g_size(v_this)) == 0)
+
+
+function c_CollectionModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_CollectionModel())
+  requires acc(c_CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_2: Int :: anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) &&
+      (anon_builtin_2 >= 0 &&
+      anon_builtin_2 < intFromRef(ListModel_g_size(v_this)) &&
+      equalsRelation(element, get(v_this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < intFromRef(ListModel_g_size(v_this)) &&
+      get(v_this, intToRef(anon_builtin_3)) == element ==>
+      boolFromRef(result))
+
+
+function get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(v_this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(v_this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(v_this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(v_this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, get(v_this, intToRef(anon_builtin_4))))
+
+
+method ListModel_c_CollectionModel_restore(v_this: Ref)
+  requires acc(c_CollectionModel_unique(v_this), write)
+  requires isSubtype(typeOf(v_this), ListModel())
+  ensures acc(ListModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), c_CollectionModel())) &&
+    true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_g_size(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_CollectionModel())) &&
+    true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_f_isEmpty(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_IterableModel())) && true ==>
+    (unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)))
+
+
+method ListModel_c_CollectionModel_upcast(v_this: Ref)
+  requires acc(ListModel_unique(v_this), write)
+  ensures acc(c_CollectionModel_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), ListModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_g_size(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_g_size(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), ListModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_f_isEmpty(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_f_isEmpty(v_this)))
+  ensures true && old(isSubtype(typeOf(v_this), c_IterableModel())) && true ==>
+    (unfolding acc(c_CollectionModel_unique(v_this), wildcard) in
+      c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)) ==
+    old((unfolding acc(ListModel_unique(v_this), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this)))
+
+
+method appendAfterSharedMap(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), ListModel())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var mapped: Ref
+  var anon_10: Ref
+  var anon_11: Ref
+  var anon_0: Ref
+  var anon_12: Ref
+  inhale isSubtype(typeOf(anon_11), functionType())
+  inhale isSubtype(typeOf(anon_0), ListModel())
+  inhale acc(ListModel_unique(anon_0), write)
+  anon_10 := anon_0
+  mapped := anon_10
+  ListModel_c_CollectionModel_upcast(mapped)
+  anon_12 := plusElementModel(mapped, intToRef(7))
+  ListModel_c_CollectionModel_restore(mapped)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plusElementModel(v_this_extension: Ref, element: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), c_CollectionModel())
+  requires acc(c_CollectionModel_unique(v_this_extension), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension)) < 2147483647)
+  ensures acc(c_CollectionModel_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_2), ListModel())
+  ensures acc(ListModel_unique(ret_2), write)
+  ensures (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension))) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      intFromRef(c_CollectionModel_g_size(v_this_extension))))
+  ensures (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==
+    old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+      |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|))
+  ensures (forall anon_builtin_0: Int ::
+      { iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+      intToRef(anon_builtin_0)) }
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
+      anon_builtin_0 >= 0 &&
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        anon_builtin_0 <
+        |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==>
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+        intToRef(anon_builtin_0))) ==
+      old((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+        intToRef(anon_builtin_0)))))
+  ensures (unfolding acc(ListModel_unique(ret_2), wildcard) in
+      intFromRef(ListModel_g_size(ret_2)) ==
+      (let anon_builtin_neg1 ==
+        ((unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          plusInts(c_CollectionModel_g_size(v_this_extension), intToRef(1)))) in
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          intFromRef(c_CollectionModel_g_size(v_this_extension)) +
+          intFromRef(intToRef(1)))))
+  ensures (unfolding acc(ListModel_unique(ret_2), wildcard) in
+      (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+        get(ret_2, c_CollectionModel_g_size(v_this_extension)) == element))
+  ensures (unfolding acc(ListModel_unique(ret_2), wildcard) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        anon_builtin_1 >= 0 &&
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          anon_builtin_1 <
+          intFromRef(c_CollectionModel_g_size(v_this_extension))) &&
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          anon_builtin_1 <
+          |iterationSequenceFromRef(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension))|) ==>
+        (unfolding acc(c_CollectionModel_unique(v_this_extension), wildcard) in
+          get(ret_2, intToRef(anon_builtin_1)) ==
+          iterationSequenceGet(c_CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(v_this_extension),
+          intToRef(anon_builtin_1)))))
+
+
+appendAfterSharedMap.lambda0.invoke:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+method invoke(it: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(it), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := it
+  goto lbl_ret_0
+  label lbl_ret_0
+}
