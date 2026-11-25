@@ -38,6 +38,7 @@ private fun builtinId(name: String): CallableId =
     CallableId(formverPluginPackage, Name.identifier(name))
 
 val postconditionsId = builtinId("postconditions")
+val exposesId = builtinId("exposes")
 
 /**
  * The builtins whose arguments are never run: specifications, and the ghost operations on permissions.
@@ -45,7 +46,7 @@ val postconditionsId = builtinId("postconditions")
 private val specificationFunctionIds: Set<CallableId> =
     setOf(builtinId("preconditions"), postconditionsId, builtinId("loopInvariants"), builtinId("verify"),
         builtinId("forAll"), builtinId("exists"), builtinId("old"), builtinId("acc"), builtinId("fold"),
-        builtinId("unfold"), builtinId("exposes"), builtinId("refute"), builtinId("decreases"),
+        builtinId("unfold"), exposesId, builtinId("refute"), builtinId("decreases"),
         builtinId("throwsOnlyIf"))
 
 private val uniquePredClassId = ClassId(formverPluginPackage, Name.identifier("UniquePred"))
