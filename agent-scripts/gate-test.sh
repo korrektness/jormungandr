@@ -38,6 +38,6 @@ if [[ "${#verify[@]}" -gt 0 ]]; then
     verify=(:formver.compiler-plugin:test "${verify[@]}")
 fi
 "${measure[@]}" gate.gradle ./gradlew --no-daemon detekt apiCheck :formver.compiler-plugin:locality:test \
-    :formver.compiler-plugin:core:unitTest :formver.compiler-plugin:uniqueness:unitTest \
+    :formver.compiler-plugin:core:unitTest :formver.compiler-plugin:uniqueness:unitTest :formver.compiler-plugin:cli:test \
     :formver.compiler-plugin:unitTest :formver.compiler-plugin:integrationTest \
     :formver.compiler-plugin:untilConversion :formver.test-runner:integrationTest "${verify[@]+"${verify[@]}"}"

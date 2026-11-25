@@ -18,7 +18,7 @@ production JVM `compileKotlin` tasks, including build logic in `buildSrc`, with
 the files seen by Kotlin FIR. The command stages its recorder and expected task
 IDs during bootstrap, then runs the Kotlin tasks serially with the PSI parser.
 The printed run directory contains the raw manifests and, on success,
-`reconciled.json`.
+`reconciled.json` and `census.tsv`.
 
 The reconciled inventory lists one row per file, including generated files,
 using checkout-relative paths and SHA-256 digests of the raw bytes. The checker
@@ -26,7 +26,19 @@ also compares the text in the parsed syntax tree with the file after removing a
 leading UTF-8 BOM and normalizing line endings to LF. A task without Kotlin
 sources needs an explicit `confirmed-empty` record. Sources outside the checkout
 and missing or inconsistent evidence fail the command.
-This command records inputs only: it does not run Formver checks or the verifier.
+
+A standalone Kotlin PSI pass reads the reconciled input identities and checks
+that the bytes still match before parsing. Its census includes one `FILE` row
+for every input, even a file with no executable regions. A row key consists of
+compilation ID, logical root ID, relative path, raw SHA-256, region kind,
+normalized half-open UTF-16 span, and the zero-based occurrence of that
+kind and span in PSI traversal order. A parent reference uses
+`kind:start:end:discriminator` in the same file identity. It names the nearest
+enclosing region anchor in the syntax tree (the outer region when anchors
+share a node), or the `FILE` row. `const val` initializers and annotation
+parameter defaults do not create runtime regions. Construction is recorded at
+runtime declarations, not at their `expect` signatures. The census records no
+proof outcomes or lowering links. The command does not run Formver checks or the verifier.
 Java-only tasks, Gradle script evaluation, tests, and test fixtures are outside
 this inventory.
 

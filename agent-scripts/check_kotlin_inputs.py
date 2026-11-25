@@ -130,12 +130,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run", type=Path)
     parser.add_argument("checkout", type=Path)
+    parser.add_argument("--census-inputs", type=Path, help="write the reconciled file identities as TSV")
     args = parser.parse_args()
     try:
         result = reconcile(args.run, args.checkout.resolve(strict=True))
     except InputProblem as error:
         print(json.dumps(error.details), file=sys.stderr)
         return 1
+    if args.census_inputs is not None:
+        with args.census_inputs.open("x", encoding="utf-8") as manifest:
+            manifest.write("census-inputs-v1\n")
+            for compilation, evidence in result.items():
+                for file in evidence["files"]:
+                    manifest.write(f"{compilation}\t{file['root']}\t{file['path']}\t{file['sha256']}\n")
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
