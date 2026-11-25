@@ -39,7 +39,10 @@ fun FirExpression.wholeInferredLocal(): FirBasedSymbol<*>? =
  * it, and to no parameter that owns it.
  */
 context(context: CheckerContext)
-fun FirFunctionCall.sharedInferredLocals(localities: CallArgumentTypeFactsMapper<Locality>): Set<FirBasedSymbol<*>> {
+fun FirFunctionCall.sharedInferredLocals(
+    localities: CallArgumentTypeFactsMapper<Locality>,
+    checkedReceiver: FirExpression?,
+): Set<FirBasedSymbol<*>> {
     val required = CallArgumentUniquenessesMapper.mapArgumentTypeFactsOf(this) +
             QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(this)
     val globals = (localities.mapArgumentTypeFactsOf(this) + QualifiedAccessArgumentLocalitiesMapper.mapArgumentTypeFactsOf(this))
@@ -50,7 +53,7 @@ fun FirFunctionCall.sharedInferredLocals(localities: CallArgumentTypeFactsMapper
     for ((argument, uniqueness) in required) {
         val paths = argument.resolveAccessState().enumeratePaths().toList()
         when {
-            uniqueness == Uniqueness.Unique -> paths.mapTo(owned) { it.first() }
+            argument === checkedReceiver || uniqueness == Uniqueness.Unique -> paths.mapTo(owned) { it.first() }
             uniqueness == Uniqueness.Shared && globals.any { it === argument } ->
                 argument.wholeInferredLocal()?.let(shared::add)
         }
@@ -92,15 +95,12 @@ fun UniquenessState.uniquenessAlong(path: Path): Uniqueness {
 
 /**
  * Weakens the inferred local [symbol], just written with [source], to what [source] holds: the uniqueness of the paths
- * it reads in [before], joined with its declared uniqueness. A source that is shared makes [symbol] shared, and one that
- * is borrowed makes it borrowed. A moved source leaves [this] unchanged, since reading it is reported. [this] must hold
- * an entry for [symbol], as the write leaves.
+ * it reads in [before], including the effective results of calls. A source that is shared makes [symbol] shared, and
+ * one that is borrowed makes it borrowed. A moved source leaves [this] unchanged, since reading it is reported.
  */
 context(context: CheckerContext)
-fun UniquenessState.weakenInferredLocal(symbol: FirBasedSymbol<*>, source: FirExpression, before: UniquenessState): UniquenessState {
-    val read = source.resolveAccessState().enumeratePaths()
-        .fold(Uniqueness.Unique) { result, path -> result.join(before.uniquenessAlong(path)) }
-    val written = read.join(source.resolveUniqueness())
+fun UniquenessState.weakenInferredLocal(symbol: FirBasedSymbol<*>, source: FirExpression, before: UniquenessFlowFacts): UniquenessState {
+    val written = before.uniquenessOf(source).join(source.resolveUniqueness())
     if (written == Uniqueness.Moved) return this
     val root = children[symbol] ?: error("No uniqueness state for inferred local ${symbol} after writing it: $this")
     return putChild(symbol, root.joinEverywhere(written))

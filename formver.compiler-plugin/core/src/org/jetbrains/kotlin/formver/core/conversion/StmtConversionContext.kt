@@ -53,10 +53,11 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
-import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 import org.jetbrains.kotlin.formver.uniqueness.plugin.receiverRequiringModelOwnership
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveTerminalUniqueness
+import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uncheckedModelResultUniqueness
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
@@ -349,14 +350,13 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
 }
 
 /**
- * Whether [receiver] is `Unique` on entry to [element]: the uniqueness checker finds the path it denotes `Unique` there,
- * or, when it denotes no path, declares it `Unique`. A path through a shared capture is never owned.
+ * Whether operand evaluation has supplied an owned [receiver] at [element] in this frame.
  */
 fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirExpression): Boolean {
-    val denoted = (receiver as? FirCheckedSafeCallSubject)?.checkedReceiver ?: receiver
-    if (context(checkerContext) { ownershipFrame.readsSharedCapture(denoted) }) return false
-    if (ownershipFrame.pathOf(denoted) != null) return ownsBefore(element, receiver)
-    return context(checkerContext) { denoted.resolveUniqueness() } == Uniqueness.Unique
+    if (!context(checkerContext) { ownershipFrame.canUseReceiverFacts(receiver) }) return false
+    val analysis = ownershipFrame.analysis ?: return false
+    if (analysis.accessInput(element) != null) return analysis.ownsReceiverAt(element, receiver)
+    return ownsBefore(element, receiver)
 }
 
 /**
@@ -370,7 +370,16 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
 ): ExpEmbedding? {
     val callee = access.toResolvedCallableSymbol() ?: return null
     val receiver = context(checkerContext) { access.receiverRequiringModelOwnership(callee) } ?: return null
-    if (ownsReceiverBefore(element, receiver)) return null
+    val fact = ownershipFrame.analysis?.modelAccess(access)
+    val uncheckedResult = context(checkerContext) { access.uncheckedModelResultUniqueness(callee) }
+    val readWithoutAccessNode = fact == null && (callee.isPure(session) || element !== access) &&
+            context(checkerContext) { access.resolveTerminalUniqueness() == uncheckedResult }
+    if (fact?.checked == true || (readWithoutAccessNode && ownsReceiverBefore(element, receiver))) {
+        if (!ownsReceiverBefore(element, receiver)) {
+            throw UnsupportedFeatureException(access.source, "external model receiver ownership in this body")
+        }
+        return null
+    }
     val member = callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString()
     reportWarning(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, access.source, KotlinCondition.UncheckedLibraryCall(member)))
     val arguments = (access as? FirFunctionCall)?.contextAndExplicitArguments.orEmpty()
@@ -383,7 +392,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
             add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee)))
         }
         val type = embedType(access.resolvedType)
-        val resultUniqueness = context(checkerContext) { access.uncheckedModelResultUniqueness(callee) }
+        val resultUniqueness = fact?.result ?: uncheckedResult
         add(
             when {
                 resultUniqueness == Uniqueness.Unique -> unconstrainedOwnedValue(type)

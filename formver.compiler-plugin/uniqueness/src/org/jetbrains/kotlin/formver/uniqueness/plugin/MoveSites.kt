@@ -84,7 +84,7 @@ context(context: CheckerContext)
 fun ControlFlowGraph.resolveMoveSites(
     uniquenessStateFlows: UniquenessStateFlows,
 ): Map<CFGNode<*>, PathAwareMoveSites> =
-    traverseToFixedPoint(MoveSitesAnalyzer(uniquenessStateFlows, uniquenessTransfer()))
+    traverseToFixedPoint(MoveSitesAnalyzer(uniquenessStateFlows, uniquenessTransfer(uniquenessStateFlows)))
 
 /**
  * Reads the sites at which [path] was moved on the routes into [node].

@@ -27,6 +27,8 @@ import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.types.type
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.formver.common.isLibraryDeclaration
 import org.jetbrains.kotlin.formver.core.contextAndExplicitArguments
@@ -181,7 +183,13 @@ internal fun StmtConversionContext.requireSharedReferenceInvocation(call: FirFun
 
 private fun StmtConversionContext.referenceOwnershipRestriction(site: FirElement, operands: List<FirExpression>): String? {
     if (holdsOwnership()) return "the enclosing body holds ownership"
-    val index = operands.indexOfFirst { !it.unwrapArgument().resolvedType.isNullableNothing && ownsReceiverBefore(site, it) }
+    val analysis = ownershipFrame.analysis
+    val index = operands.indexOfFirst { argument ->
+        val operand = argument.unwrapArgument()
+        !operand.resolvedType.isNullableNothing && (ownsReceiverBefore(site, operand) ||
+            (analysis?.accessInput(site) == null && ownershipFrame.pathOf(operand) == null &&
+                context(checkerContext) { operand.resolveUniqueness() == Uniqueness.Unique }))
+    }
     if (index < 0) return null
     return "operand ${index + 1} of type ${operands[index].resolvedType} carries ownership"
 }

@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirBlock
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -22,6 +23,15 @@ import org.jetbrains.kotlin.fir.types.isString
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipPath
+import org.jetbrains.kotlin.formver.common.FoldOwnershipCondition
+import org.jetbrains.kotlin.formver.common.FoldOwnershipRule
+import org.jetbrains.kotlin.formver.common.OwnershipAbsence
+import org.jetbrains.kotlin.formver.common.OwnershipAbsenceReason
+import org.jetbrains.kotlin.formver.core.linearization.ownedPath
+import org.jetbrains.kotlin.formver.core.linearization.toConversionPath
+import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.AddIntInt
@@ -181,6 +191,9 @@ private fun StmtConversionContext.convertBuilderCall(call: FirFunctionCall): Exp
     return blockOf(builder, invocation, unconstrainedValue(embedType(call)))
 }
 
+private fun StmtConversionContext.lacksExpectedReceiverOwnership(call: FirFunctionCall, receiver: FirExpression): Boolean =
+    context(checkerContext) { receiver.resolveUniqueness() == Uniqueness.Unique } && !ownsReceiverBefore(call, receiver)
+
 /**
  * The receiver a template iterates over, held in [variable]: its elements are [elementAt] each index below [length].
  * [factsReadable] says whether a pure expression over the elements may be stated in a loop invariant.
@@ -207,7 +220,19 @@ private data class TemplateReceiver(
 fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding? {
     convertBuilderCall(call)?.let { return it }
     val symbol = call.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
-    val scope = symbol?.let { stdlibHofKind(it, call.arguments.size) }?.takeIf { it.isScope }
+    val kind = symbol?.let { stdlibHofKind(it, call.arguments.size) }
+    val receiver = call.extensionReceiver
+    val isCollectionForEach = (kind == StdlibHof.ForEach || kind == StdlibHof.ForEachIndexed) && call.isCollectionLoop()
+    if (isCollectionForEach && receiver != null && lacksExpectedReceiverOwnership(call, receiver)) {
+        val evaluated = convert(receiver)
+        val path = evaluated.ownedPath()?.toConversionPath()
+            ?: ConversionOwnershipPath(ConversionOwnershipPath.Root(ConversionOwnershipPath.Kind.SYNTHETIC))
+        reportUnsupportedOwnership(call.source, FoldOwnershipCondition(
+            FoldOwnershipRule.NOT_HELD, path, path, OwnershipAbsence(OwnershipAbsenceReason.NEVER_HELD),
+        ))
+        return blockOf(evaluated, UnitLit)
+    }
+    val scope = kind?.takeIf { it.isScope }
     if (scope != null) {
         val callback = call.resolvedArgumentMapping?.entries?.singleOrNull { it.value.symbol == symbol.valueParameterSymbols.last() }?.key
         callback?.unwrapArgument()?.let(::knownCallableReference)?.let { resolveReference ->

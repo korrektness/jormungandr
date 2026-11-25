@@ -656,13 +656,17 @@ method _modelled@20@member@20@on@20@a@20@shared@20@collection()
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var l0_xs: Ref
-  var anon_10: Ref
+  var anon_11: Ref
   var anon_0: Ref
+  var anon_1: Ref
   l0_xs := emptyMutableListModel()
-  anon_10 := keepList(l0_xs)
+  anon_11 := keepList(l0_xs)
   inhale isSubtype(typeOf(anon_0), boolType())
-  v_ret_0 := (unfolding acc(MutableListModel_unique(l0_xs), wildcard) in
-      MutableListModel_c_ListModel_g_size(l0_xs))
+  inhale isSubtype(typeOf(anon_1), intType())
+  if (intFromRef(anon_1) >= 0) {
+    v_ret_0 := anon_1
+  } else {
+    v_ret_0 := intToRef(0)}
   goto lbl_ret_0
   label lbl_ret_0
 }

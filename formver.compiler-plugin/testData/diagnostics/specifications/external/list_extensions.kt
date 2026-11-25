@@ -5,6 +5,13 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
+<!VIPER_TEXT!>class OwnedListFieldInitializer<!> {
+    val xs: @Unique List<Int> = listOf(1)
+    val count = xs.size
+
+    @Law @Pure fun invariant(): Boolean = count == 1
+}
+
 fun <!VIPER_TEXT!>lastIndexAfterMap<!>(xs: @Unique @Borrowed List<Int>) {
     val ys = xs.map { it + 0 }
     val last = ys.lastIndex
@@ -95,8 +102,51 @@ fun <!VIPER_TEXT!>sharedOrEmpty<!>(xs: List<Int>?): List<Int> = <!UNCHECKED_LIBR
 fun <!VIPER_TEXT!>orEmptyChain<!>(xs: @Unique List<Int>?): @Unique List<Int> = xs.orEmpty().orEmpty()
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>orEmptyCannotReuseReceiver<!>(xs: @Unique List<Int>?) {
-    xs.orEmpty()
-    <!INVALID_MOVED_ACCESS!>xs<!>.orEmpty()
+    <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>
+    <!UNCHECKED_LIBRARY_CALL!><!INVALID_MOVED_ACCESS!>xs<!>.orEmpty()<!>
+}
+
+fun <!VIPER_TEXT!>orEmptyThroughOwnedLocal<!>(): @Unique List<Int> {
+    val xs = listOf(7)
+    val result = xs.orEmpty()
+    return result.orEmpty()
+}
+
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>orEmptyMovesInferredReceiver<!>() {
+    val xs = listOf(7)
+    <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>
+    <!UNCHECKED_LIBRARY_CALL!><!INVALID_MOVED_ACCESS!>xs<!>.isEmpty()<!>
+}
+
+<!VIPER_TEXT!>class Bindings<!>(val values: List<Int>)
+
+fun <!VIPER_TEXT!>observeSharedOrEmpty<!>(bindings: Bindings?): Boolean {
+    val values = <!UNCHECKED_LIBRARY_CALL!>bindings?.values.orEmpty()<!>
+    return <!UNCHECKED_LIBRARY_CALL!>values.isEmpty()<!>
+}
+
+fun <!VIPER_TEXT!>observeSharedOrEmptyChain<!>(xs: List<Int>?): Boolean = <!UNCHECKED_LIBRARY_CALL!><!UNCHECKED_LIBRARY_CALL!><!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>.orEmpty()<!>.isEmpty()<!>
+
+fun <!VIPER_TEXT!>observeJoinedOrEmpty<!>(xs: List<Int>?, flag: Boolean): Boolean {
+    var values = listOf(7)
+    if (flag) values = <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>
+    return <!UNCHECKED_LIBRARY_CALL!><!UNCHECKED_LIBRARY_CALL!>values.orEmpty()<!>.isEmpty()<!>
+}
+
+fun <!VIPER_TEXT!>observeLoopOrEmpty<!>(xs: List<Int>?, n: Int): Boolean {
+    var values = listOf(7)
+    var i = 0
+    while (i < n) {
+        <!UNCHECKED_LIBRARY_CALL!>values.isEmpty()<!>
+        values = <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>
+        i++
+    }
+    return <!UNCHECKED_LIBRARY_CALL!>values.isEmpty()<!>
+}
+
+fun <!VIPER_TEXT!>observeCapturedOrEmpty<!>(input: List<Int>?): () -> Boolean {
+    val values = <!UNCHECKED_LIBRARY_CALL!>input.orEmpty()<!>
+    return { <!UNCHECKED_LIBRARY_CALL!><!UNCHECKED_LIBRARY_CALL!>values.orEmpty()<!>.isEmpty()<!> }
 }
 
 private fun Int.<!VIPER_TEXT!>orEmpty<!>(): Int = this

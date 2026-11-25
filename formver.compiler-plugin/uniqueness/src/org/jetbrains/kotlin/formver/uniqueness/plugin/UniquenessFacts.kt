@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContextForProvider
-import org.jetbrains.kotlin.fir.analysis.checkers.context.MutableCheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.context.PersistentCheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckersDiagnosticComponent
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckersDiagnosticComponent
 import org.jetbrains.kotlin.fir.analysis.checkers.type.TypeCheckersDiagnosticComponent
@@ -30,11 +30,13 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirDoWhileLoop
 import org.jetbrains.kotlin.fir.expressions.FirLoop
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -52,7 +54,16 @@ class FunctionUniquenessAnalysis internal constructor(
     private val statesBefore: Map<FirElement, UniquenessState>,
     private val statesAfter: Map<FirElement, UniquenessState>,
     private val statesInsideCalls: Map<FirElement, UniquenessState>,
+    private val accessInputs: Map<FirElement, UniquenessFlowFacts>,
+    private val modelAccesses: Map<FirQualifiedAccessExpression, ModelAccessFact>,
 ) {
+    /** The facts on entry to the call or property access, after operand evaluation and before transfer. */
+    fun accessInput(access: FirElement): UniquenessFlowFacts? = accessInputs[access]
+
+    fun modelAccess(access: FirQualifiedAccessExpression): ModelAccessFact? = modelAccesses[access]
+
+    fun ownsReceiverAt(site: FirElement, receiver: FirExpression): Boolean =
+        context(context) { accessInputs[site]?.ownsReceiver(receiver) == true }
     /**
      * The state on entry to [element]: the join of the states its first CFG node's predecessors produce.
      */
@@ -183,13 +194,14 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
             val file = (if (owner.classId.isLocal) context.containingFileSymbol?.fir
                 else session.firProvider.getFirClassifierContainerFile(owner.classId))
                 ?: error("No containing file for ${owner.classId}.")
-            if (declaration.hasUniquenessDiagnostics(file)) null else {
+            val lexicalContext = declaration.contextWithoutUniquenessDiagnostics(file)
+            if (lexicalContext == null) null else {
                 val graph = when (declaration) {
                     is FirProperty -> declaration.controlFlowGraphReference?.controlFlowGraph
                     is FirAnonymousInitializer -> declaration.controlFlowGraphReference?.controlFlowGraph
                     else -> error("Expected a construction initializer.")
                 } ?: error("Construction initializer has no control-flow graph.")
-                declaration.buildAnalysis(graph)
+                context(lexicalContext) { declaration.buildAnalysis(graph) }
             }
         }
     }
@@ -219,11 +231,11 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         val file = moduleData.session.firProvider.getFirCallableContainerFile(symbol)
             ?: context.containingFileSymbol?.fir
             ?: error("No containing file for ${symbol.callableId}.")
-        return hasUniquenessDiagnostics(file)
+        return contextWithoutUniquenessDiagnostics(file) == null
     }
 
     context(context: CheckerContext)
-    private fun FirDeclaration.hasUniquenessDiagnostics(file: FirFile): Boolean {
+    private fun FirDeclaration.contextWithoutUniquenessDiagnostics(file: FirFile): CheckerContext? {
         val reporter = ErrorCountingReporter()
         val components = checkerExtensions.flatMap { extension ->
             listOf(
@@ -235,13 +247,13 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         val providerContext = context as? CheckerContextForProvider
             ?: error("Expected a ${CheckerContextForProvider::class.simpleName}, got ${context::class.simpleName}.")
         val visitor = TargetCheckerRunningVisitor(
-            MutableCheckerContext(providerContext.sessionHolder, providerContext.returnTypeCalculator),
+            PersistentCheckerContext(providerContext.sessionHolder, providerContext.returnTypeCalculator),
             components,
             this,
         )
         file.accept(visitor, null)
-        check(visitor.targetVisited) { "Declaration was not found in ${file.name}." }
-        return reporter.errorCount > 0
+        val targetContext = visitor.targetContext ?: error("Declaration was not found in ${file.name}.")
+        return targetContext.takeIf { reporter.errorCount == 0 }
     }
 
     context(context: CheckerContext)
@@ -272,8 +284,21 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         for ((element, node) in lastNodes) {
             statesAfter[element] = flows.readOutputUniquenessStateOf(node)
         }
-        for (node in graph.uniquenessAnalysisTargetNodes.filterIsInstance<FunctionCallEnterNode>()) {
-            statesInsideCalls[node.fir] = flows.readOutputUniquenessStateOf(node)
+        val accessInputs = mutableMapOf<FirElement, UniquenessFlowFacts>()
+        val modelAccesses = mutableMapOf<FirQualifiedAccessExpression, ModelAccessFact>()
+        for (node in graph.uniquenessAnalysisTargetNodes) {
+            val access = when (node) {
+                is FunctionCallEnterNode -> {
+                    statesInsideCalls[node.fir] = flows.readOutputUniquenessStateOf(node)
+                    node.fir
+                }
+                is QualifiedAccessNode -> node.fir
+                else -> continue
+            }
+            flows.readInputFactsOf(node)?.let { accessInputs[access] = it }
+            val output = flows[node].joinFactsOverEdgeKinds()
+            val fact = if (node is FunctionCallEnterNode) output?.callEntries?.get(node.fir)?.model else output?.accesses?.get(access)
+            if (fact != null) modelAccesses[access] = fact
         }
 
         acceptChildren(object : FirVisitorVoid() {
@@ -293,7 +318,7 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
             }
         })
 
-        return FunctionUniquenessAnalysis(context, statesBefore, statesAfter, statesInsideCalls)
+        return FunctionUniquenessAnalysis(context, statesBefore, statesAfter, statesInsideCalls, accessInputs, modelAccesses)
     }
 }
 
@@ -317,7 +342,7 @@ private class TargetCheckerRunningVisitor(
 ) : AbstractDiagnosticCollectorVisitor(context) {
     private var insideTarget = false
 
-    var targetVisited = false
+    var targetContext: CheckerContext? = null
         private set
 
     override fun shouldVisitDeclaration(declaration: FirDeclaration): Boolean =
@@ -326,7 +351,7 @@ private class TargetCheckerRunningVisitor(
     override fun checkElement(element: FirElement) {
         if (element === target) {
             insideTarget = true
-            targetVisited = true
+            targetContext = context
         }
         if (!insideTarget) return
         for (component in components) {

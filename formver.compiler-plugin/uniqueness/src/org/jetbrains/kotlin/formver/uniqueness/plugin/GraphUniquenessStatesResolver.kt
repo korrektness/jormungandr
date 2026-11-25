@@ -68,9 +68,13 @@ class UniquenessStateFlows(
      * Reads the uniqueness state before [node] by joining the output states of its predecessors, truncated as the
      * analysis truncates its joins.
      */
-    fun readInputUniquenessStateOf(node: CFGNode<*>): UniquenessState? {
-        val inputs = node.previousCfgNodes.map { predecessor -> outputs[predecessor].joinOverEdgeKinds() }
-        return if (inputs.size > 1) inputs.reduce(UniquenessState::join).truncate(maxPathLength) else inputs.singleOrNull()
+    fun readInputUniquenessStateOf(node: CFGNode<*>): UniquenessState? = readInputFactsOf(node)?.paths
+
+    fun readInputFactsOf(node: CFGNode<*>): UniquenessFlowFacts? {
+        val inputs = node.previousCfgNodes.mapNotNull { predecessor -> outputs[predecessor].joinFactsOverEdgeKinds() }
+        if (inputs.size <= 1) return inputs.singleOrNull()
+        val joined = inputs.reduce(UniquenessFlowFacts::join)
+        return joined.copy(paths = joined.paths.truncate(maxPathLength))
     }
 
     /**
@@ -119,11 +123,12 @@ private fun ControlFlowGraph.uniquenessStatesAnalyzer(
  * The uniqueness state after a node of [this] graph, given the state before it.
  */
 context(context: CheckerContext)
-fun ControlFlowGraph.uniquenessTransfer(): (CFGNode<*>, UniquenessState) -> UniquenessState {
+fun ControlFlowGraph.uniquenessTransfer(flows: UniquenessStateFlows): (CFGNode<*>, UniquenessState) -> UniquenessState {
     // A single node joins nothing, so the truncation length is never used.
     val analyzer = uniquenessStatesAnalyzer(context, maxPathLength = Int.MAX_VALUE)
     return { node, state ->
-        node.accept(analyzer, persistentMapOf(NormalPath to persistentMapOf(Unit to state))).joinOverEdgeKinds()
+        val facts = flows.readInputFactsOf(node)?.copy(paths = state) ?: UniquenessFlowFacts(state)
+        node.accept(analyzer, persistentMapOf(NormalPath to persistentMapOf(Unit to facts))).joinOverEdgeKinds()
     }
 }
 

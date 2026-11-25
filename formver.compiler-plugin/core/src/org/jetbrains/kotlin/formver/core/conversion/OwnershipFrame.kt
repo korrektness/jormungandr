@@ -74,6 +74,14 @@ class OwnershipFrame private constructor(
         (sharedRoots.isNotEmpty() && expression.resolveAccessState().children.keys.any { it in sharedRoots }) ||
             parent?.readsSharedCapture(expression) == true
 
+    /** Whether this frame preserves analyzed ownership for [expression]'s receiver paths. */
+    context(context: CheckerContext)
+    fun canUseReceiverFacts(expression: FirExpression): Boolean {
+        if (readsSharedCapture(expression)) return false
+        val roots = expression.resolveAccessState().children.keys
+        return roots.none { root -> activeBindings.firstOrNull { it.root == root }?.mode == BindingMode.Released }
+    }
+
     /** Whether [path] is `Unique` on entry to [element]. */
     fun ownsBefore(element: FirElement, path: Path): Boolean = path.firstOrNull() !in sharedRoots &&
         analysis?.let { it.owns(it.stateBefore(element), path, ownedView(path)) } ?: false

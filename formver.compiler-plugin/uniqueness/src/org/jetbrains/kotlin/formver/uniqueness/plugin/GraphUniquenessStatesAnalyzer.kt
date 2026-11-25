@@ -6,6 +6,9 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArraySetId
@@ -60,18 +63,15 @@ import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 
-typealias UniquenessStateFlow = ControlFlowInfo<Unit, UniquenessState>
+typealias UniquenessStateFlow = ControlFlowInfo<Unit, UniquenessFlowFacts>
 
-typealias PathAwareUniquenessStateFlow = PathAwareControlFlowInfo<Unit, UniquenessState>
+typealias PathAwareUniquenessStateFlow = PathAwareControlFlowInfo<Unit, UniquenessFlowFacts>
 
-/**
- * Returns the join of the [UniquenessStateFlow]s over every path edge kind.
- */
+fun PathAwareUniquenessStateFlow?.joinFactsOverEdgeKinds(): UniquenessFlowFacts? =
+    this?.values?.mapNotNull { it[Unit] }?.reduceOrNull(UniquenessFlowFacts::join)
+
 fun PathAwareUniquenessStateFlow?.joinOverEdgeKinds(): UniquenessState =
-    this?.values
-        ?.map { it[Unit] ?: EmptyUniquenessState }
-        ?.reduceOrNull(UniquenessState::join)
-        ?: EmptyUniquenessState
+    joinFactsOverEdgeKinds()?.paths ?: EmptyUniquenessState
 
 /**
  * Whether [this] graph is analyzed as part of the flow of the graph that encloses it: a default argument, or a lambda
@@ -137,18 +137,23 @@ class GraphUniquenessStatesAnalyzer(
     private val callArgumentLocalitiesMapper: CallArgumentTypeFactsMapper<Locality>,
     private val readOnlyContext: ReadOnlyContext,
     private val specifiedLambdas: Set<FirAnonymousFunction>,
-) : PathAwareControlFlowGraphVisitor<Unit, UniquenessState>() {
+) : PathAwareControlFlowGraphVisitor<Unit, UniquenessFlowFacts>() {
     override fun mergeInfo(
         a: UniquenessStateFlow,
         b: UniquenessStateFlow,
         node: CFGNode<*>
     ): UniquenessStateFlow =
         a.merge(b) { leftState, rightState ->
-            leftState.join(rightState).truncate(maxPathLength)
+            val joined = leftState.join(rightState)
+            joined.copy(paths = joined.paths.truncate(maxPathLength))
         }
 
-    private fun UniquenessStateFlow.getOrInitialize(): UniquenessState =
-        this[Unit] ?: initialState
+    private fun UniquenessStateFlow.facts(): UniquenessFlowFacts = this[Unit] ?: UniquenessFlowFacts(initialState)
+
+    private fun UniquenessStateFlow.getOrInitialize(): UniquenessState = facts().paths
+
+    private fun UniquenessStateFlow.withPaths(paths: UniquenessState): UniquenessStateFlow =
+        put(Unit, facts().copy(paths = paths))
 
     private val FirFunctionCall.movesArguments: Boolean
         get() = this !in readOnlyContext && !isPureCall(context.session) && !isPrimitiveArrayElementAccess() && !isGenericArrayElementAccess() &&
@@ -165,7 +170,7 @@ class GraphUniquenessStatesAnalyzer(
         if (node.owner.kind != ControlFlowGraph.Kind.AnonymousFunctionCalledInPlace) return visitNode(node, data)
 
         return context(context) {
-            data.transformValues { data -> data.put(Unit, data.getOrInitialize().initializeParametersOf(node.fir)) }
+            data.transformValues { data -> data.withPaths(data.getOrInitialize().initializeParametersOf(node.fir)) }
         }
     }
 
@@ -173,7 +178,7 @@ class GraphUniquenessStatesAnalyzer(
         node: CFGNode<*>,
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
-        return data.transformValues { data -> data.put(Unit, data.getOrInitialize()) }
+        return data.transformValues { data -> data.put(Unit, data.facts()) }
     }
 
     override fun visitAnonymousFunctionCaptureNode(
@@ -199,7 +204,7 @@ class GraphUniquenessStatesAnalyzer(
                         state = state.putChild(symbol, root.copy(data = Uniqueness.Moved))
                     }
                 }
-                flow.put(Unit, state)
+                flow.withPaths(state)
             }
         }
     }
@@ -224,7 +229,7 @@ class GraphUniquenessStatesAnalyzer(
                     val root = state.children[symbol] ?: UniquenessState(symbol.resolveDeclaredUniqueness())
                     if (root.data <= Uniqueness.Unknown) state = state.putChild(symbol, root.sharedKeepingMoves())
                 }
-                flow.put(Unit, state)
+                flow.withPaths(state)
             }
         }
     }
@@ -262,7 +267,7 @@ class GraphUniquenessStatesAnalyzer(
                 val uniquenessState = data.getOrInitialize()
                 var newUniquenessState = uniquenessState.assign(leftAccessState, rightAccessState, movesInitializer)
                 if (initializer != null && leftSymbol.hasInferredUniqueness) {
-                    newUniquenessState = newUniquenessState.weakenInferredLocal(leftSymbol, initializer, uniquenessState)
+                    newUniquenessState = newUniquenessState.weakenInferredLocal(leftSymbol, initializer, data.facts())
                 }
                 if (source != null) {
                     newUniquenessState = newUniquenessState.shareInferredLocal(source, uniquenessState)
@@ -270,7 +275,7 @@ class GraphUniquenessStatesAnalyzer(
                         newUniquenessState = newUniquenessState.shareInferredLocal(leftSymbol, newUniquenessState)
                     }
                 }
-                data.put(Unit, newUniquenessState)
+                data.withPaths(newUniquenessState)
             }
         }
     }
@@ -294,14 +299,14 @@ class GraphUniquenessStatesAnalyzer(
                 }
                 val target = leftValue.wholeInferredLocal()
                 if (target != null) {
-                    newUniquenessState = newUniquenessState.weakenInferredLocal(target, rightValue, uniquenessState)
+                    newUniquenessState = newUniquenessState.weakenInferredLocal(target, rightValue, data.facts())
                 }
                 val source = rightValue.wholeInferredLocal()
                 if (source != null && (target != null || leftValue.resolveUniqueness() == Uniqueness.Shared)) {
                     newUniquenessState = newUniquenessState.shareInferredLocal(source, uniquenessState)
                     if (target != null) newUniquenessState = newUniquenessState.shareInferredLocal(target, newUniquenessState)
                 }
-                data.put(Unit, newUniquenessState)
+                data.withPaths(newUniquenessState)
             }
         }
     }
@@ -309,9 +314,13 @@ class GraphUniquenessStatesAnalyzer(
     override fun visitQualifiedAccessNode(
         node: QualifiedAccessNode,
         data: PathAwareUniquenessStateFlow
-    ): PathAwareUniquenessStateFlow {
-        return context(context) {
-            data.transformValues { data -> data.put(Unit, data.getOrInitialize().passReceiversToAccessor(node.fir)) }
+    ): PathAwareUniquenessStateFlow = context(context) {
+        val access = node.fir
+        val fact = data.joinFactsOverEdgeKinds()?.classify(access)
+        data.transformValues { flow ->
+            val facts = flow.facts()
+            val paths = facts.paths.passReceiversToAccessor(access)
+            flow.put(Unit, facts.copy(paths = paths, accesses = fact?.let { facts.accesses.put(access, it) } ?: facts.accesses))
         }
     }
 
@@ -328,15 +337,27 @@ class GraphUniquenessStatesAnalyzer(
         for (receiver in access.allReceiverExpressions) {
             newUniquenessState = receiver.resolveAccessState().move(newUniquenessState)
         }
-        return newUniquenessState.restoreBorrowedReceivers(access)
+        return newUniquenessState.restoreBorrowedReceivers(access, this)
     }
 
     context(context: CheckerContext)
-    private fun UniquenessState.restoreBorrowedReceivers(access: FirQualifiedAccessExpression): UniquenessState {
+    private fun AccessState.restoreBorrow(state: UniquenessState, before: UniquenessState): UniquenessState =
+        enumeratePaths().fold(state) { result, path ->
+            val current = result.find(path) ?: return@fold result
+            if (current.data != Uniqueness.Moved) result
+            else result.insert(path, current.copy(data = before.uniquenessAlong(path)))
+        }
+
+    context(context: CheckerContext)
+    private fun UniquenessState.restoreBorrowedReceivers(
+        access: FirQualifiedAccessExpression,
+        before: UniquenessState,
+        except: FirExpression? = null,
+    ): UniquenessState {
         var state = this
         for ((argument, locality) in QualifiedAccessArgumentLocalitiesMapper.mapArgumentTypeFactsOf(access)) {
-            if (locality == Locality.Local) {
-                state = argument.resolveAccessState().initialize(state)
+            if (argument !== except && locality == Locality.Local) {
+                state = argument.resolveAccessState().restoreBorrow(state, before)
             }
         }
         return state
@@ -353,32 +374,39 @@ class GraphUniquenessStatesAnalyzer(
             val value = call.resolvedArgumentMapping!!.entries.single { it.value.name.asString() == parameterName }.key
             return with(context) {
                 data.transformValues { flow ->
-                    flow.put(Unit, value.resolveAccessState().move(flow.getOrInitialize()))
+                    flow.withPaths(value.resolveAccessState().move(flow.getOrInitialize()))
                 }
             }
         }
-        if (!call.movesArguments) return visitNode(node, data)
-
-        with(context) {
-            val sharedLocals = call.sharedInferredLocals(callArgumentLocalitiesMapper)
-            return data.transformValues { data ->
-                val before = data.getOrInitialize()
-                var newUniquenessState = before
-
-                // NOTE: `allReceiverExpressions` also includes context arguments.
-                for (receiver in call.allReceiverExpressions) {
-                    newUniquenessState = receiver.resolveAccessState().move(newUniquenessState)
+        return with(context) {
+            val input = data.joinFactsOverEdgeKinds()
+            val fact = input?.classify(call)
+            val receiver = call.toResolvedCallableSymbol()?.let { call.receiverRequiringModelOwnership(it) }
+            val sharedLocals = if (call.movesArguments) {
+                call.sharedInferredLocals(callArgumentLocalitiesMapper, receiver.takeIf { fact?.checked == true })
+            } else emptySet()
+            data.transformValues { flow ->
+                val before = flow.facts()
+                var paths = before.paths
+                if (call.movesArguments) {
+                    for (operand in call.allReceiverExpressions + call.arguments) {
+                        val access = operand.resolveAccessState()
+                        val movable = if (operand === receiver && fact?.checked != true) {
+                            access.copy(children = access.children.mutate { roots ->
+                                roots.keys.removeAll { operand.isOnlyUnownedPropertyRoot(it) }
+                            })
+                        } else access
+                        paths = movable.move(paths)
+                    }
+                    for (symbol in sharedLocals) paths = paths.shareInferredLocal(symbol, before.paths)
                 }
-
-                for (argument in call.arguments) {
-                    newUniquenessState = argument.resolveAccessState().move(newUniquenessState)
-                }
-
-                for (symbol in sharedLocals) {
-                    newUniquenessState = newUniquenessState.shareInferredLocal(symbol, before)
-                }
-
-                data.put(Unit, newUniquenessState)
+                flow.put(Unit, before.copy(
+                    paths = paths,
+                    accesses = if (fact != null) before.accesses.remove(call) else before.accesses,
+                    callEntries = if (call.movesArguments || fact != null) {
+                        before.callEntries.put(call, CallEntryFact(before.paths, fact))
+                    } else before.callEntries,
+                ))
             }
         }
     }
@@ -388,27 +416,39 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val call = node.fir
-        if (!call.movesArguments) return visitNode(node, data)
-
         with(context) {
+            val callee = call.toResolvedCallableSymbol()
+            val gatedReceiver = callee?.let { call.receiverRequiringModelOwnership(it) }
+            val gatedExtension = gatedReceiver?.takeIf { it === call.extensionReceiver }
+            val modelBorrowsExtension = gatedExtension != null && callee.externalSpecificationSymbol(context.session)
+                ?.receiverParameterSymbol?.resolveLocality() == Locality.Local
             return data.transformValues { data ->
-                var newUniquenessState = data.getOrInitialize().restoreBorrowedReceivers(call)
-
-                for ((argument, requiredLocality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {
-                    if (requiredLocality == Locality.Global) continue
-
-                    newUniquenessState = argument.resolveAccessState().initialize(newUniquenessState)
+                val facts = data.facts()
+                val entry = facts.callEntries[call] ?: return@transformValues data.withPaths(facts.paths)
+                val checked = entry.model?.checked == true
+                var paths = facts.paths
+                if (call.movesArguments) {
+                    paths = paths.restoreBorrowedReceivers(call, entry.paths, gatedExtension)
+                    if (checked && modelBorrowsExtension) {
+                        paths = gatedExtension.resolveAccessState().restoreBorrow(paths, entry.paths)
+                    }
+                    for ((argument, locality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {
+                        if (locality == Locality.Local) paths = argument.resolveAccessState().restoreBorrow(paths, entry.paths)
+                    }
                 }
-
-                data.put(Unit, newUniquenessState)
+                data.put(Unit, facts.copy(
+                    paths = paths,
+                    accesses = entry.model?.let { facts.accesses.put(call, it) } ?: facts.accesses,
+                    callEntries = facts.callEntries.remove(call),
+                ))
             }
         }
     }
 
     override fun visitExitDefaultArgumentsNode(
         node: ExitDefaultArgumentsNode,
-        data: PathAwareControlFlowInfo<Unit, UniquenessState>
-    ): PathAwareControlFlowInfo<Unit, UniquenessState> {
+        data: PathAwareUniquenessStateFlow,
+    ): PathAwareUniquenessStateFlow {
         val valueParameter = node.fir
 
         return with(context) {
@@ -421,15 +461,15 @@ class GraphUniquenessStatesAnalyzer(
                 val defaultValueUniquenessState = defaultValueAccessState.projectTerminalUniquenessState(newUniquenessState)
                 newUniquenessState = newUniquenessState.insert(valueParameterPath, defaultValueUniquenessState)
                 newUniquenessState = defaultValueAccessState.move(newUniquenessState)
-                data.put(Unit, newUniquenessState)
+                data.withPaths(newUniquenessState)
             }
         }
     }
 
     override fun visitJumpNode(
         node: JumpNode,
-        data: PathAwareControlFlowInfo<Unit, UniquenessState>
-    ): PathAwareControlFlowInfo<Unit, UniquenessState> {
+        data: PathAwareUniquenessStateFlow,
+    ): PathAwareUniquenessStateFlow {
         return when (val jumpExpression = node.fir) {
             is FirReturnExpression -> {
                 with (context) {
@@ -438,7 +478,7 @@ class GraphUniquenessStatesAnalyzer(
                         val resultAccessState = jumpExpression.result.resolveAccessState()
                         newUniquenessState = resultAccessState.move(newUniquenessState)
 
-                        data.put(Unit, newUniquenessState)
+                        data.withPaths(newUniquenessState)
                     }
                 }
             }
@@ -448,8 +488,8 @@ class GraphUniquenessStatesAnalyzer(
 
     override fun visitThrowExceptionNode(
         node: ThrowExceptionNode,
-        data: PathAwareControlFlowInfo<Unit, UniquenessState>
-    ): PathAwareControlFlowInfo<Unit, UniquenessState> {
+        data: PathAwareUniquenessStateFlow,
+    ): PathAwareUniquenessStateFlow {
         val throwExpression = node.fir
 
         return with (context) {
@@ -458,7 +498,7 @@ class GraphUniquenessStatesAnalyzer(
                 val exceptionAccessState = throwExpression.exception.resolveAccessState()
                 newUniquenessState = exceptionAccessState.move(newUniquenessState)
 
-                data.put(Unit, newUniquenessState)
+                data.withPaths(newUniquenessState)
             }
         }
     }

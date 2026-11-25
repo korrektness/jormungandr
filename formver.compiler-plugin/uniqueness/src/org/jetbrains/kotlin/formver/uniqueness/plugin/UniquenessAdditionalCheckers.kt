@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
@@ -35,6 +36,9 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
     }
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
+        override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> =
+            setOf(UntrustedDeclarationChecker(EffectiveUniquenessChecker))
+
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> =
             setOf(
                 OverrideUniquenessChecker,
@@ -52,7 +56,6 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
                 UntrustedDeclarationChecker(FunctionEscapeUniquenessConsistencyChecker),
                 UntrustedDeclarationChecker(FunctionExitUniquenessConsistencyChecker),
                 UntrustedDeclarationChecker(FunctionUseAfterMoveChecker),
-                UntrustedDeclarationChecker(SharedInferredLocalChecker),
                 UntrustedDeclarationChecker(BorrowedViewEscapeChecker),
                 PureFunctionResultChecker,
                 DispatchReceiverAnnotationPlacementChecker(defaultUniquenessAnnotationId, INVALID_UNIQUENESS_TYPE_TARGET),

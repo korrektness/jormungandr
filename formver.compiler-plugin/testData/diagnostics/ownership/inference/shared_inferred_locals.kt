@@ -109,7 +109,7 @@ fun <!VIPER_TEXT!>`modelled member on a shared collection`<!>(): Int {
     val xs = mutableListOf<Int>()
     keepList(xs)
     <!UNCHECKED_LIBRARY_CALL!>xs.add(1)<!>
-    return xs.size
+    return <!UNCHECKED_LIBRARY_CALL!>xs.size<!>
 }
 
 fun <!VIPER_TEXT!>keepList<!>(xs: MutableList<Int>) {}

@@ -20,6 +20,11 @@ fun <!VIPER_TEXT!>sharedAdd<!>(xs: MutableList<Int>) {
     <!UNCHECKED_LIBRARY_CALL!>xs.add(1)<!>
 }
 
+fun <!VIPER_TEXT!>borrowedAddTwice<!>(xs: @Borrowed MutableList<Int>) {
+    <!UNCHECKED_LIBRARY_CALL!>xs.add(1)<!>
+    <!UNCHECKED_LIBRARY_CALL!>xs.add(2)<!>
+}
+
 fun <!VIPER_TEXT!>sharedGetCaught<!>(xs: List<Int>, i: Int): Int {
     var result = 0
     try {

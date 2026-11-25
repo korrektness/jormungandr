@@ -76,9 +76,9 @@ fun <!VIPER_TEXT!>iteratesTooFar<!>() {
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>iteratesMutableList<!>(): Int {
     val list = mutableListOf<Int>()
-    list.add(7)
+    <!UNCHECKED_LIBRARY_CALL!>list.add(7)<!>
     val iterator = <!OPAQUE_CALL!>list.iterator()<!>
-    <!INVALID_MOVED_ACCESS!>list<!>.add(8)
+    <!UNCHECKED_LIBRARY_CALL!><!INVALID_MOVED_ACCESS!>list<!>.add(8)<!>
     return <!UNCHECKED_LIBRARY_CALL!>iterator.next()<!>
 }
 
@@ -118,7 +118,7 @@ fun <!VIPER_TEXT!>slicedTooFar<!>() {
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>slicedMutable<!>(): Int {
     val list = mutableListOf<Int>()
-    list.add(1)
+    <!UNCHECKED_LIBRARY_CALL!>list.add(1)<!>
     <!OPAQUE_CALL!>list.subList(0, 1)<!>
-    return <!INVALID_MOVED_ACCESS!>list<!>.size
+    return <!UNCHECKED_LIBRARY_CALL!><!INVALID_MOVED_ACCESS!>list<!>.size<!>
 }

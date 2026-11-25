@@ -67,6 +67,6 @@ fun <!VIPER_TEXT!>sharedMapThenCheckedMap<!>(xs: List<Int>) {
     verify(zs.size == ys.size)
 }
 
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>sharedOrEmptyAliasesReceiver<!>(xs: List<String>?) {
+fun <!VERIFICATION_SKIPPED!>sharedOrEmptyAliasesReceiver<!>(xs: List<String>?) {
     <!UNSUPPORTED_OWNERSHIP!><!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>.forEach { }<!>
 }
