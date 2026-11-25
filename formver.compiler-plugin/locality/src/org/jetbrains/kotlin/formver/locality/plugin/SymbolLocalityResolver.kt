@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
 import org.jetbrains.kotlin.formver.readonly.plugin.isInSpecification
 import org.jetbrains.kotlin.formver.readonly.plugin.isReadOnlyBorrowed
+import org.jetbrains.kotlin.formver.readonly.plugin.isUniquePredArgument
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 /**
@@ -91,6 +92,13 @@ fun FirCallableSymbol<*>.resolveLocality(): Locality =
         is FirFunctionSymbol<*> -> resolveScopeLocality()
         else -> Locality.Global
     }
+
+/** Resolves call argument locality; `UniquePred` borrows only when interpreted in a specification. */
+internal object CallParameterLocalityResolver : SymbolTypeFactResolver<Locality, FirValueParameterSymbol> {
+    context(context: CheckerContext)
+    override fun resolveTypeFactOf(symbol: FirValueParameterSymbol): Locality =
+        if (symbol.isUniquePredArgument && context.isInSpecification()) Locality.Local else symbol.resolveLocality()
+}
 
 object VariableLocalityResolver :
     SymbolTypeFactResolver<Locality, FirVariableSymbol<*>> {

@@ -127,7 +127,7 @@ object InvokeParametersLocalityResolver : InvokeParameterTypeFactsResolver<Local
 }
 
 val CallArgumentLocalitiesMapper = CallArgumentTypeFactsMapper(
-    VariableLocalityResolver,
+    CallParameterLocalityResolver,
     InvokeParametersLocalityResolver
 )
 

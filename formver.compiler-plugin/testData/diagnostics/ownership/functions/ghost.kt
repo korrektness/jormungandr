@@ -27,7 +27,7 @@ fun `ghost builtins reject a moved value`(n: @Unique Node) {
     unfold(UniquePred(<!INVALID_MOVED_ACCESS!>n<!>))
 }
 
-fun `a predicate constructed outside a specification would carry a borrowed value`(n: @Unique @Borrowed Node) {
-    val p = <!INVALID_UNIQUE_PRED_PLACEMENT!>UniquePred(n)<!>
+fun `a predicate constructed outside a specification would carry a borrowed value`(n: @Unique @Borrowed Node) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
+    val p = <!INVALID_UNIQUE_PRED_PLACEMENT!>UniquePred(<!LOCALITY_MISMATCH!>n<!>)<!>
     store(p)
-}
+}<!>

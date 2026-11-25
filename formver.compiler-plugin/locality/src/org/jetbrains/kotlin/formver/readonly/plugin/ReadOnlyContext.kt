@@ -68,17 +68,20 @@ fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
 
 private fun FirFunctionSymbol<*>.borrowsParameterOfType(type: ConeKotlinType, session: FirSession): Boolean =
-    callableId in specificationFunctionIds || isUniquePredConstructor || isCollectionLoop() ||
+    callableId in specificationFunctionIds || isCollectionLoop() ||
             isPure(session) && type.attributes.uniquenessAttribute != null
 
 /**
  * Whether [this] parameter is borrowed because its function only reads it: every parameter of a specification
- * builtin or of the `UniquePred` constructor, and every `@Unique` parameter of a `@Pure` function.
+ * builtin, and every `@Unique` parameter of a `@Pure` function.
  */
 fun FirValueParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
     val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
     return function.borrowsParameterOfType(externalSpecificationSymbol(session).resolvedReturnType, session)
 }
+
+internal val FirValueParameterSymbol.isUniquePredArgument: Boolean
+    get() = (containingDeclarationSymbol as? FirFunctionSymbol<*>)?.isUniquePredConstructor == true
 
 /**
  * Whether [this] receiver is borrowed because its function only reads it, as for [FirValueParameterSymbol]s.
