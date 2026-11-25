@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -88,21 +90,142 @@ class FileVerificationSinkTest {
     }
 
     @Test
-    fun `replay exception does not discard later siblings`() {
+    fun `replay assertion does not discard later siblings or replace the batch failure`() {
+        for (teardown in listOf(null, IllegalStateException())) {
+            val sink = FileVerificationSink(1) {
+                object : FileVerificationBackend {
+                    override fun verify(program: Program, onError: (VerifierError) -> Unit) = Unit
+                    override fun close() { teardown?.let { throw it } }
+                }
+            }
+            val error = AssertionError()
+            val replayed = mutableListOf<VerificationResult>()
+            val request = VerificationRequest(program(), "z3", 0, null, emptyList(), false)
+            sink.submit(request) { throw error }
+            sink.submit(request) { replayed += it() }
+            val thrown = assertFailsWith<Throwable> { sink.flush() }
+            assertSame(teardown ?: error, thrown)
+            assertEquals(listOfNotNull(error.takeIf { teardown != null }), thrown.suppressed.toList())
+            assertNull(replayed.single().failure)
+        }
+    }
+
+    @Test
+    fun `each replay interruption is attached without replacing teardown failure`() {
+        val teardown = IllegalStateException()
         val sink = FileVerificationSink(1) {
             object : FileVerificationBackend {
                 override fun verify(program: Program, onError: (VerifierError) -> Unit) = Unit
-                override fun close() = Unit
+                override fun close() { throw teardown }
             }
         }
-        val error = IllegalArgumentException("replay")
-        var sibling = false
         val request = VerificationRequest(program(), "z3", 0, null, emptyList(), false)
-        sink.submit(request) { throw error }
-        sink.submit(request) { sibling = true }
-        val thrown = kotlin.runCatching { sink.flush() }.exceptionOrNull()
-        assertSame(error, thrown)
-        assertTrue(sibling)
+        repeat(2) {
+            sink.submit(request) {
+                assertFalse(Thread.currentThread().isInterrupted)
+                Thread.currentThread().interrupt()
+            }
+        }
+        val replayed = mutableListOf<VerificationResult>()
+        sink.submit(request) {
+            assertFalse(Thread.currentThread().isInterrupted)
+            replayed += it()
+        }
+        try {
+            assertSame(teardown, assertFailsWith<IllegalStateException> { sink.flush() })
+            assertTrue(Thread.currentThread().isInterrupted)
+        } finally {
+            Thread.interrupted()
+        }
+        assertEquals(2, teardown.suppressed.size)
+        teardown.suppressed.forEach { assertIs<InterruptedException>(it) }
+        assertNull(replayed.single().failure)
+    }
+
+    @Test
+    fun `overflow and its completed sibling survive concurrent cleanup failure`() {
+        val programs = List(2) { program() }
+        val overflow = StackOverflowError()
+        val teardown = IllegalStateException()
+        val siblingStarted = CountDownLatch(1)
+        val overflowClosed = CountDownLatch(1)
+        val sink = FileVerificationSink(2) { request ->
+            object : FileVerificationBackend {
+                override fun verify(program: Program, onError: (VerifierError) -> Unit) {
+                    if (program === programs[0]) {
+                        siblingStarted.await()
+                        throw overflow
+                    }
+                    siblingStarted.countDown()
+                    overflowClosed.await()
+                }
+                override fun close() {
+                    if (request.program === programs[0]) overflowClosed.countDown() else throw teardown
+                }
+            }
+        }
+        val replayed = mutableListOf<Throwable?>()
+        programs.forEach { program ->
+            sink.submit(VerificationRequest(program, "z3", 0, null, emptyList(), false)) {
+                replayed += it().failure
+                it().throwFailure()
+            }
+        }
+        assertSame(overflow, assertFailsWith<StackOverflowError> { sink.flush() })
+        assertEquals(listOf(teardown), overflow.suppressed.toList())
+        assertEquals(listOf<Throwable?>(overflow, null), replayed)
+    }
+
+    @Test
+    fun `option switch teardown does not fill the incoming result slot`() {
+        val teardown = IllegalStateException()
+        val closed = mutableListOf<Boolean>()
+        val sink = FileVerificationSink(1) { request ->
+            object : FileVerificationBackend {
+                override fun verify(program: Program, onError: (VerifierError) -> Unit) = Unit
+                override fun close() {
+                    closed += request.counterexamples
+                    if (!request.counterexamples) throw teardown
+                }
+            }
+        }
+        val request = VerificationRequest(program(), "z3", 0, null, emptyList(), false)
+        val replayed = mutableListOf<Pair<Boolean, Throwable?>>()
+        for (mode in listOf(false, true)) {
+            sink.submit(request.copy(counterexamples = mode)) { replayed += mode to it().failure }
+        }
+        assertSame(teardown, assertFailsWith<IllegalStateException> { sink.flush() })
+        assertEquals(listOf(false), closed)
+        assertEquals(listOf<Pair<Boolean, Throwable?>>(false to null), replayed)
+    }
+
+    @Test
+    fun `worker cancellation replays the interrupted attempt without interrupting the checker`() {
+        val programs = List(3) { program() }
+        val cleanups = mutableListOf<Boolean>()
+        val sink = FileVerificationSink(1) {
+            object : FileVerificationBackend {
+                override fun verify(program: Program, onError: (VerifierError) -> Unit) {
+                    if (program === programs[1]) {
+                        Thread.currentThread().interrupt()
+                        CountDownLatch(1).await()
+                    }
+                }
+                override fun close() { cleanups += Thread.currentThread().isInterrupted }
+            }
+        }
+        val replayed = mutableListOf<Pair<Int, Throwable?>>()
+        programs.forEachIndexed { index, program ->
+            sink.submit(VerificationRequest(program, "z3", 0, null, emptyList(), false)) {
+                val result = it()
+                replayed += index to result.failure
+                result.throwFailure()
+            }
+        }
+        val failure = assertFailsWith<InterruptedException> { sink.flush() }
+        assertFalse(Thread.interrupted())
+        assertEquals(listOf(false), cleanups)
+        assertEquals(listOf<Pair<Int, Throwable?>>(0 to null, 1 to failure), replayed)
     }
 
     @Test
@@ -135,30 +258,49 @@ class FileVerificationSinkTest {
             created.incrementAndGet()
             AutoCloseable { closed.incrementAndGet() }
         }) { _, input -> input }
-        assertEquals(listOf(7), result)
+        assertEquals(listOf(7), result.results)
         assertEquals(1, created.get())
         assertEquals(1, closed.get())
     }
 
     @Test
-    fun `interruption waits for worker cleanup before returning`() {
+    fun `checker interruption joins cleanup and replays completed and overflowing jobs`() {
         val started = CountDownLatch(1)
         val closing = CountDownLatch(1)
         val release = CountDownLatch(1)
         val finishVerification = CountDownLatch(1)
         val outcome = AtomicReference<Throwable>()
         val interruptRestored = AtomicReference<Boolean>()
+        val programs = List(2) { program() }
+        val overflow = StackOverflowError()
+        val cleaned = AtomicInteger()
+        val sink = FileVerificationSink(1) {
+            object : FileVerificationBackend {
+                override fun verify(program: Program, onError: (VerifierError) -> Unit) {
+                    if (program === programs[1]) {
+                        started.countDown()
+                        finishVerification.await()
+                        throw overflow
+                    }
+                }
+                override fun close() {
+                    closing.countDown()
+                    release.await()
+                    cleaned.incrementAndGet()
+                }
+            }
+        }
+        val replayed = mutableListOf<Throwable?>()
+        programs.forEach { program ->
+            sink.submit(VerificationRequest(program, "z3", 0, null, emptyList(), false)) {
+                assertEquals(1, cleaned.get())
+                assertFalse(Thread.currentThread().isInterrupted)
+                replayed += it().failure
+            }
+        }
         val caller = thread {
             try {
-                FileBatchRunner.run(listOf(1), 4, {
-                    object : AutoCloseable {
-                        override fun close() { closing.countDown(); release.await() }
-                    }
-                }) { _, _ ->
-                    started.countDown()
-                    finishVerification.await()
-                    1
-                }
+                sink.flush()
             } catch (error: Throwable) {
                 outcome.set(error)
             } finally {
@@ -176,7 +318,9 @@ class FileVerificationSinkTest {
             release.countDown()
             caller.join()
         }
-        assertIs<InterruptedException>(outcome.get())
+        val interruption = assertIs<InterruptedException>(outcome.get())
+        assertEquals(listOf(overflow), interruption.suppressed.toList())
+        assertEquals(listOf<Throwable?>(null, overflow), replayed)
         assertEquals(true, interruptRestored.get())
     }
 
@@ -184,16 +328,14 @@ class FileVerificationSinkTest {
     fun `worker exception waits for close`() {
         val closing = CountDownLatch(1)
         val release = CountDownLatch(1)
-        val outcome = AtomicReference<Throwable>()
+        val outcome = AtomicReference<FileBatchRunner.Batch<Int>>()
         val failure = AssertionError("worker")
         val caller = thread {
-            try {
-                FileBatchRunner.run(listOf(1), 1, {
-                    object : AutoCloseable {
-                        override fun close() { closing.countDown(); release.await() }
-                    }
-                }) { _, _ -> throw failure }
-            } catch (error: Throwable) { outcome.set(error) }
+            outcome.set(FileBatchRunner.run(listOf(1), 1, {
+                object : AutoCloseable {
+                    override fun close() { closing.countDown(); release.await() }
+                }
+            }) { _, _ -> throw failure })
         }
         closing.await()
         try {
@@ -203,6 +345,6 @@ class FileVerificationSinkTest {
             release.countDown()
             caller.join()
         }
-        assertSame(failure, outcome.get())
+        assertSame(failure, outcome.get().failures.single())
     }
 }

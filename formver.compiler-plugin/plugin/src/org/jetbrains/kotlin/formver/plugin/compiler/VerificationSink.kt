@@ -34,8 +34,9 @@ internal data class VerificationResult(val errors: List<VerifierError>, val fail
 }
 
 /**
- * Submit in producer order. Replay exactly once, in that order, on the checker thread while its
- * captured contexts remain valid. Workers receive only requests and return results, never replay
+ * Replay each available result exactly once, in submission order, on the checker thread while its
+ * captured contexts remain valid. A stopped batch may leave unstarted requests without a result.
+ * Workers receive only requests and return results, never replay
  * closures. At replay, the supplied function returns the result; a deferred sink supplies the
  * backend elapsed time in [VerificationResult.elapsedNanos]. The immediate sink executes the
  * backend in that function, inside the checker's progress scope.
