@@ -13,8 +13,6 @@ import org.jetbrains.kotlin.formver.common.TerminationRule
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.KtFakeSourceElementKind
-import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.FirLabel
@@ -53,16 +51,13 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
-import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
-import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
-import org.jetbrains.kotlin.formver.core.isUnique
-import org.jetbrains.kotlin.formver.core.isBorrowed
-import org.jetbrains.kotlin.formver.core.returnsUnique
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
+import org.jetbrains.kotlin.formver.uniqueness.plugin.receiverRequiringModelOwnership
+import org.jetbrains.kotlin.formver.uniqueness.plugin.uncheckedModelResultUniqueness
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -193,10 +188,6 @@ private fun StmtConversionContext.unconstrainedOwnedValue(type: TypeEmbedding): 
     val facts = declaration.variable.withInvariants(typeResolver) { proven = true }
     return blockOf(declaration, facts, UnconstrainedOwnedValue(declaration.variable))
 }
-
-/** Whether this is the `iterator()` call by which FIR starts a desugared `for` loop. */
-private fun FirQualifiedAccessExpression.isForLoopIterator(): Boolean =
-    source?.kind == KtFakeSourceElementKind.DesugaredForLoop && toResolvedCallableSymbol()?.name == OperatorNameConventions.ITERATOR
 
 /**
  * A reference to the object declaration [symbol]. Each reference is a separate unconstrained value, so the
@@ -369,50 +360,16 @@ fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirE
 }
 
 /**
- * Whether [this] library extension takes its receiver `@Unique` only in its external specification. The uniqueness
- * checker reads the receiver requirement from the library declaration, so it accepts any receiver.
- */
-private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCallableSymbol<*>): Boolean {
-    val model = callee.externalSpecificationSymbol(session)
-    if (model == callee) return false
-    return model.receiverParameterSymbol?.let { context(checkerContext) { it.isUnique() } } == true
-}
-
-/**
- * Whether [this] library extension returns a fresh object: its external specification declares the result `@Unique`
- * and consumes no parameter, so the result cannot be one the caller passed in.
- */
-private fun StmtConversionContext.specifiesFreshExtensionResult(callee: FirCallableSymbol<*>): Boolean {
-    val model = callee.externalSpecificationSymbol(session) as? FirFunctionSymbol<*> ?: return false
-    if (model == callee || callee.dispatchReceiverType != null) return false
-    return context(checkerContext) {
-        model.returnsUnique() &&
-            (listOfNotNull(model.receiverParameterSymbol) + model.contextParameterSymbols + model.valueParameterSymbols)
-                .none { it.isUnique() && !it.isBorrowed() }
-    }
-}
-
-/**
- * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
- * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
- * is not `Unique` on entry to [element]; `null` for any other access. The `iterator()` call of a `for` loop gives an owned iterator
- * with unconstrained state, as only the loop's `hasNext()` and `next()` calls reach it. An extension that returns a
- * fresh object (see `specifiesFreshExtensionResult`) gives an owned result with unconstrained state (docs/soundness.md,
- * "Fresh results of library calls on objects that are not owned"). The `size` of a Collection or a Map is at least 0
- * (docs/soundness.md, "Sizes of collections that are not owned").
+ * Converts [access] on the unchecked path if its external model requires a receiver not owned on entry to [element];
+ * returns `null` for any other access. The result has the ownership given by [uncheckedModelResultUniqueness], and
+ * the `size` of a Collection or a Map is at least 0.
  */
 fun StmtConversionContext.convertUnownedSpecifiedMember(
     access: FirQualifiedAccessExpression,
     element: FirElement = access,
 ): ExpEmbedding? {
     val callee = access.toResolvedCallableSymbol() ?: return null
-    val dispatchReceiver = access.dispatchReceiver
-    val extensionReceiver = access.extensionReceiver
-    val receiver = when {
-        dispatchReceiver != null && callee.specifiesOwnedReceiver(session) -> dispatchReceiver
-        extensionReceiver != null && specifiesOwnedExtensionReceiver(callee) -> extensionReceiver
-        else -> return null
-    }
+    val receiver = context(checkerContext) { access.receiverRequiringModelOwnership(callee) } ?: return null
     if (ownsReceiverBefore(element, receiver)) return null
     val member = callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString()
     reportWarning(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, access.source, KotlinCondition.UncheckedLibraryCall(member)))
@@ -426,9 +383,10 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(
             add(NonDeterministically(exceptionalExit(KotlinCondition.ExceptionSource.UNSPECIFIED_CALL, callee)))
         }
         val type = embedType(access.resolvedType)
+        val resultUniqueness = context(checkerContext) { access.uncheckedModelResultUniqueness(callee) }
         add(
             when {
-                access.isForLoopIterator() || specifiesFreshExtensionResult(callee) -> unconstrainedOwnedValue(type)
+                resultUniqueness == Uniqueness.Unique -> unconstrainedOwnedValue(type)
                 callee.name == SIZE && callee is FirPropertySymbol && isIntSized(receiver) -> nonNegativeValue(type)
                 else -> unconstrainedValue(type)
             }

@@ -91,3 +91,14 @@ fun <!VIPER_TEXT!>sharedReceivers<!>(xs: List<Int>) {
 }
 
 fun <!VIPER_TEXT!>sharedOrEmpty<!>(xs: List<Int>?): List<Int> = <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>
+
+fun <!VIPER_TEXT!>orEmptyChain<!>(xs: @Unique List<Int>?): @Unique List<Int> = xs.orEmpty().orEmpty()
+
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>orEmptyCannotReuseReceiver<!>(xs: @Unique List<Int>?) {
+    xs.orEmpty()
+    <!INVALID_MOVED_ACCESS!>xs<!>.orEmpty()
+}
+
+private fun Int.<!VIPER_TEXT!>orEmpty<!>(): Int = this
+
+fun <!VIPER_TEXT!>sourceOrEmpty<!>(value: Int): Int = value.orEmpty()
