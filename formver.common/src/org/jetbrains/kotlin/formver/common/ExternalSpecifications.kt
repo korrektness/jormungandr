@@ -64,9 +64,9 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     private val classes = linkedMapOf<FirRegularClassSymbol, FirRegularClassSymbol>()
     private val callables = linkedMapOf<FirCallableSymbol<*>, FirCallableSymbol<*>>()
-    private val models = mutableSetOf<FirBasedSymbol<*>>()
+    private val models: MutableSet<FirBasedSymbol<*>> = mutableSetOf()
     private val failures = mutableListOf<ExternalSpecificationError>()
-    private val rebindings = mutableListOf<ExternalSpecificationError>()
+    private val rebindings: MutableList<ExternalSpecificationError> = mutableListOf()
     private var initialized = false
 
     val errors: List<ExternalSpecificationError>
@@ -361,9 +361,10 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
                 member.getAnnotationByClassId(annotationId("SpecOf"), session) != null) continue
             val name = Name.identifier(member.bindingName(externalMemberId) ?: member.name.asString())
             val candidates = mutableListOf<FirCallableSymbol<*>>()
+            val callable: FirCallableSymbol<*> = member
             when (member) {
-                is FirNamedFunctionSymbol -> scope.processFunctionsByName(name) { if (matches(member, it)) candidates += it }
-                is FirPropertySymbol -> scope.processPropertiesByName(name) { if (it is FirPropertySymbol && matches(member, it)) candidates += it }
+                is FirNamedFunctionSymbol -> scope.processFunctionsByName(name) { if (matches(callable, it)) candidates += it }
+                is FirPropertySymbol -> scope.processPropertiesByName(name) { if (it is FirPropertySymbol && matches(callable, it)) candidates += it }
                 else -> { fail(member, ExternalSpecRule.UNSUPPORTED_MEMBER); continue }
             }
             bind(member, candidates, "${target.classId}.$name")

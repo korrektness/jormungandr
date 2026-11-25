@@ -60,3 +60,22 @@ fun `a move later in a loop reaches an earlier use`(a: @Unique A) {
         consume(a)
     }
 }
+
+private fun fresh(): @Unique A = A()
+
+private fun publish(value: A) {}
+
+class Registry {
+    private val inferred = fresh()
+    private val shared: A = fresh()
+
+    fun `publishing an owned field moves it`() {
+        publish(inferred)
+        borrow(<!INVALID_MOVED_ACCESS!>inferred<!>)
+    }
+
+    fun `publishing a shared field keeps it accessible`() {
+        publish(shared)
+        borrow(shared)
+    }
+}
