@@ -36,6 +36,16 @@ fun <!VIPER_TEXT!>uniqueCallResultFilter<!>(xs: @Unique @Borrowed List<Int>) {
     verify(ys.size == xs.size)
 }
 
+fun <!VIPER_TEXT!>capturedMapResult<!>(xs: List<Int>): () -> Boolean {
+    val mapped = <!UNCHECKED_LIBRARY_CALL!>xs.map { it }<!>
+    return {
+        val found = <!OPAQUE_CALL!>mapped.any { it > 0 }<!>
+        refute(found)
+        refute(!found)
+        found
+    }
+}
+
 fun <!VIPER_TEXT!>sharedMapThenLoop<!>(xs: Set<String>): Boolean {
     val ys = <!UNCHECKED_LIBRARY_CALL!>xs.map { it.length }<!>
     for (y in ys) { if (y == 0) return true }

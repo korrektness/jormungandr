@@ -359,10 +359,11 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
 
 /**
  * Whether [receiver] is `Unique` on entry to [element]: the uniqueness checker finds the path it denotes `Unique` there,
- * or, when it denotes no path, declares it `Unique`.
+ * or, when it denotes no path, declares it `Unique`. A path through a shared capture is never owned.
  */
 fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirExpression): Boolean {
     val denoted = (receiver as? FirCheckedSafeCallSubject)?.checkedReceiver ?: receiver
+    if (context(checkerContext) { ownershipFrame.readsSharedCapture(denoted) }) return false
     if (ownershipFrame.pathOf(denoted) != null) return ownsBefore(element, receiver)
     return context(checkerContext) { denoted.resolveUniqueness() } == Uniqueness.Unique
 }

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.expression.BindingMode
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Path
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveAccessState
 
 /**
  * The uniqueness facts for one body being converted: a function or construction initializer, or a body inlined at a call, which is an
@@ -65,6 +67,12 @@ class OwnershipFrame private constructor(
 
     /** The path [expression] denotes. */
     fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)?.takeUnless { it.firstOrNull() in sharedRoots }
+
+    /** Whether [expression] can denote a path rooted in a shared capture of a detached lambda. */
+    context(context: CheckerContext)
+    fun readsSharedCapture(expression: FirExpression): Boolean =
+        (sharedRoots.isNotEmpty() && expression.resolveAccessState().children.keys.any { it in sharedRoots }) ||
+            parent?.readsSharedCapture(expression) == true
 
     /** Whether [path] is `Unique` on entry to [element]. */
     fun ownsBefore(element: FirElement, path: Path): Boolean = path.firstOrNull() !in sharedRoots &&
