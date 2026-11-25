@@ -49,7 +49,7 @@ object Z3Provisioning {
         try {
             val zip = tmpDir.resolve("${release.name}.zip")
             val url = "https://github.com/Z3Prover/z3/releases/download/z3-$VERSION/${release.name}.zip"
-            URI(url).toURL().openStream().use { input -> zip.outputStream().use { input.copyTo(it) } }
+            downloadZip(url, zip)
             val actual = MessageDigest.getInstance("SHA-256").digest(zip.readBytes()).joinToString("") { "%02x".format(it) }
             if (actual != release.sha256) {
                 throw GradleException("Checksum mismatch for $url: expected ${release.sha256}, got $actual.")
@@ -68,6 +68,10 @@ object Z3Provisioning {
             tmpDir.deleteRecursively()
         }
         return exe
+    }
+
+    private fun downloadZip(url: String, zip: File) {
+        URI(url).toURL().openStream().use { input -> zip.outputStream().use { input.copyTo(it) } }
     }
 
     private fun unzip(zip: File, target: File) {
