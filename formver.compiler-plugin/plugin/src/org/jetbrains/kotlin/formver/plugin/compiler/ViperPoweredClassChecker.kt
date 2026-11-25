@@ -94,7 +94,7 @@ internal class ViperPoweredClassChecker(
                 declaration.shouldVerify = program.verify
                 declaration.trust = program.trust
             } else {
-                val emittedSite = site?.withEmittedBodies(program.emittedBodies)
+                val emittedSite = program.emittedCallableEvidence?.let { site?.withEmittedEvidence(it) } ?: site
                 if (program.verify) {
                     if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel, emittedSite)) {
                         return@decide false

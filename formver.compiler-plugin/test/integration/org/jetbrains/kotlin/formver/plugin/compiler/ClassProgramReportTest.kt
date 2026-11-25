@@ -317,6 +317,8 @@ class ClassProgramReportTest {
             interface Owner {
                 val action: Spec get() = Spec { x ->
                     exposes(Spec::class) { state() == 0 }
+                    preconditions { x >= 0 }
+                    postconditions<Int> { it == x }
                     x
                 }
             }
@@ -327,9 +329,19 @@ class ClassProgramReportTest {
         assertEquals(listOf(FailureKind.INTERNAL_ERROR.name, FailureKind.VERIFICATION_SKIPPED.name), result.diagnostics)
         assertEquals(true, result.skipped["Owner"])
         assertEquals(mapOf("Owner.lambda0" to backendError), result.rows)
-        val (program, region) = result.ids.getValue("Owner.lambda0")
-        assertEquals(64, program.length)
-        assertEquals(regionId("LAMBDA", "{ x ->\n        exposes(Spec::class) { state() == 0 }\n        x\n    }"), region)
+        val ids = result.ids.getValue("Owner.lambda0")
+        assertEquals(64, ids[0].length)
+        val lambda = source.substring(source.indexOf("{ x ->"), source.lastIndexOf("    }") + "    }".length)
+        val region = regionId("LAMBDA", lambda)
+        assertEquals(region, ids[1])
+        assertEquals(region, ids[3])
+        val contracts = listOf(regionId("LAMBDA", "{ x >= 0 }") + ":PRECONDITION",
+            regionId("LAMBDA", "{ it == x }") + ":POSTCONDITION").sorted().joinToString(",")
+        assertEquals(listOf("", contracts, contracts), ids.drop(4))
+
+        val success = compile(source, literalAssertionSink)
+        assertEquals("verified", success.rows.getValue("Owner.lambda0").verification)
+        assertEquals(ids, success.ids.getValue("Owner.lambda0"))
 
         val missingPsi = compile(source, sink, useLightTree = true)
         val failure = assertIs<IllegalStateException>(missingPsi.failure)
@@ -352,13 +364,7 @@ class ClassProgramReportTest {
             @NeverVerify fun opaque(): Int = 2
             fun caller(): Int { return opaque() }
             """,
-            VerificationSink { request, replay ->
-                val nodes = request.program.iterator()
-                val errors = generateSequence { if (nodes.hasNext()) nodes.next() else null }
-                    .filterIsInstance<Assert>().filter { it.exp() is FalseLit }
-                    .map { VerificationError(AssertFailed(it, AssertionFalse(it.exp()), false)) }.toList()
-                replay { VerificationResult(errors) }
-            },
+            literalAssertionSink,
             checkFunctions = true,
         )
         assertNull(result.failure)
@@ -369,7 +375,7 @@ class ClassProgramReportTest {
         val caller = regionId("FUNCTION", "{ return opaque() }")
         val expected = mapOf("supplier.body" to owner, "supplier.lambda0" to lambda, "caller.body" to caller)
             .mapKeys { result.ids.getValue(it.key)[0] }
-        val emitted = result.ids.values.filter { it.last().isNotEmpty() }.associate { it[0] to it.last() }
+        val emitted = result.ids.values.filter { it[3].isNotEmpty() }.associate { it[0] to it[3] }
         assertEquals(expected, emitted)
         assertEquals(regionId("FUNCTION", "2"), result.ids.getValue("opaque.body")[1])
     }
@@ -392,9 +398,33 @@ class ClassProgramReportTest {
         val second = result.ids.getValue("Second.class")
         assertNotEquals(first[0], second[0])
         val candidate = regionId("FUNCTION", "{ preconditions { x >= 0 }; return x }")
-        assertEquals(listOf("", candidate, candidate), first.drop(1))
-        assertEquals(listOf("", candidate, candidate), second.drop(1))
-        assertEquals("", result.ids.getValue("Base.class").last())
+        val spec = regionId("LAMBDA", "{ x >= 0 }") + ":PRECONDITION"
+        val bundle = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.name
+        assertEquals(listOf("", candidate, candidate, bundle, spec, spec), first.drop(1))
+        assertEquals(first.drop(1), second.drop(1))
+        assertEquals("", result.ids.getValue("Base.class")[3])
+    }
+
+    @Test
+    fun `contract lambda evidence preserves missing and failed obligations beside a verified program`() {
+        val result = compile(
+            """
+            import org.jetbrains.kotlin.formver.plugin.*
+            fun good(): Int { postconditions<Int> { it == 1 }; return 1 }
+            @NeverVerify fun unchecked(): Int { postconditions<Int> { it == 2 }; return 2 }
+            fun bad(): Int { postconditions<Int> { it == 3 }; verify(false); return 3 }
+            """,
+            literalAssertionSink,
+            checkFunctions = true,
+        )
+        assertNull(result.failure)
+        assertEquals(mapOf("good.body" to "verified", "unchecked.body" to "not_selected", "bad.body" to "failed"),
+            result.rows.mapValues { it.value.verification })
+        for ((owner, anchor) in mapOf("good" to "{ it == 1 }", "unchecked" to "{ it == 2 }", "bad" to "{ it == 3 }")) {
+            val ids = result.ids.getValue("$owner.body")
+            val spec = regionId("LAMBDA", anchor) + ":POSTCONDITION"
+            assertEquals(listOf("", spec, if (owner == "unchecked") "" else spec), ids.drop(4))
+        }
     }
 
     private fun regionId(kind: String, anchor: String): String {
@@ -408,6 +438,13 @@ class ClassProgramReportTest {
 
     private companion object {
         val backendError = Outcome("converted", "", "", "error")
+        val literalAssertionSink = VerificationSink { request, replay ->
+            val nodes = request.program.iterator()
+            val errors = generateSequence { if (nodes.hasNext()) nodes.next() else null }
+                .filterIsInstance<Assert>().filter { it.exp() is FalseLit }
+                .map { VerificationError(AssertFailed(it, AssertionFalse(it.exp()), false)) }.toList()
+            replay { VerificationResult(errors) }
+        }
     }
 }
 

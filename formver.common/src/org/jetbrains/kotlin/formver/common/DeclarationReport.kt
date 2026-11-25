@@ -13,6 +13,8 @@ import java.io.File
  * See docs/configuration.md#declaration-reports for row coverage and column definitions.
  */
 class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIndex? = null) {
+    enum class SyntheticProgramReason { CLASS_OBLIGATION_BUNDLE }
+
     data class Row(
         val file: String,
         val line: Int,
@@ -30,11 +32,15 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
         val targetRegionId: String = "",
         val inheritedCandidateRegionIds: String = "",
         val directBodyRegionIds: String = "",
+        val syntheticProgramReason: SyntheticProgramReason? = null,
+        val contractLambdaCandidates: String = "",
+        val specOnlyLambdas: String = "",
     ) {
         fun render(): String = listOf(
             file, line.toString(), declaration, program, conversion, conversionKind, conversionReason,
             conversionDetail, verification, verificationDetail, seconds?.let { "%.3f".format(it) }.orEmpty(),
             exceptionCallees, programId, targetRegionId, inheritedCandidateRegionIds, directBodyRegionIds,
+            syntheticProgramReason?.name.orEmpty(), contractLambdaCandidates, specOnlyLambdas,
         ).joinToString("\t") { it.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ') }
     }
 
@@ -53,6 +59,7 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
             "file", "line", "declaration", "program", "conversion", "conversion_kind", "conversion_reason",
             "conversion_detail", "verification", "verification_detail", "seconds", "exception_callees",
             "program_id", "target_region_id", "inherited_candidate_region_ids", "direct_body_region_ids",
+            "synthetic_program_reason", "contract_lambda_candidates", "spec_only_lambdas",
         )
     }
 }

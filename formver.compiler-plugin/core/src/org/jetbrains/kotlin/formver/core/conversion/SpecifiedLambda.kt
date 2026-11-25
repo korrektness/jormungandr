@@ -217,6 +217,8 @@ private fun FirStatement.result(): FirStatement = (this as? FirReturnExpression)
 private fun FirStatement.isExposes(): Boolean =
     ((result() as? FirFunctionCall)?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)?.isFormverFunctionNamed("exposes") == true
 
+internal fun FirBlock.liftedContractStatements(): List<FirStatement> = statements.dropWhile { it.isExposes() }
+
 /** A concrete observer of the lifted class: its body is the exposed binding value read over the capture fields. */
 data class LiftedObserver(val signature: NonInlineFunctionSignature, val body: ExpEmbedding)
 
@@ -260,7 +262,10 @@ private fun LiftedLambda.bindObserver(observer: FirNamedFunctionSymbol, value: F
 }
 
 context(converter: ProgramConversionContext)
-fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): SignatureWithTarget<NonInlineFunctionSignature> {
+internal fun LiftedLambda.invokeSignature(
+    inherited: CompleteFunctionSignature,
+    contractLambdas: EmbeddedContractLambdas? = null,
+): SignatureWithTarget<NonInlineFunctionSignature> {
     val concreteType = buildType { existing(type) }
     val receiver = inherited.dispatchReceiver!!
     val dispatch = PlaceholderVariableEmbedding(receiver.name, concreteType, receiver.isUnique, receiver.isBorrowed)
@@ -278,7 +283,7 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
     return named.toNonInlineSignature(null).toCompleteSignature(source.function.source) {
         userFunctionContract()
         val specification = extractFirSpecification(
-            source.function.body!!.statements.dropWhile { it.isExposes() }, source.function.returnTypeRef.coneType,
+            source.function.body!!.liftedContractStatements(), source.function.returnTypeRef.coneType,
         )
         val (pre, post) = if (specification.precond != null || specification.postcond != null) {
             val resolver = RootParameterResolver(converter, named.signature, named.signature.parameterVariables(source.function.symbol),
@@ -296,6 +301,8 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
                 (specification.postcond?.let { context(postResolver).collectInvariants(it) } ?: emptyList())
                     .withProofClause(KotlinCondition.ProofClause.POSTCONDITION, source.function.symbol)
         } else converter.embedContract(source.invoke, named.signature, target)
+        contractLambdas?.record(named.signature.name, source.function,
+            specification.precond.takeIf { pre.isNotEmpty() }, specification.postcond.takeIf { post.isNotEmpty() })
         addPreconditions(pre)
         addPostconditions(post)
     }

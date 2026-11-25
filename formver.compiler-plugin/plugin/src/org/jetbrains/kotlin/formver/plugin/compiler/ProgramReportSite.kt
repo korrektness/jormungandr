@@ -14,7 +14,10 @@ import org.jetbrains.kotlin.formver.common.DeclarationReport
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import org.jetbrains.kotlin.formver.common.source.RegionKind
+import org.jetbrains.kotlin.formver.core.conversion.ContractLambda
+import org.jetbrains.kotlin.formver.core.conversion.EmittedCallableEvidence
 import org.jetbrains.kotlin.formver.core.conversion.InheritedImplementationObligation
+import org.jetbrains.kotlin.formver.core.conversion.contractLambdaCandidates
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
@@ -25,14 +28,17 @@ internal class ProgramReportSite(
     private val report: DeclarationReport,
     private val row: DeclarationReport.Row,
     private val regions: Map<FirDeclaration, String> = emptyMap(),
+    private val contracts: Map<ContractLambda, String> = emptyMap(),
 ) {
     val tracksBodies: Boolean get() = regions.isNotEmpty()
 
-    fun withEmittedBodies(bodies: List<FirFunction>): ProgramReportSite {
-        val emitted = bodies.toSet()
+    fun withEmittedEvidence(evidence: EmittedCallableEvidence): ProgramReportSite {
+        val emitted = evidence.bodies.toSet()
         val links = regions.entries.groupBy({ it.value }, { it.key })
             .filterValues { targets -> targets.all { it in emitted } }.keys.sorted()
-        return ProgramReportSite(report, row.copy(directBodyRegionIds = links.joinToString(",")))
+        val specs = contracts.entries.groupBy({ it.value }, { it.key })
+            .filterValues { targets -> targets.all { it in evidence.contractLambdas } }.keys.sorted()
+        return ProgramReportSite(report, row.copy(directBodyRegionIds = links.joinToString(","), specOnlyLambdas = specs.joinToString(",")))
     }
 
     fun record(outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
@@ -88,8 +94,24 @@ internal fun PluginConfiguration.programReportSite(
         if (regionId != null) put(target, regionId)
         putAll(candidates)
     }
-    return ProgramReportSite(report, row.copy(programId = programId, targetRegionId = regionId.orEmpty(),
-        inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(",")), regions)
+    val contracts = sourceIndex.contractLambdas(regions.keys.filterIsInstance<FirFunction>())
+    return ProgramReportSite(report, row.copy(
+        programId = programId,
+        targetRegionId = regionId.orEmpty(),
+        inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(","),
+        syntheticProgramReason = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.takeIf { target is FirRegularClass },
+        contractLambdaCandidates = contracts.values.distinct().sorted().joinToString(","),
+    ), regions, contracts)
+}
+
+private fun ProofSourceIndex.contractLambdas(functions: List<FirFunction>): Map<ContractLambda, String> = buildMap {
+    for (function in functions) {
+        for (lambda in function.contractLambdaCandidates()) {
+            val psi = lambda.declaration.psiOwner() ?: continue
+            val region = file(psi.containingFile as KtFile).region(psi, RegionKind.LAMBDA) ?: continue
+            put(lambda, "$region:${lambda.reason.name}")
+        }
+    }
 }
 
 private fun FirDeclaration.psiOwner() = (source as? KtPsiSourceElement)?.psi?.let {

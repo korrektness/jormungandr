@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
-import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
@@ -27,6 +26,7 @@ import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.TargetsSelection
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.externalSpecifications
+import org.jetbrains.kotlin.formver.core.conversion.EmittedCallableEvidence
 import org.jetbrains.kotlin.formver.core.conversion.InheritedImplementationObligation
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.constructionFailures
@@ -58,7 +58,7 @@ data class ClassProgram(
     /** Whether [program] proves the class's constructors and nothing skips its verification. */
     val verifiesConstruction: Boolean,
     val trust: TrustedAssumptionCollector,
-    val emittedBodies: List<FirFunction> = emptyList(),
+    val emittedCallableEvidence: EmittedCallableEvidence? = null,
 )
 
 /** Converts the Viper program that checks a concrete class. */
@@ -129,8 +129,8 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         SiliconFrontend.checkConsistency(viperProgram)
         val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
             !converter.skipsVerification
-        val bodies = if (trackBodies) converter.emittedCallableBodies(program) else emptyList()
-        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust, bodies)
+        val evidence = if (trackBodies) converter.emittedCallableEvidence(program) else null
+        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust, evidence)
     }
 
     /**

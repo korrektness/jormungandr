@@ -177,6 +177,8 @@ replaces the file. The first line names the columns:
 | `target_region_id` | Census region targeted by the callable conversion or standalone lambda conversion; blank for class programs. |
 | `inherited_candidate_region_ids` | Sorted comma-separated source implementation region IDs from the receiving class's selected inherited obligations. A candidate can appear in multiple classes' rows. |
 | `direct_body_region_ids` | Sorted comma-separated region IDs with callable bodies in this emitted program. A link requires every body definition and refinement for that region in this program. A header without a body does not qualify. |
+| `synthetic_program_reason` | `CLASS_OBLIGATION_BUNDLE` identifies the generated class proof container, which has a program ID but no callable target region. It gives no source region coverage; the obligations it contains need their own evidence. |
+| `contract_lambda_candidates`, `spec_only_lambdas` | Sorted comma-separated `region_id:PRECONDITION` or `region_id:POSTCONDITION` entries. A candidate is a directly supplied lambda of a leading contract call (after `exposes`, if present, in a lifted lambda), whose resolved JVM marker passes the bytecode non-invocation check. A spec-only link additionally requires lowering its own contract clauses and emitting all associated callable body definitions and refinements in this program. |
 
 The report always includes the identity and membership columns. They remain blank unless
 `proof_checkout` (the census checkout root) and `proof_compilation` (the census
@@ -188,15 +190,28 @@ using the [source census](developing.md#production-kotlin-input-evidence) fields
 binds exact bytes; syntax spans count UTF-16 code units after BOM removal and
 line-ending normalization.
 
-Target and candidate IDs identify required program–region pairs, including on
-stopped or excluded rows. For coverage, reconcile each pair against an emitted
-`direct_body_region_ids` link **on that program** and a terminal `verified`
+Coverage requires establishing the applicable programs and their source
+obligations independently of terminal report rows, including separately queued,
+class-hosted and lifted programs. Terminal rows alone do not identify jobs that
+never ran. Callable targets and inherited implementation candidates identify
+required program–region pairs, including on stopped or excluded rows.
+Reconcile each pair against an emitted `direct_body_region_ids` link **on that
+program** and a terminal `verified`
 outcome. Membership describes emission, so it can accompany a nonpassing
 outcome. Missing links are unaccounted even if every reported program is green.
 Class-hosted copies are separate obligations; a base method's own program does
 not discharge them. A callee definition included as proof context does not
 replace its own proof program. Constructor, initializer and builtin lowering
 do not produce these links.
+
+For each applicable contract lambda obligation, require a matching candidate,
+spec-only link and terminal `verified` outcome on its program row. A spec-only link accounts for the
+contract lambda body, not the containing callable or any nested executable
+region. The compiler resolves the marker to a JVM method whose bytecode only returns,
+with an optional Kotlin parameter null check. Preconditions constrain the body
+proof and postconditions are obligations of it. Empty clauses, termination
+measures, other specification constructs, and exclusions such as `SPEC_OF`,
+`LAW` or `NEVER_CONVERT` do not supply spec-only links.
 
 Queued verification jobs that never start have no terminal row. This includes
 jobs left in a stopped worker batch and jobs queued when checking aborts before

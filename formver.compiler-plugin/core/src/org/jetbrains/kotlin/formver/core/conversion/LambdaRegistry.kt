@@ -43,12 +43,13 @@ internal class LambdaRegistry(
     fun register(
         lambda: SpecifiedLambda,
         lambdas: List<SpecifiedLambda>,
+        contractLambdas: EmbeddedContractLambdas?,
         inheritedSignature: () -> CompleteFunctionSignature,
     ): LambdaRegistration {
         prepare(lambdas)
         val implementation = lifted.getValue(lambda.expression)
         val inherited = inheritedSignature()
-        val (signature, target) = with(converter) { implementation.invokeSignature(inherited) }
+        val (signature, target) = with(converter) { implementation.invokeSignature(inherited, contractLambdas) }
         signatures[signature.name] = signature
         val analysis = converter.uniquenessAnalysisOf(lambda.function.symbol)
         converter.convertedBodyResolver.storeImpure(signature.name, with(converter) {

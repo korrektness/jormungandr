@@ -41,8 +41,12 @@ class DeclarationReportTest {
 
     private fun location(type: Class<*>) = Paths.get(type.protectionDomain.codeSource.location.toURI()).toString()
 
-    private fun compile(checkout: File, files: List<File>, vararg options: String): Pair<Int, String> {
-        val classpath = listOf(location(KotlinVersion::class.java), System.getProperty("annotationsRuntime.classpath"))
+    private fun compile(
+        checkout: File, files: List<File>, vararg options: String,
+        runtime: String = System.getProperty("annotationsRuntime.classpath"),
+        destination: File = checkout.resolve("classes"),
+    ): Pair<Int, String> {
+        val classpath = listOf(location(KotlinVersion::class.java), runtime)
         val repository = File(System.getProperty("idea.home.path")).canonicalFile
         val compilerClasspath = System.getProperty("java.class.path").split(File.pathSeparator)
             .filterNot { File(it).canonicalFile.startsWith(repository) }
@@ -50,7 +54,7 @@ class DeclarationReportTest {
             File(System.getProperty("java.home"), "bin/java").path, "-Xss30m",
             "-cp", compilerClasspath.joinToString(File.pathSeparator), K2JVMCompiler::class.java.name,
             "-no-stdlib", "-no-reflect", "-Xreport-all-warnings", "-Xuse-fir-lt=false",
-            "-classpath", classpath.joinToString(File.pathSeparator), "-d", checkout.resolve("classes").path,
+            "-classpath", classpath.joinToString(File.pathSeparator), "-d", destination.path,
             "-Xplugin=" + System.getProperty("formver.pluginJar"),
             *options.flatMap { listOf("-P", "plugin:org.jetbrains.kotlin.formver:$it") }.toTypedArray(),
             *files.map { it.path }.toTypedArray(),
@@ -68,6 +72,7 @@ class DeclarationReportTest {
         source: String = this.source,
         verification: String = "no_targets",
         checkout: File = temp,
+        runtime: String = System.getProperty("annotationsRuntime.classpath"),
     ): Report {
         checkout.mkdirs()
         val file = checkout.resolve("src/Census.kt").apply {
@@ -82,7 +87,7 @@ class DeclarationReportTest {
         val report = checkout.resolve("report.tsv")
         val (exit, output) = compile(checkout, listOf(file, generated),
             "verification_targets_selection=$verification", "declaration_report=$report", "input_manifest=$inputManifest",
-            "proof_checkout=$checkout", "proof_compilation=:test:compileKotlin",
+            "proof_checkout=$checkout", "proof_compilation=:test:compileKotlin", runtime = runtime,
         )
         assertEquals(ExitCode.COMPILATION_ERROR.code, exit, output)
         val sources = inputManifest.readLines().drop(1).map { it.split('\t') }.filter { it[0] == "source" }
@@ -165,8 +170,44 @@ class DeclarationReportTest {
         val withBodies = setOf("one.body", "increment.body", "supplier.body", "supplier.lambda0", "constant.body",
             "outer.body", "<local>.local.body", "computed.get.body", "computed.set.body")
         assertEquals(withBodies.associateWith { rows.ids.getValue(it)[1] },
-            rows.ids.mapValues { (_, ids) -> ids.last() }.filterValues(String::isNotEmpty))
+            rows.ids.mapValues { (_, ids) -> ids[3] }.filterValues(String::isNotEmpty))
         assertTrue(rows.ids.getValue("recurse.body")[1].isNotEmpty())
+    }
+
+    @Test
+    fun `doesNotInvokeArgument admits the no-op bytecode and rejects the invoking marker`() {
+        val consumer = """
+            import org.jetbrains.kotlin.formver.plugin.preconditions
+            fun consumer(): Int { preconditions { true }; return 1 }
+            fun unsupported(): Double = 0.5
+        """.trimIndent()
+        val anchor = "{ true }"
+        val start = consumer.indexOf(anchor)
+        val raw = digest(consumer.toByteArray())
+        val reference = "census-region-v1\t:test:compileKotlin\tcheckout\tsrc/Census.kt\t$raw\tLAMBDA:$start:${start + anchor.length}:0"
+        val spec = digest(reference.toByteArray()) + ":PRECONDITION"
+
+        fun evidence(name: String, markerBody: String): List<String> {
+            val marker = temp.resolve(name).apply { mkdirs() }
+            val file = marker.resolve("Builtins.kt").apply {
+                writeText("""
+                    package org.jetbrains.kotlin.formver.plugin
+                    fun preconditions(body: () -> Unit) { $markerBody }
+                """.trimIndent())
+            }
+            val jar = marker.resolve("replacement.jar")
+            val (exit, output) = compile(marker, listOf(file), "conversion_targets_selection=no_targets",
+                "verification_targets_selection=no_targets", destination = jar)
+            assertEquals(ExitCode.OK.code, exit, output)
+            val rows = report(consumer, checkout = marker.resolve("consumer"), runtime = jar.path)
+            val body = rows.ids.getValue("consumer.body")
+            assertTrue(body[1].isNotEmpty())
+            assertEquals(body[1], body[3])
+            return body.drop(5)
+        }
+
+        assertEquals(listOf(spec, spec), evidence("no-op", ""))
+        assertEquals(listOf("", ""), evidence("invoking", "body()"))
     }
 
     @Test

@@ -46,7 +46,16 @@ internal class ProgramBodyProcessor(
 ) {
     private val runtimeDefinitions = mutableMapOf<SymbolicName, SymbolicName>()
 
-    fun emittedCallableBodies(program: Program, registered: List<RegisteredFunction>): List<FirFunction> {
+    val contractLambdas = EmbeddedContractLambdas()
+
+    fun emittedCallableEvidence(program: Program, registered: List<RegisteredFunction>): EmittedCallableEvidence {
+        val bodies = emittedCallableBodies(program, registered)
+        val emitted = bodies.toSet()
+        val obligations = registered.filter { it.declaration in emitted }.groupBy { it.declaration }
+        return EmittedCallableEvidence(bodies, obligations.flatMap { (owner, copies) -> contractLambdas.emitted(owner, copies) }.toSet())
+    }
+
+    private fun emittedCallableBodies(program: Program, registered: List<RegisteredFunction>): List<FirFunction> {
         val methods = program.methods.filter { it.body != null }.map { it.name }.toSet()
         val functions = program.functions.filter { it.body != null }.map { it.name }.toSet()
         val refinementsByBody = refinements.groupBy { it.override.name }

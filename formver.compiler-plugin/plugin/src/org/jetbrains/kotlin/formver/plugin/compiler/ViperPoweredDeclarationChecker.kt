@@ -261,7 +261,7 @@ internal class ViperPoweredDeclarationChecker(
             }
         } else {
             val emittedSite = site?.takeIf { it.tracksBodies }
-                ?.withEmittedBodies(programConversionContext.emittedCallableBodies(program)) ?: site
+                ?.withEmittedEvidence(programConversionContext.emittedCallableEvidence(program)) ?: site
             if (shouldVerify) {
                 verifyProgram(declaration, programConversionContext, index, viperProgram, name, emittedSite)
             } else {

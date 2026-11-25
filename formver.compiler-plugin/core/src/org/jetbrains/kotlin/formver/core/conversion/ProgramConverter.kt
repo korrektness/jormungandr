@@ -223,8 +223,8 @@ class ProgramConverter(
         return program.copy(domains = listOf(runtimeTypes) + program.domains)
     }
 
-    /** Registered callable bodies whose definitions and refinements all occur in the emitted program. */
-    fun emittedCallableBodies(program: Program): List<FirFunction> = bodyProcessor.emittedCallableBodies(program, registered)
+    /** Registered bodies with all definitions and refinements, and spec-only lambdas encoded in every such obligation. */
+    fun emittedCallableEvidence(program: Program): EmittedCallableEvidence = bodyProcessor.emittedCallableEvidence(program, registered)
 
     // region Callable Conversion
 
@@ -254,7 +254,8 @@ class ProgramConverter(
             val (signature, target) = with(this) { lifted.invokeSignature(embedCompleteSignature(parent.invoke).signature) }
             with(this) { lifted.invokeBody(signature, target, uniquenessAnalysisOf(parent.function.symbol)) }
         }
-        val result = lambdaRegistry.register(lambda, lambdas) { embedCompleteSignature(lambda.invoke).signature }
+        val evidence = if (config.declarationReport?.sourceIndex != null) bodyProcessor.contractLambdas else null
+        val result = lambdaRegistry.register(lambda, lambdas, evidence) { embedCompleteSignature(lambda.invoke).signature }
         lawEncoding.registerClass(lambdaRegistry[lambda.expression]!!.type,
             lambda.expression.resolvedType.toRegularClassSymbol(session)!!, lambda.function.source)
         registered += RegisteredFunction(lambda.function, result.signature, result.target, uniquenessOutcomeOf(lambda.function).hasErrors)
@@ -640,6 +641,12 @@ class ProgramConverter(
         }
         val preconditions = firSpec.precond?.let { preconditionContext.collectPreconditions(symbol, it, preconditionStatements) } ?: emptyList()
         val postconditions = firSpec.postcond?.let { postconditionContext.collectInvariants(it) } ?: emptyList()
+
+        if (config.declarationReport?.sourceIndex != null && holder === declaration) {
+            bodyProcessor.contractLambdas.record(signature.name, holder,
+                firSpec.precond.takeIf { preconditions.isNotEmpty() && measureCalls.isEmpty() },
+                firSpec.postcond.takeIf { postconditions.isNotEmpty() })
+        }
 
         checkVarReads(declaration, holderAnalysis) { source ->
             val consumed = if (signature.isPure) emptySet() else
