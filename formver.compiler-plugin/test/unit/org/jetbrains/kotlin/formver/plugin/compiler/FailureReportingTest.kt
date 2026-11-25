@@ -193,9 +193,11 @@ class FailureReportingTest {
         val first = failure(SourceRole.Proof(KotlinCondition.ProofClause.ASSERTION))
         val second = failure(SourceRole.Proof(KotlinCondition.ProofClause.ASSERTION))
         val reports = ReportedVerifierErrors()
-        assertTrue(reports.add(first, source))
-        assertFalse(reports.add(second, source))
+        assertTrue(reports.add(first, first.toFailure(source)))
+        assertFalse(reports.add(second, second.toFailure(source)))
         assertTrue(reports.add(second, diagnosticSource(20)))
+        val assumption = failure(SourceRole.ThrowsAssumption)
+        assertFalse(reports.add(assumption, assumption.toFailure(diagnosticSource(30))))
         assertTrue(reports.add(failure(SourceRole.Proof(KotlinCondition.ProofClause.REFUTATION)), source))
         val proposition = TrueLit(pos, info, trafos)
         val different = VerificationError(errors.AssertFailed(Assert(proposition, pos, info, trafos),

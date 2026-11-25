@@ -155,17 +155,17 @@ contents and interpretation are defined in
 ## Declaration reports
 
 `declaration_report` makes a direct compiler invocation write a tab-separated
-file with one row per program that SnaKt converts or excludes: the body of each
-source function or property accessor that has one, and each lambda converted
-as a program of its own.
-A compilation replaces the file. The first line names the columns:
+file with program outcomes for function and property accessor bodies,
+standalone lambda programs, and class programs. A class program contains the
+selected constructor, law, and inherited implementation obligations. A
+compilation replaces the file. The first line names the columns:
 
 | Column | Value |
 |:--|:--|
 | `file`, `line` | Source path and 1-based line where the declaration starts. |
 | `declaration` | Fully qualified name, as in verification progress messages. |
-| `program` | `body`, or `lambdaN` for the declaration's N-th lambda program, numbered as in verification progress messages. |
-| `conversion` | `converted`; `stopped` when conversion reported an error; `excluded` when the function is not converted by design: marked `@NeverConvert`, a specification, a law, or not selected. |
+| `program` | `body` for a function or accessor body, `class` for a class program, or `lambdaN` for the declaration's N-th lambda program, numbered as in verification progress messages. |
+| `conversion` | `converted`; `stopped` when an error prevented conversion from completing; `excluded` when the function is not converted by design: marked `@NeverConvert`, a specification, a law, or not selected. |
 | `conversion_kind` | For `stopped`, the [`FailureKind`](../formver.common/src/org/jetbrains/kotlin/formver/common/Failure.kt) of the first conversion error. |
 | `conversion_reason` | For `stopped`, that error's reason code, the name of the rule or reason its condition carries, or else the condition's type name; for `excluded`, `NEVER_CONVERT`, `SPEC_OF`, `LAW` or `NOT_SELECTED`. |
 | `conversion_detail` | For `stopped`, that error's message. |
@@ -174,5 +174,7 @@ A compilation replaces the file. The first line names the columns:
 | `seconds` | Verification time of the program. |
 | `exception_callees` | For `failed`, one entry per `EXCEPTION_FROM_UNSPECIFIED_CALL` or `EXCEPTION_FROM_THROWING_CALL` error whose call has a declared callee, sorted and comma-separated. An entry is `KIND:origin:callee`: the error's `FailureKind`; `source` when the callee is declared in the compiled sources, `library` when it is read from a compiled dependency; and the callee's fully qualified name, including its owning class or package, named as the error message names it (see [Exception freedom](../SPECIFICATIONS.md#exception-freedom)), such as `kotlin.Any.toString`. |
 
-Compilations run by the test facade write no rows for converted programs,
-because the facade verifies them itself.
+Queued verification jobs that never start have no terminal row. This includes
+jobs left in a stopped worker batch and jobs queued when checking aborts before
+the batch runs. Compilations run by the test facade write no rows for converted
+programs, because the facade verifies them itself.

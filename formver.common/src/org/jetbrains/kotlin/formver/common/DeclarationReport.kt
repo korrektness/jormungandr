@@ -8,9 +8,8 @@ package org.jetbrains.kotlin.formver.common
 import java.io.File
 
 /**
- * The declaration report of one compilation: a tab-separated file at [target] with a header line and one [Row] per
- * program that the compilation tried to convert. Construction replaces [target]. The values of each column are defined
- * in docs/configuration.md#declaration-reports.
+ * A compilation's program outcomes in a tab-separated file at [target]. Construction replaces [target].
+ * See docs/configuration.md#declaration-reports for row coverage and column definitions.
  */
 class DeclarationReport(private val target: File) {
     data class Row(

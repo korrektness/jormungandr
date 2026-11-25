@@ -73,7 +73,6 @@ import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.formver.core.LambdaVerificationProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
-import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.Program
@@ -92,6 +91,7 @@ internal class ViperPoweredDeclarationChecker(
     private val reportedErrors: ReportedVerifierErrors,
     private val sink: VerificationSink = ImmediateVerificationSink,
     private val processedLambdas: MutableSet<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol> = mutableSetOf(),
+    private val useVerificationFacade: Boolean = System.getProperty("formver.testRun").toBoolean(),
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     private val progress = VerificationProgress(config.messageCollector)
 
@@ -227,7 +227,7 @@ internal class ViperPoweredDeclarationChecker(
             }
         }
         programConversionContext.firstConversionError?.let { failure ->
-            recordOutcome(declaration, index) { stoppedBy(failure.kind.name, failure.reasonCode, failure.detail) }
+            recordConversionStop(declaration, index, failure)
             return
         }
         programConversionContext.linearizeAll()
@@ -242,7 +242,7 @@ internal class ViperPoweredDeclarationChecker(
         SiliconFrontend.checkConsistency(viperProgram)
         val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
         val name = declaration.verificationLabel + if (index == 0) "" else ".lambda${index - 1}"
-        if (System.getProperty("formver.testRun").toBoolean()) {
+        if (useVerificationFacade) {
             // The test facade verifies the program later.
             val trusted = programConversionContext.trust
             if (index == 0) {
@@ -263,73 +263,137 @@ internal class ViperPoweredDeclarationChecker(
         }
     }
 
-    /** Verifies [viperProgram], program [index] of [declaration], and reports and records the outcome. */
+    /** Submits program [index] of [declaration]. Returns false when a class setup error prevents submission. */
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun verifyProgram(
+    fun verifyProgram(
         declaration: FirDeclaration,
         programConversionContext: ProgramConverter,
         index: Int,
         viperProgram: viper.silver.ast.Program,
         name: String,
-    ) {
-        val z3Exe = verifierLocator.z3Exe { reason ->
-            reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
-            recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "SOLVER_UNAVAILABLE: $reason") }
-        } ?: return
-        sink.submit(config.verificationRequest(viperProgram, z3Exe)) { obtainResult ->
-            var elapsedNanos: Long? = null
-            val start = System.nanoTime()
-            fun seconds() = (elapsedNanos ?: (System.nanoTime() - start)) / NANOS_PER_SECOND
-            try {
-                val failedKinds = mutableListOf<String>()
-                val exceptionCallees = mutableListOf<String>()
-                val timeout = progress.run(name, declaration.source, { elapsedNanos }) {
-                    val result = obtainResult()
-                    elapsedNanos = result.elapsedNanos
-                    result.errors.forEach { err ->
-                        val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
-                        val failure = when (err) { is VerificationError -> err.toFailure(source) }
-                        failedKinds += failure.kind.name
-                        failure.exceptionCallee?.let { exceptionCallees += it }
-                        if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
+    ): Boolean {
+        val classProgram = index == 0 && declaration is FirRegularClass
+        var unavailableReason: String? = null
+        val request = try {
+            val z3Exe = verifierLocator.z3Exe(recordUnavailable = { unavailableReason = it }) { reason ->
+                reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
+            }
+            z3Exe?.let { config.verificationRequest(viperProgram, it) }
+        } catch (error: Throwable) {
+            if (!classProgram) throw error
+            fun recordError(detail: String) = recordOutcome(declaration, index) {
+                copy(verification = "error", verificationDetail = detail)
+            }
+            when (error) {
+                is UnsupportedFeatureException -> {
+                    reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
+                    recordError("${error.reason.name}: ${error.message}")
+                }
+                is Exception, is NotImplementedError -> {
+                    val internal = (error as? SnaktInternalException) ?: error.asInternalErrorAt(declaration.source)
+                    reportClassInternalError(error, internal, declaration)
+                    recordError("${internal.reason.name}: ${internal.message}")
+                }
+                else -> {
+                    if (config.declarationReport == null) throw error
+                    error.rethrowAfterRecording {
+                        val internal = error.asInternalErrorAt(declaration.source)
+                        recordError("${internal.reason.name}: ${internal.message}")
                     }
-                    result.throwFailure()
                 }
-                val failed = failedKinds.isNotEmpty()
-                if (timeout != null) reporter.reportFailure(timeout)
-                else if (!failed) {
-                    config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust)
-                    if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
-                }
-                recordOutcome(declaration, index) {
-                    when {
-                        timeout != null -> copy(verification = "timeout")
-                        failedKinds.isNotEmpty() -> copy(
-                            verification = "failed",
-                            verificationDetail = failedKinds.sorted().joinToString(","),
-                            exceptionCallees = exceptionCallees.sorted().joinToString(","),
-                        )
-                        else -> copy(verification = "verified")
-                    }.copy(seconds = seconds())
-                }
-            } catch (e: UnsupportedFeatureException) {
-                recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "${e.reason.name}: ${e.message}", seconds = seconds()) }
-                reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
-                programConversionContext.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
-            } catch (e: Exception) {
-                val internal = (e as? SnaktInternalException) ?: e.asInternalErrorAt(declaration.source)
-                recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "${internal.reason.name}: ${internal.message}", seconds = seconds()) }
-                reportInternalError(internal, declaration, programConversionContext)
-            } catch (e: NotImplementedError) {
-                val internal = e.asInternalErrorAt(declaration.source)
-                recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "${internal.reason.name}: ${internal.message}", seconds = seconds()) }
-                reportInternalError(internal, declaration, programConversionContext)
-            } catch (e: StackOverflowError) {
-                val internal = e.asInternalErrorAt(declaration.source)
-                recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "${internal.reason.name}: ${internal.message}", seconds = seconds()) }
-                reportInternalError(internal, declaration, programConversionContext)
+            }
+            return false
+        }
+        if (request == null) {
+            val reason = checkNotNull(unavailableReason)
+            recordOutcome(declaration, index) { copy(verification = "error", verificationDetail = "SOLVER_UNAVAILABLE: $reason") }
+        } else {
+            sink.submit(request) { obtainResult ->
+                replayVerification(declaration, programConversionContext, index, name, classProgram, obtainResult)
             }
         }
+        return true
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun replayVerification(
+        declaration: FirDeclaration,
+        programConversionContext: ProgramConverter,
+        index: Int,
+        name: String,
+        classProgram: Boolean,
+        obtainResult: () -> VerificationResult,
+    ) {
+        var elapsedNanos: Long? = null
+        val start = System.nanoTime()
+        fun seconds() = (elapsedNanos ?: (System.nanoTime() - start)) / NANOS_PER_SECOND
+        fun errorRow(detail: String): DeclarationReport.Row.() -> DeclarationReport.Row = {
+            copy(verification = "error", verificationDetail = detail)
+        }
+        val outcome: DeclarationReport.Row.() -> DeclarationReport.Row = try {
+            val failedKinds = mutableListOf<String>()
+            val exceptionCallees = mutableListOf<String>()
+            val timeout = progress.run(name, declaration.source, { elapsedNanos }) {
+                val result = obtainResult()
+                elapsedNanos = result.elapsedNanos
+                result.errors.forEach { err ->
+                    val error = when (err) { is VerificationError -> err }
+                    val source = error.reportingPosition(declaration.source).unwrapOr { declaration.source }
+                    val failure = error.toFailure(source)
+                    failedKinds += failure.kind.name
+                    failure.exceptionCallee?.let { exceptionCallees += it }
+                    if (reportedErrors.add(error, failure)) reporter.reportFailure(failure.copy(errorStyle = config.errorStyle))
+                }
+                result.throwFailure()
+            }
+            if (timeout != null) reporter.reportFailure(timeout)
+            else if (failedKinds.isEmpty()) {
+                config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust)
+                if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
+            }
+            ({
+                when {
+                    timeout != null -> copy(verification = "timeout")
+                    failedKinds.isNotEmpty() -> copy(
+                        verification = "failed",
+                        verificationDetail = failedKinds.sorted().joinToString(","),
+                        exceptionCallees = exceptionCallees.sorted().joinToString(","),
+                    )
+                    else -> copy(verification = "verified")
+                }
+            })
+        } catch (e: Throwable) {
+            when {
+                e is UnsupportedFeatureException -> {
+                    val source = if (classProgram) declaration.source else reportingSource(e.source, declaration)
+                    reporter.reportTranslation(source, ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
+                    if (!classProgram) {
+                        programConversionContext.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
+                    }
+                    errorRow("${e.reason.name}: ${e.message}")
+                }
+                e is Exception || e is NotImplementedError || (!classProgram && e is StackOverflowError) -> {
+                    val internal = (e as? SnaktInternalException) ?: e.asInternalErrorAt(declaration.source)
+                    if (classProgram) reportClassInternalError(e, internal, declaration)
+                    else reportInternalError(internal, declaration, programConversionContext)
+                    errorRow("${internal.reason.name}: ${internal.message}")
+                }
+                else -> {
+                    if (!classProgram || config.declarationReport == null) throw e
+                    e.rethrowAfterRecording {
+                        val internal = e.asInternalErrorAt(declaration.source)
+                        recordOutcome(declaration, index) { errorRow("${internal.reason.name}: ${internal.message}")().copy(seconds = seconds()) }
+                    }
+                }
+            }
+        }
+        recordOutcome(declaration, index) { outcome().copy(seconds = seconds()) }
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportClassInternalError(error: Throwable, internal: SnaktInternalException, declaration: FirDeclaration) {
+        reporter.reportInternalFailure(declaration.source, internal)
+        config.messageCollector.report(CompilerMessageSeverity.LOGGING, error.stackTraceToString())
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -338,40 +402,61 @@ internal class ViperPoweredDeclarationChecker(
     ) {
         try {
             convert()
+        } catch (e: ReportAppendException) {
+            throw e
         } catch (e: UnsupportedFeatureException) {
-            recordOutcome(owner, index) { stoppedBy(FailureKind.UNSUPPORTED_FEATURE.name, e.reason.name, e.message) }
             reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
             converter.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
+            recordTranslationStop(owner, index, e)
         } catch (e: SnaktInternalException) {
-            recordInternalStop(owner, index, e)
             reportInternalError(e, declaration, converter)
+            recordInternalStop(owner, index, e)
         } catch (e: Exception) {
             val internal = e.asInternalErrorAt(declaration.source)
-            recordInternalStop(owner, index, internal)
             reportInternalError(internal, declaration, converter)
+            recordInternalStop(owner, index, internal)
         } catch (e: NotImplementedError) {
             val internal = e.asInternalErrorAt(declaration.source)
-            recordInternalStop(owner, index, internal)
             reportInternalError(internal, declaration, converter)
+            recordInternalStop(owner, index, internal)
         }
     }
 
     context(context: CheckerContext)
-    private fun recordInternalStop(declaration: FirDeclaration, index: Int, e: SnaktInternalException) =
+    fun recordTranslationStop(declaration: FirDeclaration, index: Int, e: UnsupportedFeatureException) =
+        recordOutcome(declaration, index) { stoppedBy(FailureKind.UNSUPPORTED_FEATURE.name, e.reason.name, e.message) }
+
+    context(context: CheckerContext)
+    fun recordInternalStop(declaration: FirDeclaration, index: Int, e: SnaktInternalException) =
         recordOutcome(declaration, index) { stoppedBy(FailureKind.INTERNAL_ERROR.name, e.reason.name, e.message) }
 
     /** Writes the outcome of program [index] of [declaration] to the declaration report, when one is configured. */
     context(context: CheckerContext)
-    private fun recordOutcome(declaration: FirDeclaration, index: Int, outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
+    fun recordOutcome(declaration: FirDeclaration, index: Int, outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
         val report = config.declarationReport ?: return
         if (declaration is FirFunction && declaration.body == null) return
         @OptIn(SymbolInternals::class)
         val line = context.containingFileSymbol!!.fir.sourceFileLinesMapping!!.getLineByOffset(declaration.source!!.startOffset)
-        val program = if (index == 0) "body" else "lambda${index - 1}"
-        report.write(DeclarationReport.Row(
+        val program = when {
+            index > 0 -> "lambda${index - 1}"
+            declaration is FirRegularClass -> "class"
+            else -> "body"
+        }
+        val row = DeclarationReport.Row(
             context.containingFilePath!!, line + 1, declaration.verificationLabel, program, conversion = "converted",
-        ).outcome())
+        ).outcome()
+        try {
+            report.write(row)
+        } catch (error: java.io.IOException) {
+            throw ReportAppendException(error)
+        }
     }
+
+    private class ReportAppendException(cause: java.io.IOException) : java.io.IOException(cause)
+
+    context(context: CheckerContext)
+    fun recordConversionStop(declaration: FirDeclaration, index: Int, failure: Failure) =
+        recordOutcome(declaration, index) { stoppedBy(failure.kind.name, failure.reasonCode, failure.detail) }
 
     private fun DeclarationReport.Row.stoppedBy(kind: String, reason: String, detail: String) =
         copy(conversion = "stopped", conversionKind = kind, conversionReason = reason, conversionDetail = detail)

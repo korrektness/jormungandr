@@ -5,8 +5,8 @@
 
 package org.jetbrains.kotlin.formver.plugin.compiler
 
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.descriptors.isInterface
-import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -14,46 +14,32 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.constructionFailures
-import org.jetbrains.kotlin.formver.core.conversion.record
 import org.jetbrains.kotlin.formver.core.conversion.constructionVerdicts
 import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
+import org.jetbrains.kotlin.formver.core.conversion.verificationSkipReason
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
-import org.jetbrains.kotlin.formver.common.reportTranslation
-import org.jetbrains.kotlin.formver.common.reportTool
-import org.jetbrains.kotlin.formver.common.reportInternalFailure
 import org.jetbrains.kotlin.formver.core.names.embedName
-import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
+import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.formver.core.viperProgram
+import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
-import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
-import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
-import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 
 /** Checks concrete classes' constructors, laws, and inherited member bodies and contracts. */
 internal class ViperPoweredClassChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
-    private val verifierLocator: VerifierLocator,
-    private val reportedErrors: ReportedVerifierErrors,
-    private val sink: VerificationSink = ImmediateVerificationSink,
+    verifierLocator: VerifierLocator,
+    reportedErrors: ReportedVerifierErrors,
+    sink: VerificationSink = ImmediateVerificationSink,
     processedLambdas: MutableSet<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol> = mutableSetOf(),
+    private val useVerificationFacade: Boolean = System.getProperty("formver.testRun").toBoolean(),
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
-    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors, sink, processedLambdas)
+    private val checker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors, sink, processedLambdas, useVerificationFacade)
     private val programs = ClassPrograms(session, config)
-    private val progress = VerificationProgress(config.messageCollector)
-
-    context(context: CheckerContext)
-    private fun shouldSkip(declaration: FirRegularClass): Boolean =
-        programs.isSkipped(declaration, context.containingFilePath)
-
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportFailure(declaration: FirRegularClass, error: org.jetbrains.kotlin.formver.viper.errors.VerifierError) {
-        val source = error.reportingPosition(declaration.source).unwrapOr { declaration.source }
-        if (reportedErrors.add(error, source)) reporter.reportVerifierError(source, error, config.errorStyle)
-    }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportConstructionDiscipline(declaration: FirRegularClass) {
@@ -68,77 +54,71 @@ internal class ViperPoweredClassChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        if (shouldSkip(declaration)) return
-        val dumps = lambdaChecker.standaloneLambdaDumps(declaration, declaration.symbol.classId.embedName()).toMutableList()
+        if (programs.isSkipped(declaration, context.containingFilePath)) return
+        val dumps = checker.standaloneLambdaDumps(declaration, declaration.symbol.classId.embedName()).toMutableList()
         reportConstructionDiscipline(declaration)
         programs.implementationObligations(declaration)?.let { checkObligations(declaration, it, dumps) }
-        lambdaChecker.reportViperText(declaration, dumps)
+        checker.reportViperText(declaration, dumps)
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun checkObligations(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>) {
         val verdicts = checkNotNull(session.constructionVerdicts) { "the plugin registers construction verdicts" }
         verdicts.decide(declaration.symbol) {
-            try {
-                val program = programs.convert(declaration, obligations, dumps) ?: return@decide false
-                if (System.getProperty("formver.testRun").toBoolean()) {
-                    declaration.viperProgram = program.program
-                    declaration.shouldVerify = program.verify
-                    declaration.trust = program.trust
-                } else if (program.verify) {
-                    verify(declaration, program)
-                }
-                program.verifiesConstruction
+            val (converter, program) = try {
+                val converter = ProgramConverter(session, config, context, reporter)
+                converter to programs.convert(declaration, obligations, dumps, converter)
             } catch (error: UnsupportedFeatureException) {
                 reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
-                false
+                checker.recordTranslationStop(declaration, 0, error)
+                return@decide false
             } catch (error: Exception) {
-                reportInternalError(declaration, error)
-                false
+                reportInternalConversionError(declaration, error)
+                return@decide false
             } catch (error: NotImplementedError) {
-                reportInternalError(declaration, error)
-                false
+                reportInternalConversionError(declaration, error)
+                return@decide false
+            } catch (error: Throwable) {
+                if (config.declarationReport == null) throw error
+                error.rethrowAfterRecording {
+                    checker.recordInternalStop(declaration, 0, error.asInternalErrorAt(declaration.source))
+                }
             }
+            if (program == null) {
+                checker.recordConversionStop(declaration, 0, checkNotNull(converter.firstConversionError))
+                return@decide false
+            }
+            if (useVerificationFacade) {
+                declaration.viperProgram = program.program
+                declaration.shouldVerify = program.verify
+                declaration.trust = program.trust
+            } else if (program.verify) {
+                if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel)) return@decide false
+            } else {
+                val skip = converter.verificationSkipReason
+                checker.recordOutcome(declaration, 0) {
+                    if (skip == null) copy(verification = "not_selected") else copy(verification = "skipped", verificationDetail = skip.name)
+                }
+            }
+            program.verifiesConstruction
         }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun verify(declaration: FirRegularClass, program: ClassProgram) {
-        val z3 = verifierLocator.z3Exe { reason ->
-            reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
-        } ?: return
-        sink.submit(config.verificationRequest(program.program, z3)) { obtainResult ->
-            try {
-                var failed = false
-                var elapsedNanos: Long? = null
-                val timeout = progress.run(declaration.verificationLabel, declaration.source, { elapsedNanos }) {
-                    val result = obtainResult()
-                    elapsedNanos = result.elapsedNanos
-                    result.errors.forEach { error ->
-                        failed = true
-                        reportFailure(declaration, error)
-                    }
-                    result.throwFailure()
-                }
-                if (timeout != null) reporter.reportFailure(timeout)
-                else if (!failed) {
-                    config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trust)
-                    config.verifiedDeclarations?.record(declaration.symbol)
-                }
-            } catch (error: UnsupportedFeatureException) {
-                reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
-            } catch (error: Exception) {
-                reportInternalError(declaration, error)
-            } catch (error: NotImplementedError) {
-                reportInternalError(declaration, error)
-            }
-        }
+    private fun reportInternalConversionError(declaration: FirRegularClass, error: Throwable) {
+        val internal = (error as? SnaktInternalException) ?: error.asInternalErrorAt(declaration.source)
+        reporter.reportInternalFailure(declaration.source, internal)
+        config.messageCollector.report(CompilerMessageSeverity.LOGGING, error.stackTraceToString())
+        checker.recordInternalStop(declaration, 0, internal)
     }
+}
 
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportInternalError(declaration: FirRegularClass, error: Throwable) {
-        reporter.reportInternalFailure(declaration.source,
-            (error as? org.jetbrains.kotlin.formver.common.SnaktInternalException) ?: error.asInternalErrorAt(declaration.source))
-        config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
+/** Records a fatal outcome without letting a reporting failure replace the fatal error. */
+internal inline fun Throwable.rethrowAfterRecording(record: () -> Unit): Nothing {
+    try {
+        record()
+    } catch (reportFailure: Throwable) {
+        if (reportFailure !== this) addSuppressed(reportFailure)
     }
+    throw this
 }

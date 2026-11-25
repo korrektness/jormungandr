@@ -95,8 +95,13 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
 
     /** The checked Viper program for [obligations], or null after a conversion error. Adds its Viper text to [dumps]. */
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    fun convert(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>): ClassProgram? {
-        val converter = ProgramConverter(session, config, context, reporter)
+    fun convert(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>): ClassProgram? =
+        convert(declaration, obligations, dumps, ProgramConverter(session, config, context, reporter))
+
+    context(reporter: DiagnosticReporter)
+    internal fun convert(
+        declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>, converter: ProgramConverter,
+    ): ClassProgram? {
         val provesConstruction = obligations.constructors.isNotEmpty() && !obligations.skipsConstructor
         if (provesConstruction) converter.provenConstruction = declaration.symbol
         converter.registerClassLaws(declaration.symbol)

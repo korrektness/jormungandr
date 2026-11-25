@@ -23,13 +23,18 @@ class ReportedVerifierErrors {
         Key(failure.kind, failure.primary, failure.obligation, failure.backend?.errorId, failure.backend?.reasonId),
     )
 
-    /**
-     * Records [error] and says whether to report it. A failure at a [SourceRole.ThrowsAssumption] is not reported:
-     * the call it belongs to checks the same precondition in the same state, and that failure is reported.
-     */
     fun add(error: VerifierError, source: KtSourceElement?): Boolean = when (error) {
-        is VerificationError -> !error.atThrowsAssumption() && add(error.toFailure(source))
+        is VerificationError -> addIfReportable(error) { error.toFailure(source) }
     }
+
+    /**
+     * Records the interpreted [failure] and says whether to report it. A failure at a [SourceRole.ThrowsAssumption]
+     * is not reported: the call it belongs to checks and reports the same precondition in the same state.
+     */
+    fun add(error: VerificationError, failure: Failure): Boolean = addIfReportable(error) { failure }
+
+    private inline fun addIfReportable(error: VerificationError, failure: () -> Failure): Boolean =
+        !error.atThrowsAssumption() && add(failure())
 }
 
 private fun VerificationError.atThrowsAssumption(): Boolean =

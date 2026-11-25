@@ -24,6 +24,7 @@ class DeclarationReportTest {
         fun half(): Double = 0.5
         @NeverConvert fun ignored(): Int = 2
         @Pure fun impure(): Int = increment(1)
+        class Counter(val start: Int)
     """.trimIndent()
 
     private fun location(type: Class<*>) = Paths.get(type.protectionDomain.codeSource.location.toURI()).toString()
@@ -32,7 +33,7 @@ class DeclarationReportTest {
      * Compiles [source] in a separate JVM with the bundled plugin jar, outside the test facade, and returns the report
      * rows by declaration and program.
      */
-    private fun report(): Map<String, List<String>> {
+    private fun report(source: String = this.source, verification: String = "no_targets"): Map<String, List<String>> {
         val file = temp.resolve("Census.kt").apply { writeText(source) }
         val generated = temp.resolve("generated/Census.kt").apply {
             parentFile.mkdirs()
@@ -44,17 +45,19 @@ class DeclarationReportTest {
         val repository = File(System.getProperty("idea.home.path")).canonicalFile
         val compilerClasspath = System.getProperty("java.class.path").split(File.pathSeparator)
             .filterNot { File(it).canonicalFile.startsWith(repository) }
-        val process = ProcessBuilder(
+        val builder = ProcessBuilder(
             File(System.getProperty("java.home"), "bin/java").path, "-Xss30m",
             "-cp", compilerClasspath.joinToString(File.pathSeparator), K2JVMCompiler::class.java.name,
             "-no-stdlib", "-no-reflect", "-Xreport-all-warnings", "-Xuse-fir-lt=false",
             "-classpath", classpath.joinToString(File.pathSeparator), "-d", temp.resolve("classes").path,
             "-Xplugin=" + System.getProperty("formver.pluginJar"),
-            "-P", "plugin:org.jetbrains.kotlin.formver:verification_targets_selection=no_targets",
+            "-P", "plugin:org.jetbrains.kotlin.formver:verification_targets_selection=$verification",
             "-P", "plugin:org.jetbrains.kotlin.formver:declaration_report=$report",
             "-P", "plugin:org.jetbrains.kotlin.formver:input_manifest=$inputManifest",
             file.path, generated.path,
-        ).redirectErrorStream(true).start()
+        ).redirectErrorStream(true)
+        builder.environment()["Z3_EXE"] = temp.resolve("missing-z3").absolutePath
+        val process = builder.start()
         val output = process.inputStream.bufferedReader().readText()
         val exit = process.waitFor()
         assertEquals(ExitCode.COMPILATION_ERROR.code, exit, output)
@@ -78,7 +81,7 @@ class DeclarationReportTest {
     }
 
     @Test
-    fun `the report gives each function its conversion outcome`() {
+    fun `the report distinguishes conversion from verification for functions and classes`() {
         assertEquals(
             mapOf(
                 "one.body" to listOf("4", "converted", "", "", "not_selected", ""),
@@ -88,8 +91,26 @@ class DeclarationReportTest {
                 "half.body" to listOf("7", "stopped", "UNSUPPORTED_FEATURE", "KOTLIN_CONSTRUCT", "", ""),
                 "ignored.body" to listOf("8", "excluded", "", "NEVER_CONVERT", "", ""),
                 "impure.body" to listOf("9", "stopped", "PURITY_VIOLATION", "FUNCTION_BODY", "", ""),
+                "Counter.class" to listOf("10", "converted", "", "", "not_selected", ""),
             ),
             report(),
+        )
+    }
+
+    @Test
+    fun `every attempted program records solver unavailability`() {
+        val rows = report(
+            """
+            class First(val n: Int)
+            class Second(val n: Int)
+            fun one(): Int = 1
+            """.trimIndent(),
+            verification = "all_targets",
+        )
+        val unavailable = listOf("error", "SOLVER_UNAVAILABLE")
+        assertEquals(
+            mapOf("First.class" to unavailable, "Second.class" to unavailable, "one.body" to unavailable),
+            rows.mapValues { (_, row) -> listOf(row[4], row[5].substringBefore(':')) },
         )
     }
 }

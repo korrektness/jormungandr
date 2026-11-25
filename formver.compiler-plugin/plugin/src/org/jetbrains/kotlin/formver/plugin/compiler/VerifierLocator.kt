@@ -24,13 +24,15 @@ class VerifierLocator(private val locate: () -> String = SiliconFrontend::locate
 
     private val unavailabilityReported = AtomicBoolean(false)
 
-    /**
-     * Returns the path of the Z3 binary, or `null` when there is none. The first call that finds none passes the reason
-     * to [reportUnavailable]; later calls do not.
-     */
-    fun z3Exe(reportUnavailable: (String) -> Unit): String? =
+    /** Returns the solver path, or `null` and reports unavailability once per locator. */
+    fun z3Exe(reportUnavailable: (String) -> Unit): String? = z3Exe({}, reportUnavailable)
+
+    /** Also passes the cached failure to [recordUnavailable] on every unsuccessful lookup. */
+    internal fun z3Exe(recordUnavailable: (String) -> Unit, reportUnavailable: (String) -> Unit): String? =
         z3Exe.getOrElse { e ->
-            if (unavailabilityReported.compareAndSet(false, true)) reportUnavailable(e.message.orEmpty())
+            val reason = e.message.orEmpty()
+            if (unavailabilityReported.compareAndSet(false, true)) reportUnavailable(reason)
+            recordUnavailable(reason)
             null
         }
 }
