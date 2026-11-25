@@ -133,7 +133,7 @@ fun constructorInitializerConditions(
 ): List<ExpEmbedding> {
     val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList()
     if (owner.origin != FirDeclarationOrigin.Source || !program.constructorFactsJustified(owner)) return emptyList()
-    val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
+    val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, result.type, isUnique = true)
     val substitutions = signature.parameterVariables(symbol).associate { (symbol, value) ->
         SubstitutedArgument.ValueParameter(symbol) to value
     } + (SubstitutedArgument.DispatchThis to receiver)

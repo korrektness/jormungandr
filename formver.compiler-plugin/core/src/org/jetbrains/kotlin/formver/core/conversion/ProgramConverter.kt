@@ -291,13 +291,14 @@ class ProgramConverter(
     }
 
     /**
-     * Registers the body of the accessor [declaration] against the method header its callers call. The header types
-     * the receivers and parameters as `Any` or `Any?`. The body reads them with their Kotlin types, which it assumes on
-     * entry: the JVM enforces them on every call.
+     * Registers the Kotlin body of [declaration]. The multiset size getter implements no method header at intrinsic
+     * read sites, so its body proves its own signature. Other accessors prove the header used at read and write sites;
+     * the body assumes the Kotlin input types, which the JVM enforces on every call.
      */
     fun registerAccessor(declaration: FirPropertyAccessor) {
         registeredSymbol = declaration.symbol
         val property = declaration.propertySymbol
+        if (declaration.isGetter && context(typeResolver, session) { MultisetSizeProperty.match(property) }) return register(declaration)
         val embedding = embedProperty(property)
         val header = if (declaration.isGetter) (embedding.getter as? CustomGetter)?.getterMethod
             else (embedding.setter as? CustomSetter)?.setterMethod
@@ -530,7 +531,7 @@ class ProgramConverter(
             convertedBodyResolver.storePure(signature.signature.name, body, sourceBody)
         } else {
             val body = context.withExceptionEscape(signature.signature.exceptionEscape(symbol)) {
-                convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget, scope?.entry(this@ProgramConverter).orEmpty())
+                convertImpureBody(declaration, signature.signature, signature.returnTarget, scope?.entry(this@ProgramConverter).orEmpty())
             }
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
@@ -595,6 +596,7 @@ class ProgramConverter(
      * It will return the callable embedding, if the function was seen the first time, it will embed the full function signature and body (if needed).
      */
     override fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding {
+        symbol.checkIntrinsicConstructorUse()
         val model = symbol.externalSpecificationSymbol(session)
         if (model != symbol) return embedAnyFunction(model).also { trust.recordFunctionBinding(symbol, it) }
         context(checkerContext) { symbol.observerDeclaration() }?.let { return embedAnyFunction(it) }
@@ -881,6 +883,9 @@ class ProgramConverter(
     // region types (also classes)
 
     override fun embedType(type: ConeKotlinType): TypeEmbedding = buildType { with(this@ProgramConverter) { embedTypeWithBuilder(type) } }
+
+    override fun embedCallableResult(symbol: FirFunctionSymbol<*>): TypeEmbedding =
+        symbol.intrinsicConstructionOwner(session)?.let { embedClass(it).asTypeEmbedding() } ?: embedType(symbol.resolvedReturnType)
 
     private val observerBindingRegistry = ObserverBindingRegistry()
     internal val lawEncoding = LawEncoding(this)

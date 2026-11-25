@@ -1,0 +1,28 @@
+/intrinsic_getter_body.kt: info: Generated Viper text for Multiset:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_Multiset())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == c_Multiset()
+  fold acc(c_Multiset_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_Multiset_unique(v_ret_0), write)
+}
+
+/intrinsic_getter_body.kt: info: Generated Viper text for size:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method public_g_size(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), multisetType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var count: Ref
+  count := intToRef(3)
+  assert intFromRef(count) == 3
+  v_ret_0 := count
+  goto lbl_ret_0
+  label lbl_ret_0
+}

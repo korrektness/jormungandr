@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.name.StandardClassIds
 /** The specification-only `Multiset` of `formver.annotations`. */
 val multisetClassId = ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("Multiset"))
 
+val iterationSequenceClassId = ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("IterationSequence"))
+
 private val valueTypeClassIds = setOf(
     StandardClassIds.Int,
     StandardClassIds.Long,
@@ -28,7 +30,7 @@ private val valueTypeClassIds = setOf(
     StandardClassIds.String,
     StandardClassIds.Unit,
     multisetClassId,
-    ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("IterationSequence")),
+    iterationSequenceClassId,
 )
 
 /**

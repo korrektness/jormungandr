@@ -85,6 +85,7 @@ interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttach
     fun reportTerminationFailure(failure: Failure)
 
     fun embedType(type: ConeKotlinType): TypeEmbedding
+    fun embedCallableResult(symbol: FirFunctionSymbol<*>): TypeEmbedding
     fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding
     fun embedType(exp: FirExpression): TypeEmbedding = embedType(exp.resolvedType)
     fun embedProperty(symbol: FirPropertySymbol): PropertyEmbedding

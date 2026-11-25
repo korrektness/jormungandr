@@ -1,0 +1,76 @@
+/intrinsic_nothing_return.kt: info: Generated Viper text for checkedStop:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method checkedStop(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures false
+  ensures isSubtype(typeOf(v_ret_0), nothingType())
+{
+  var anon: Ref
+  anon := con()
+  fold acc(Throwable_unique(anon), write)
+  fold acc(Exception_unique(anon), write)
+  fold acc(RuntimeException_unique(anon), write)
+  fold acc(IllegalStateException_unique(anon), write)
+  inhale false
+  label lbl_ret_0
+}
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalStateException())
+  ensures isSubtype(typeOf(ret_4), IllegalStateException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/intrinsic_nothing_return.kt: info: Generated Viper text for unavailableMultiset:
+method checkedStop(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures false
+  ensures isSubtype(typeOf(ret_1), nothingType())
+
+
+method unavailableMultiset() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), multisetType())
+{
+  var anon: Ref
+  anon := checkedStop(intToRef(1))
+  label lbl_ret_0
+}
+
+/intrinsic_nothing_return.kt: info: Generated Viper text for invalidUnavailableSequence:
+method checkedStop(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures false
+  ensures isSubtype(typeOf(ret_1), nothingType())
+
+
+method invalidUnavailableSequence() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), iterationSequenceType())
+{
+  var anon: Ref
+  anon := checkedStop(intToRef(0))
+  label lbl_ret_0
+}
+
+/intrinsic_nothing_return.kt: info: Generated Viper text for absurd:
+function absurd(value: Ref): Ref
+  requires false
+  requires isSubtype(typeOf(value), nothingType())
+  ensures false
+  ensures isSubtype(typeOf(result), intType())
+{
+  value
+}

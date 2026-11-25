@@ -134,16 +134,16 @@ private fun ProgramConversionContext.passSuperArgument(
  * types.
  */
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-context(program: ProgramConversionContext)
-fun constructionBody(
+context(program: ProgramConverter)
+internal fun constructionBody(
     constructor: FirConstructorSymbol,
     signature: NonInlineFunctionSignature,
     target: ReturnTarget,
     onUniquenessError: () -> Unit,
 ): ConvertedMethodBody {
     val owner = constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!
-    val type = program.embedType(constructor.resolvedReturnType).pretype as ClassTypeEmbedding
     val receiver = target.variable
+    val type = receiver.type.pretype as ClassTypeEmbedding
     val actions = mutableListOf<ExpEmbedding>()
     val initializers = mutableSetOf<FirDeclaration>()
     fun addInitializer(declaration: FirDeclaration, action: ExpEmbedding) {
@@ -177,7 +177,7 @@ fun constructionBody(
     fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
         val phases = ConstructionPhases(declaring)
-        val boundary = EstablishConstruction(receiver, program.embedType(symbol.resolvedReturnType).pretype as ClassTypeEmbedding)
+        val boundary = EstablishConstruction(receiver, program.embedClass(declaring))
         val bodyTarget = if (symbol.isPrimary) target else program.returnTargetProducer.getFresh(buildType { unit() })
         val resolver = InlineParameterResolver(arguments + (SubstitutedArgument.DispatchThis to receiver), null, bodyTarget)
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),

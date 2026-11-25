@@ -96,7 +96,7 @@ fun FirFunctionSymbol<*>.toFunctionSignature(): SignatureWithTarget<FunctionSign
     val dispatchReceiverType = this.receiverType
     val extensionReceiverType = this.extensionReceiverType
 
-    val returnType = converter.embedType(this.resolvedReturnType)
+    val returnType = converter.embedCallableResult(this)
 
     val returnTarget = when {
         this.isPure(converter.session) -> ReturnTarget.createForPureFunction(returnType)

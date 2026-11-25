@@ -5,16 +5,20 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.*
+import org.jetbrains.kotlin.formver.uniqueness.plugin.iterationSequenceClassId
 import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 
 context(converter: ProgramConverter)
@@ -58,8 +62,7 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     type.canBeNull(converter.session) -> embedNullable(type)
 
     type.isAny -> any()
-    type is ConeClassLikeType && type.lookupTag.classId.asSingleFqName().asString() ==
-            "org.jetbrains.kotlin.formver.plugin.IterationSequence" -> {
+    type is ConeClassLikeType && type.lookupTag.classId == iterationSequenceClassId -> {
         converter.typeResolver.markIterationSequenceUsed()
         iterationSequence()
     }
@@ -93,8 +96,22 @@ internal fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirF
             embedTypeWithBuilder(param.resolvedReturnType)
         }
     }
-    withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
+    withReturnType(converter.embedCallableResult(symbol))
     returnsUnique = context(converter.checkerContext) { symbol.returnsUnique() }
+}
+
+/** The nominal owner of a runtime constructor whose class has a separate specification-value encoding. */
+internal fun FirFunctionSymbol<*>.intrinsicConstructionOwner(session: FirSession): FirRegularClassSymbol? {
+    val owner = (this as? FirConstructorSymbol)?.resolvedReturnType?.toRegularClassSymbol(session) ?: return null
+    return owner.takeIf { it.classId == multisetClassId || it.classId == iterationSequenceClassId }
+}
+
+/** A direct constructor call cannot produce a specification value. */
+context(converter: ProgramConverter)
+internal fun FirFunctionSymbol<*>.checkIntrinsicConstructorUse() {
+    if (intrinsicConstructionOwner(converter.session) != null) throw UnsupportedFeatureException(
+        null, "a direct call to a specification value constructor",
+    )
 }
 
 context(converter: ProgramConverter)
