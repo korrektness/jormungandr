@@ -40,6 +40,8 @@ object FormalVerificationConfigurationKeys {
     val EXTERNAL_SPEC_FILES: CompilerConfigurationKey<List<File>> =
         CompilerConfigurationKey.create("external specification sources")
     val TRUST_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("trust report")
+    val INPUTS_ONLY: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("record inputs without verification")
+    val INPUT_MANIFEST: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("compiler input manifest")
     val DECLARATION_REPORT: CompilerConfigurationKey<File> = CompilerConfigurationKey.create("declaration report")
     val EXCEPTION_FREE_BY_DEFAULT: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("exception free by default")
 }
@@ -106,6 +108,14 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
+        private val INPUTS_ONLY_OPTION = CliOption(
+            "inputs_only", "<true|false>", "Record inputs without enabling Formver analysis",
+            required = false, allowMultipleOccurrences = false,
+        )
+        private val INPUT_MANIFEST_OPTION = CliOption(
+            "input_manifest", "<path>", "Record inputs presented to FIR checkers",
+            required = false, allowMultipleOccurrences = false,
+        )
         val DECLARATION_REPORT_OPTION = CliOption(
             FormalVerificationPluginNames.DECLARATION_REPORT_OPTION_NAME,
             "<path>",
@@ -136,6 +146,8 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         EXTERNAL_SPEC_OPTION,
         TRUST_REPORT_OPTION,
         DECLARATION_REPORT_OPTION,
+        INPUT_MANIFEST_OPTION,
+        INPUTS_ONLY_OPTION,
         EXCEPTION_FREE_BY_DEFAULT_OPTION,
     )
 
@@ -185,6 +197,13 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                 TRUST_REPORT_OPTION -> {
                     require(value.isNotBlank())
                     configuration.put(FormalVerificationConfigurationKeys.TRUST_REPORT, File(value))
+                }
+
+                INPUTS_ONLY_OPTION -> configuration.put(FormalVerificationConfigurationKeys.INPUTS_ONLY, value.toBooleanStrict())
+
+                INPUT_MANIFEST_OPTION -> {
+                    require(value.isNotBlank())
+                    configuration.put(FormalVerificationConfigurationKeys.INPUT_MANIFEST, File(value))
                 }
 
                 DECLARATION_REPORT_OPTION -> {

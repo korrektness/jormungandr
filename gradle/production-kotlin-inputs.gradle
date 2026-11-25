@@ -1,0 +1,46 @@
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.security.MessageDigest
+
+String compilation = formverInputCompilation
+File evidence = new File(System.getenv('FORMVER_INPUTS_DIR'), compilation.substring(1).replace(':', '/'))
+File plugin = new File(System.getenv('FORMVER_INPUTS_DIR'), 'compiler-plugin.jar')
+
+def kotlinSources = { task ->
+    (task.sources.files + task.'getScriptSources$kotlin_gradle_plugin_common'().files).sort()
+}
+def record = { List<File> files ->
+    def rows = files.collect { file ->
+        String path = file.canonicalPath
+        if (path =~ /[\t\r\n]/) throw new GradleException("Invalid Kotlin input path: ${path.inspect()}")
+        String digest = MessageDigest.getInstance('SHA-256').digest(file.bytes).encodeHex().toString()
+        "${path}\t${digest}\n"
+    }
+    Files.createDirectories(evidence.toPath())
+    String state = files.isEmpty() ? 'confirmed-empty' : 'sources'
+    Files.writeString(new File(evidence, 'task.tsv').toPath(), "task-inputs-v1\t${state}\n" + rows.join(),
+        StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)
+}
+
+def compile = tasks.named('compileKotlin') {
+    incremental = false
+    inputs.file(plugin).withPropertyName('formverInputRecorder')
+    outputs.upToDateWhen { false }
+    outputs.doNotCacheIf('Captures the inputs of this compiler execution') { true }
+    compilerOptions.freeCompilerArgs.addAll([
+        '-Xuse-fir-lt=false',
+        "-Xplugin=${plugin.absolutePath}".toString(),
+        '-P', 'plugin:org.jetbrains.kotlin.formver:inputs_only=true',
+        '-P', "plugin:org.jetbrains.kotlin.formver:input_manifest=${new File(evidence, 'compiler.tsv')}".toString(),
+    ])
+    doFirst { task -> record(kotlinSources(task) as List) }
+}
+
+gradle.taskGraph.afterTask { task, state ->
+    if (task.project == project && task.name == compile.name && state.noSource) {
+        List<File> files = kotlinSources(task)
+        if (!files.isEmpty()) throw new GradleException("${compilation} reported NO-SOURCE with inputs: ${files}")
+        record(files)
+    }
+}

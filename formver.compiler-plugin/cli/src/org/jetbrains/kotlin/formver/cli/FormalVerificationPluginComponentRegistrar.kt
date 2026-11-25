@@ -30,6 +30,12 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
         get() = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+        val inputManifest = configuration.get(FormalVerificationConfigurationKeys.INPUT_MANIFEST)
+        if (configuration.get(FormalVerificationConfigurationKeys.INPUTS_ONLY, false)) {
+            requireNotNull(inputManifest) { "inputs_only requires input_manifest" }
+            FirExtensionRegistrarAdapter.registerExtension(CompilerInputManifest(inputManifest, ExternalSpecSources.NONE))
+            return
+        }
         val logLevel =
             configuration.get(FormalVerificationConfigurationKeys.LOG_LEVEL, LogLevel.Companion.defaultLogLevel())
         val errorStyle = configuration.get(
@@ -51,6 +57,9 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES),
             bundled = ExternalSpecSources.extractBundled(File(FormalVerificationPluginComponentRegistrar::class.java.protectionDomain.codeSource.location.toURI())),
         )
+        inputManifest?.let {
+            FirExtensionRegistrarAdapter.registerExtension(CompilerInputManifest(it, externalSpecs))
+        }
         val specFragment = configuration.addToRootFragment(externalSpecs.files.map { it.path })
         for (file in externalSpecs.files) {
             configuration.addKotlinSourceRoot(file.path, isCommon = specFragment != null, hmppModuleName = specFragment)

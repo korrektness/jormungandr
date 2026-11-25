@@ -11,6 +11,25 @@ uniqueness or locality error, or with a rejected ownership construct
 `VERIFICATION_SKIPPED`. A `var` write or array store through a local holding a
 shared constructor result is dropped and reports `UNTRACKED_WRITE`.
 
+## Production Kotlin input evidence
+
+Run `agent-scripts/capture-kotlin-inputs.sh` to compare the sources of the
+production JVM `compileKotlin` tasks, including build logic in `buildSrc`, with
+the files seen by Kotlin FIR. The command stages its recorder and expected task
+IDs during bootstrap, then runs the Kotlin tasks serially with the PSI parser.
+The printed run directory contains the raw manifests and, on success,
+`reconciled.json`.
+
+The reconciled inventory lists one row per file, including generated files,
+using checkout-relative paths and SHA-256 digests of the raw bytes. The checker
+also compares the text in the parsed syntax tree with the file after removing a
+leading UTF-8 BOM and normalizing line endings to LF. A task without Kotlin
+sources needs an explicit `confirmed-empty` record. Sources outside the checkout
+and missing or inconsistent evidence fail the command.
+This command records inputs only: it does not run Formver checks or the verifier.
+Java-only tasks, Gradle script evaluation, tests, and test fixtures are outside
+this inventory.
+
 ## Tests
 
 Choose a tier by the boundary under test; choose a fixture mode by the work

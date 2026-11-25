@@ -9,6 +9,35 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+val kotlinInputDirectory = providers.environmentVariable("FORMVER_INPUTS_DIR").map(::file)
+val productionKotlinCompilations = sortedSetOf(":buildSrc:compileKotlin")
+val prepareProductionKotlinInputs by tasks.registering(Copy::class) {
+    val packaging = project(":formver.compiler-plugin")
+    dependsOn(":formver.compiler-plugin:embeddableJar")
+    from(provider { packaging.tasks.named<Jar>("embeddableJar").get().archiveFile.get() }) {
+        rename { "compiler-plugin.jar" }
+    }
+    into(providers.gradleProperty("formverInputBootstrapDir").map(::file))
+    doLast {
+        destinationDir.resolve("expected.tsv").writeText(
+            productionKotlinCompilations.joinToString("\n", prefix = "production-kotlin-v1\n", postfix = "\n"),
+        )
+    }
+}
+val captureProductionKotlinInputs by tasks.registering
+
+allprojects {
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        val compilation = if (path == ":") ":compileKotlin" else "$path:compileKotlin"
+        productionKotlinCompilations.add(compilation)
+        if (kotlinInputDirectory.isPresent) {
+            extra["formverInputCompilation"] = compilation
+            apply(from = rootProject.file("gradle/production-kotlin-inputs.gradle"))
+            captureProductionKotlinInputs.configure { dependsOn(compilation) }
+        }
+    }
+}
+
 allprojects {
     group = "org.jetbrains.kotlin.formver"
     version = "0.1.0-SNAPSHOT"
