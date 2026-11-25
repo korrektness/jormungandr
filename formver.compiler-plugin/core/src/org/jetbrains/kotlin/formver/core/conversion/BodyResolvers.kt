@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionExp
@@ -26,6 +27,8 @@ data class ConvertedMethodBody(
     val returnTarget: ReturnTarget,
     /** The source of the body as written, where a body that does not end in a jump leaves. */
     val bodySource: KtSourceElement? = null,
+    /** Initializer declarations whose evaluation is embedded directly in this constructor body. */
+    val constructionInitializers: Set<FirDeclaration> = emptySet(),
 )
 
 /**

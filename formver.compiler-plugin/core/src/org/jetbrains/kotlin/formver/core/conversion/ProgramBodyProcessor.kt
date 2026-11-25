@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
@@ -53,6 +54,19 @@ internal class ProgramBodyProcessor(
         val emitted = bodies.toSet()
         val obligations = registered.filter { it.declaration in emitted }.groupBy { it.declaration }
         return EmittedCallableEvidence(bodies, obligations.flatMap { (owner, copies) -> contractLambdas.emitted(owner, copies) }.toSet())
+    }
+
+    fun emittedConstruction(program: Program, registered: List<RegisteredFunction>): Map<FirConstructor, Set<FirDeclaration>> {
+        val methods = program.methods.filter { it.body != null }.map { it.name }.toSet()
+        return buildMap {
+            for ((declaration, signature) in registered) {
+                if (declaration !is FirConstructor) continue
+                val name = signature.name
+                if (converter.convertedBodyResolver.sourceBody(name, pure = false) !== declaration) continue
+                if ((runtimeDefinitions[name] ?: name) !in methods) continue
+                put(declaration, checkNotNull(converter.convertedBodyResolver.lookupImpure(name)).constructionInitializers)
+            }
+        }
     }
 
     private fun emittedCallableBodies(program: Program, registered: List<RegisteredFunction>): List<FirFunction> {

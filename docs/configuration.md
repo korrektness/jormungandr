@@ -179,6 +179,7 @@ replaces the file. The first line names the columns:
 | `direct_body_region_ids` | Sorted comma-separated region IDs with callable bodies in this emitted program. A link requires every body definition and refinement for that region in this program. A header without a body does not qualify. |
 | `synthetic_program_reason` | `CLASS_OBLIGATION_BUNDLE` identifies the generated class proof container, which has a program ID but no callable target region. It gives no source region coverage; the obligations it contains need their own evidence. |
 | `contract_lambda_candidates`, `spec_only_lambdas` | Sorted comma-separated `region_id:PRECONDITION` or `region_id:POSTCONDITION` entries. A candidate is a directly supplied lambda of a leading contract call (after `exposes`, if present, in a lifted lambda), whose resolved JVM marker passes the bytecode non-invocation check. A spec-only link additionally requires lowering its own contract clauses and emitting all associated callable body definitions and refinements in this program. |
+| `constructor_initializer_candidates`, `enclosing_constructor_links` | Sorted comma-separated `region_id:constructor_obligation_id` entries. Candidates name `init` blocks and property initializers reached by a class program's constructors, including opted-out constructors and source delegation. An enclosing link requires the exact initializer to be lowered into that constructor's emitted proof body. Each obligation ID is scoped to its `program_id` and identifies a primary constructor or the syntax span of a secondary constructor. |
 
 The report always includes the identity and membership columns. They remain blank unless
 `proof_checkout` (the census checkout root) and `proof_compilation` (the census
@@ -201,8 +202,19 @@ outcome. Membership describes emission, so it can accompany a nonpassing
 outcome. Missing links are unaccounted even if every reported program is green.
 Class-hosted copies are separate obligations; a base method's own program does
 not discharge them. A callee definition included as proof context does not
-replace its own proof program. Constructor, initializer and builtin lowering
-do not produce these links.
+replace its own proof program.
+
+For an initializer, require a candidate, matching enclosing link and terminal
+`verified` outcome for **every** applicable `(program_id, constructor_obligation_id,
+region_id)` triple. Require independently expected class programs and obligations,
+including a declaring class's construction obligations where applicable: a subclass's
+copy cannot fill a missing constructor proof. The row's terminal outcome applies to
+all its emitted links; even a green row cannot fill a missing link for an opted-out
+constructor. An initializer link gives no credit to constructor syntax, delegation
+arguments or nested regions. A separately lowered lambda, local callable or accessor
+needs its own callable evidence. This evidence covers only initializers lowered by
+the constructor implementation; it supplies no evidence for other initializer or
+builtin lowering.
 
 For each applicable contract lambda obligation, require a matching candidate,
 spec-only link and terminal `verified` outcome on its program row. A spec-only link accounts for the

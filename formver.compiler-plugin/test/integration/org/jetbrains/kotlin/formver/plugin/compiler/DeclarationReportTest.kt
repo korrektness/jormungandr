@@ -203,7 +203,7 @@ class DeclarationReportTest {
             val body = rows.ids.getValue("consumer.body")
             assertTrue(body[1].isNotEmpty())
             assertEquals(body[1], body[3])
-            return body.drop(5)
+            return body.subList(5, 7)
         }
 
         assertEquals(listOf(spec, spec), evidence("no-op", ""))

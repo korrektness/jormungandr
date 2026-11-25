@@ -145,6 +145,11 @@ fun constructionBody(
     val type = program.embedType(constructor.resolvedReturnType).pretype as ClassTypeEmbedding
     val receiver = target.variable
     val actions = mutableListOf<ExpEmbedding>()
+    val initializers = mutableSetOf<FirDeclaration>()
+    fun addInitializer(declaration: FirDeclaration, action: ExpEmbedding) {
+        actions += action
+        if (program.config.declarationReport?.sourceIndex != null) initializers += declaration
+    }
     val captured = mutableMapOf<FirBasedSymbol<*>, PropertyAccessEmbedding>()
     val entered = mutableMapOf<CaptureScope, Map<FirBasedSymbol<*>, PropertyAccessEmbedding>>()
 
@@ -235,9 +240,9 @@ fun constructionBody(
                     if (field != null && field !is UserFieldEmbedding) throw UnsupportedFeatureException(
                         declaration.source, "initialization of a library-encoded field",
                     )
-                    actions += constructionStore(receiver, property, value).withPosition(declaration.source)
+                    addInitializer(declaration, constructionStore(receiver, property, value).withPosition(declaration.source))
                 }
-                is FirAnonymousInitializer -> declaration.body?.let { actions += initializerContext(declaration).convert(it) }
+                is FirAnonymousInitializer -> declaration.body?.let { addInitializer(declaration, initializerContext(declaration).convert(it)) }
                 else -> Unit
             }
         }
@@ -250,5 +255,6 @@ fun constructionBody(
     initialize(constructor, signature.parameterVariables(constructor).associate { (parameter, value) ->
         SubstitutedArgument.ValueParameter(parameter) to value
     })
-    return ConvertedMethodBody(FunctionExp(signature, actions.toBlock(), target.label!!), target)
+    return ConvertedMethodBody(FunctionExp(signature, actions.toBlock(), target.label!!), target,
+        constructionInitializers = initializers)
 }

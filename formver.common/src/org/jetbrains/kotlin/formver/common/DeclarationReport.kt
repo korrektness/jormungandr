@@ -35,12 +35,15 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
         val syntheticProgramReason: SyntheticProgramReason? = null,
         val contractLambdaCandidates: String = "",
         val specOnlyLambdas: String = "",
+        val constructorInitializerCandidates: String = "",
+        val enclosingConstructorLinks: String = "",
     ) {
         fun render(): String = listOf(
             file, line.toString(), declaration, program, conversion, conversionKind, conversionReason,
             conversionDetail, verification, verificationDetail, seconds?.let { "%.3f".format(it) }.orEmpty(),
             exceptionCallees, programId, targetRegionId, inheritedCandidateRegionIds, directBodyRegionIds,
             syntheticProgramReason?.name.orEmpty(), contractLambdaCandidates, specOnlyLambdas,
+            constructorInitializerCandidates, enclosingConstructorLinks,
         ).joinToString("\t") { it.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ') }
     }
 
@@ -60,6 +63,7 @@ class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIn
             "conversion_detail", "verification", "verification_detail", "seconds", "exception_callees",
             "program_id", "target_region_id", "inherited_candidate_region_ids", "direct_body_region_ids",
             "synthetic_program_reason", "contract_lambda_candidates", "spec_only_lambdas",
+            "constructor_initializer_candidates", "enclosing_constructor_links",
         )
     }
 }

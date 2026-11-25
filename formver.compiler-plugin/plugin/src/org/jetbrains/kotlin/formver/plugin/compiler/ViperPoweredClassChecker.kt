@@ -65,10 +65,12 @@ internal class ViperPoweredClassChecker(
     private fun checkObligations(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>) {
         val verdicts = checkNotNull(session.constructionVerdicts) { "the plugin registers construction verdicts" }
         verdicts.decide(declaration.symbol) {
-            val site = config.programReportSite(declaration, inherited = obligations.inherited)
+            val site = config.programReportSite(declaration, inherited = obligations.inherited,
+                constructors = obligations.constructors + obligations.skippedConstructors)
             val (converter, program) = try {
                 val converter = ProgramConverter(session, config, context, reporter)
-                converter to programs.convert(declaration, obligations, dumps, converter, trackBodies = site?.tracksBodies == true)
+                converter to programs.convert(declaration, obligations, dumps, converter,
+                    trackBodies = site?.tracksBodies == true, trackConstruction = site?.tracksConstruction == true)
             } catch (error: UnsupportedFeatureException) {
                 reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
                 checker.recordTranslationStop(site, error)
@@ -94,7 +96,7 @@ internal class ViperPoweredClassChecker(
                 declaration.shouldVerify = program.verify
                 declaration.trust = program.trust
             } else {
-                val emittedSite = program.emittedCallableEvidence?.let { site?.withEmittedEvidence(it) } ?: site
+                val emittedSite = site?.withEmittedEvidence(program.emittedCallableEvidence, program.emittedConstruction)
                 if (program.verify) {
                     if (!checker.verifyProgram(declaration, converter, 0, program.program, declaration.verificationLabel, emittedSite)) {
                         return@decide false

@@ -262,6 +262,9 @@ class ClassProgramReportTest {
         assertSame(overflow, result.failure)
         assertEquals(mapOf("Stops.class" to Outcome("stopped", FailureKind.INTERNAL_ERROR.name,
             InternalReason.UNEXPECTED_EXCEPTION.name, "")), result.rows)
+        val ids = result.ids.getValue("Stops.class")
+        val candidate = "${regionId("INIT_BLOCK", "{ val half = 0.5 }")}:${constructorId(ids[0], "primary")}"
+        assertEquals(listOf(candidate, ""), ids.subList(7, 9))
     }
 
     @Test
@@ -337,7 +340,7 @@ class ClassProgramReportTest {
         assertEquals(region, ids[3])
         val contracts = listOf(regionId("LAMBDA", "{ x >= 0 }") + ":PRECONDITION",
             regionId("LAMBDA", "{ it == x }") + ":POSTCONDITION").sorted().joinToString(",")
-        assertEquals(listOf("", contracts, contracts), ids.drop(4))
+        assertEquals(listOf("", contracts, contracts), ids.subList(4, 7))
 
         val success = compile(source, literalAssertionSink)
         assertEquals("verified", success.rows.getValue("Owner.lambda0").verification)
@@ -400,7 +403,7 @@ class ClassProgramReportTest {
         val candidate = regionId("FUNCTION", "{ preconditions { x >= 0 }; return x }")
         val spec = regionId("LAMBDA", "{ x >= 0 }") + ":PRECONDITION"
         val bundle = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.name
-        assertEquals(listOf("", candidate, candidate, bundle, spec, spec), first.drop(1))
+        assertEquals(listOf("", candidate, candidate, bundle, spec, spec), first.subList(1, 7))
         assertEquals(first.drop(1), second.drop(1))
         assertEquals("", result.ids.getValue("Base.class")[3])
     }
@@ -423,17 +426,83 @@ class ClassProgramReportTest {
         for ((owner, anchor) in mapOf("good" to "{ it == 1 }", "unchecked" to "{ it == 2 }", "bad" to "{ it == 3 }")) {
             val ids = result.ids.getValue("$owner.body")
             val spec = regionId("LAMBDA", anchor) + ":POSTCONDITION"
-            assertEquals(listOf("", spec, if (owner == "unchecked") "" else spec), ids.drop(4))
+            assertEquals(listOf("", spec, if (owner == "unchecked") "" else spec), ids.subList(4, 7))
         }
     }
 
+    @Test
+    fun `each constructor must emit its initializer links even when the class row is green`() {
+        fun checkConstructors(optOut: Boolean) {
+            val secondary = "${if (optOut) "@NeverVerify " else ""}constructor() : this(0)"
+            val result = compile(
+                """
+                import org.jetbrains.kotlin.formver.plugin.*
+                open class Base(val seed: Int) {
+                    val count = 123
+                    init { verify(true) }
+                    $secondary
+                }
+                class Derived : Base()
+                """,
+                literalAssertionSink,
+            )
+            assertNull(result.failure)
+            assertEquals(mapOf("Base.class" to "verified", "Derived.class" to "verified"),
+                result.rows.mapValues { it.value.verification })
+            val base = result.ids.getValue("Base.class")
+            val derived = result.ids.getValue("Derived.class")
+            val regions = listOf(regionId("INIT_BLOCK", "{ verify(true) }"), regionId("PROPERTY_INITIALIZER", "123"))
+            val start = temp.resolve("Classes.kt").readText().indexOf(secondary)
+            assertTrue(start >= 0)
+            val primary = constructorId(base[0], "primary")
+            val second = constructorId(base[0], "secondary:$start:${start + secondary.length}")
+            fun pairs(vararg obligations: String) = regions.flatMap { id -> obligations.map { "$id:$it" } }.sorted().joinToString(",")
+            assertEquals(pairs(primary, second), base[7])
+            assertEquals(if (optOut) pairs(primary) else pairs(primary, second), base[8])
+            val derivedPairs = pairs(constructorId(derived[0], "primary"))
+            assertEquals(listOf(derivedPairs, derivedPairs), derived.subList(7, 9))
+        }
+        checkConstructors(optOut = false)
+        checkConstructors(optOut = true)
+    }
+
+    @Test
+    fun `constructor coverage of lambda creation does not cover its separately emitted body`() {
+        val lambda = "{ exposes(Spec::class) { state() == 0 }; verify(false); 1 }"
+        val initializer = "Spec $lambda"
+        val result = compile(
+            """
+            import org.jetbrains.kotlin.formver.plugin.*
+            fun interface Spec {
+                @Unique @Borrowed fun invoke(): Int
+                @GhostObserver @Pure fun state(): Int = ghostObserver()
+            }
+            class Owner { val action = $initializer }
+            """,
+            literalAssertionSink,
+        )
+        assertNull(result.failure)
+        assertEquals(mapOf("Owner.class" to "verified", "Owner.lambda0" to "failed"), result.rows.mapValues { it.value.verification })
+        val owner = result.ids.getValue("Owner.class")
+        val nested = result.ids.getValue("Owner.lambda0")
+        val pair = "${regionId("PROPERTY_INITIALIZER", initializer)}:${constructorId(owner[0], "primary")}"
+        assertEquals(listOf(pair, pair), owner.subList(7, 9))
+        assertEquals(regionId("LAMBDA", lambda), nested[3])
+    }
+
+    private fun constructorId(programId: String, spelling: String): String =
+        stableId("constructor-obligation-v1", "$programId:$spelling")
+
     private fun regionId(kind: String, anchor: String): String {
-        val text = temp.resolve("Classes.kt").readText()
-        val start = text.indexOf(anchor)
+        val start = temp.resolve("Classes.kt").readText().indexOf(anchor)
         assertTrue(start >= 0)
+        return stableId("census-region-v1", "$kind:$start:${start + anchor.length}:0")
+    }
+
+    private fun stableId(domain: String, reference: String): String {
         fun digest(value: String) = MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).toHexString()
-        val key = "census-region-v1\t:test:compileKotlin\tcheckout\tClasses.kt\t${digest(text)}\t$kind:$start:${start + anchor.length}:0"
-        return digest(key)
+        val digest = digest(temp.resolve("Classes.kt").readText())
+        return digest("$domain\t:test:compileKotlin\tcheckout\tClasses.kt\t$digest\t$reference")
     }
 
     private companion object {

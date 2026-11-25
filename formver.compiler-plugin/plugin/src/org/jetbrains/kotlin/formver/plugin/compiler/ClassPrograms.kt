@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
@@ -46,8 +48,8 @@ data class ClassObligations(
     /** The constructors whose bodies the class program verifies. */
     val constructors: List<FirConstructorSymbol>,
     val inherited: List<InheritedImplementationObligation>,
-    /** Whether a constructor is `@NeverVerify`, so the class program does not verify the whole construction. */
-    val skipsConstructor: Boolean,
+    /** Constructors excluded by `@NeverVerify`; their initializer obligations remain outstanding. */
+    val skippedConstructors: List<FirConstructorSymbol>,
 )
 
 /** A converted class program. */
@@ -59,6 +61,7 @@ data class ClassProgram(
     val verifiesConstruction: Boolean,
     val trust: TrustedAssumptionCollector,
     val emittedCallableEvidence: EmittedCallableEvidence? = null,
+    val emittedConstruction: Map<FirConstructor, Set<FirDeclaration>> = emptyMap(),
 )
 
 /** Converts the Viper program that checks a concrete class. */
@@ -91,7 +94,7 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         return when {
             constructors.isEmpty() && inherited.isEmpty() && !hasLawHarness -> null
             hasClassLaws && constructionFailed -> null
-            else -> ClassObligations(constructors, inherited, skipsConstructor = constructors.size < allConstructors.size)
+            else -> ClassObligations(constructors, inherited, skippedConstructors = allConstructors - constructors.toSet())
         }
     }
 
@@ -104,8 +107,9 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
     internal fun convert(
         declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>, converter: ProgramConverter,
         trackBodies: Boolean = false,
+        trackConstruction: Boolean = false,
     ): ClassProgram? {
-        val provesConstruction = obligations.constructors.isNotEmpty() && !obligations.skipsConstructor
+        val provesConstruction = obligations.constructors.isNotEmpty() && obligations.skippedConstructors.isEmpty()
         if (provesConstruction) converter.provenConstruction = declaration.symbol
         converter.registerClassLaws(declaration.symbol)
         obligations.constructors.forEach { converter.registerConstructor(it) }
@@ -130,7 +134,8 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
             !converter.skipsVerification
         val evidence = if (trackBodies) converter.emittedCallableEvidence(program) else null
-        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust, evidence)
+        val construction = if (trackConstruction) converter.emittedConstruction(program) else emptyMap()
+        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust, evidence, construction)
     }
 
     /**

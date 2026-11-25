@@ -4,12 +4,14 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtPsiSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.formver.common.DeclarationReport
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
@@ -29,16 +31,26 @@ internal class ProgramReportSite(
     private val row: DeclarationReport.Row,
     private val regions: Map<FirDeclaration, String> = emptyMap(),
     private val contracts: Map<ContractLambda, String> = emptyMap(),
+    private val initializers: ConstructorReportLinks? = null,
 ) {
     val tracksBodies: Boolean get() = regions.isNotEmpty()
+    val tracksConstruction: Boolean get() = initializers?.isEmpty == false
 
-    fun withEmittedEvidence(evidence: EmittedCallableEvidence): ProgramReportSite {
-        val emitted = evidence.bodies.toSet()
+    fun withEmittedEvidence(
+        evidence: EmittedCallableEvidence?,
+        construction: Map<FirConstructor, Set<FirDeclaration>> = emptyMap(),
+    ): ProgramReportSite {
+        val emitted = evidence?.bodies.orEmpty().toSet()
         val links = regions.entries.groupBy({ it.value }, { it.key })
             .filterValues { targets -> targets.all { it in emitted } }.keys.sorted()
+        val emittedSpecs = evidence?.contractLambdas.orEmpty()
         val specs = contracts.entries.groupBy({ it.value }, { it.key })
-            .filterValues { targets -> targets.all { it in evidence.contractLambdas } }.keys.sorted()
-        return ProgramReportSite(report, row.copy(directBodyRegionIds = links.joinToString(","), specOnlyLambdas = specs.joinToString(",")))
+            .filterValues { targets -> targets.all { it in emittedSpecs } }.keys.sorted()
+        return ProgramReportSite(report, row.copy(
+            directBodyRegionIds = links.joinToString(","),
+            specOnlyLambdas = specs.joinToString(","),
+            enclosingConstructorLinks = initializers?.emitted(construction).orEmpty(),
+        ))
     }
 
     fun record(outcome: DeclarationReport.Row.() -> DeclarationReport.Row) {
@@ -59,6 +71,7 @@ internal fun PluginConfiguration.programReportSite(
     index: Int = 0,
     target: FirDeclaration = owner,
     inherited: List<InheritedImplementationObligation> = emptyList(),
+    constructors: List<FirConstructorSymbol> = emptyList(),
 ): ProgramReportSite? {
     val report = declarationReport ?: return null
     if (target is FirFunction && target.body == null) return null
@@ -95,13 +108,15 @@ internal fun PluginConfiguration.programReportSite(
         putAll(candidates)
     }
     val contracts = sourceIndex.contractLambdas(regions.keys.filterIsInstance<FirFunction>())
+    val initializers = constructorReportLinks(sourceIndex, programId, constructors, context.session)
     return ProgramReportSite(report, row.copy(
         programId = programId,
         targetRegionId = regionId.orEmpty(),
         inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(","),
         syntheticProgramReason = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.takeIf { target is FirRegularClass },
         contractLambdaCandidates = contracts.values.distinct().sorted().joinToString(","),
-    ), regions, contracts)
+        constructorInitializerCandidates = initializers.candidates,
+    ), regions, contracts, initializers)
 }
 
 private fun ProofSourceIndex.contractLambdas(functions: List<FirFunction>): Map<ContractLambda, String> = buildMap {

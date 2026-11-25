@@ -226,6 +226,10 @@ class ProgramConverter(
     /** Registered bodies with all definitions and refinements, and spec-only lambdas encoded in every such obligation. */
     fun emittedCallableEvidence(program: Program): EmittedCallableEvidence = bodyProcessor.emittedCallableEvidence(program, registered)
 
+    /** The initializers embedded in each registered constructor's emitted proof body. */
+    fun emittedConstruction(program: Program): Map<FirConstructor, Set<FirDeclaration>> =
+        bodyProcessor.emittedConstruction(program, registered)
+
     // region Callable Conversion
 
     /** The declaration passed to [register]. */
@@ -339,7 +343,7 @@ class ProgramConverter(
         lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(owner.fir, owner.classId.embedName()) })
         var hasInitializationErrors = false
         val body = with(this) { constructionBody(symbol, contract, signature.returnTarget) { hasInitializationErrors = true } }
-        convertedBodyResolver.storeImpure(contract.name, body)
+        convertedBodyResolver.storeImpure(contract.name, body, symbol.fir)
         registered += RegisteredFunction(symbol.fir, contract, signature.returnTarget,
             hasInitializationErrors || uniquenessOutcomeOf(symbol.fir).hasErrors)
     }
