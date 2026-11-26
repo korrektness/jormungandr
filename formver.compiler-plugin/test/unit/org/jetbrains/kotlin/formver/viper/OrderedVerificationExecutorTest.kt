@@ -17,8 +17,8 @@ import kotlin.test.assertTrue
 class OrderedVerificationExecutorTest {
     @Test
     fun `jobs run concurrently within the budget and results retain input order`() {
-        for (jobs in listOf(1, 4, 8, 16)) {
-            val configured = VerificationConcurrency.parseJobs(jobs.toString())
+        for ((setting, jobs) in listOf("1" to 1, null to 4, "+8" to 8, "16" to 16)) {
+            val configured = VerificationConcurrency.parseJobs(setting)
             assertEquals(jobs, configured)
             OrderedVerificationExecutor(configured).use { executor ->
                 val active = AtomicInteger()
@@ -40,7 +40,7 @@ class OrderedVerificationExecutorTest {
 
     @Test
     fun `invalid job settings are rejected`() {
-        for (value in listOf("", "garbage", "1.5", "0", "-1", "17", "2147483648")) {
+        for (value in listOf("", "garbage", "1.5", " 4", "0", "-1", "17", "2147483648", "-2147483649")) {
             assertFailsWith<IllegalArgumentException> { VerificationConcurrency.parseJobs(value) }
         }
     }

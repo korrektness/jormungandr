@@ -1,0 +1,120 @@
+/lazy_validation_message.kt: info: Generated Viper text for checkedLimit:
+method checkedLimit(input: Ref, parsed: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(input), nullable(stringType()))
+  requires isSubtype(typeOf(parsed), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var setting: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  if (input != nullValue()) {
+    setting := input
+  } else {
+    var anon_0: Ref
+    v_ret_0 := intToRef(4)
+    goto lbl_ret_0
+    setting := anon_0
+  }
+  if (!(parsed == nullValue())) {
+    anon_2 := andBools(leInts(intToRef(1), parsed), leInts(parsed, intToRef(16)))
+  } else {
+    anon_2 := boolToRef(false)}
+  inhale isSubtype(typeOf(anon_3), functionType())
+  anon_1 := require(anon_2, anon_3)
+  v_ret_0 := parsed
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method require(value: Ref, lazyMessage: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  requires isSubtype(typeOf(lazyMessage), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+checkedLimit.lambda0.invoke:
+method invoke() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), anyType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_1), stringType())
+  anon_0 := anon_1
+  if (!(|stringFromRef(stringLit_0())| + |stringFromRef(anon_0)| <=
+  2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStrings(stringLit_0(), anon_0))| +
+  |stringFromRef(stringLit_1())| <=
+  2147483647)) {
+    inhale false
+  }
+  v_ret_0 := addStrings(addStrings(stringLit_0(), anon_0), stringLit_1())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/lazy_validation_message.kt: info: Generated Viper text for forbidsUpperBoundRejection:
+function throws_forbidsUpperBoundRejection(input: Ref, parsed: Ref): Bool
+  requires isSubtype(typeOf(input), nullable(stringType()))
+  requires isSubtype(typeOf(parsed), nullable(intType()))
+{
+  !(input == nullValue()) &&
+  (parsed == nullValue() || intFromRef(parsed) < 1)
+}
+
+method forbidsUpperBoundRejection(input: Ref, parsed: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(input), nullable(stringType()))
+  requires isSubtype(typeOf(parsed), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var setting: Ref
+  var anon_1: Ref
+  if (input != nullValue()) {
+    setting := input
+  } else {
+    var anon_0: Ref
+    v_ret_0 := intToRef(4)
+    goto lbl_ret_0
+    setting := anon_0
+  }
+  if (!(parsed == nullValue())) {
+    anon_1 := andBools(leInts(intToRef(1), parsed), leInts(parsed, intToRef(16)))
+  } else {
+    anon_1 := boolToRef(false)}
+  if (boolFromRef(anon_1)) {
+  } else {
+    var v_ret_3: Ref
+    if (!(|stringFromRef(stringLit_0())| + |stringFromRef(setting)| <=
+    2147483647)) {
+      inhale false
+    }
+    if (!(|stringFromRef(addStrings(stringLit_0(), setting))| +
+    |stringFromRef(stringLit_1())| <=
+    2147483647)) {
+      inhale false
+    }
+    v_ret_3 := addStrings(addStrings(stringLit_0(), setting), stringLit_1())
+    goto lbl_ret_3
+    label lbl_ret_3
+    assert old(throws_forbidsUpperBoundRejection(input, parsed))
+    inhale false
+  }
+  v_ret_0 := parsed
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method plus(this: Ref, other: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_4), stringType())
