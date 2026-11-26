@@ -75,15 +75,23 @@ class TrustReportTest {
     @Test
     fun `a malformed report is rejected`() {
         assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\n  declaration without a file\n") }
-        assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\na.kt\n  f\n    unknown kind: x\n") }
+        val badLine = "    unknown kind: x"
+        val error = assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\na.kt\n  f\n$badLine\n") }
+        val diagnostic = requireNotNull(error.message)
+        assertEquals(5, diagnostic.substringBefore(": ").substringAfterLast(' ').toInt())
+        assertEquals(badLine, diagnostic.substringAfter(": "))
         assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\na.kt\n    @NeverVerify: x\n") }
     }
 
     @Test
     fun `a report whose text render would not write is rejected`() {
         val rendered = TrustReport(mapOf("a.kt" to mapOf("f" to setOf(abs)))).render()
+        val badSummary = "SnaKt verified 2 declarations."
+        val error = assertFailsWith<IllegalArgumentException> { TrustReport.parse(rendered.replaceBefore("\n", badSummary)) }
+        val diagnostic = requireNotNull(error.message)
+        assertEquals(1, diagnostic.substringBefore(": ").substringAfterLast(' ').toInt())
+        assertEquals(badSummary, diagnostic.substringAfter(": "))
         val malformed = listOf(
-            rendered.replaceBefore("\n", "SnaKt verified 2 declarations."),
             rendered.substringAfter("\n"),
             "",
             "SnaKt verified no declarations.\n\nempty.kt\n",

@@ -1,9 +1,14 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun <!VIPER_TEXT!>addOverflow<!>(x: Int): Int {
+fun <!VIPER_TEXT!>widenAfterIncrement<!>(x: Int): Long {
     preconditions { x == 2147483647 }
-    return <!INTEGER_OVERFLOW!>x + 1<!>
+    return (<!INTEGER_OVERFLOW!>x + 1<!>).toLong()
+}
+fun <!VIPER_TEXT!>widenBeforeIncrement<!>(x: Int): Long {
+    preconditions { x == 2147483647 }
+    postconditions<Long> { it == 2147483648L }
+    return x.toLong() + 1L
 }
 fun <!VIPER_TEXT!>subOverflow<!>(x: Int): Int {
     preconditions { x == -2147483648 }

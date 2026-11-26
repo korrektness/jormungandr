@@ -1,10 +1,22 @@
-/checked_integer.kt: info: Generated Viper text for addOverflow:
-method addOverflow(x: Ref) returns (v_ret_0: Ref)
+/checked_integer.kt: info: Generated Viper text for widenAfterIncrement:
+method widenAfterIncrement(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
   requires intFromRef(x) == 2147483647
-  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
 {
-  v_ret_0 := plusInts(x, intToRef(1))
+  v_ret_0 := convertIntToLong(plusInts(x, intToRef(1)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for widenBeforeIncrement:
+method widenBeforeIncrement(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), longType())
+  ensures longFromRef(v_ret_0) == 2147483648
+{
+  v_ret_0 := plusLongLong(convertIntToLong(x), longToRef(1))
   goto lbl_ret_0
   label lbl_ret_0
 }

@@ -128,7 +128,7 @@ class TrustReport(
             val actual = text.split("\n")
             val differing = (0..maxOf(expected.size, actual.size)).first { expected.getOrNull(it) != actual.getOrNull(it) }
             throw IllegalArgumentException(
-                "Malformed trust report line ${differing + 1}: ${actual.getOrNull(differing) ?: "(end of text)"}"
+                "Malformed trust report line ${differing.toLong() + 1L}: ${actual.getOrNull(differing) ?: "(end of text)"}"
             )
         }
 
@@ -141,7 +141,7 @@ class TrustReport(
             var assumptions: MutableSet<TrustedAssumption>? = null
             // The first line is the summary, which [parse] checks against the entries.
             for ((index, line) in text.split('\n').withIndex().drop(1)) {
-                fun malformed(): Nothing = throw IllegalArgumentException("Malformed trust report line ${index + 1}: $line")
+                fun malformed(): Nothing = throw IllegalArgumentException("Malformed trust report line ${index.toLong() + 1L}: $line")
                 when {
                     '\r' in line -> malformed()
                     line.isEmpty() -> {}
