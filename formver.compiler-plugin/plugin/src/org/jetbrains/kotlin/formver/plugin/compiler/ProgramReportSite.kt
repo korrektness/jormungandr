@@ -1,6 +1,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtPsiSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
@@ -23,6 +24,7 @@ import org.jetbrains.kotlin.formver.core.conversion.contractLambdaCandidates
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
+import org.jetbrains.kotlin.psi.KtProperty
 import java.io.IOException
 
 /** Carries the same reporting identity from conversion to terminal result replay. */
@@ -89,7 +91,7 @@ internal fun PluginConfiguration.programReportSite(
     val line = lineMapping.getLineByOffset(ownerSource.startOffset) + 1
     val row = DeclarationReport.Row(path, line, ownerLabel, program, conversion = "converted")
     val sourceIndex = report.sourceIndex ?: return ProgramReportSite(report, row)
-    val (programId, regionId) = sourceIndex.programIdentity(target, "$ownerLabel ($program)", path)
+    val (programId, regionId, syntheticReason) = sourceIndex.programIdentity(target, "$ownerLabel ($program)", path)
     val candidates = inherited.mapNotNull { obligation ->
         val implementation = obligation.implementation.fir
         val psi = implementation.psiOwner()
@@ -113,7 +115,7 @@ internal fun PluginConfiguration.programReportSite(
         programId = programId,
         targetRegionId = regionId.orEmpty(),
         inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(","),
-        syntheticProgramReason = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.takeIf { target is FirRegularClass },
+        syntheticProgramReason = syntheticReason,
         contractLambdaCandidates = contracts.values.distinct().sorted().joinToString(","),
         constructorInitializerCandidates = initializers.candidates,
     ), regions, contracts, initializers)
@@ -133,7 +135,14 @@ private fun FirDeclaration.psiOwner() = (source as? KtPsiSourceElement)?.psi?.le
     if (it is KtFunctionLiteral) it.parent else it
 }
 
-private fun ProofSourceIndex.programIdentity(target: FirDeclaration, label: String, path: String): Pair<String, String?> {
+private data class ProgramIdentity(
+    val programId: String,
+    val regionId: String? = null,
+    val syntheticReason: DeclarationReport.SyntheticProgramReason? = null,
+)
+
+@OptIn(SymbolInternals::class)
+private fun ProofSourceIndex.programIdentity(target: FirDeclaration, label: String, path: String): ProgramIdentity {
     val owner = checkNotNull(target.psiOwner()) {
         "Program target $label has no compiler PSI in $path (source offset: ${target.source?.startOffset})"
     }
@@ -143,15 +152,28 @@ private fun ProofSourceIndex.programIdentity(target: FirDeclaration, label: Stri
             "No class syntax for $label at ${file.source.path}:${owner.textOffset}"
         }
         val span = owner.textRange
-        return file.source.stableId("class-program-v1", "${span.startOffset}:${span.endOffset}") to null
+        return ProgramIdentity(
+            file.source.stableId("class-program-v1", "${span.startOffset}:${span.endOffset}"),
+            syntheticReason = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE,
+        )
     }
     val kind = when (target) {
         is FirAnonymousFunction -> if (target.isLambda) RegionKind.LAMBDA else RegionKind.FUNCTION
         is FirPropertyAccessor -> if (target.isGetter) RegionKind.GETTER else RegionKind.SETTER
         else -> RegionKind.FUNCTION
     }
+    if (target is FirPropertyAccessor && target.source?.kind == KtFakeSourceElementKind.DelegatedPropertyAccessor) {
+        val property = checkNotNull(target.propertySymbol.fir.psiOwner() as? KtProperty) {
+            "No property syntax for $label at ${file.source.path}:${owner.textOffset}"
+        }
+        val delegate = file.requireRegion(label, property, RegionKind.PROPERTY_DELEGATE)
+        return ProgramIdentity(
+            file.source.stableId("delegated-accessor-program-v1", "$kind:$delegate"),
+            syntheticReason = DeclarationReport.SyntheticProgramReason.DELEGATED_ACCESSOR,
+        )
+    }
     val region = file.requireRegion(label, owner, kind)
-    return file.source.stableId("callable-program-v1", region) to region
+    return ProgramIdentity(file.source.stableId("callable-program-v1", region), region)
 }
 
 private fun ProofSourceIndex.IndexedFile.requireRegion(label: String, owner: PsiElement, kind: RegionKind) =

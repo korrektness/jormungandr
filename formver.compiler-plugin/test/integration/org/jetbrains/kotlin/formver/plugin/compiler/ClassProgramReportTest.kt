@@ -23,10 +23,13 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirFile
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.builder.buildPropertyAccessorCopy
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import org.jetbrains.kotlin.formver.core.conversion.ConstructionVerdicts
@@ -488,6 +491,47 @@ class ClassProgramReportTest {
         val pair = "${regionId("PROPERTY_INITIALIZER", initializer)}:${constructorId(owner[0], "primary")}"
         assertEquals(listOf(pair, pair), owner.subList(7, 9))
         assertEquals(regionId("LAMBDA", lambda), nested[3])
+    }
+
+    @Test
+    fun `delegated getter reporting requires a census anchor for its property`() {
+        val file = temp.resolve("Classes.kt").apply {
+            writeText("val delegated by lazy { 1 }\nval ordinary = 2\n")
+        }
+        val report = temp.resolve("getter.tsv")
+        val config = PluginConfiguration(
+            LogLevel.ONLY_WARNINGS, ErrorStyle.USER_FRIENDLY, TargetsSelection.ALL_TARGETS, TargetsSelection.ALL_TARGETS,
+            false, MessageCollector.NONE,
+            declarationReport = DeclarationReport(report, ProofSourceIndex(":test:compileKotlin", temp.toPath())),
+        )
+        val registrar = object : FirExtensionRegistrar() {
+            override fun ExtensionRegistrarContext.configurePlugin() {
+                +FirAdditionalCheckersExtension.Factory { session ->
+                    object : FirAdditionalCheckersExtension(session) {
+                        override val declarationCheckers = object : DeclarationCheckers() {
+                            override val fileCheckers = setOf(object : FirFileChecker(MppCheckerKind.Common) {
+                                context(context: CheckerContext, reporter: DiagnosticReporter)
+                                @OptIn(DirectDeclarationsAccess::class)
+                                override fun check(declaration: FirFile) {
+                                    val (delegated, ordinary) = declaration.declarations.filterIsInstance<FirProperty>()
+                                    val getter = checkNotNull(delegated.getter)
+                                    checkNotNull(config.programReportSite(getter)).record { this }
+                                    val missing = buildPropertyAccessorCopy(getter) {
+                                        symbol = FirPropertyAccessorSymbol()
+                                        propertySymbol = ordinary.symbol
+                                    }
+                                    assertFailsWith<IllegalStateException> {
+                                        config.programReportSite(getter, target = missing)?.record { this }
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+        runFrontend(file, registrar, useLightTree = false)
+        assertEquals("delegated.get", report.readLines().drop(1).single().split('\t')[2])
     }
 
     private fun constructorId(programId: String, spelling: String): String =

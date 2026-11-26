@@ -13,7 +13,7 @@ import java.io.File
  * See docs/configuration.md#declaration-reports for row coverage and column definitions.
  */
 class DeclarationReport(private val target: File, val sourceIndex: ProofSourceIndex? = null) {
-    enum class SyntheticProgramReason { CLASS_OBLIGATION_BUNDLE }
+    enum class SyntheticProgramReason { CLASS_OBLIGATION_BUNDLE, DELEGATED_ACCESSOR }
 
     data class Row(
         val file: String,

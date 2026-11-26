@@ -127,19 +127,28 @@ class DeclarationReportTest {
 
     @Test
     fun `callable program identities survive checkout relocation but bind exact bytes and normalized spans`() {
-        val plain = "// 🐍\n$source\n"
+        val delegate = "kotlin.properties.Delegates.notNull<Int>()"
+        val plain = "// 🐍\n$source\nvar delegated: Int by $delegate\n"
         val formatted = "\uFEFF" + plain.replace("\n", "\r\n")
         val original = report(formatted, checkout = temp.resolve("original")).ids
         assertEquals(original, report(formatted, checkout = temp.resolve("relocated")).ids)
         assertNotEquals(original.getValue("supplier.body")[0], original.getValue("supplier.lambda0")[0])
         val plainIds = report(plain, checkout = temp.resolve("plain")).ids
         assertNotEquals(plainIds.getValue("supplier.body")[0], original.getValue("supplier.body")[0])
-        for ((label, kind) in listOf("supplier.body" to "FUNCTION", "supplier.lambda0" to "LAMBDA")) {
-            val anchor = "{ 1 }"
+        val raw = digest(formatted.toByteArray())
+        val input = ":test:compileKotlin\tcheckout\tsrc/Census.kt\t$raw"
+        fun regionId(kind: String, anchor: String): String {
             val start = plain.indexOf(anchor)
-            val raw = digest(formatted.toByteArray())
-            val reference = "census-region-v1\t:test:compileKotlin\tcheckout\tsrc/Census.kt\t$raw\t$kind:$start:${start + anchor.length}:0"
-            assertEquals(digest(reference.toByteArray()), original.getValue(label)[1])
+            return digest("census-region-v1\t$input\t$kind:$start:${start + anchor.length}:0".toByteArray())
+        }
+        assertEquals(regionId("FUNCTION", "{ 1 }"), original.getValue("supplier.body")[1])
+        assertEquals(regionId("LAMBDA", "{ 1 }"), original.getValue("supplier.lambda0")[1])
+        assertEquals(regionId("GETTER", "4"), original.getValue("computed.get.body")[1])
+        val delegateId = regionId("PROPERTY_DELEGATE", delegate)
+        for ((accessor, kind) in listOf("get" to "GETTER", "set" to "SETTER")) {
+            val expected = digest("delegated-accessor-program-v1\t$input\t$kind:$delegateId".toByteArray())
+            assertEquals(listOf(expected, "", "", "", DeclarationReport.SyntheticProgramReason.DELEGATED_ACCESSOR.name,
+                "", "", "", ""), original.getValue("delegated.$accessor.body"))
         }
     }
 
