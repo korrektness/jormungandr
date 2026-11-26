@@ -4,9 +4,13 @@ import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import viper.silver.ast.*
 import viper.silver.plugin.standard.refute.Refute
+import java.nio.file.FileAlreadyExistsException
+import java.nio.file.Files
+import java.util.concurrent.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class SiliconFrontendTest {
@@ -16,6 +20,7 @@ class SiliconFrontendTest {
     private val int = `Int$`.`MODULE$`
     private val ref = `Ref$`.`MODULE$`
     private val bool = `Bool$`.`MODULE$`
+    private val emptyProgram = Program(emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), pos, info, trafos)
 
     /**
      * `function f(x: Int): Int ensures ret_1 > 0 { x }`, where `ret_1` is undeclared, and `method m() { assert false }`.
@@ -125,17 +130,16 @@ class SiliconFrontendTest {
 
     @Test
     fun `cache status distinguishes cold verification misses and hits without caching failures`() {
-        val directory = java.nio.file.Files.createTempDirectory("silicon-status-")
+        val directory = Files.createTempDirectory("silicon-status-")
         try {
-            val success = Program(emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), pos, info, trafos)
             val statuses = mutableListOf<String>()
             val failures = mutableListOf<VerifierError>()
             SiliconFrontend(SiliconFrontend.locateZ3()).use {
-                it.verify(success, statuses::add) { failure -> failures.add(failure) }
+                it.verify(emptyProgram, statuses::add) { failure -> failures.add(failure) }
             }
             SiliconFrontend(SiliconFrontend.locateZ3(), cacheDirectory = directory).use {
-                it.verify(success, statuses::add) { failure -> failures.add(failure) }
-                it.verify(success, statuses::add) { failure -> failures.add(failure) }
+                it.verify(emptyProgram, statuses::add) { failure -> failures.add(failure) }
+                it.verify(emptyProgram, statuses::add) { failure -> failures.add(failure) }
                 repeat(2) { _ ->
                     it.verify(hiddenTriggerFailureProgram, statuses::add) { failure -> failures.add(failure) }
                 }
@@ -147,4 +151,30 @@ class SiliconFrontendTest {
         }
     }
 
+    @Test
+    fun `cache status is reported when verification exits exceptionally`() {
+        val directory = Files.createTempDirectory("silicon-status-")
+        try {
+            val z3 = SiliconFrontend.locateZ3()
+            val cancellation = CancellationException()
+            val statuses = mutableListOf<String>()
+            SiliconFrontend(z3, cacheDirectory = directory).use { verifier ->
+                verifier.verify(emptyProgram) { throw AssertionError(it) }
+                val thrown = assertFailsWith<CancellationException> {
+                    verifier.verify(hiddenTriggerFailureProgram, statuses::add) { throw cancellation }
+                }
+                assertSame(cancellation, thrown)
+            }
+            val reportFile = Files.createTempFile(directory, "report", null)
+            SiliconFrontend(z3, cacheDirectory = directory, cacheReportDirectory = reportFile).use { verifier ->
+                val failure = assertFailsWith<FileAlreadyExistsException> {
+                    verifier.verify(emptyProgram, statuses::add) { throw AssertionError(it) }
+                }
+                assertEquals(reportFile, java.nio.file.Path.of(failure.file))
+            }
+            assertEquals(listOf("miss", "unavailable"), statuses)
+        } finally {
+            directory.toFile().deleteRecursively()
+        }
+    }
 }

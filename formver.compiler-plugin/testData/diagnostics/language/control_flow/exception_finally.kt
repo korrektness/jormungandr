@@ -232,3 +232,25 @@ fun <!VIPER_TEXT!>finallyBoundsAreErrors<!>(a: IntArray) {
 fun <!VIPER_TEXT!>finallyDivisionIsError<!>(x: Int) {
     try { <!DIVISION_BY_ZERO, DIVISION_BY_ZERO!>x / 0<!> } finally { verify(true) }
 }
+
+fun <!VIPER_TEXT!>finallyReportsCallbackCompletion<!>(action: () -> Unit, report: (Boolean) -> Unit) {
+    var completed = false
+    try {
+        action()
+        completed = true
+    } finally {
+        report(completed)
+    }
+    verify(completed)
+}
+
+fun <!VIPER_TEXT!>finallyReportsCallbackFailure<!>(action: () -> Unit, report: (Boolean) -> Unit) {
+    var completed = false
+    try {
+        action()
+        completed = true
+    } finally {
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>completed<!>)
+        report(completed)
+    }
+}

@@ -211,7 +211,7 @@ class SiliconFrontend(
     fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) =
         verify(viperProgram, {}, onFailure)
 
-    /** Reports whether this invocation uses the outcome cache: off, miss or hit. */
+    /** Reports the outcome cache status: off, miss, hit, or unavailable if cache access fails before verification starts. */
     fun verify(
         viperProgram: viper.silver.ast.Program,
         onCacheStatus: (String) -> Unit,
@@ -260,18 +260,30 @@ class SiliconFrontend(
                 else -> error("Unexpected Silicon verification result: $result")
             }
         }
+        runReportingCompletion(
+            action = { verifyUsingCache(viperProgram, verify) },
+            report = { completed ->
+                onCacheStatus(when {
+                    cache == null -> "off"
+                    executed -> "miss"
+                    completed -> "hit"
+                    else -> "unavailable"
+                })
+            },
+        )
+    }
+
+    private fun verifyUsingCache(viperProgram: viper.silver.ast.Program, verify: () -> Boolean): Boolean =
+        if (cache == null) verify()
+        else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
+
+    private fun runReportingCompletion(action: () -> Unit, report: (Boolean) -> Unit) {
         var completed = false
         try {
-            if (cache == null) verify()
-            else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
+            action()
             completed = true
         } finally {
-            onCacheStatus(when {
-                cache == null -> "off"
-                executed -> "miss"
-                completed -> "hit"
-                else -> "unavailable"
-            })
+            report(completed)
         }
     }
 
