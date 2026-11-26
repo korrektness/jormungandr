@@ -42,6 +42,12 @@ class FailureReportingTest {
         assertNull(problem.primary)
         assertNull(problem.counterexample)
         assertTrue(problem.related.isEmpty())
+
+        val rendered = FailureToFirRenderer.message(problem)
+        assertContains(rendered, "${backend.result.id()}/${backend.result.reason().id()}")
+        assertFailsWith<IllegalArgumentException> {
+            FailureToFirRenderer.message(problem.copy(backend = null))
+        }
     }
 
     @Test

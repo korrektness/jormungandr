@@ -85,7 +85,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             '\\' -> "\\\\"
             else -> if (value.value.isISOControl()) "\\u%04x".format(value.value.code) else value.value.toString()
         } + "'"
-        CounterexampleValue.Null -> "null"
+        is CounterexampleValue.Null -> "null"
         is CounterexampleValue.EnumLike -> value.names.joinToString(" / ")
     }
 
@@ -227,13 +227,13 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 "Could not establish that ${operator(condition.operation)} stays within the ${condition.resultType} range [${condition.lower}, ${condition.upper}]."
             is KotlinCondition.DivisionByZero -> "Could not establish a nonzero divisor for ${operator(condition.operation)}."
             is KotlinCondition.CastFailure -> "Could not establish that the cast operand has runtime type ${condition.target}."
-            KotlinCondition.NullAssertion -> "Could not establish that the operand of !! is non-null."
+            is KotlinCondition.NullAssertion -> "Could not establish that the operand of !! is non-null."
             is KotlinCondition.Proof -> proofMessage(condition)
             is KotlinCondition.ExceptionEscape -> exceptionEscapeMessage(condition)
             is PurityCondition -> purityMessage(condition)
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
             is TerminationCondition -> terminationMessage(condition)
-            KotlinCondition.Termination, KotlinCondition.LoopTermination -> decreaseMessage(condition)
+            is KotlinCondition.Termination, is KotlinCondition.LoopTermination -> decreaseMessage(condition)
             is AttributeCondition -> attributeMessage(failure.kind, condition)
             is KotlinCondition.Returns -> "Could not establish that the function never returns ${article(opposite(condition.effect))}."
             is KotlinCondition.Conditional -> {
@@ -253,11 +253,11 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.Tool -> toolMessage(failure.kind, condition)
             is KotlinCondition.Timeout ->
                 "Verification of '${condition.declaration}' did not finish within ${condition.seconds} seconds, so it is not verified."
-            KotlinCondition.UntrackedWrite -> "Write is not tracked because the local it goes through is shared."
+            is KotlinCondition.UntrackedWrite -> "Write is not tracked because the local it goes through is shared."
             is KotlinCondition.UncheckedLibraryCall ->
                 "Call to '${condition.member}' is not checked against its specification because its receiver is not unique. It may throw, and its result is unknown."
             is KotlinCondition.OpaqueCall -> opaqueCallMessage(condition)
-            KotlinCondition.Unclassified -> {
+            is KotlinCondition.Unclassified -> {
                 val evidence = requireNotNull(failure.backend)
                 "Could not establish a generated Kotlin obligation [${evidence.errorId}/${evidence.reasonId}]: ${evidence.detail}"
             }
@@ -408,7 +408,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 "The uniqueness checker has no facts for the inline function '${condition.declaration.name}'."
             ConversionOwnershipCondition.MissingFactsRule.LAMBDA_BODY -> "The uniqueness checker has no state for this lambda body."
         }
-        ConversionOwnershipCondition.TryWithOwnership -> "`try` is not supported in a function that holds ownership."
+        is ConversionOwnershipCondition.TryWithOwnership -> "`try` is not supported in a function that holds ownership."
         is FoldOwnershipCondition -> foldOwnershipMessage(condition)
     }
 
