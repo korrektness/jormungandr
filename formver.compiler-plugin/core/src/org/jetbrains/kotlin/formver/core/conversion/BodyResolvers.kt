@@ -27,8 +27,8 @@ data class ConvertedMethodBody(
     val returnTarget: ReturnTarget,
     /** The source of the body as written, where a body that does not end in a jump leaves. */
     val bodySource: KtSourceElement? = null,
-    /** Initializer declarations whose evaluation is embedded directly in this constructor body. */
-    val constructionInitializers: Set<FirDeclaration> = emptySet(),
+    /** Primary constructors and initializers lowered into this constructor body. */
+    val constructionParts: Set<FirDeclaration> = emptySet(),
 )
 
 /**

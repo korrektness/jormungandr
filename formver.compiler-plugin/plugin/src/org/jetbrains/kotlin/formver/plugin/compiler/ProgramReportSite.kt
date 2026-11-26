@@ -33,10 +33,10 @@ internal class ProgramReportSite(
     private val row: DeclarationReport.Row,
     private val regions: Map<FirDeclaration, String> = emptyMap(),
     private val contracts: Map<ContractLambda, String> = emptyMap(),
-    private val initializers: ConstructorReportLinks? = null,
+    private val constructorLinks: ConstructorReportLinks? = null,
 ) {
     val tracksBodies: Boolean get() = regions.isNotEmpty()
-    val tracksConstruction: Boolean get() = initializers?.isEmpty == false
+    val tracksConstruction: Boolean get() = constructorLinks?.isEmpty == false
 
     fun withEmittedEvidence(
         evidence: EmittedCallableEvidence?,
@@ -51,7 +51,8 @@ internal class ProgramReportSite(
         return ProgramReportSite(report, row.copy(
             directBodyRegionIds = links.joinToString(","),
             specOnlyLambdas = specs.joinToString(","),
-            enclosingConstructorLinks = initializers?.emitted(construction).orEmpty(),
+            enclosingConstructorLinks = constructorLinks?.emittedInitializers(construction).orEmpty(),
+            primaryConstructorLinks = constructorLinks?.emittedPrimaryConstructors(construction).orEmpty(),
         ))
     }
 
@@ -110,15 +111,16 @@ internal fun PluginConfiguration.programReportSite(
         putAll(candidates)
     }
     val contracts = sourceIndex.contractLambdas(regions.keys.filterIsInstance<FirFunction>())
-    val initializers = constructorReportLinks(sourceIndex, programId, constructors, context.session)
+    val constructorLinks = constructorReportLinks(sourceIndex, programId, constructors, context.session)
     return ProgramReportSite(report, row.copy(
         programId = programId,
         targetRegionId = regionId.orEmpty(),
         inheritedCandidateRegionIds = candidates.values.distinct().sorted().joinToString(","),
         syntheticProgramReason = syntheticReason,
         contractLambdaCandidates = contracts.values.distinct().sorted().joinToString(","),
-        constructorInitializerCandidates = initializers.candidates,
-    ), regions, contracts, initializers)
+        constructorInitializerCandidates = constructorLinks.initializerCandidates,
+        primaryConstructorCandidates = constructorLinks.primaryCandidates,
+    ), regions, contracts, constructorLinks)
 }
 
 private fun ProofSourceIndex.contractLambdas(functions: List<FirFunction>): Map<ContractLambda, String> = buildMap {

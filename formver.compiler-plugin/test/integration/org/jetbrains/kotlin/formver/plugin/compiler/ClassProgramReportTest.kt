@@ -268,6 +268,8 @@ class ClassProgramReportTest {
         val ids = result.ids.getValue("Stops.class")
         val candidate = "${regionId("INIT_BLOCK", "{ val half = 0.5 }")}:${constructorId(ids[0], "primary")}"
         assertEquals(listOf(candidate, ""), ids.subList(7, 9))
+        val primary = "${regionId("PRIMARY_CONSTRUCTOR", "Stops")}:${constructorId(ids[0], "primary")}"
+        assertEquals(listOf(primary, ""), ids.subList(9, 11))
     }
 
     @Test
@@ -406,8 +408,9 @@ class ClassProgramReportTest {
         val candidate = regionId("FUNCTION", "{ preconditions { x >= 0 }; return x }")
         val spec = regionId("LAMBDA", "{ x >= 0 }") + ":PRECONDITION"
         val bundle = DeclarationReport.SyntheticProgramReason.CLASS_OBLIGATION_BUNDLE.name
-        assertEquals(listOf("", candidate, candidate, bundle, spec, spec), first.subList(1, 7))
-        assertEquals(first.drop(1), second.drop(1))
+        val callableEvidence = listOf("", candidate, candidate, bundle, spec, spec)
+        assertEquals(callableEvidence, first.subList(1, 7))
+        assertEquals(callableEvidence, second.subList(1, 7))
         assertEquals("", result.ids.getValue("Base.class")[3])
     }
 
@@ -434,7 +437,7 @@ class ClassProgramReportTest {
     }
 
     @Test
-    fun `each constructor must emit its initializer links even when the class row is green`() {
+    fun `each constructor must emit its construction links even when the class row is green`() {
         fun checkConstructors(optOut: Boolean) {
             val secondary = "${if (optOut) "@NeverVerify " else ""}constructor() : this(0)"
             val result = compile(
@@ -462,8 +465,17 @@ class ClassProgramReportTest {
             fun pairs(vararg obligations: String) = regions.flatMap { id -> obligations.map { "$id:$it" } }.sorted().joinToString(",")
             assertEquals(pairs(primary, second), base[7])
             assertEquals(if (optOut) pairs(primary) else pairs(primary, second), base[8])
-            val derivedPairs = pairs(constructorId(derived[0], "primary"))
+            val derivedObligation = constructorId(derived[0], "primary")
+            val derivedPairs = pairs(derivedObligation)
             assertEquals(listOf(derivedPairs, derivedPairs), derived.subList(7, 9))
+
+            val baseRegion = regionId("PRIMARY_CONSTRUCTOR", "(val seed: Int)")
+            val basePrimary = "$baseRegion:$primary"
+            val baseBoth = listOf(basePrimary, "$baseRegion:$second").sorted().joinToString(",")
+            assertEquals(listOf(baseBoth, if (optOut) basePrimary else baseBoth), base.subList(9, 11))
+            val derivedRegion = regionId("PRIMARY_CONSTRUCTOR", "Derived")
+            val derivedPrimary = listOf("$baseRegion:$derivedObligation", "$derivedRegion:$derivedObligation").sorted().joinToString(",")
+            assertEquals(listOf(derivedPrimary, derivedPrimary), derived.subList(9, 11))
         }
         checkConstructors(optOut = false)
         checkConstructors(optOut = true)

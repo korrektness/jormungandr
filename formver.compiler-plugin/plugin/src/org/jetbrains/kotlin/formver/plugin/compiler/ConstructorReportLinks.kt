@@ -16,17 +16,29 @@ import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.source.ProofSourceIndex
 import org.jetbrains.kotlin.formver.common.source.RegionKind
 import org.jetbrains.kotlin.psi.KtAnonymousInitializer
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 
-/** Expected initializer obligations and their exact FIR identities, scoped to one program row. */
-internal class ConstructorReportLinks(private val pairs: Map<Pair<FirConstructor, FirDeclaration>, String>) {
-    val candidates: String get() = pairs.values.distinct().sorted().joinToString(",")
-    val isEmpty: Boolean get() = pairs.isEmpty()
+/** Construction candidates and their exact FIR identities, scoped to one program row. */
+internal class ConstructorReportLinks(pairs: Map<Pair<FirConstructor, FirDeclaration>, String>) {
+    private val primaryConstructors = pairs.filterKeys { (_, part) -> part is FirConstructor }
+        .entries.groupBy({ it.value }, { it.key })
+    private val initializers = pairs.filterKeys { (_, part) -> part !is FirConstructor }
+        .entries.groupBy({ it.value }, { it.key })
 
-    fun emitted(bodies: Map<FirConstructor, Set<FirDeclaration>>): String = pairs.entries.groupBy({ it.value }, { it.key })
-        .filterValues { sources -> sources.all { (constructor, initializer) -> initializer in bodies[constructor].orEmpty() } }
+    val primaryCandidates: String get() = primaryConstructors.keys.sorted().joinToString(",")
+    val initializerCandidates: String get() = initializers.keys.sorted().joinToString(",")
+    val isEmpty: Boolean get() = primaryConstructors.isEmpty() && initializers.isEmpty()
+
+    fun emittedPrimaryConstructors(bodies: Map<FirConstructor, Set<FirDeclaration>>): String = primaryConstructors
+        .filterValues { sources -> sources.singleOrNull()?.let { (root, part) -> part in bodies[root].orEmpty() } == true }
+        .keys.sorted().joinToString(",")
+
+    fun emittedInitializers(bodies: Map<FirConstructor, Set<FirDeclaration>>): String = initializers
+        .filterValues { sources -> sources.all { (root, part) -> part in bodies[root].orEmpty() } }
         .keys.sorted().joinToString(",")
 }
 
@@ -57,8 +69,15 @@ internal fun PluginConfiguration.constructorReportLinks(
                 parent.origin == FirDeclarationOrigin.Source
             }
         }
-        val declaringClasses = chain.map { checkNotNull(it.resolvedReturnType.toRegularClassSymbol(session)) }.distinct()
-        for (declaring in declaringClasses) {
+        val declaringClasses = chain.map { symbol ->
+            symbol to checkNotNull(symbol.resolvedReturnType.toRegularClassSymbol(session))
+        }.toList()
+        for ((symbol, declaring) in declaringClasses) {
+            if (!symbol.isPrimary) continue
+            val region = primaryConstructorRegion(sourceIndex, symbol, declaring.source as? KtPsiSourceElement) ?: continue
+            put(constructor to symbol.fir, "$region:$obligation")
+        }
+        for (declaring in declaringClasses.map { it.second }.distinct()) {
             for (declaration in declaring.fir.declarations) {
                 val region = initializerRegion(sourceIndex, declaration) ?: continue
                 put(constructor to declaration, "$region:$obligation")
@@ -66,6 +85,23 @@ internal fun PluginConfiguration.constructorReportLinks(
         }
     }
 })
+
+private fun PluginConfiguration.primaryConstructorRegion(
+    sourceIndex: ProofSourceIndex,
+    constructor: FirConstructorSymbol,
+    ownerSource: KtPsiSourceElement?,
+): String? {
+    val owner = ownerSource?.psi as? KtClassOrObject ?: return null
+    val file = owner.containingFile as KtFile
+    if (externalSpecs.isExternalSpec(file.virtualFilePath)) return null
+    val psi = (constructor.source as? KtPsiSourceElement)?.psi ?: return null
+    val anchor = when {
+        psi is KtPrimaryConstructor && psi.getContainingClassOrObject() === owner -> psi
+        psi === owner && !owner.hasExplicitPrimaryConstructor() -> owner
+        else -> return null
+    }
+    return sourceIndex.file(file).region(anchor, RegionKind.PRIMARY_CONSTRUCTOR)
+}
 
 private fun PluginConfiguration.initializerRegion(sourceIndex: ProofSourceIndex, declaration: FirDeclaration): String? {
     val psi = (declaration.source as? KtPsiSourceElement)?.psi ?: return null

@@ -180,6 +180,7 @@ replaces the file. The first line names the columns:
 | `synthetic_program_reason` | `CLASS_OBLIGATION_BUNDLE` identifies a generated class proof container; its obligations need their own evidence. `DELEGATED_ACCESSOR` identifies a generated getter or setter with no source body. Its program ID is anchored to the property's `PROPERTY_DELEGATE` region and accessor direction, but reports no coverage of the delegate expression or any other source region. |
 | `contract_lambda_candidates`, `spec_only_lambdas` | Sorted comma-separated `region_id:PRECONDITION` or `region_id:POSTCONDITION` entries. A candidate is a directly supplied lambda of a leading contract call (after `exposes`, if present, in a lifted lambda), whose resolved JVM marker passes the bytecode non-invocation check. A spec-only link additionally requires lowering its own contract clauses and emitting all associated callable body definitions and refinements in this program. |
 | `constructor_initializer_candidates`, `enclosing_constructor_links` | Sorted comma-separated `region_id:constructor_obligation_id` entries. Candidates name `init` blocks and property initializers reached by a class program's constructors, including opted-out constructors and source delegation. An enclosing link requires the exact initializer to be lowered into that constructor's emitted proof body. Each obligation ID is scoped to its `program_id` and identifies a primary constructor or the syntax span of a secondary constructor. |
+| `primary_constructor_candidates`, `primary_constructor_links` | Sorted comma-separated `region_id:constructor_obligation_id` entries for `PRIMARY_CONSTRUCTOR` regions. Candidates follow resolved source constructor delegation, including from opted-out roots. A link identifies an unambiguous primary constructor lowered into the exact emitted constructor obligation in this row. |
 
 The report always includes the identity and membership columns. They remain blank unless
 `proof_checkout` (the census checkout root) and `proof_compilation` (the census
@@ -215,6 +216,12 @@ arguments or nested regions. A separately lowered lambda, local callable or acce
 needs its own callable evidence. This evidence covers only initializers lowered by
 the constructor implementation; it supplies no evidence for other initializer or
 builtin lowering.
+
+Apply the same per-obligation reconciliation to primary constructors using their
+own columns. A primary constructor of an abstract class can link to a concrete
+class's emitted obligation when that obligation lowers it by source delegation.
+A primary constructor link supplies no evidence for supertype calls, delegation
+arguments, default arguments, initializer regions or nested bodies.
 
 For each applicable contract lambda obligation, require a matching candidate,
 spec-only link and terminal `verified` outcome on its program row. A spec-only link accounts for the

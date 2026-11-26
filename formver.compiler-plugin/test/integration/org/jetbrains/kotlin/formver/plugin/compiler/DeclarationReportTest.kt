@@ -148,7 +148,7 @@ class DeclarationReportTest {
         for ((accessor, kind) in listOf("get" to "GETTER", "set" to "SETTER")) {
             val expected = digest("delegated-accessor-program-v1\t$input\t$kind:$delegateId".toByteArray())
             assertEquals(listOf(expected, "", "", "", DeclarationReport.SyntheticProgramReason.DELEGATED_ACCESSOR.name,
-                "", "", "", ""), original.getValue("delegated.$accessor.body"))
+                "", "", "", "", "", ""), original.getValue("delegated.$accessor.body"))
         }
     }
 

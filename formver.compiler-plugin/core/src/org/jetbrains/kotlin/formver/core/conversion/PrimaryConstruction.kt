@@ -128,6 +128,13 @@ private fun ProgramConversionContext.passSuperArgument(
     arguments[SubstitutedArgument.ValueParameter(parameter)] = variable
 }
 
+context(program: ProgramConverter)
+private fun MutableSet<FirDeclaration>.recordConstructionPart(declaration: FirDeclaration) {
+    if (program.config.declarationReport?.sourceIndex != null && (declaration !is FirConstructor || declaration.isPrimary)) {
+        add(declaration)
+    }
+}
+
 /**
  * Executes construction on one allocation, in delegation and declaration order. A library superclass constructor's
  * body is not converted: its classes' fields other than `lateinit` ones are assumed to hold values of their declared
@@ -145,10 +152,10 @@ internal fun constructionBody(
     val receiver = target.variable
     val type = receiver.type.pretype as ClassTypeEmbedding
     val actions = mutableListOf<ExpEmbedding>()
-    val initializers = mutableSetOf<FirDeclaration>()
+    val constructionParts = mutableSetOf<FirDeclaration>()
     fun addInitializer(declaration: FirDeclaration, action: ExpEmbedding) {
         actions += action
-        if (program.config.declarationReport?.sourceIndex != null) initializers += declaration
+        constructionParts.recordConstructionPart(declaration)
     }
     val captured = mutableMapOf<FirBasedSymbol<*>, PropertyAccessEmbedding>()
     val entered = mutableMapOf<CaptureScope, Map<FirBasedSymbol<*>, PropertyAccessEmbedding>>()
@@ -251,10 +258,11 @@ internal fun constructionBody(
             actions += FunctionExp(null, context.convert(body), bodyTarget.label!!)
         }
         actions += boundary.withPosition(symbol.fir.source)
+        constructionParts.recordConstructionPart(symbol.fir)
     }
     initialize(constructor, signature.parameterVariables(constructor).associate { (parameter, value) ->
         SubstitutedArgument.ValueParameter(parameter) to value
     })
     return ConvertedMethodBody(FunctionExp(signature, actions.toBlock(), target.label!!), target,
-        constructionInitializers = initializers)
+        constructionParts = constructionParts)
 }

@@ -64,7 +64,7 @@ internal class ProgramBodyProcessor(
                 val name = signature.name
                 if (converter.convertedBodyResolver.sourceBody(name, pure = false) !== declaration) continue
                 if ((runtimeDefinitions[name] ?: name) !in methods) continue
-                put(declaration, checkNotNull(converter.convertedBodyResolver.lookupImpure(name)).constructionInitializers)
+                put(declaration, checkNotNull(converter.convertedBodyResolver.lookupImpure(name)).constructionParts)
             }
         }
     }
