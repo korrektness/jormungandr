@@ -147,6 +147,42 @@ class SiliconConfigurationGateTest {
         }
     }
 
+    @Test
+    fun `a conflicting lease rechecks admission after a spurious wakeup`() {
+        var waits = 0
+        val gate = SiliconConfigurationGate {
+            if (++waits >= 2) throw InterruptedException()
+        }
+        val options = listOf("same")
+        gate.withConfiguration(options) {
+            assertFailsWith<InterruptedException> { gate.withExclusiveConfiguration(options) { 7 } }
+            assertEquals(2, waits)
+            assertEquals(7, gate.withConfiguration(options) { 7 })
+        }
+        assertEquals(8, gate.withExclusiveConfiguration(options) { 8 })
+    }
+
+    @Test
+    fun `a saturated shared lease count rejects acquisition without consuming capacity`() {
+        val gate = SiliconConfigurationGate { throw AssertionError("Compatible leases must not wait.") }
+        val count = SiliconConfigurationGate::class.java.getDeclaredField("active").apply { isAccessible = true }
+        val options = listOf("same")
+        gate.withConfiguration(options) {
+            count.setInt(gate, Int.MAX_VALUE - 1)
+            try {
+                repeat(2) {
+                    assertEquals(7, gate.withConfiguration(options) {
+                        assertFailsWith<IllegalStateException> { gate.withConfiguration(options) { 8 } }
+                        7
+                    })
+                }
+            } finally {
+                count.setInt(gate, 1)
+            }
+        }
+        assertEquals(9, gate.withExclusiveConfiguration(options) { 9 })
+    }
+
     private companion object {
         const val TIMEOUT_SECONDS = 30L
     }

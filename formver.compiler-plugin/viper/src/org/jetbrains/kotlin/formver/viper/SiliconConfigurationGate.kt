@@ -26,16 +26,20 @@ class SiliconConfigurationGate(private val awaitRelease: (Condition) -> Unit = {
                 if (!exclusive && !this.exclusive && configuration == options) break
                 awaitRelease(available)
             }
+            val count = active
+            check(count < Int.MAX_VALUE) { "Silicon configuration lease count is $count on acquisition." }
             configuration = options
             this.exclusive = exclusive
-            active++
+            active = count + 1
         }
         try {
             return action()
         } finally {
             lock.withLock {
-                active--
-                if (active == 0) available.signalAll()
+                val count = active
+                check(count > 0) { "Silicon configuration lease count is $count on release." }
+                active = count - 1
+                if (count == 1) available.signalAll()
             }
         }
     }
