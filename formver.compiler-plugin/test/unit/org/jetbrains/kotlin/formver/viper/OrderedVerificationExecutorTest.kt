@@ -46,38 +46,41 @@ class OrderedVerificationExecutorTest {
     }
 
     @Test
-    fun `workers reuse exclusive resources and close them`() {
+    fun `workers reuse exclusive resources without dropping repeated inputs`() {
         val opened = AtomicInteger()
         val closed = AtomicInteger()
+        val started = AtomicInteger()
         val barrier = CyclicBarrier(2)
         class Resource : java.io.Closeable {
             val active = java.util.concurrent.atomic.AtomicBoolean()
             override fun close() { closed.incrementAndGet() }
         }
         OrderedVerificationExecutor(2).use { executor ->
-            val results = executor.mapWithResource(listOf(4, 3, 2, 1), { opened.incrementAndGet(); Resource() }) { resource, value ->
-                kotlin.test.assertTrue(resource.active.compareAndSet(false, true))
-                barrier.await()
+            val results = executor.mapWithResource(listOf(4, 3, 4, 1), { opened.incrementAndGet(); Resource() }) { resource, value ->
+                assertTrue(resource.active.compareAndSet(false, true))
+                if (started.getAndIncrement() < 2) barrier.await()
                 resource.active.set(false)
-                value
+                value * 10
             }
-            assertEquals(listOf(4, 3, 2, 1), results)
+            assertEquals(listOf(40, 30, 40, 10), results)
         }
         assertEquals(2, opened.get())
         assertEquals(2, closed.get())
     }
 
     @Test
-    fun `resource closes when verification throws`() {
-        val closed = AtomicInteger()
+    fun `resource close failure is suppressed when verification throws`() {
+        val verificationFailure = IllegalStateException()
+        val closeFailure = IllegalArgumentException()
         OrderedVerificationExecutor(2).use { executor ->
-            assertFailsWith<IllegalStateException> {
-                executor.mapWithResource(listOf(1), { java.io.Closeable { closed.incrementAndGet() } }) { _, _ ->
-                    error("verification failed")
+            val thrown = assertFailsWith<IllegalStateException> {
+                executor.mapWithResource(listOf(1), { java.io.Closeable { throw closeFailure } }) { _, _ ->
+                    throw verificationFailure
                 }
             }
+            assertSame(verificationFailure, thrown)
+            assertEquals(listOf(closeFailure), thrown.suppressed.toList())
         }
-        assertEquals(1, closed.get())
     }
 
     @Test

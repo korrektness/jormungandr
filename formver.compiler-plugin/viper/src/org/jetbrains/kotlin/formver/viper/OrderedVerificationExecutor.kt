@@ -85,18 +85,27 @@ class OrderedVerificationExecutor(private val parallelism: Int) : Closeable {
 
     /** Each active worker owns its resource until all its jobs finish. */
     fun <T, R, C : Closeable> mapWithResource(inputs: List<T>, resource: () -> C, action: (C, T) -> R): List<R> {
-        val next = AtomicInteger()
-        return map((0 until minOf(parallelism, inputs.size)).toList()) {
-            resource().use { owned ->
-                buildList {
-                    while (true) {
-                        val index = next.getAndIncrement()
-                        if (index >= inputs.size) break
-                        add(index to action(owned, inputs[index]))
-                    }
+        val batch = ResourceBatch(inputs, resource, action)
+        val workers = (0 until minOf(parallelism, inputs.size)).toList()
+        return map(workers) { batch.runWorker() }.flatten().sortedBy { it.first }.map { it.second }
+    }
+
+    private class ResourceBatch<T, R, C : Closeable>(
+        private val inputs: List<T>,
+        private val resource: () -> C,
+        private val action: (C, T) -> R,
+    ) {
+        private val next = AtomicInteger()
+
+        fun runWorker(): List<Pair<Int, R>> = resource().use { owned ->
+            buildList {
+                while (true) {
+                    val index = next.getAndIncrement()
+                    if (index >= inputs.size) break
+                    add(index to action(owned, inputs[index]))
                 }
             }
-        }.flatten().sortedBy { it.first }.map { it.second }
+        }
     }
 
     /** Cancels every accepted job and wakes its caller without waiting for worker cleanup. */
