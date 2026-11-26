@@ -159,3 +159,40 @@ method testNullableSafeAs(foo: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/casts.kt: info: Generated Viper text for comparableInt:
+method comparableInt(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Comparable())
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/casts.kt: info: Generated Viper text for comparableUInt:
+method comparableUInt(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), uintType())
+  ensures isSubtype(typeOf(v_ret_0), Comparable())
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/casts.kt: info: Generated Viper text for unitIsComparable:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method unitIsComparable(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), unitType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var boxed: Ref
+  boxed := value
+  assert isSubtype(typeOf(boxed), Comparable())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

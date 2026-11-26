@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.formver.plugin.verify
 
 open <!VIPER_TEXT!>class Foo<!>
 <!VIPER_TEXT!>class Bar<!> : Foo()
@@ -31,3 +32,12 @@ fun <!VIPER_TEXT!>testNullableAs<!>(foo: Foo?): Bar? = foo as Bar?
 fun <!VIPER_TEXT!>testSafeAs<!>(foo: Foo): Bar? = foo as? Bar
 
 fun <!VIPER_TEXT!>testNullableSafeAs<!>(foo: Foo?): Bar? = foo as? Bar
+
+fun <!VIPER_TEXT!>comparableInt<!>(value: Int): Comparable<*> = value
+
+fun <!VIPER_TEXT!>comparableUInt<!>(value: UInt): Comparable<*> = value
+
+fun <!VIPER_TEXT!>unitIsComparable<!>(value: Unit) {
+    val boxed: Any = value
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>boxed is Comparable<*><!>)
+}

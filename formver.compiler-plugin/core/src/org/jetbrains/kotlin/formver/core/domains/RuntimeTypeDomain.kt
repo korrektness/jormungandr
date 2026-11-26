@@ -115,12 +115,13 @@ class RuntimeTypeDomain(typeResolver: TypeResolver, usesUnsigned: Boolean = fals
         val unitValue = createDomainFunc(UnqualifiedDomainFuncName("unitValue"), emptyList(), Ref)
     }
 
-    // The interfaces `String` implements. They are class types, in the domain only when the program refers to them.
-    private val stringSuperTypeNames = setOf(StandardClassIds.CharSequence.embedName(), StandardClassIds.Comparable.embedName())
+    private val charSequenceName = StandardClassIds.CharSequence.embedName()
+    private val comparableName = StandardClassIds.Comparable.embedName()
+    private val comparableInjections = primitiveTypeInjections + unsignedInjections.takeIf { usesUnsigned }.orEmpty()
 
     private val usesMultiset = typeResolver.usesMultiset
     private val allInjections: List<Injection> =
-        primitiveTypeInjections + unsignedInjections.takeIf { usesUnsigned }.orEmpty() + listOfNotNull(
+        comparableInjections + listOfNotNull(
             multisetInjection.takeIf { usesMultiset },
             iterationSequenceInjection.takeIf { typeResolver.usesIterationSequence },
         )
@@ -246,9 +247,12 @@ class RuntimeTypeDomain(typeResolver: TypeResolver, usesUnsigned: Boolean = fals
         allInjections.forEach {
             it.apply { injectionAxioms() }
         }
-        typeResolver.classTypeEmbeddings().filter { it.name in stringSuperTypeNames }.forEach { superType ->
-            axiom {
-                stringType() subtype superType.runtimeType
+        typeResolver.classTypeEmbeddings().forEach { type ->
+            when (type.name) {
+                charSequenceName -> axiom { stringType() subtype type.runtimeType }
+                comparableName -> comparableInjections.forEach { injection ->
+                    axiom { injection.typeFunction() subtype type.runtimeType }
+                }
             }
         }
         typeResolver.classTypeEmbeddings().forEach { type ->

@@ -1590,6 +1590,8 @@ check and null otherwise. These operations supply no permissions or generic-argu
 facts; type-parameter casts check the erased bound. Reference-array casts requiring runtime
 component checks, including `as?`, are unsupported; a compiler-proven redundant
 component check is permitted. Primitive-array casts use their nominal runtime type.
+Represented signed and unsigned integers, `Boolean`, `Char` and `String` are
+subtypes of erased `Comparable`.
 
 A read through a cast, smart cast, `!!` or safe-call subject uses the source
 owned path's presentation: its root's declared type, or its last owned field's
