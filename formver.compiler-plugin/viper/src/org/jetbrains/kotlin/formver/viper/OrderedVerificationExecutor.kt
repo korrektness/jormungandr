@@ -21,27 +21,28 @@ class OrderedVerificationExecutor(private val parallelism: Int) : Closeable {
     private var closed = false
 
     fun <T, R> map(inputs: List<T>, action: (T) -> R): List<R> {
-        val completions = LinkedBlockingQueue<Future<R>>()
-        val futures = mutableListOf<Future<R>>()
+        val batch = CompletionBatch<R>()
+        return awaitBatch(batch) { inputs.forEach { submit(batch, it, action) } }
+    }
+
+    private fun <T, R> submit(batch: CompletionBatch<R>, input: T, action: (T) -> R) {
+        val task = CompletionTask(WorkerCall(input, action)) { finished ->
+            synchronized(lifecycle) { active.remove(finished) }
+            // Cancellation must publish completion even if shutdown discards the queued task.
+            batch.publish(finished)
+        }
+        batch.add(task)
+        synchronized(lifecycle) {
+            if (closed) throw RejectedExecutionException("Verification executor is closed")
+            active += task
+            executor.execute(task)
+        }
+    }
+
+    private fun <R> awaitBatch(batch: CompletionBatch<R>, submit: () -> Unit): List<R> {
         try {
-            inputs.forEach { input ->
-                val task = object : FutureTask<R>(Callable { action(input) }) {
-                    override fun done() {
-                        synchronized(lifecycle) { active.remove(this) }
-                        // Cancellation must publish completion even if shutdown discards the queued task.
-                        completions.add(this)
-                    }
-                }
-                futures += task
-                synchronized(lifecycle) {
-                    if (closed) throw RejectedExecutionException("Verification executor is closed")
-                    active += task
-                    executor.execute(task)
-                }
-            }
-            // Observe failures in completion order, so a blocked earlier job cannot hide a later job's failure.
-            repeat(futures.size) { completions.take().get() }
-            return futures.map { it.get() }
+            submit()
+            return batch.results()
         } catch (error: ExecutionException) {
             throw error.cause!!
         } catch (error: InterruptedException) {
@@ -49,8 +50,37 @@ class OrderedVerificationExecutor(private val parallelism: Int) : Closeable {
             throw error
         } finally {
             // Also cancel accepted jobs when submission fails partway through the batch.
-            futures.forEach { it.cancel(true) }
+            batch.cancel()
         }
+    }
+
+    private class CompletionBatch<R> {
+        private val completions = LinkedBlockingQueue<Future<R>>()
+        private val futures = mutableListOf<Future<R>>()
+
+        fun add(task: Future<R>) {
+            futures.add(task)
+        }
+
+        fun publish(task: Future<R>) {
+            completions.add(task)
+        }
+
+        fun results(): List<R> {
+            // Observe failures in completion order, so a blocked earlier job cannot hide a later job's failure.
+            repeat(futures.size) { completions.take().get() }
+            return futures.map { it.get() }
+        }
+
+        fun cancel() = futures.forEach { it.cancel(true) }
+    }
+
+    private class WorkerCall<T, R>(private val input: T, private val action: (T) -> R) : Callable<R> {
+        override fun call(): R = action(input)
+    }
+
+    private class CompletionTask<R>(action: Callable<R>, private val onDone: (Future<R>) -> Unit) : FutureTask<R>(action) {
+        override fun done() = onDone(this)
     }
 
     /** Each active worker owns its resource until all its jobs finish. */

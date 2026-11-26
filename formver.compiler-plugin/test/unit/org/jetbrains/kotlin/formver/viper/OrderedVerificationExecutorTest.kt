@@ -1,15 +1,18 @@
 package org.jetbrains.kotlin.formver.viper
 
 import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.FutureTask
 import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class OrderedVerificationExecutorTest {
     @Test
@@ -125,6 +128,37 @@ class OrderedVerificationExecutorTest {
             return object : Iterator<T> by delegate {
                 override fun hasNext(): Boolean = delegate.hasNext().also { if (!it) exhausted.countDown() }
             }
+        }
+    }
+
+    @Test
+    fun `input traversal failure interrupts accepted jobs without closing the executor`() {
+        val started = CountDownLatch(1)
+        val release = Semaphore(0)
+        val interrupted = CompletableFuture<Boolean>()
+        val failure = IllegalStateException()
+        val inputs = object : List<Int> by listOf(1, 2) {
+            override fun iterator(): Iterator<Int> = sequence {
+                yield(1)
+                started.await()
+                throw failure
+            }.iterator()
+        }
+        OrderedVerificationExecutor(1).use { executor ->
+            try {
+                val thrown = assertFailsWith<IllegalStateException> {
+                    executor.map(inputs) {
+                        started.countDown()
+                        release.acquireUninterruptibly()
+                        interrupted.complete(Thread.currentThread().isInterrupted)
+                    }
+                }
+                assertSame(failure, thrown)
+            } finally {
+                release.release()
+            }
+            assertTrue(interrupted.get())
+            assertEquals(listOf(6, 2), executor.map(listOf(3, 1)) { it * 2 })
         }
     }
 
