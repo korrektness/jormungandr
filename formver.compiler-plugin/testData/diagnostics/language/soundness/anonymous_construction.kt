@@ -88,3 +88,19 @@ open <!VIPER_TEXT!>class CallbackBase<!> {
 }
 
 fun <!VERIFICATION_SKIPPED!>unsupportedSuperclassCallback<!>(): CallbackBase = <!UNSUPPORTED_FEATURE!>object : CallbackBase()<!> {}
+
+interface PositiveResult {
+    @SpecOf("get")
+    fun getSpec() { postconditions<Int> { it > 0 } }
+    fun <!VIPER_TEXT!>get<!>(): Int
+}
+
+open <!VIPER_TEXT!>class ZeroResult<!> { open fun <!VIPER_TEXT!>get<!>(): Int = 0 }
+abstract class AbstractResult : ZeroResult(), PositiveResult
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class NamedResult<!> : AbstractResult()<!>
+
+fun <!VERIFICATION_SKIPPED!>inheritedContractCounterexample<!>() {
+    val result: PositiveResult = <!UNSUPPORTED_FEATURE!>object : AbstractResult()<!> {}
+    val value = result.get()
+    verify(value > 0)
+}

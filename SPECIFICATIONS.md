@@ -306,6 +306,7 @@ their own:
   type `(Mutable)List<String!>!` is `List<String!>?`.
 
 A supported memberless anonymous object literal has its own nominal class with its declared supertypes.
+Construction is unsupported when the abstract superclass has inherited implementation obligations that require a concrete subclass proof.
 
 ## Preconditions and Postconditions
 

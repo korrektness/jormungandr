@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousObject
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isInner
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousObjectExpression
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
@@ -55,7 +56,10 @@ internal fun FirAnonymousObject.eligibleSuperclass(): AnonymousSuperclass? =
         }
         if (!constructor.supportsAnonymousArguments() || !owner.supportsAnonymousConstruction()) return@anonymousSuperclass null
         if (constructionFailures(owner, program.session).isNotEmpty()) return@anonymousSuperclass null
-        if (context(program.checkerContext) { owner.interfaceLaws().isNotEmpty() }) return@anonymousSuperclass null
+        context(program.checkerContext) {
+            if (owner.interfaceLaws().isNotEmpty()) return@anonymousSuperclass null
+            if (owner.isAbstract && owner.inheritedImplementationObligations().isNotEmpty()) return@anonymousSuperclass null
+        }
         AnonymousSuperclass(owner, constructor, delegation)
     }
 

@@ -561,3 +561,81 @@ method con() returns (v_ret_0: Ref)
 method create() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Lambda0())
   ensures isSubtype(typeOf(ret_2), Lambda0())
+
+
+/anonymous_construction.kt: info: Generated Viper text for get:
+method get(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), PositiveResult())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) > 0
+
+
+/anonymous_construction.kt: info: Generated Viper text for ZeroResult:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ZeroResult())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ZeroResult()
+  fold acc(ZeroResult_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ZeroResult_unique(v_ret_0), write)
+}
+
+/anonymous_construction.kt: info: Generated Viper text for get:
+method get(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ZeroResult())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/anonymous_construction.kt: info: Generated Viper text for NamedResult:
+method NamedResult_c_PositiveResult_f_get_inherited_contract_c_PositiveResult_f_get(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), NamedResult())
+  requires typeOf(this) == NamedResult()
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) > 0
+
+
+method NamedResult_c_ZeroResult_f_get_inherited_body_c_PositiveResult_f_get(this: Ref)
+  returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), NamedResult())
+  requires typeOf(this) == NamedResult()
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(v_ret_4) > 0
+{
+  v_ret_4 := intToRef(0)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NamedResult())
+  ensures isSubtype(typeOf(v_ret_0), NamedResult()) &&
+    (isSubtype(typeOf(v_ret_0), AbstractResult()) &&
+    isSubtype(typeOf(v_ret_0), c_ZeroResult()))
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NamedResult()
+  fold acc(c_ZeroResult_unique(v_ret_0), write)
+  fold acc(AbstractResult_unique(v_ret_0), write)
+  fold acc(NamedResult_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NamedResult_unique(v_ret_0), write)
+  unfold acc(AbstractResult_unique(v_ret_0), write)
+  unfold acc(c_ZeroResult_unique(v_ret_0), write)
+}
+
+method refines_NamedResult_c_PositiveResult_f_get_inherited_contract_c_PositiveResult_f_get(this: Ref)
+  returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), NamedResult())
+  requires typeOf(this) == NamedResult()
+  requires isSubtype(typeOf(this), NamedResult())
+{
+  ret_5 := NamedResult_c_ZeroResult_f_get_inherited_body_c_PositiveResult_f_get(this)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(ret_5) > 0
+}
