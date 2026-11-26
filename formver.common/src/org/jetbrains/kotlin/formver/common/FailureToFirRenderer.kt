@@ -68,8 +68,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             else -> return null
         }
         val before = text.take(source.startOffset)
-        val line = before.count { it == '\n' } + 1
-        val column = before.length - before.lastIndexOf('\n')
+        val line = before.count { it == '\n' }.toLong() + 1
+        val column = before.length.toLong() - before.lastIndexOf('\n').toLong()
         val file = (source as? org.jetbrains.kotlin.KtPsiSourceElement)?.psi?.containingFile?.name
         return "${file?.let { "$it:" }.orEmpty()}$line:$column"
     }

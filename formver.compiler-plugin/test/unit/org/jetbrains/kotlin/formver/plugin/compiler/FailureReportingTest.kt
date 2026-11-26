@@ -340,6 +340,20 @@ class FailureReportingTest {
     }
 
     @Test
+    fun `counterexample coordinates handle the first line and reset after a newline`() {
+        val problem = failure().toFailure(null)
+        val value = CounterexampleValue.Integer(7.toBigInteger())
+        val text = "abc\ndef"
+        val rendered = FailureToFirRenderer.message(problem.copy(counterexample = Counterexample(listOf(
+            CounterexampleBinding("firstLine", value, diagnosticSource(2, text)),
+            CounterexampleBinding("nextLine", value, diagnosticSource(4, text)),
+        ))))
+        val coordinates = Regex("""\((\d+):(\d+)\)$""", RegexOption.MULTILINE).findAll(rendered)
+            .map { match -> match.groupValues[1].toInt() to match.groupValues[2].toInt() }.toList()
+        assertEquals(listOf(1 to 3, 2 to 1), coordinates)
+    }
+
+    @Test
     fun `presentation and counterexample slots do not identify obligations`() {
         val problem = failure().toFailure(null)
         val reports = ReportedVerifierErrors()

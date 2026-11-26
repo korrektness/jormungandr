@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.KtLightSourceElement
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.lexer.KtTokens
 
-internal fun diagnosticSource(offset: Int): KtSourceElement {
+internal fun diagnosticSource(offset: Int, text: String = "x"): KtSourceElement {
     val node = object : LighterASTNode {
         override fun getTokenType() = KtTokens.IDENTIFIER
         override fun getStartOffset() = offset
@@ -21,7 +21,7 @@ internal fun diagnosticSource(offset: Int): KtSourceElement {
             return 0
         }
         override fun disposeChildren(nodes: Array<LighterASTNode>, count: Int) {}
-        override fun toString(node: LighterASTNode): CharSequence = "x"
+        override fun toString(node: LighterASTNode): CharSequence = text
         override fun getStartOffset(node: LighterASTNode) = node.startOffset
         override fun getEndOffset(node: LighterASTNode) = node.endOffset
     }
