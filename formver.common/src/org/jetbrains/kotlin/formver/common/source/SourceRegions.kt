@@ -24,19 +24,26 @@ fun sourceRegions(file: KtFile): List<SourceRegion> {
     val anchors = IdentityHashMap<PsiElement, RegionId>()
     val occurrences = mutableMapOf<RegionSpan, Int>()
     val regions = mutableListOf<AnchoredRegion>()
-    file.accept(object : KtTreeVisitorVoid() {
-        override fun visitKtElement(element: KtElement) {
+    val pending = ArrayDeque<PsiElement>()
+    val first = file.firstChild
+    if (first != null) pending.addLast(first)
+    while (pending.isNotEmpty()) {
+        val element = pending.removeLast()
+        if (element is KtElement) {
             for ((kind, node) in regionAnchors(element)) {
                 val range = node.textRange
                 val span = RegionSpan(kind, range.startOffset, range.endOffset)
-                val index = occurrences.getOrDefault(span, 0)
+                val index = occurrences[span] ?: 0
                 occurrences[span] = index + 1
                 val id = RegionId(span, index)
                 regions.add(AnchoredRegion(id, element, node, anchors.put(node, id)))
             }
-            super.visitKtElement(element)
         }
-    })
+        val sibling = element.nextSibling
+        if (sibling != null) pending.addLast(sibling)
+        val child = element.firstChild
+        if (child != null) pending.addLast(child)
+    }
     return regions.map { (id, owner, node, outerAtNode) ->
         val enclosing = outerAtNode ?: generateSequence(node.parent) { it.parent }.firstNotNullOfOrNull(anchors::get)
         SourceRegion(id, owner, enclosing)
