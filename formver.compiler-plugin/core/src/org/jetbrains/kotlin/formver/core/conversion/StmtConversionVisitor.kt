@@ -347,6 +347,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitSamConversionExpression(expression: FirSamConversionExpression, data: StmtConversionContext): ExpEmbedding =
         data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: data.convertSamValue(expression, expression.expression)
 
+    override fun visitAnonymousObjectExpression(
+        anonymousObjectExpression: FirAnonymousObjectExpression, data: StmtConversionContext,
+    ): ExpEmbedding = data.convertAnonymousObject(anonymousObjectExpression) ?: visitElement(anonymousObjectExpression, data)
+
     override fun visitComponentCall(componentCall: FirComponentCall, data: StmtConversionContext): ExpEmbedding =
         visitFunctionCall(componentCall, data)
 

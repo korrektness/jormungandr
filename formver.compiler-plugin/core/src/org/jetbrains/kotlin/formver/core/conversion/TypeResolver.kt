@@ -30,6 +30,11 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Function
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.formver.core.names.ClassKotlinName
+import org.jetbrains.kotlin.formver.core.names.FakeScope
+import org.jetbrains.kotlin.name.FqName
 
 /**
  * Name used to look up properties.
@@ -81,6 +86,24 @@ class TypeResolver {
 
     /** The classes whose instances use identity for `equals`: those whose exact class does not override it. */
     val identityEqualityClasses = linkedSetOf<ClassTypeEmbedding>()
+
+    internal val activeAnonymousConstruction = mutableSetOf<FirAnonymousObjectSymbol>()
+    private val anonymousTypes = linkedMapOf<FirAnonymousObjectSymbol, ClassTypeEmbedding>()
+    private val anonymousSuperclasses = mutableMapOf<FirAnonymousObjectSymbol, AnonymousSuperclass?>()
+
+    internal fun anonymousSuperclass(symbol: FirAnonymousObjectSymbol, resolve: () -> AnonymousSuperclass?): AnonymousSuperclass? =
+        if (symbol in anonymousSuperclasses) anonymousSuperclasses[symbol]
+        else resolve().also { anonymousSuperclasses[symbol] = it }
+
+    internal fun embedAnonymousClass(symbol: FirAnonymousObjectSymbol, supertypeName: (ConeKotlinType) -> SymbolicName): ClassTypeEmbedding {
+        anonymousTypes[symbol]?.let { return it }
+        val name = ScopedName(FakeScope, ClassKotlinName(FqName("AnonymousObject${anonymousTypes.size}")))
+        val type = ClassTypeEmbedding(name)
+        anonymousTypes[symbol] = type
+        register(type, isInterface = false)
+        symbol.resolvedSuperTypes.forEach { addSubtypeRelation(name, supertypeName(it)) }
+        return type
+    }
 
     /** The domain of the `==` relation, if a specification states it. */
     fun equalsRelationDomain(): EqualsRelationDomain? =

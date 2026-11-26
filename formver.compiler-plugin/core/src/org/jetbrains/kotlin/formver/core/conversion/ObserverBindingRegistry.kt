@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
@@ -28,23 +29,26 @@ import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
+context(context: CheckerContext)
+@OptIn(ScopeFunctionRequiresPrewarm::class)
+internal fun FirRegularClassSymbol.hasObserverFamily(): Boolean {
+    val scope = unsubstitutedScope()
+    var hasObserver = false
+    for (memberName in scope.getCallableNames()) {
+        scope.processFunctionsByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
+        scope.processPropertiesByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
+    }
+    return hasObserver
+}
+
 /** Resolves observer implementations in each registered ownership presentation. */
 class ObserverBindingRegistry {
     private val classSymbols = linkedMapOf<SymbolicName, FirRegularClassSymbol>()
 
-    @OptIn(ScopeFunctionRequiresPrewarm::class)
     fun registerClass(ctx: ProgramConversionContext, symbol: FirRegularClassSymbol) {
         val name = symbol.classId.embedName()
         if (classSymbols.putIfAbsent(name, symbol) != null) return
-        context(ctx.checkerContext) {
-            val scope = symbol.unsubstitutedScope()
-            var hasObserver = false
-            for (memberName in scope.getCallableNames()) {
-                scope.processFunctionsByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
-                scope.processPropertiesByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
-            }
-            if (hasObserver) ctx.typeResolver.markClassFamilyView(name)
-        }
+        if (context(ctx.checkerContext) { symbol.hasObserverFamily() }) ctx.typeResolver.markClassFamilyView(name)
     }
 
     /**

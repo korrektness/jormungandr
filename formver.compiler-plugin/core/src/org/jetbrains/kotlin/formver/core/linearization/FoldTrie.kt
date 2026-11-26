@@ -217,7 +217,10 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     /** Mark [path] as holding nothing, emitting nothing. The predicate, if any, is leaked. */
-    fun release(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>) = markAbsent(sink, path, Absence.Released(sink.site))
+    fun release(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>) {
+        markAbsent(sink, path, Absence.Released(sink.site))
+        if (path.fields.isEmpty()) constructionRoots.remove(hierarchy.rootKey(path.root))
+    }
 
     private fun markAbsent(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>, why: Absence<R, F, S>) {
         if (classOf(path) == null || !holds(path)) return

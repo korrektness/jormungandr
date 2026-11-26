@@ -370,6 +370,15 @@ fun FirDeclaration.rejectCaptureReads(source: KtSourceElement?, construct: Strin
     }
 }
 
+/** Rejects captured locals in anonymous member bodies, which have no storage for them. */
+internal fun FirFunction.rejectUnsupportedBodyCaptures(source: KtSourceElement?, pure: Boolean) {
+    val owner = symbol.containingClassLookupTag()?.toSymbol(moduleData.session)
+    if (owner is FirAnonymousObjectSymbol && capturedLocals().isNotEmpty()) {
+        throw UnsupportedFeatureException(source, "an anonymous object member that reads a captured local")
+    }
+    if (pure) rejectCaptureReads(source, "a `@Pure` function")
+}
+
 /** Throws when the contract of the locally scoped [this] reads a value it captures, at its source when it is [registered]. */
 @OptIn(SymbolInternals::class)
 fun FirFunctionSymbol<*>.rejectContractCaptureReads(registered: FirBasedSymbol<*>?) {

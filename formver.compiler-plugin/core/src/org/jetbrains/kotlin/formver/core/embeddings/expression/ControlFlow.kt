@@ -250,7 +250,8 @@ data class RootBinding(
 /**
  * A body inlined at a call: [declarations] store the arguments that are not variables, [body] runs with its parameters
  * bound by [bindings], and the call's value is [result], which reads [returnVariable]. When [returnsUnique], the
- * caller receives the predicate of [returnVariable].
+ * caller receives the predicate of [returnVariable]. With [abandonConstructionOnExit], a jump out of [body] also
+ * discards any partially constructed result rather than folding it.
  */
 data class InlineCall(
     val bindings: List<RootBinding>,
@@ -259,6 +260,7 @@ data class InlineCall(
     val returnVariable: VariableEmbedding,
     val result: ExpEmbedding,
     val returnsUnique: Boolean,
+    val abandonConstructionOnExit: Boolean = false,
 ) : ExpEmbedding {
     override val type: TypeEmbedding = result.type
 

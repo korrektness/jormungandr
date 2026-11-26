@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.uniqueness.plugin.iterationSequenceClassId
 import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 
+@OptIn(SymbolInternals::class)
 context(converter: ProgramConverter)
 internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuilder = when {
     type is ConeErrorType -> error("Encountered an erroneous type: $type")
@@ -76,7 +78,9 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     }
     type is ConeClassLikeType -> when (val classLikeSymbol = type.toClassSymbol(converter.session)) {
         is FirRegularClassSymbol -> existing(converter.embedClass(classLikeSymbol))
-        is FirAnonymousObjectSymbol -> embedComponents(classLikeSymbol.resolvedSuperTypes, type.isMarkedNullable)
+        is FirAnonymousObjectSymbol -> if (with(converter) { classLikeSymbol.fir.eligibleSuperclass() } != null) {
+            existing(converter.typeResolver.embedAnonymousClass(classLikeSymbol) { converter.embedType(it).pretype.name })
+        } else embedComponents(classLikeSymbol.resolvedSuperTypes, type.isMarkedNullable)
         else -> unimplementedTypeEmbedding(type)
     }
 

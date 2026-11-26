@@ -521,7 +521,7 @@ class ProgramConverter(
             lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
         }
 
-        if (signature.signature.isPure) declaration.rejectCaptureReads(symbol.source.takeIf { symbol == registeredSymbol }, "a `@Pure` function")
+        declaration.rejectUnsupportedBodyCaptures(symbol.source.takeIf { symbol == registeredSymbol }, signature.signature.isPure)
         val scope = bodyScope.takeIf { symbol == registeredSymbol }
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis, scope)
         val sourceBody = declaration.takeIf { reportSourceBody }

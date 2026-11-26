@@ -113,7 +113,7 @@ private fun isStableInitializer(initializer: FirExpression, parameters: Set<FirV
     var stable = true
     initializer.accept(object : FirVisitorVoid() {
         override fun visitElement(element: FirElement) {
-            val hasClosure = element is FirAnonymousFunctionExpression || element is FirSimpleFunction
+            val hasClosure = element is FirAnonymousFunctionExpression || element is FirSimpleFunction || element is FirAnonymousObjectExpression
             val unsupportedAccess = element is FirQualifiedAccessExpression &&
                 !element.isAllowedInitializerAccess(parameters, program.session)
             val hasStateAccess = element is FirVariableAssignment || element is FirThisReceiverExpression

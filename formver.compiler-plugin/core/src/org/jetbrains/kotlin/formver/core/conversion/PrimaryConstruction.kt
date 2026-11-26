@@ -12,11 +12,11 @@ import org.jetbrains.kotlin.formver.core.parameterArguments
 import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
 
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
-import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmb
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.formver.core.isUnique
+import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
@@ -128,7 +129,7 @@ private fun ProgramConversionContext.passSuperArgument(
     arguments[SubstitutedArgument.ValueParameter(parameter)] = variable
 }
 
-context(program: ProgramConverter)
+context(program: ProgramConversionContext)
 private fun MutableSet<FirDeclaration>.recordConstructionPart(declaration: FirDeclaration) {
     if (program.config.declarationReport?.sourceIndex != null && (declaration !is FirConstructor || declaration.isPrimary)) {
         add(declaration)
@@ -149,13 +150,34 @@ internal fun constructionBody(
     onUniquenessError: () -> Unit,
 ): ConvertedMethodBody {
     val owner = constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!
-    val receiver = target.variable
-    val type = receiver.type.pretype as ClassTypeEmbedding
-    val actions = mutableListOf<ExpEmbedding>()
-    val constructionParts = mutableSetOf<FirDeclaration>()
-    fun addInitializer(declaration: FirDeclaration, action: ExpEmbedding) {
+    val construction = Construction(program, signature, target, signature.exceptionEscape(constructor), onUniquenessError)
+    val steps = construction.build(owner, constructor)
+    return ConvertedMethodBody(FunctionExp(signature, steps.toBlock(), target.label!!), target,
+        constructionParts = construction.parts)
+}
+
+internal data class AnonymousSuperCall(val creator: StmtConversionContext, val delegation: FirDelegatedConstructorCall)
+
+/** Lowers constructor code on one allocated receiver, checking the requirements of delegated constructors. */
+@OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
+internal class Construction(
+    private val program: ProgramConversionContext,
+    private val signature: FunctionSignature,
+    private val target: ReturnTarget,
+    private val escape: ThrowsConditionCheck?,
+    private val onUniquenessError: () -> Unit,
+    private val anonymousSuperCall: AnonymousSuperCall? = null,
+) {
+    private val receiver = target.variable
+    private val type = receiver.type.pretype as ClassTypeEmbedding
+    private val actions = mutableListOf<ExpEmbedding>()
+    val parts = mutableSetOf<FirDeclaration>()
+
+    private fun MethodConverter.statementContext() = StmtConverter(this, exceptionEscape = escape,
+        activeCatchLabels = anonymousSuperCall?.creator?.activeCatchLabels.orEmpty())
+    private fun addInitializer(declaration: FirDeclaration, action: ExpEmbedding) {
         actions += action
-        constructionParts.recordConstructionPart(declaration)
+        with(program) { parts.recordConstructionPart(declaration) }
     }
     val captured = mutableMapOf<FirBasedSymbol<*>, PropertyAccessEmbedding>()
     val entered = mutableMapOf<CaptureScope, Map<FirBasedSymbol<*>, PropertyAccessEmbedding>>()
@@ -165,7 +187,7 @@ internal fun constructionBody(
      * body scope when that scope contains [declaring], else those of [declaring] itself. A capture that an earlier
      * scope declared keeps its variable.
      */
-    fun capturesOf(declaring: FirRegularClassSymbol): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> {
+    private fun capturesOf(declaring: FirRegularClassSymbol): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> {
         if (!declaring.classId.isLocal && !declaring.isInner) return emptyMap()
         val enclosing = generateSequence(declaring.classId) { it.outerClassId }.toSet()
         val scope = program.bodyScope?.takeIf { (it.declaration.symbol as? FirClassLikeSymbol<*>)?.classId in enclosing }
@@ -176,20 +198,43 @@ internal fun constructionBody(
         }
     }
 
-    fun capturesOf(constructor: FirConstructorSymbol) =
+    private fun capturesOf(constructor: FirConstructorSymbol) =
         capturesOf(constructor.resolvedReturnType.toRegularClassSymbol(program.session)!!)
-    capturesOf(owner)
-    val escape = signature.exceptionEscape(constructor)
-    actions += AllocateObject(receiver, type, constructionFields(owner))
-    fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
+    private fun superArguments(
+        context: StmtConversionContext, delegation: FirDelegatedConstructorCall, parent: FirConstructorSymbol,
+    ): Map<SubstitutedArgument, ExpEmbedding> {
+        val parentArguments = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
+        val deferredChecks = context.passSuperArguments(delegation, parent, actions, parentArguments)
+        for (parameter in parent.signatureParameterSymbols) {
+            val key = SubstitutedArgument.ValueParameter(parameter)
+            if (key in parentArguments) continue
+            val defaultConverter = MethodConverter(program, signature,
+                InlineParameterResolver(parentArguments, null, target), program.scopeIndexProducer.getFresh(),
+                OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()),
+                captures = capturesOf(parent), constructionReceiver = receiver)
+            val defaultContext = if (anonymousSuperCall == null) defaultConverter.statementCtxt() else defaultConverter.statementContext()
+            val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
+            val converted = parameter.fir.defaultValue?.let { defaultContext.convertExpecting(it, parameter.resolvedReturnType) }
+                ?: context.omittedArgument(delegation, parameter, value.type)
+            actions += Declare(value, converted,
+                targetOwned = context(program.checkerContext) { parameter.isUnique() })
+            parentArguments[key] = value
+        }
+        deferredChecks.forEach { (parameter, evaluated) ->
+            val variable = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
+            program.passSuperArgument(parameter, variable, context.checkedCast(evaluated, variable.type), actions, parentArguments)
+        }
+        return parentArguments
+    }
+    private fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
         val phases = ConstructionPhases(declaring)
-        val boundary = EstablishConstruction(receiver, program.embedClass(declaring))
+        val boundary = EstablishConstruction(receiver, program.embedCallableResult(symbol).pretype as ClassTypeEmbedding)
         val bodyTarget = if (symbol.isPrimary) target else program.returnTargetProducer.getFresh(buildType { unit() })
         val resolver = InlineParameterResolver(arguments + (SubstitutedArgument.DispatchThis to receiver), null, bodyTarget)
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),
             OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), captures = capturesOf(declaring),
-            constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt(escape)
+            constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementContext()
         if (delegated) symbol.fir.constructorSpecification()?.spec?.precond?.let { clauses ->
             actions += context.collectInvariants(clauses).withProofClause(
                 org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.PRECONDITION, symbol,
@@ -208,37 +253,26 @@ internal fun constructionBody(
             }
             return MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(), frame,
                 captures = capturesOf(declaring), constructionReceiver = receiver, constructionPhases = phases,
-                constructionBoundary = boundary).statementCtxt(escape)
+                constructionBoundary = boundary).statementContext()
         }
         val delegation = symbol.fir.delegatedConstructor
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
         if (parent != null && parent.origin == FirDeclarationOrigin.Source) {
-            val parentArguments = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
-            val deferredChecks = context.passSuperArguments(delegation, parent, actions, parentArguments)
-            for (parameter in parent.signatureParameterSymbols) {
-                val key = SubstitutedArgument.ValueParameter(parameter)
-                if (key in parentArguments) continue
-                val defaultContext = MethodConverter(program, signature,
-                    InlineParameterResolver(parentArguments, null, target), program.scopeIndexProducer.getFresh(),
-                    OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()),
-                    captures = capturesOf(parent), constructionReceiver = receiver).statementCtxt()
-                val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
-                val converted = parameter.fir.defaultValue?.let { defaultContext.convertExpecting(it, parameter.resolvedReturnType) }
-                    ?: context.omittedArgument(delegation, parameter, value.type)
-                actions += Declare(value, converted,
-                    targetOwned = context(program.checkerContext) { parameter.isUnique() })
-                parentArguments[key] = value
-            }
-            deferredChecks.forEach { (parameter, evaluated) ->
-                val variable = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
-                program.passSuperArgument(parameter, variable, context.checkedCast(evaluated, variable.type), actions, parentArguments)
-            }
-            initialize(parent, parentArguments, delegated = true)
+            initialize(parent, superArguments(context, delegation, parent), delegated = true)
         } else {
-            actions += libraryFieldTypes(parent, receiver)
+            actions += with(program) { libraryFieldTypes(parent, receiver) }
         }
         val delegatesWithinClass = parent?.resolvedReturnType?.toRegularClassSymbol(program.session) == declaring
-        for (declaration in declaring.fir.declarations.takeUnless { delegatesWithinClass }.orEmpty()) {
+        if (!delegatesWithinClass) initializeMembers(declaring, ::initializerContext)
+        if (!symbol.isPrimary) symbol.fir.body?.let { body ->
+            actions += Declare(bodyTarget.variable, null)
+            actions += FunctionExp(null, context.convert(body), bodyTarget.label!!)
+        }
+        actions += boundary.withPosition(symbol.fir.source)
+        with(program) { parts.recordConstructionPart(symbol.fir) }
+    }
+    private fun initializeMembers(declaring: FirRegularClassSymbol, initializerContext: (FirDeclaration) -> StmtConversionContext) {
+        for (declaration in declaring.fir.declarations) {
             when (declaration) {
                 is FirProperty -> declaration.initializer?.let { initializer ->
                     val value = initializerContext(declaration).convertExpecting(initializer, declaration.returnTypeRef.coneType)
@@ -247,22 +281,27 @@ internal fun constructionBody(
                     if (field != null && field !is UserFieldEmbedding) throw UnsupportedFeatureException(
                         declaration.source, "initialization of a library-encoded field",
                     )
-                    addInitializer(declaration, constructionStore(receiver, property, value).withPosition(declaration.source))
+                    val store = with(program) { constructionStore(receiver, property, value) }
+                    addInitializer(declaration, store.withPosition(declaration.source))
                 }
                 is FirAnonymousInitializer -> declaration.body?.let { addInitializer(declaration, initializerContext(declaration).convert(it)) }
                 else -> Unit
             }
         }
-        if (!symbol.isPrimary) symbol.fir.body?.let { body ->
-            actions += Declare(bodyTarget.variable, null)
-            actions += FunctionExp(null, context.convert(body), bodyTarget.label!!)
-        }
-        actions += boundary.withPosition(symbol.fir.source)
-        constructionParts.recordConstructionPart(symbol.fir)
     }
-    initialize(constructor, signature.parameterVariables(constructor).associate { (parameter, value) ->
-        SubstitutedArgument.ValueParameter(parameter) to value
-    })
-    return ConvertedMethodBody(FunctionExp(signature, actions.toBlock(), target.label!!), target,
-        constructionParts = constructionParts)
+
+    fun build(owner: FirRegularClassSymbol, constructor: FirConstructorSymbol): List<ExpEmbedding> {
+        capturesOf(owner)
+        val arguments: Map<SubstitutedArgument, ExpEmbedding> = if (anonymousSuperCall != null) {
+            superArguments(anonymousSuperCall.creator, anonymousSuperCall.delegation, constructor)
+        } else signature.parameterVariables(constructor).associate { (parameter, value) ->
+            SubstitutedArgument.ValueParameter(parameter) to value
+        }
+        actions += AllocateObject(receiver, type, with(program) { constructionFields(owner) })
+        if (owner.classId != StandardClassIds.Any) {
+            initialize(constructor, arguments, delegated = anonymousSuperCall != null)
+        }
+        if (anonymousSuperCall != null) actions += EstablishConstruction(receiver, type)
+        return actions
+    }
 }

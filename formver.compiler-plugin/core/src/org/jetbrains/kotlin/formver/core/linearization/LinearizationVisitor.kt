@@ -411,6 +411,7 @@ data class LinearizationVisitor(
                 override fun toViperUnusedResult(ctx: LinearizationContext) {
                     withinScope(ctx, e.body.placedLabels(), leave = { jumpCtx, state ->
                         e.bindings.forEach { jumpCtx.exitBinding(it, state) }
+                        if (e.abandonConstructionOnExit) state.release(jumpCtx, OwnedPath(e.returnVariable))
                     }) { e.body.linearize().toViperUnusedResult(ctx) }
                 }
             })

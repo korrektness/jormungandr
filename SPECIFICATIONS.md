@@ -299,11 +299,13 @@ their own:
 - `T & Any` is `T` without null.
 - An intersection type, such as the `A & B` that a value of type `A` gets when smart cast to `B`, has every
   component type.
-- An anonymous object type has its declared supertypes.
+- An unsupported memberless anonymous object literal has its declared-supertype view.
 - A captured type, such as the type of a read through a star projection, has its upper bounds: reading `value`
   from `Box<*>`, where `Box<T : Number>`, gives a `Number`.
 - A Java platform type is its upper bound, which admits null: `String!` is `String?`, and the platform collection
   type `(Mutable)List<String!>!` is `List<String!>?`.
+
+A supported memberless anonymous object literal has its own nominal class with its declared supertypes.
 
 ## Preconditions and Postconditions
 
