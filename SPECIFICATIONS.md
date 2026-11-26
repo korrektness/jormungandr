@@ -307,6 +307,7 @@ their own:
 
 A supported memberless anonymous object literal has its own nominal class with its declared supertypes.
 Construction is unsupported when the abstract superclass has inherited implementation obligations that require a concrete subclass proof.
+It is also unsupported when a superclass property is initialized directly with a lambda or anonymous function.
 
 ## Preconditions and Postconditions
 

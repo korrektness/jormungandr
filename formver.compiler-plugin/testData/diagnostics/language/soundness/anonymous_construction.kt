@@ -104,3 +104,20 @@ fun <!VERIFICATION_SKIPPED!>inheritedContractCounterexample<!>() {
     val value = result.get()
     verify(value > 0)
 }
+
+abstract class AbstractFunctionBase {
+    val action: () -> Int = { verify(false); 1 }
+}
+
+private fun <!VERIFICATION_SKIPPED!>abstractFunctionInitializer<!>() = <!UNSUPPORTED_FEATURE!>object : AbstractFunctionBase()<!> {}
+
+fun <!VIPER_TEXT!>useAbstractFunctionInitializer<!>(): AbstractFunctionBase = abstractFunctionInitializer()
+
+abstract class CallbackFreeBase(value: Int) {
+    val initialized = value + 1
+}
+
+fun <!VIPER_TEXT!>callbackFreeInitializer<!>() {
+    val literal = object : CallbackFreeBase(41) {}
+    verify(literal.initialized == 42)
+}

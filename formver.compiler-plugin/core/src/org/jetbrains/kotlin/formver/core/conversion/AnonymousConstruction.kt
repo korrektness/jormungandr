@@ -10,8 +10,10 @@ import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousObject
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isInner
+import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousObjectExpression
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
@@ -70,7 +72,7 @@ private fun FirConstructorSymbol.supportsAnonymousArguments(): Boolean =
     }
 
 context(program: ProgramConversionContext)
-@OptIn(SymbolInternals::class)
+@OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 private fun FirRegularClassSymbol.supportsAnonymousConstruction(): Boolean {
     if (classId == StandardClassIds.Any) return true
     val session = program.session
@@ -78,6 +80,7 @@ private fun FirRegularClassSymbol.supportsAnonymousConstruction(): Boolean {
     if (typeParameterSymbols.isNotEmpty() || isManual(session) || session.externalSpecifications?.modelClass(this) != null) return false
     if (context(program.checkerContext) { hasObserverFamily() }) return false
     if (SpecifiedLambda.collect(fir, classId.embedName()).isNotEmpty()) return false
+    if (fir.declarations.filterIsInstance<FirProperty>().any { it.initializer is FirAnonymousFunctionExpression }) return false
     return resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(session) }
         .filter { it.classKind == ClassKind.CLASS }.all { it.supportsAnonymousConstruction() }
 }

@@ -639,3 +639,53 @@ method refines_NamedResult_c_PositiveResult_f_get_inherited_contract_c_PositiveR
   assert isSubtype(typeOf(ret_5), intType())
   assert intFromRef(ret_5) > 0
 }
+
+/anonymous_construction.kt: info: Generated Viper text for useAbstractFunctionInitializer:
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), AbstractFunctionBase())
+  ensures isSubtype(typeOf(result), functionType())
+
+
+method abstractFunctionInitializer() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), AbstractFunctionBase())
+
+
+method useAbstractFunctionInitializer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), AbstractFunctionBase())
+{
+  v_ret_0 := abstractFunctionInitializer()
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/anonymous_construction.kt: info: Generated Viper text for callbackFreeInitializer:
+function initialized(this: Ref): Ref
+  requires isSubtype(typeOf(this), CallbackFreeBase())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callbackFreeInitializer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var literal: Ref
+  var v_ret_1: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(41)
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == AnonymousObject0()
+  anon_1 := plusInts(anon_0, intToRef(1))
+  inhale intFromRef(initialized(v_ret_1)) == intFromRef(anon_1)
+  fold acc(CallbackFreeBase_unique(v_ret_1), write)
+  fold acc(AnonymousObject0_unique(v_ret_1), write)
+  label lbl_ret_1
+  literal := v_ret_1
+  assert intFromRef(initialized(literal)) == 42
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
