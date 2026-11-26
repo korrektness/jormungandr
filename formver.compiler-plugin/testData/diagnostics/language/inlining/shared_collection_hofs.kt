@@ -81,6 +81,13 @@ fun <!VIPER_TEXT!>appendAfterSharedMap<!>(xs: List<Int>) {
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>mapped + 7<!>
 }
 
+fun <!VIPER_TEXT!>sharedToListForEach<!>(xs: Set<Int>) {
+    <!UNCHECKED_LIBRARY_CALL!>xs.toList()<!>.forEachIndexed { i, _ ->
+        verify(i >= 0)
+        refute(i == 0)
+    }
+}
+
 fun <!VERIFICATION_SKIPPED!>sharedOrEmptyAliasesReceiver<!>(xs: List<String>?) {
     <!UNSUPPORTED_OWNERSHIP!><!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>.forEach { }<!>
 }

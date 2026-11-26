@@ -113,9 +113,13 @@ class OrderedVerificationExecutor(private val parallelism: Int) : Closeable {
         synchronized(lifecycle) {
             closed = true
             executor.shutdownNow()
-            // done() removes tasks from active synchronously during cancellation.
-            active.toList().forEach { it.cancel(true) }
+            cancelActiveUnderLock()
         }
+    }
+
+    private fun cancelActiveUnderLock() {
+        // done() removes tasks from active synchronously during cancellation.
+        active.toList().forEach { it.cancel(true) }
     }
 
     companion object {
