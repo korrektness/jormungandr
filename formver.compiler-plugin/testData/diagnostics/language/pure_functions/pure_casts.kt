@@ -138,6 +138,19 @@ fun <T : CastBound> <!VIPER_TEXT!>boundedCast<!>(x: Any): Boolean {
 @Suppress("UNCHECKED_CAST")
 fun <T : CastBound> <!VIPER_TEXT!>badBoundedCast<!>(x: Any): Boolean = (<!CAST_NOT_ESTABLISHED!>x as T<!>) === x
 
+interface FirstCastBound
+interface SecondCastBound
+
+@Pure
+@Suppress("UNCHECKED_CAST")
+fun <U, T : U> <!VIPER_TEXT!>transitiveInterfaceCast<!>(x: FirstCastBound): Boolean
+    where U : FirstCastBound, U : SecondCastBound = (x as T) === x
+
+@Pure
+@Suppress("UNCHECKED_CAST")
+fun <U, T : U> <!VIPER_TEXT!>wrongTransitiveInterfaceCast<!>(x: SecondCastBound): Boolean
+    where U : FirstCastBound, U : SecondCastBound = (<!CAST_NOT_ESTABLISHED!>x as T<!>) === x
+
 @Pure
 @Suppress("UNCHECKED_CAST")
 fun <!VIPER_TEXT!>parameterizedCast<!>(x: Any): Boolean {

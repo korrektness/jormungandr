@@ -18,10 +18,10 @@ fun ConeKotlinType.erasedCastTarget(session: FirSession): ConeKotlinType {
         is ConeDefinitelyNotNullType -> erase(expanded.original)
         is ConeTypeParameterType -> {
             val bounds = expanded.lookupTag.typeParameterSymbol.resolvedBounds.map { it.coneType }
-            val erased = bounds.map(::erase)
+            val erased = bounds.map { erase(it) }
             erased.firstOrNull {
                 (it.toClassSymbol(session) as? FirRegularClassSymbol)?.classKind != ClassKind.INTERFACE
-            } ?: erased.first()
+            } ?: erased.firstOrNull() ?: throw NoSuchElementException("List is empty.")
         }
         else -> expanded
     }

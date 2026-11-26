@@ -542,6 +542,36 @@ function checkedType(castValue: Ref, castTarget: rt): Ref
   castValue
 }
 
+/pure_casts.kt: info: Generated Viper text for transitiveInterfaceCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function transitiveInterfaceCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), FirstCastBound())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, FirstCastBound()) == x)
+}
+
+/pure_casts.kt: info: Generated Viper text for wrongTransitiveInterfaceCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function wrongTransitiveInterfaceCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), SecondCastBound())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, FirstCastBound()) == x)
+}
+
 /pure_casts.kt: info: Generated Viper text for parameterizedCast:
 function checkedType(castValue: Ref, castTarget: rt): Ref
   requires isSubtype(typeOf(castValue), castTarget)
