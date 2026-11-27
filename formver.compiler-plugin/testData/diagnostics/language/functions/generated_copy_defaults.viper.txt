@@ -1,0 +1,366 @@
+/generated_copy_defaults.kt: info: Generated Viper text for CopyFields:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method con(par_data: Ref, par_children: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), nullable(anyType()))
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(g_children(v_ret_0)) == intFromRef(par_children)
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(g_children(v_ret_0)) == intFromRef(par_children)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CopyFields()
+  anon_0 := par_data
+  inhale g_data(v_ret_0) == anon_0
+  anon_1 := par_children
+  inhale intFromRef(g_children(v_ret_0)) == intFromRef(anon_1)
+  fold acc(CopyFields_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CopyFields_unique(v_ret_0), write)
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for replaceChildren:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method replaceChildren(p: Ref, par_children: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var anon: Ref
+  anon := g_data(p)
+  inhale isSubtype(typeOf(anon), stringType())
+  v_ret_0 := copy(p, anon, par_children)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for replaceData:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method replaceData(p: Ref, par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var anon: Ref
+  anon := g_children(p)
+  v_ret_0 := copy(p, par_data, anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for copyBothDefaults:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method copyBothDefaults(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := g_data(p)
+  inhale isSubtype(typeOf(anon_0), stringType())
+  anon_1 := g_children(p)
+  v_ret_0 := copy(p, anon_0, anon_1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for receiverOnce:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method receiverOnce(p: Ref, par_children: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var stage: Ref
+  var q: Ref
+  var anon_0: Ref
+  var v_ret_3: Ref
+  var anon_1: Ref
+  var v_ret_5: Ref
+  var anon_2: Ref
+  stage := intToRef(0)
+  assert intFromRef(stage) == 0
+  stage := intToRef(1)
+  v_ret_3 := p
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_0 := v_ret_3
+  assert intFromRef(stage) == 1
+  stage := intToRef(2)
+  v_ret_5 := par_children
+  goto lbl_ret_5
+  label lbl_ret_5
+  anon_1 := v_ret_5
+  anon_2 := g_data(anon_0)
+  inhale isSubtype(typeOf(anon_2), stringType())
+  q := copy(anon_0, anon_2, anon_1)
+  assert intFromRef(stage) == 2
+  v_ret_0 := q
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for captureOriginalReceiver:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method captureOriginalReceiver(p: Ref, other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(other), CopyFields())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var receiver: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_3: Ref
+  var anon_2: Ref
+  receiver := p
+  anon_0 := receiver
+  receiver := other
+  v_ret_3 := intToRef(7)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_1 := v_ret_3
+  anon_2 := g_data(anon_0)
+  inhale isSubtype(typeOf(anon_2), stringType())
+  v_ret_0 := copy(anon_0, anon_2, anon_1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+/generated_copy_defaults.kt: info: Generated Viper text for reorderedExplicit:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method reorderedExplicit(p: Ref, par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  var stage: Ref
+  var anon_0: Ref
+  var v_ret_3: Ref
+  var anon_1: Ref
+  var v_ret_5: Ref
+  stage := intToRef(0)
+  stage := intToRef(1)
+  v_ret_3 := intToRef(7)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_0 := v_ret_3
+  assert intFromRef(stage) == 1
+  v_ret_5 := par_data
+  goto lbl_ret_5
+  label lbl_ret_5
+  anon_1 := v_ret_5
+  v_ret_0 := copy(p, anon_1, anon_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for mixedExplicit:
+function g_children(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method copy(this: Ref, par_data: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), CopyFields())
+
+
+method mixedExplicit(p: Ref, par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  requires isSubtype(typeOf(par_data), stringType())
+  ensures isSubtype(typeOf(v_ret_0), CopyFields())
+{
+  v_ret_0 := copy(p, par_data, intToRef(7))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for copy:
+function data(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_children(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method copy(v_this_extension: Ref, flag: Ref, par_children: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), CopyFields())
+  requires isSubtype(typeOf(flag), boolType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (boolFromRef(flag)) {
+    v_ret_0 := par_children
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generated_copy_defaults.kt: info: Generated Viper text for ordinaryCopyOverload:
+function data(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CopyFields())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_children(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CopyFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method copy(v_this_extension: Ref, flag: Ref, par_children: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), CopyFields())
+  requires isSubtype(typeOf(flag), boolType())
+  requires isSubtype(typeOf(par_children), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method ordinaryCopyOverload(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), CopyFields())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := boolToRef(true)
+  anon_1 := intToRef(42)
+  v_ret_0 := copy(p, anon_0, anon_1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

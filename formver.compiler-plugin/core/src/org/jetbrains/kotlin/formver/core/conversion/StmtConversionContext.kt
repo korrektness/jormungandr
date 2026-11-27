@@ -474,9 +474,11 @@ fun StmtConversionContext.holdsOwnership(): Boolean {
     return annotatedSignature || ownershipFrame.analysis?.sharesEveryPath == false
 }
 
+/** Captures mutable value locals; reference locals retain their ownership roots unless [snapshotMutableReference] is set. */
 fun StmtConversionContext.argumentDeclaration(
     arg: ExpEmbedding,
-    callType: TypeEmbedding
+    callType: TypeEmbedding,
+    snapshotMutableReference: Boolean = false,
 ): Pair<Declare?, ExpEmbedding> =
     when (arg.ignoringMetaNodes()) {
         is LambdaExp -> null to arg
@@ -485,12 +487,10 @@ fun StmtConversionContext.argumentDeclaration(
                 proven = true
                 access = true
             }
-            // Capture mutable value locals before later arguments or the inlined body can assign them.
-            // Reference locals retain their roots for ownership binding and borrowed-predicate restoration.
             val variable = argWithInvariants.underlyingVariable
-            val mutableValue = ((variable as? FirVariableEmbedding)?.symbol as? FirPropertySymbol)?.isVar == true &&
-                    variable.type.getNonNullable().injectionOrNull != null
-            if (variable != null && !mutableValue) null to argWithInvariants
+            val snapshotsLocal = ((variable as? FirVariableEmbedding)?.symbol as? FirPropertySymbol)?.isVar == true &&
+                    (snapshotMutableReference || variable.type.getNonNullable().injectionOrNull != null)
+            if (variable != null && !snapshotsLocal) null to argWithInvariants
             else declareAnonVar(callType, argWithInvariants).let {
                 it to it.variable
             }
