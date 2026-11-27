@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.seqOf
 import viper.silver.ast.*
+import viper.silver.plugin.standard.termination.FunctionTerminationError
+import viper.silver.plugin.standard.termination.TupleDecreasesFalse
 import viper.silver.verifier.errors
 import viper.silver.verifier.reasons
 import kotlin.test.*
@@ -116,8 +118,29 @@ class FailureReportingTest {
             assertIs<FalseLit>(expression)
             val backend = VerificationError(errors.AssertFailed(Assert(expression, pos, info, trafos),
                 reasons.AssertionFalse(expression), false))
+            val reasonNode = backend.unverifiableProposition
+            assertSame(expression, reasonNode.node)
+            assertEquals(SourceRole.Proof(clause), reasonNode.getInfoOrNull<SourceRole>())
             assertEquals(KotlinCondition.Proof(clause), backend.toFailure(null).condition)
         }
+    }
+
+    @Test
+    fun `termination reasons retain declaration metadata without treating it as a proof clause`() {
+        val role = SourceRole.Arithmetic(KotlinCondition.DivisionByZero("/"))
+        val metadata = with(SimpleNameResolver()) { role.asInfo.toSilver() }
+        val function = Function("recursive", seqOf<LocalVarDecl>(), `Bool$`.`MODULE$`,
+            seqOf<Exp>(), seqOf<Exp>(), scala.Option.empty(), pos, metadata, trafos)
+        val call = FuncApp("recursive", seqOf<Exp>(), pos, info, `Bool$`.`MODULE$`, trafos)
+        val backend = VerificationError(FunctionTerminationError(call, TupleDecreasesFalse(function), false))
+
+        val reasonNode = backend.unverifiableProposition
+        assertSame(function, reasonNode.node)
+        assertEquals(role, reasonNode.getInfoOrNull<SourceRole>())
+        val problem = backend.toFailure(null)
+        assertEquals(FailureKind.TERMINATION_NOT_ESTABLISHED, problem.kind)
+        assertEquals(KotlinCondition.Termination, problem.condition)
+        assertTrue(ReportedVerifierErrors().add(backend, null))
     }
 
     @Test

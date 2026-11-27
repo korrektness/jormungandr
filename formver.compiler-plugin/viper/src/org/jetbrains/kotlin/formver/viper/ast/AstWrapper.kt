@@ -13,7 +13,5 @@ sealed interface AstWrapper {
         fun <I> getInfoOrNull(): I? = info.unwrapOr<I> { null }
     }
 
-    data class Exp(override val node: viper.silver.ast.Exp) : Node(node) {
-        constructor(node: viper.silver.ast.Node) : this(node as viper.silver.ast.Exp)
-    }
+    data class Exp(override val node: viper.silver.ast.Exp) : Node(node)
 }
