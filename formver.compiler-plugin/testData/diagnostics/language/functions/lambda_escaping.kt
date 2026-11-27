@@ -142,6 +142,21 @@ fun <!VIPER_TEXT!>bodyVerifies<!>() {
     later { verify(1 == 1) }
 }
 
+data <!VIPER_TEXT!>class CallbackNode<!>(val child: Box?)
+
+fun <!VIPER_TEXT!>withChild<!>(root: CallbackNode, child: Box): CallbackNode = root.copy(child = child)
+
+fun <!VIPER_TEXT!>assignNode<!>(target: CallbackNode) {}
+
+fun <!VIPER_TEXT!>constructTargetInCallback<!>(root: CallbackNode) {
+    later {
+        val target = withChild(root, Box(1))
+        assignNode(target)
+        refute(false)
+    }
+    refute(false)
+}
+
 fun <!VIPER_TEXT!>bodyFails<!>() {
     later { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>1 == 2<!>) }
 }

@@ -71,6 +71,35 @@ fun `try expression as initializer`(a: @Unique A): @Unique A {
     return r
 }
 
+fun `declarations in finally preserve the source and target paths on each exit`(
+    early: Boolean,
+    a: @Unique A,
+    moved: @Unique A,
+    inspected: @Unique Any,
+) {
+    try {
+        if (early) {
+            consume(a.x)
+            return
+        }
+    } finally {
+        val target: @Unique Any = moved.x
+        consume(target)
+        borrow(<!INVALID_MOVED_ACCESS!>moved.x<!>)
+
+        when (inspected) {
+            is A -> borrow(inspected)
+        }
+        consume(inspected)
+
+        var uninitialized: @Unique Any
+        uninitialized = Any()
+        consume(uninitialized)
+    }
+
+    consume(a.x)
+}
+
 fun `consume subproperty in try`(b: @Unique B) {
     try {
         consume(b.y)

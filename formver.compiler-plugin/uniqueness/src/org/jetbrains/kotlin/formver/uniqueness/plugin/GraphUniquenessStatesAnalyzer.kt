@@ -250,10 +250,6 @@ class GraphUniquenessStatesAnalyzer(
             context(context) { declaration.symbol.borrowedViewSource() != null }) return visitNode(node, data)
         val initializer = declaration.initializer
         val leftSymbol = declaration.symbol
-        val leftAccessState = EmptyAccessState.putChild(
-            leftSymbol,
-            AccessState(Access.Terminal)
-        )
 
         with(context) {
             val rightAccessState = initializer?.resolveAccessState()
@@ -265,6 +261,10 @@ class GraphUniquenessStatesAnalyzer(
 
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
+                val leftAccessState = EmptyAccessState.putChild(
+                    leftSymbol,
+                    AccessState(Access.Terminal)
+                )
                 var newUniquenessState = uniquenessState.assign(leftAccessState, rightAccessState, movesInitializer)
                 if (initializer != null && leftSymbol.hasInferredUniqueness) {
                     newUniquenessState = newUniquenessState.weakenInferredLocal(leftSymbol, initializer, data.facts())
