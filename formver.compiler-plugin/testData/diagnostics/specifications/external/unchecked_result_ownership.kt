@@ -60,3 +60,19 @@ fun assertedResult(xs: List<Int>?, flag: Boolean): @Unique List<Int> =
 
 fun borrowOnlyReceiver(xs: @Borrowed List<Int>?): @Unique List<Int> =
     <!EXIT_UNIQUENESS_INCONSISTENCY, UNIQUENESS_MISMATCH!><!LOCALITY_MISMATCH!>xs<!>.orEmpty()<!>
+
+fun impureBorrowRestoresOwnedReceiver(xs: @Unique List<Int>) {
+    xs.toList()
+    takesList(xs)
+}
+
+fun uncheckedBorrowDoesNotRestoreEitherReceiver(xs: @Unique List<Int>, ys: @Unique List<Int>, flag: Boolean) {
+    (if (flag) xs else ys).toList()
+    takesList(<!INVALID_MOVED_ACCESS!>xs<!>)
+    takesList(<!INVALID_MOVED_ACCESS!>ys<!>)
+}
+
+fun sourceExtensionStillConsumesReceiver(xs: @Unique List<Int>) {
+    xs.consume()
+    takesList(<!INVALID_MOVED_ACCESS!>xs<!>)
+}

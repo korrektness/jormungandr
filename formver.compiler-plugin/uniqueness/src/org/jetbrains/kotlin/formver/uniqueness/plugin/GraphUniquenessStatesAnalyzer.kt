@@ -429,7 +429,7 @@ class GraphUniquenessStatesAnalyzer(
                 var paths = facts.paths
                 if (call.movesArguments) {
                     paths = paths.restoreBorrowedReceivers(call, entry.paths, gatedExtension)
-                    if (checked && modelBorrowsExtension) {
+                    if (checked && gatedExtension != null && modelBorrowsExtension) {
                         paths = gatedExtension.resolveAccessState().restoreBorrow(paths, entry.paths)
                     }
                     for ((argument, locality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {
