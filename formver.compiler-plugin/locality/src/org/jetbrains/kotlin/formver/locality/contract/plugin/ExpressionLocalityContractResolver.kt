@@ -81,8 +81,16 @@ private fun FirFunctionSymbol<*>.resolveReferenceLocalityContract(reference: Fir
     // The unbound receiver's type comes from the reference's LHS, but the callee supplies its borrowing requirement.
     // Keep the other slots from the adapted reference type, which accounts for default and vararg arguments.
     val parameters = contract.parameterTypeFacts.toMutableList()
-    parameters[0] = parameters.first().copy(typeFact = receiver.resolveLocality())
-    return contract.copy(parameterTypeFacts = parameters)
+    val receiverFact = parameters.first()
+    parameters[0] = receiverFact.copy(
+        typeFact = receiver.resolveLocality(),
+        functionTypeFact = receiverFact.functionTypeFact,
+    )
+    return contract.copy(
+        parameterTypeFacts = parameters,
+        resultFunctionTypeFact = contract.resultFunctionTypeFact,
+        holdsNoFunction = contract.holdsNoFunction,
+    )
 }
 
 /**

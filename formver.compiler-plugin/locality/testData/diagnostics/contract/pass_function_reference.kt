@@ -48,6 +48,22 @@ fun `adapted extension reference preserves borrowed receiver`() {
     requireLocalFunction(Any::borrowReceiverWithDefault)
 }
 
+typealias BorrowingCallback = (@Borrowed Any) -> Unit
+
+fun @Borrowed BorrowingCallback.borrowCallbackReceiver(callback: BorrowingCallback): BorrowingCallback = callback
+
+fun `unbound extension reference keeps nested receiver contract`() {
+    val reference: (@Borrowed BorrowingCallback, BorrowingCallback) -> BorrowingCallback =
+        BorrowingCallback::borrowCallbackReceiver
+    val invalid: (@Borrowed (Any) -> Unit, BorrowingCallback) -> BorrowingCallback =
+        <!LOCALITY_CONTRACT_MISMATCH!>BorrowingCallback::borrowCallbackReceiver<!>
+}
+
+fun `bound extension reference keeps nested value argument contract`(receiver: BorrowingCallback) {
+    val reference: (BorrowingCallback) -> BorrowingCallback = receiver::borrowCallbackReceiver
+    val invalid: ((Any) -> Unit) -> BorrowingCallback = <!LOCALITY_CONTRACT_MISMATCH!>receiver::borrowCallbackReceiver<!>
+}
+
 fun `pass globalFunction to requireGlobalFunction`() {
     requireGlobalFunction(::globalFunction)
 }
