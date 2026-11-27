@@ -327,7 +327,10 @@ private class ErrorCountingReporter : DiagnosticReporter() {
         private set
 
     override fun report(diagnostic: KtDiagnostic?, context: DiagnosticContext) {
-        if (diagnostic?.severity == Severity.ERROR) errorCount++
+        if (diagnostic?.severity == Severity.ERROR) {
+            val count = errorCount
+            errorCount = if (count == Int.MAX_VALUE) Int.MIN_VALUE else count + 1
+        }
     }
 }
 
