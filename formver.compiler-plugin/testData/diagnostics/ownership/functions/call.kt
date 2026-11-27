@@ -22,6 +22,10 @@ fun borrow(a: @Borrowed Any) {}
 
 fun borrowUnique(a: @Borrowed @Unique Any) {}
 
+fun borrowTwoAndUnique(a: @Borrowed Any, b: @Borrowed Any, c: @Borrowed @Unique Any) {}
+
+fun noArguments() {}
+
 fun consume(a: @Unique Any?) {}
 
 fun share(a: Any) {}
@@ -174,6 +178,19 @@ fun `consume unique after storing type check`(a: @Unique Any) {
 }
 
 // Passing the same local as multiple arguments
+
+fun `argument collisions with zero operands`() {
+    noArguments()
+}
+
+fun `only pairs involving the unique parameter collide`(a: @Unique B, b: @Unique B) {
+    borrowTwoAndUnique(a.y, a, b)
+    borrowTwoAndUnique(
+        <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a.y<!>,
+        <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>,
+        <!INVALID_DUPLICATE_UNIQUE_ARGUMENT, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a<!>,
+    )
+}
 
 fun `pass shared twice to shareBoth`(a: Any) {
     shareBoth(a, a)

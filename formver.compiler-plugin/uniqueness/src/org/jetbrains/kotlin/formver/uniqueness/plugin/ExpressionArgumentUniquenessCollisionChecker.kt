@@ -116,7 +116,8 @@ class ExpressionArgumentUniquenessCollisionChecker<Statement : FirStatement>(
 
         val argumentUniquenesses = argumentUniquenessMapper.mapArgumentUniquenessesOf(expression)
 
-        for ((index, left) in argumentUniquenesses.withIndex()) {
+        for (index in 0 until argumentUniquenesses.size) {
+            val left = argumentUniquenesses[index]
             for (right in argumentUniquenesses.subList(index + 1, argumentUniquenesses.size)) {
                 if (left.second != Uniqueness.Unique && right.second != Uniqueness.Unique) continue
                 checkPathCollision(
