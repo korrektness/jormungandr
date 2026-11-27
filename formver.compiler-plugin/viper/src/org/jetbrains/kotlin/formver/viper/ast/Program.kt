@@ -102,26 +102,33 @@ private fun Function.registerNames() {
 }
 
 /**
- * Drops each function named in [removable] that no domain, method, predicate or kept function calls.
+ * Drops each function named in [removable] that is not reachable through name registration
+ * from the rest of the program.
  * Silicon checks every function's definition, so an uncalled function costs time and adds no fact the rest of the
  * program can use.
  */
 fun Program.withoutUncalledFunctions(removable: Set<SymbolicName>): Program {
     val candidates = functions.filter { it.name in removable }.associateBy { it.name }
-    val called = mutableSetOf<SymbolicName>()
-    val pending = ArrayDeque<Function>()
-    // Every name the emitted program uses is registered, so registration sees every call.
-    val collector = object : NameResolver {
-        override fun lookup(name: SymbolicName): String = error("Names are only collected here.")
-        override fun resolve() {}
-        override fun register(name: AnyName) {
-            val function = candidates[name] ?: return
-            if (called.add(function.name)) pending.add(function)
-        }
+    val collector = CalledFunctionCollector(candidates)
+    collector.collectFrom(copy(functions = functions.filter { it.name !in candidates }))
+    return copy(functions = functions.filter { it.name !in candidates || collector.wasCalled(it.name) })
+}
+
+private class CalledFunctionCollector(private val candidates: Map<SymbolicName, Function>) : NameResolver {
+    private val called = mutableSetOf<SymbolicName>()
+    private val pending = ArrayDeque<Function>()
+
+    fun collectFrom(roots: Program) = context(this) {
+        roots.registerAllNames()
+        while (this.pending.isNotEmpty()) this.pending.removeFirst().registerNames()
     }
-    with(collector) {
-        copy(functions = functions.filter { it.name !in candidates }).registerAllNames()
-        while (pending.isNotEmpty()) pending.removeFirst().registerNames()
+
+    fun wasCalled(name: SymbolicName): Boolean = name in called
+
+    override fun lookup(name: SymbolicName): String = error("Names are only collected here.")
+    override fun resolve() {}
+    override fun register(name: AnyName) {
+        val function = candidates[name] ?: return
+        if (called.add(function.name)) pending.add(function)
     }
-    return copy(functions = functions.filter { it.name !in candidates || it.name in called })
 }
