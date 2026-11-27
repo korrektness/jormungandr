@@ -51,12 +51,15 @@ fun CheckerContext.isTrustedCode(declaration: FirBasedSymbol<*>? = null): Boolea
     if (isInSpecification()) return false
     val chain = containingDeclarations + listOfNotNull(declaration)
     if (chain.any { it.neverVerify(session) }) return true
-    // A property initializer or an `init` block runs as part of the construction; a property accessor does not.
+    val lastIndex = chain.lastIndex
     return chain.indices.any { i ->
         val owner = chain[i] as? FirClassSymbol<*> ?: return@any false
-        val member = chain.getOrNull(i + 1)
+        if (i >= lastIndex) return@any false
+        val memberIndex = i + 1
+        val member = chain.getOrNull(memberIndex)
         val inConstruction = member is FirAnonymousInitializerSymbol ||
-            member is FirPropertySymbol && chain.getOrNull(i + 2) !is FirPropertyAccessorSymbol
+            member is FirPropertySymbol &&
+            (memberIndex >= lastIndex || chain.getOrNull(memberIndex + 1) !is FirPropertyAccessorSymbol)
         inConstruction && owner.hasNeverVerifyConstructor(session)
     }
 }

@@ -573,7 +573,7 @@ class ClassProgramReportTest {
     }
 }
 
-private fun runFrontend(file: File, checkers: FirExtensionRegistrar, useLightTree: Boolean) {
+internal fun runFrontend(file: File, checkers: FirExtensionRegistrar, useLightTree: Boolean) {
     val compiler = K2JVMCompiler()
     val stdlib = File(KotlinVersion::class.java.protectionDomain.codeSource.location.toURI())
     val classpath = listOf(stdlib.path, System.getProperty("annotationsRuntime.classpath")).joinToString(File.pathSeparator)
