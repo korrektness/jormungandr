@@ -119,15 +119,16 @@ class ReadOnlyContext private constructor(
 
     private class Collector(private val opensContext: (FirElement) -> Boolean) : FirVisitorVoid() {
         val elements = mutableSetOf<FirElement>()
-        private var depth = 0
+        private var insideContext = false
 
         override fun visitElement(element: FirElement) {
             val opens = opensContext(element)
+            val enclosingContext = insideContext
 
-            if (opens) depth++
-            if (depth > 0) elements.add(element)
+            insideContext = enclosingContext || opens
+            if (insideContext) elements.add(element)
             element.acceptChildren(this)
-            if (opens) depth--
+            insideContext = enclosingContext
         }
     }
 
