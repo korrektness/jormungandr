@@ -22,7 +22,7 @@ interface Callable {
 
     fun arg(index: Int): AstWrapper.Exp {
         require(index in args.indices) {
-            "The callable does not have a ${index + 1}-th argument."
+            "The callable does not have a ${index.toLong() + 1L}-th argument."
         }
         return args[index]
     }
