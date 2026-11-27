@@ -18,6 +18,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UniquenessTrieProperties {
+    @Example
+    fun `height counts path components and selects the deepest branch`() {
+        val empty = PathTrie<String, Unit>(Unit)
+        val nested = empty.putChild("outer", empty.putChild("inner", empty))
+        val branching = empty.putChild("left", empty).putChild("middle", nested).putChild("right", empty)
+
+        assertEquals(0, empty.height)
+        assertEquals(2, nested.height)
+        assertEquals(3, branching.height)
+    }
+
     @Property
     fun `join is commutative, associative and idempotent`(
         @ForAll("states") a: UniquenessTrie<String>,

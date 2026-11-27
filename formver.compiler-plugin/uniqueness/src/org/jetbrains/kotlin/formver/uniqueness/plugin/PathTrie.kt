@@ -32,9 +32,12 @@ fun <Key, Type> PathTrie<Key, Type>.putChild(key: Key, child: PathTrie<Key, Type
 val <Key> PathTrie<Key, *>.keys: Sequence<Key>
     get() = children.keys.asSequence() + children.values.flatMap { it.keys }
 
-/** The number of components in the longest path of [this] trie. */
+/** Zero for a trie without children; otherwise the maximum child height after incrementing each with `Int` wraparound. */
 val PathTrie<*, *>.height: Int
-    get() = children.values.maxOfOrNull { it.height + 1 } ?: 0
+    get() = children.values.maxOfOrNull {
+        val childHeight = it.height
+        if (childHeight == Int.MAX_VALUE) Int.MIN_VALUE else childHeight + 1
+    } ?: 0
 
 fun <Key, Type> PathTrie<Key, Type>.join(
     other: PathTrie<Key, Type>,
