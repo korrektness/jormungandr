@@ -205,7 +205,8 @@ object DefaultArgumentUniquenessCollisionChecker : FirFunctionChecker(MppChecker
             }
         }
 
-        for ((index, left) in operands.withIndex()) {
+        for (index in 0 until operands.size) {
+            val left = operands[index]
             for (right in operands.subList(index + 1, operands.size)) {
                 if (!left.isDefault && !right.isDefault) continue
                 if (left.uniqueness != Uniqueness.Unique && right.uniqueness != Uniqueness.Unique) continue

@@ -114,6 +114,13 @@ fun `share unique field of unique parameter as default argument`(
 fun `read value field of unique parameter as default argument`(
     b: @Unique Node,
     n: Int = b.count,
+    fresh: @Unique Any = Any(),
+) {}
+
+fun `overlapping defaults report both default sources`(
+    b: @Unique Node,
+    alias: Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>b<!>,
+    child: @Unique Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!><!INVALID_MOVED_ACCESS!>b<!>.child<!>,
 ) {}
 
 fun `share shared parameter as default argument`(
