@@ -10,6 +10,7 @@ import net.jqwik.api.Arbitraries
 import net.jqwik.api.Assume
 import net.jqwik.api.Arbitrary
 import net.jqwik.api.Combinators
+import net.jqwik.api.Example
 import net.jqwik.api.ForAll
 import net.jqwik.api.Property
 import net.jqwik.api.Provide
@@ -50,6 +51,19 @@ class UniquenessTrieProperties {
         @ForAll("states") child: UniquenessTrie<String>,
     ) {
         assertEquals(child, state.insert(path, child).find(path))
+    }
+
+    @Example
+    fun `truncate folds descendants only at the depth limit`() {
+        val empty = UniquenessTrie<String>(Uniqueness.Unique)
+        val moved = UniquenessTrie<String>(Uniqueness.Moved)
+        val trie = empty.insert(listOf("branch", "leaf"), moved).insert(listOf("sibling"), empty)
+
+        assertEquals(moved, trie.truncate(0))
+        assertEquals(empty.insert(listOf("branch"), moved).insert(listOf("sibling"), empty), trie.truncate(1))
+        for (length in listOf(2, Int.MAX_VALUE, -1, Int.MIN_VALUE + 1, Int.MIN_VALUE)) {
+            assertEquals(trie, trie.truncate(length), "limit $length")
+        }
     }
 
     @Property

@@ -46,13 +46,15 @@ fun <Key> UniquenessTrie<Key>.insert(path: List<Key>, child: UniquenessTrie<Key>
 /**
  * Collapses every subtree below a path of [maxLength] components into that path, which takes the join of every state
  * in the subtree. A path with a [Uniqueness.Moved] descendant thereby becomes [Uniqueness.Moved] itself.
+ * Negative limits count down with `Int` wraparound: `Int.MIN_VALUE` gives children a limit of `Int.MAX_VALUE`.
  */
 fun <Key> UniquenessTrie<Key>.truncate(maxLength: Int): UniquenessTrie<Key> =
     when {
         children.isEmpty() -> this
         maxLength == 0 -> UniquenessTrie(joinedData)
         else -> copy(children = children.mutate { mutable ->
-            for ((key, child) in children) mutable[key] = child.truncate(maxLength - 1)
+            val childLimit = if (maxLength == Int.MIN_VALUE) Int.MAX_VALUE else maxLength - 1
+            for ((key, child) in children) mutable[key] = child.truncate(childLimit)
         })
     }
 
