@@ -1,6 +1,8 @@
 // UNIQUE_CHECK_ONLY
+// DIAGNOSTIC_KINDS
 
 import org.jetbrains.kotlin.formver.plugin.Borrowed
+import org.jetbrains.kotlin.formver.plugin.Pure
 import org.jetbrains.kotlin.formver.plugin.Unique
 
 class Node {
@@ -13,6 +15,20 @@ fun later(block: () -> Unit) {}
 
 fun `lambda captures unique parameter`(node: @Unique Node) {
     later <!INVALID_UNIQUENESS_CAPTURE!>{ borrow(node) }<!>
+}
+
+fun `lambda captures a later owned local only once`() {
+    val late: @Unique Node = Node()
+    late.value = 1
+    late.value = 2
+    later <!INVALID_UNIQUENESS_CAPTURE!>{ borrow(late); borrow(late) }<!>
+}
+
+@Pure
+fun `lambda captures an owned root through a read only view`(root: @Unique Node): Int {
+    val view = root
+    val read = <!INVALID_UNIQUENESS_CAPTURE!>{ <!UNSUPPORTED_OWNERSHIP!>view<!>.value }<!>
+    return 0
 }
 
 fun `lambda captures borrowed parameter`(node: @Borrowed Node) {

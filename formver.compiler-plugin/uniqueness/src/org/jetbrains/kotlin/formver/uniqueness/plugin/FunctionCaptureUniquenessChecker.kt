@@ -62,14 +62,6 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
         val nodes = graph.uniquenessAnalysisTargetNodes
 
-        val ownedRoots = mutableSetOf<FirBasedSymbol<*>>()
-        for (node in nodes) {
-            val rootUniquenessStates = uniquenessStateFlows[node].joinOverEdgeKinds().children
-            for ((symbol, uniquenessState) in rootUniquenessStates) {
-                if (uniquenessState.data <= Uniqueness.Unknown) ownedRoots.add(symbol)
-            }
-        }
-
         val specifications = ReadOnlyContext.specificationsOf(graph, context)
         val specifiedLambdas = declaration.specifiedLambdas()
         val separateGraphs = nodes
@@ -83,7 +75,15 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
                 val source = symbol.borrowedViewSource()
                 if (source != null && source.resolveDeclaredUniqueness() != Uniqueness.Unique) continue
                 val root = source?.firstOrNull() ?: symbol
-                if (root !in ownedRoots) continue
+                var isOwnedRoot = false
+                for (node in nodes) {
+                    val state = uniquenessStateFlows[node].joinOverEdgeKinds().children[root]
+                    if (state != null && state.data <= Uniqueness.Unknown) {
+                        isOwnedRoot = true
+                        break
+                    }
+                }
+                if (!isOwnedRoot) continue
                 if (separateGraph.declaration is FirAnonymousFunction && !root.isAnnotatedOwned()) continue
 
                 val boundary = separateGraph.declaration?.source ?: declaration.source

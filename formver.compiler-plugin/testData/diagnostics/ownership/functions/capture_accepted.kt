@@ -25,6 +25,12 @@ fun `separate lambda captures shared parameter`(node: Node) {
     }
 }
 
+val globalNode: Node = Node()
+
+fun `local function captures a global absent from local flow`() {
+    fun touch() { globalNode.value = 1 }
+}
+
 fun `separate lambda declares its own unique local`() {
     later {
         val local: @Unique Node = Node()
